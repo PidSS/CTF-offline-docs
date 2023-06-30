@@ -1,5 +1,6 @@
 {
     "sites": [
+        { "name":"Lilac合作文档", "folder":"lilac.notion", "domain":"https://www.notion.so/lilachit/House-of-Lilac-6ea9f34298904f5b9e14e48387cf072c" },
         { "name":"CTF Wiki", "folder":"ctf-wiki.org" },
         { "name":"离别歌 [P神]", "folder":"www.leavesongs.com" },
         { "name":"Pion1eer [机器猫]", "folder":"www.ruanx.net" },
