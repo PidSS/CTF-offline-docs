@@ -11,6 +11,8 @@
         { "name":"Python反序列化 [机器猫]", "domain":"zhuanlan.zhihu.com/p/89132768", "indexPath":"/sites/散装网页/从零开始python反序列化攻击：pickle原理解析 & 不用reduce的RCE姿势 - 知乎.html" },
         { "name":"CyberChef", "folder":"CyberChef_v10.4.0" },
         { "name":"Python文档", "folder":"python-3.11.4" },
-        { "name":"密码学e与phi不互素的问题", "domain":"tttang.com/archive/1504/#toc_2", "indexPath":"sites/散装网页/针对CTFer的e与phi不互素的问题-跳跳糖.html" }
+        { "name":"密码学e与phi不互素的问题", "domain":"tttang.com/archive/1504/#toc_2", "indexPath":"sites/散装网页/针对CTFer的e与phi不互素的问题-跳跳糖.html" },
+        { "name":"珂技系列-SQL注入", "domain":"www.freebuf.com/articles/web/261524.html", "indexPath":"/sites/散装网页/珂技系列之一篇就够了--mysql注入 - FreeBuf网络安全行业门户.html" },
+        { "name":"PHP反序列化和POP链构造", "domain":"as1def.github.io/2020/10/09/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8CPOP%E9%93%BE%E6%9E%84%E9%80%A0/", "indexPath":"/sites/散装网页/PHP反序列化和POP链构造 _ As1def's Blog.html" }
     ]
 }
