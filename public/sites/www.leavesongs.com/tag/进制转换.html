@@ -1,0 +1,341 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>文章列表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                进制转换
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="col-11 columns" id="mainbody">
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../C/radixchange.html" title="位运算处理进制转换问题">位运算处理进制转换问题</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/C.html">C/C++</a></span>
+  
+  <span class="date">时间: 2012-12-13 22:54</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../C/radixchange.html#reply-list">6条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../C/radixchange.html">29918人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2.html">进制转换</a>
+    
+        <a href="%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>一般初学者学习一门语言，一般都有那么经典的几个题，比如判断水仙花，进制转换，计算1加到100的和，输出多少以内的素数或是判断一个数是否是素数等等。我学C语言老师也不厌其烦地布置这类题目，因为我之前有过基础，所以思考题目时总会有些拓展，比如十进制转换成二进制这道题。</p>
+<p>老师讲的方法类似于这样</p>
+<div class="codehilite"><pre><span></span><span class="k">do</span><span class="p">{</span>
+    <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">num</span><span class="o">%</span><span class="mi">2</span><span class="p">;}</span>
+<span class="k">while</span><span class="p">((</span><span class="n">num</span><span class="o">/=</span><span class="mi">2</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+
+
+<p>通过不断的对2取余得到的余数保存在数组a[]里，最后数组里就是得到的二进制数(但是是反的，输出的时候需要从a[n]-&gt;a[0]输出)。</p>
+<p>这种办法比较好理解，但是从效率上来说还是差了。C语言的魅力就在它有很多对系统底层操作的功能，比如位运算。</p>
+<p>一个数在计算机里以二进制保存，我们何不直接把保存在计算机里的二进制数拿出来用呢？后来我写了一个用位运算解决转换问题的程序，网上也有类似的程序，大家也可以去对比对比。...</p>
+        
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="2019.html">2019</a>
+        
+        <a rel="tag" href="xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="php.html">php</a>
+        
+        <a rel="tag" href="CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="django.html">django</a>
+        
+        <a rel="tag" href="%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="getshell.html">getshell</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="webshell.html">webshell</a>
+        
+        <a rel="tag" href="%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+
+</html>

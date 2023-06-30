@@ -1,0 +1,720 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>宝塔面板phpMyAdmin未授权访问漏洞是个低级错误吗？ | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                PHP &raquo; <a href="baota-phpmyadmin-unauthentication-analysis.html">宝塔面板phpMyAdmin未授权访问漏洞是个低级错误吗？</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">宝塔面板phpMyAdmin未授权访问漏洞是个低级错误吗？</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PHP.html">PHP</a></span>
+  
+  <span class="date">时间: 2020-8-27 21:40</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="baota-phpmyadmin-unauthentication-analysis.html">56863人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF.html">宝塔面板</a>
+    
+        <a href="../tag/phpmyadmin.html">phpmyadmin</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <blockquote>
+<p>本文2020年8月24日发表于<a href="https://mp.weixin.qq.com/s/3ZjwFo5gWlJACSkeYWQLXA">代码审计公众号</a></p>
+</blockquote>
+<p>周日晚，某群里突然发布了一则消息，宝塔面板的phpmyadmin存在未授权访问漏洞的紧急漏洞预警，并给出了一大批存在漏洞的URL：</p>
+<p><a href="../media/attachment/2020/08/27/f5a794c4-b270-4dec-a2d5-3b846450d273.png"><img alt="image-20200824014506363.png" src="../media/attachment/2020/08/27/f5a794c4-b270-4dec-a2d5-3b846450d273.7cc66608e169.png" /></a></p>
+<p>随便点开其中一个，赫然就是一个大大的phpmyadmin后台管理页面，无需任何认证与登录。当然，随后各种神图神事也都刷爆了社交网络，作为一个冷静安全研究者，我对此当然是一笑置之，但是这个漏洞的原因我还是颇感兴趣的，所以本文我们就来考证一下整件事情的缘由。</p>
+<h2 id="_1"><a class="toclink" href="#_1">我们的问题究竟是什么？</a></h2>
+<p>首先，我先给出一个结论：<strong>这件事情绝对不是简简单单地有一个pma目录忘记删除了，或者宝塔面板疏忽大意进行了错误地配置，更不是像某些人阴谋论中说到的官方刻意留的后门。</strong></p>
+<p>我为什么这么说？首先，根据<a href="https://www.bt.cn/bbs/thread-54666-1-1.html">官方的说法</a>，这个漏洞只影响如下版本：</p>
+<ul>
+<li>Linux正式版7.4.2</li>
+<li>Linux测试版7.5.13</li>
+<li>Windows正式版6.8</li>
+</ul>
+<p>这个版本就是最新版（漏洞修复版）的前一个版本。也就是说，这个确定的小版本之前的版本面板是不受影响的。我们试想一下，如果是“后门”或者官方忘记删除的目录，为什么只影响这一个版本呢？况且宝塔面板发展了这么久，积累了400万用户，体系安全性也相对比较成熟，如果存在这么低劣的错误或“后门”，也应该早就被发现了。</p>
+<p>经过实际查看互联网上的案例和询问使用了宝塔面板的朋友，我发现在7.4.2以前的版本中没有pma这个目录，并且phpmyadmin默认情况下认证方法是需要输入账号密码的。所以，宝塔出现这个漏洞，一定是做过了下面这两件事：</p>
+<ul>
+<li>新增了一个pma目录，内容phpmyadmin</li>
+<li>phpmyadmin的配置文件被修改了认证方式</li>
+</ul>
+<p>那么，我们的问题就变成了，<strong>官方为什么要做这两处修改，目的究竟是什么</strong>？</p>
+<p>为了研究这个问题，我们需要先安装一个宝塔7.4.2版本。但是，宝塔的安装是一个傻瓜化的一键化脚本：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">wget</span> <span class="o">&amp;&amp;</span> <span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="n">install</span><span class="o">.</span><span class="n">sh</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">bt</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">install</span><span class="o">/</span><span class="n">install_6</span><span class="o">.</span><span class="mf">0.</span><span class="n">sh</span> <span class="o">&amp;&amp;</span> <span class="n">sh</span> <span class="n">install</span><span class="o">.</span><span class="n">sh</span>
+</code></pre></div>
+
+<p>并没有给到用户一个可以选择版本号的选项，官方的Git也许久没更新了，我们如何才能安装到一个合适的版本（7.4.2）呢？</p>
+<h2 id="_2"><a class="toclink" href="#_2">安装一个合适的版本</a></h2>
+<p>这当然难不倒我。首先，我安装了最新版的宝塔面板，用的就是上述一键化脚本。</p>
+<p>安装的过程自然没什么问题，安装完成后，系统显示的版本号是最新版7.4.3，因为在爆出这个漏洞以后，官方迅速进行了修复升级。不过没关系，我们仍然可以找到离线升级包：</p>
+<ul>
+<li><a href="http://download.bt.cn/install/update/LinuxPanel-7.4.0.zip">http://download.bt.cn/install/update/LinuxPanel-7.4.0.zip</a></li>
+<li><a href="http://download.bt.cn/install/update/LinuxPanel-7.4.2.zip">http://download.bt.cn/install/update/LinuxPanel-7.4.2.zip</a></li>
+<li><a href="http://download.bt.cn/install/update/LinuxPanel-7.4.3.zip">http://download.bt.cn/install/update/LinuxPanel-7.4.3.zip</a></li>
+</ul>
+<p>分别是7.4.0/7.4.2/7.4.3的版本，我们分别下载并解压，并尝试将自己的服务器版本恢复成漏洞版本7.4.2。</p>
+<p>在恢复代码之前，我们先将服务器断网，或者将宝塔设置成离线模式：</p>
+<p><a href="../media/attachment/2020/08/27/d139d31b-b4ab-4ddf-a128-1e28e5b0079e.png"><img alt="image-20200824022651960.png" src="../media/attachment/2020/08/27/d139d31b-b4ab-4ddf-a128-1e28e5b0079e.7013f4488232.png" /></a></p>
+<p>这么做的目的是防止不小心点击了宝塔的版本更新，避免好不容易恢复的代码又自动升级了。</p>
+<p>宝塔系统代码默认安装完是在<code>/www/server/panel</code>，接着我们直接将将压缩包内的panel目录上传到这里来，覆盖掉已有的文件。重启下宝塔，即可发现系统版本号已经恢复成7.4.2了：</p>
+<p><a href="../media/attachment/2020/08/27/46822318-37e5-4b6e-93a3-882ba16d96b1.png"><img alt="image-20200824022910270.png" src="../media/attachment/2020/08/27/46822318-37e5-4b6e-93a3-882ba16d96b1.2de245ecb4a7.png" /></a></p>
+<p>还没完，我们使用beyond compare打开7.4.2和7.4.3的压缩包代码，先看看官方是怎么修复的漏洞：</p>
+<p><a href="../media/attachment/2020/08/27/3409ec04-5799-4207-a87a-a767e2a5aca2.png"><img alt="image-20200824031629647.png" src="../media/attachment/2020/08/27/3409ec04-5799-4207-a87a-a767e2a5aca2.0da4804fb155.png" /></a></p>
+<p>比较粗暴，直接判断目录<code>/www/server/phpmyadmin/pma</code>是否存在，如果存在就直接删掉。所以，我们虽然恢复了系统版本代码，但删掉的pma已经不在了，我们还需要恢复一下这个目录。</p>
+<p>方法也很简单，<code>/www/server/phpmyadmin</code>下本身存在一个phpmyadmin目录，我们直接复制一下这个目录即可：</p>
+<p><a href="../media/attachment/2020/08/27/6d67f339-76f5-4e2e-ac74-a9730c658472.png"><img alt="image-20200824031816843.png" src="../media/attachment/2020/08/27/6d67f339-76f5-4e2e-ac74-a9730c658472.9e1d1e88c2a9.png" /></a></p>
+<h2 id="_3"><a class="toclink" href="#_3">漏洞究竟是怎么回事</a></h2>
+<p>有了环境，我们仍需看看代码。</p>
+<p>首先，由于7.4.2是引入漏洞的版本，我们看看官方对7.4.2的更新日志：</p>
+<p><a href="../media/attachment/2020/08/27/1bb5f524-cffc-4b71-a3f0-5ba385fd62fb.png"><img alt="image-20200824024228905.png" src="../media/attachment/2020/08/27/1bb5f524-cffc-4b71-a3f0-5ba385fd62fb.21b826b0c051.png" /></a></p>
+<p>用beyond compare打开7.4.0和7.4.2的压缩包代码，看看具体增加了哪些代码：</p>
+<p><a href="../media/attachment/2020/08/27/d1757a1d-ebd0-45fd-8a6e-9962c2b916bc.png"><img alt="image-20200824024330748.png" src="../media/attachment/2020/08/27/d1757a1d-ebd0-45fd-8a6e-9962c2b916bc.4a714a004592.png" /></a></p>
+<p>可见，在7.4.2版本中增加了两个视图，分别对应着phpmyadmin和adminer。视图中用到了<code>panelPHP#start</code>方法，这个方法其实也是新加的：</p>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">puri</span><span class="p">,</span><span class="n">document_root</span><span class="p">,</span><span class="n">last_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            @name 开始处理PHP请求</span>
+<span class="sd">            @author hwliang&lt;2020-07-11&gt;</span>
+<span class="sd">            @param puri string(URI地址)</span>
+<span class="sd">            @return socket or Response</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="o">...</span>
+
+        <span class="c1">#如果是PHP文件</span>
+        <span class="k">if</span> <span class="n">puri</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.php&#39;</span><span class="p">:</span>
+            <span class="k">if</span>  <span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/phpmyadmin/&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="o">...</span>
+                <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+                    <span class="c1">#登录phpmyadmin</span>
+                    <span class="k">if</span> <span class="n">puri</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;index.php&#39;</span><span class="p">,</span><span class="s1">&#39;/index.php&#39;</span><span class="p">]:</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="n">public</span><span class="o">.</span><span class="n">url_encode</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="nb">bytes</span><span class="p">):</span>
+                            <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">re_io</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pma_username&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">username</span><span class="p">:</span>
+                            <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pma_password&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_pma_passwd</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">):</span>
+                                <span class="k">return</span> <span class="n">Resp</span><span class="p">(</span><span class="s1">&#39;未安装phpmyadmin&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">puri</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;logout.php&#39;</span><span class="p">,</span><span class="s1">&#39;/logout.php&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write_pma_passwd</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="o">...</span>
+
+        <span class="c1">#如果是静态文件</span>
+        <span class="k">return</span> <span class="n">send_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</code></pre></div>
+
+<p>代码太长，我们不展开分析，只我写出来的部分。在请求的路径是<code>/phpmyadmin/index.php</code>且存在<code>pma_username</code>、<code>pma_password</code>时，则执行<code>self.write_pma_passwd(username,password)</code>。</p>
+<p>跟进<code>self.write_pma_passwd</code>：</p>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">write_pma_passwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            @name 写入mysql帐号密码到配置文件</span>
+<span class="sd">            @author hwliang&lt;2020-07-13&gt;</span>
+<span class="sd">            @param username string(用户名)</span>
+<span class="sd">            @param password string(密码)</span>
+<span class="sd">            @return bool</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_phpmyadmin_phpversion</span><span class="p">()</span>
+        <span class="n">pconfig</span> <span class="o">=</span> <span class="s1">&#39;cookie&#39;</span>
+        <span class="k">if</span> <span class="n">username</span><span class="p">:</span>
+            <span class="n">pconfig</span> <span class="o">=</span> <span class="s1">&#39;config&#39;</span>
+        <span class="n">pma_path</span> <span class="o">=</span> <span class="s1">&#39;/www/server/phpmyadmin/&#39;</span>
+        <span class="n">pma_config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pma_path</span><span class="p">,</span><span class="s1">&#39;pma/config.inc.php&#39;</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">public</span><span class="o">.</span><span class="n">readFile</span><span class="p">(</span><span class="n">pma_config_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">conf</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;/\* Authentication type \*/(.|\n)+/\* Server parameters \*/&quot;</span>
+        <span class="n">rstr</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;/* Authentication type */</span>
+<span class="s1">$cfg[&#39;Servers&#39;][$i][&#39;auth_type&#39;] = &#39;</span><span class="si">{}</span><span class="s1">&#39;;</span>
+<span class="s1">$cfg[&#39;Servers&#39;][$i][&#39;host&#39;] = &#39;localhost&#39;; </span>
+<span class="s1">$cfg[&#39;Servers&#39;][$i][&#39;port&#39;] = &#39;</span><span class="si">{}</span><span class="s1">&#39;;</span>
+<span class="s1">$cfg[&#39;Servers&#39;][$i][&#39;user&#39;] = &#39;</span><span class="si">{}</span><span class="s1">&#39;; </span>
+<span class="s1">$cfg[&#39;Servers&#39;][$i][&#39;password&#39;] = &#39;</span><span class="si">{}</span><span class="s1">&#39;; </span>
+<span class="s1">/* Server parameters */&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pconfig</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mysql_port</span><span class="p">(),</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">rep</span><span class="p">,</span><span class="n">rstr</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span>
+        <span class="n">public</span><span class="o">.</span><span class="n">writeFile</span><span class="p">(</span><span class="n">pma_config_file</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+
+<p>这个代码也很好理解了，如果传入了username和password的情况下，宝塔会改写phpmyadmin的配置文件config.inc.php，将认证方式改成<code>config</code>，并写死账号密码。</p>
+<p>这就是为什么7.4.2版本中pma可以直接访问的原因。</p>
+<blockquote>
+<p>补个课：</p>
+<p>phpmyadmin支持数种认证方法，默认情况下是Cookie认证，此时需要输入账号密码；用户也可以将认证方式修改成Config认证，此时phpmyadmin会使用配置文件中的账号密码来连接mysql数据库，即不用再输入账号密码。</p>
+</blockquote>
+<h2 id="_4"><a class="toclink" href="#_4">官方做这些动作的原因</a></h2>
+<p>其实各位看官看到这里肯定脑子里还是一团浆糊，这些代码究竟意味着什么呢？为什么官方要将认证模式改成<code>config</code>模式？</p>
+<p>这是很多漏洞分析文章的通病，这些文章在出现漏洞后跟一遍漏洞代码，找到漏洞发生点和利用方法就结束了，并没有深入研究开发为什么会这么写，那么下次你还是挖不出漏洞。</p>
+<p>所以，这里思考一下，我们现在起码还有下列疑问：</p>
+<ul>
+<li>在7.4.2版本以前，用户是如何使用phpmyadmin的？</li>
+<li>宝塔为什么要在7.4.2版本增加phpmyadmin有关的视图？</li>
+<li>宝塔为什么要将phpmyadmin认证模式改成config？</li>
+<li>我们如何复现这个漏洞？</li>
+</ul>
+<p>第一个问题，我们其实可以简单找到答案。在正常安装宝塔最新版7.4.3时，我们点击宝塔后台的phpmyadmin链接，会访问到这样一个路径：</p>
+<p><a href="../media/attachment/2020/08/27/6e79099b-26c7-475b-97d0-8280d28bbab7.png"><img alt="image-20200824025924524.png" src="../media/attachment/2020/08/27/6e79099b-26c7-475b-97d0-8280d28bbab7.e8d5690a3259.png" /></a></p>
+<p>7.4.3版本为了修复这个漏洞，回滚了部分代码，所以这种方式其实就是7.4.2以前版本的phpmyadmin的访问方式：<strong>通过888端口下的一个以<code>phpmyadmin_</code>开头的文件夹直接访问phpmyadmin。</strong></p>
+<p>这种老的访问方法中，888端口是一个单独的Nginx或Apache服务器，整个东西是安全的，访问也需要输入账号密码。</p>
+<p>但是这种访问方法有些麻烦，需要额外开放888端口，而且每次登陆都要重新输入密码。所以，官方开发人员提出了一种新的做法，在宝塔后端的python层面转发用户对phpmyadmin的请求给php-fpm。这样有三个好处：</p>
+<ul>
+<li>直接在python层面做用户认证，和宝塔的用户认证进行统一，不需要多次输入mysql密码</li>
+<li>也不需要再对外开放888端口了</li>
+<li>使用phpmyadmin也不再依赖于Nginx/Apache等服务器中间件了</li>
+</ul>
+<p>这就是为什么宝塔要在7.4.2增加phpmyadmin有关的视图的原因，这个视图就是一个phpmyadmin的代理，做的事情就是转发用户的请求给php-fpm。</p>
+<p>用户在第一次使用这种方式登录时，系统会自动发送包含了Mysql账号密码的数据包，宝塔后端会捕捉到此时的账号密码，填入phpmyadmin的配置文件，并将认证方式改成<code>config</code>。对于用户来说，感受到的体验就是，不再需要输入任何Mysql密码即可使用phpmyadmin了。</p>
+<p>这的确给用户的使用带来了更好的体验。</p>
+<h2 id="_5"><a class="toclink" href="#_5">漏洞复现</a></h2>
+<p>此时我们应该还有个疑问：既然官方目的是“直接在python层面做用户认证，和宝塔的用户认证进行统一”，那么仍然是有认证的呀？为什么会出现未授权访问漏洞呢？</p>
+<p>我们可以来复现一下这个漏洞。首先，我们以系统管理员的身份登录宝塔后台，来到数据库页面，点击“phpMyAdmin”按钮，会弹出如下模态框：</p>
+<p><a href="../media/attachment/2020/08/27/dc1bea1b-f0f4-474e-8b65-ffc541d3ca1e.png"><img alt="image-20200824033308293.png" src="../media/attachment/2020/08/27/dc1bea1b-f0f4-474e-8b65-ffc541d3ca1e.c2e8eef5356e.png" /></a></p>
+<p>这个里面有两种访问模式，“通过Nginx/Apache/OIs访问”是老版本的访问方式，“通过面板安全访问”就是7.4.2新增加的代理模式。</p>
+<p>我们点击“通过面板安全访问”，并抓包，会抓到这样一个数据包：</p>
+<p><a href="../media/attachment/2020/08/27/e37e461a-fbc0-4056-9079-9a7fc22b6b66.png"><img alt="image-20200824033926259.png" src="../media/attachment/2020/08/27/e37e461a-fbc0-4056-9079-9a7fc22b6b66.5e5108e6d773.png" /></a></p>
+<p>宝塔前端将我们的Mysql账号密码填好了直接发给phpmyadmin。又因为我们前面分析过的那段代码，后台将账号密码直接写入了phpmyadmin配置文件，来做到免认证的逻辑。</p>
+<p>如果一个未认证的用户，直接访问<code>http://ip:8888/phpmyadmin/index.php</code>呢？会被直接重定向到登录页面：</p>
+<p><a href="../media/attachment/2020/08/27/700c16c6-73b5-4f6a-9315-a6a1bed3bbe4.png"><img alt="image-20200824034618519.png" src="../media/attachment/2020/08/27/700c16c6-73b5-4f6a-9315-a6a1bed3bbe4.6fdc6ec9ecde.png" /></a></p>
+<p>如果仅仅是这样，这个过程是不存在漏洞的。但是，官方开发人员犯了一个错误，他将pma应用放在了<code>/www/server/phpmyadmin</code>目录下，而这个目录原本是老的phpmyadmin访问方式所使用的Web根目录。</p>
+<p>这意味着，我通过老的888端口+pma目录，可以访问到新的phpmyadmin，而新的phpmyadmin又被官方修改了配置文件，最终导致了未授权访问漏洞：</p>
+<p><a href="../media/attachment/2020/08/27/2c7b7a63-5225-438e-b349-79440edf6d3c.png"><img alt="image-20200824034837337.png" src="../media/attachment/2020/08/27/2c7b7a63-5225-438e-b349-79440edf6d3c.42cfef19961b.png" /></a></p>
+<p>所以，如何解决这个问题呢？也很简单，只需要将pma移到其他目录去即可。</p>
+<h2 id="_6"><a class="toclink" href="#_6">总结</a></h2>
+<p>我们来做个总结。</p>
+<p>首先，宝塔面板绝对不是弱智，这个漏洞不是简简单单的放了一个未授权的pma在外面忘记删。这其实会打很多人脸，因为大部分人认为这只是个简单的phpmyadmin未授权访问漏洞，并对宝塔进行了一顿diss，没有想到这后面其实是一个复杂的逻辑错误。</p>
+<p>其次，用户体验和安全绝对是不冲突的，我十分不喜欢为了保障安全而阉割用户体验的做法。所以希望宝塔官方不会因为这次的漏洞事件而彻底将代码回滚（据说7.4.3的更新只是临时解决方案），该改进的地方还是要改进。</p>
+<p>我有数年不再使用Linux面板了，这次也算重新体验了一下2020年的Linux面板，个人感觉宝塔看外在其实是一个比较注重安全的系统，比如自动生成的用户密码、用户名和密码的策略、默认的Php安全配置、自动的版本更新等等，相比于很多国内其他的商业系统，绝对属于有过之而无不及了。但是看代码其实需要改进的地方还有很多，这个以后有机会再细说吧。</p>
+<hr />
+<p>最后，我的博客即将同步至腾讯云+社区，邀请大家一同入驻：<a href="https://cloud.tencent.com/developer/support-plan?invite_code=2t8a82fyrsysc">https://cloud.tencent.com/developer/support-plan?invite_code=2t8a82fyrsysc</a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF.html">宝塔面板</a>
+                
+                    <a href="../tag/phpmyadmin.html">phpmyadmin</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 7 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3584">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/69f6d48aa271db33d6f7de165dde2281.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://www.gov-bid.com/" target="_blank" rel="nofollow noopener">招标采购</a></div>
+                    <p>文章很专业 支持一下  虽然我不用宝塔</p>
+                    <span class="comment-time">时间: 2020-11-30 17:46</span>
+                    <span class="comment-reply"><a href="#comment-3584" onclick="reply_to('3584','招标采购')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3580">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">XF010101</a></div>
+                    <p>学到了。利用越简单，背后的逻辑越有趣。</p>
+                    <span class="comment-time">时间: 2020-11-25 11:07</span>
+                    <span class="comment-reply"><a href="#comment-3580" onclick="reply_to('3580','XF010101')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3573">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Roster</a></div>
+                    <p>分析角度很独特，优质文章。</p>
+                    <span class="comment-time">时间: 2020-11-16 16:24</span>
+                    <span class="comment-reply"><a href="#comment-3573" onclick="reply_to('3573','Roster')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3551">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/ae784d2d196cf6d3982ade4a9c64ef3e.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://cloud.tencent.com/developer" target="_blank" rel="nofollow noopener">Jinx</a></div>
+                    <p>您好～我是腾讯云+社区的运营，关注了您在分享的技术文章，觉得内容很棒，我们诚挚邀请您加入腾讯云自媒体分享计划。完整福利和申请地址请见：https://cloud.tencent.com/developer/support-plan<br>作者申请此计划后将作者的文章进行搬迁同步到社区的专栏下，你只需要简单填写一下表单申请即可，我们会给作者提供包括流量、云服务器、域名等，另外还有些周边礼物。  我们诚挚的邀请您并期待您的加入~<br>腾讯云+社区是由腾讯云全新打造的一个技术交流社区，正在引入更多的作者与优质文章，就此社区推出一个自媒体的分享计划。</p>
+                    <span class="comment-time">时间: 2020-10-09 17:44</span>
+                    <span class="comment-reply"><a href="#comment-3551" onclick="reply_to('3551','Jinx')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3552">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@Jinx 可以，已加链接。</p>
+                    <span class="comment-time">时间: 2020-10-10 01:20</span>
+                    <span class="comment-reply"><a href="#comment-3552" onclick="reply_to('3552','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3545">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">test</a></div>
+                    <p>过犹不及 多用于消极形容，用来夸不太好</p>
+                    <span class="comment-time">时间: 2020-09-17 10:39</span>
+                    <span class="comment-reply"><a href="#comment-3545" onclick="reply_to('3545','test')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3546">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@test 专业</p>
+                    <span class="comment-time">时间: 2020-09-18 17:28</span>
+                    <span class="comment-reply"><a href="#comment-3546" onclick="reply_to('3546','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="72bb5ac069dbee12863e2ea52ea909d953a1f113" />
+</div><div class="col-6">
+<img src="../captcha/image/72bb5ac069dbee12863e2ea52ea909d953a1f113/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="456" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="We3ytsXlzJdsHvchrJE2JPoqOg4VhRYyIMrp1xy4X5rbf30FtKBNGirv9Dl6QtaQ">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

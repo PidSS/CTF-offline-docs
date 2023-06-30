@@ -1,0 +1,586 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>phpcms上传导致getshell详解及案例 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="phpcms-upload-getshell.html">phpcms上传导致getshell详解及案例</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">phpcms上传导致getshell详解及案例</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-12-5 17:34</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="phpcms-upload-getshell.html">15237人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/phpcms.html">phpcms</a>
+    
+        <a href="../tag/0day.html">0day</a>
+    
+        <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>这篇文章好几天前写了，给协会里新成员普及知识，看大家也都玩的差不多了，就发表到博客里，增加一点噱头和访问量，哈哈~</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 什么是上传漏洞</a></h2>
+<p>很多cms为了丰富自己的功能都提供了上传头像、上传图片等功能。但如果上传的内容没有做好过滤，则等于说给了攻击者一个执行任意代码的途径。比如攻击者可以在上传一个含有恶意代码的文件，伪装成图片，来绕过后台的检测机制。</p>
+<p>以前一般的上传漏洞主要有以下几个方式造成：</p>
+<ol>
+<li>在客户端用javascript或flash验证用户上传的文件格式，但上传到服务器后没验证。</li>
+<li>对用户上传的文件只检查了ContentType，但ContentType是可以被用户修改的，所以用户上传的脚本文件可以将ContentType改成image/gif来绕过检查。</li>
+<li>黑名单机制。检查用户上传的文件的后缀，如果是处于黑名单中的后缀，就返回错误信息。但黑名单机制很不好，不够完善，当黑名单中有遗漏的时候，攻击者就能够生虚而入。</li>
+<li>没有对用户上传的文件改名。网站有时候检查了用户上传的文件后缀是.jpg或.gif，于是就上传成功了，不对上传的文件进行改名。但一旦服务器存在解析漏洞，攻击者就可以利用畸形文件名来上传恶意代码。比如IIS6.0的解析漏洞，攻击者即可上传文件名类似“muma.asp;.gif”的文件，虽然看起来是一个gif格式，但IIS6.0就会把它解析成asp脚本运行。</li>
+<li>解压缩功能造成问题。有些网站有这样的功能，比如wordpress和emlog后台支持上传压缩包（上传后自动解压），这样我们把恶意代码写在压缩包中某文件里，就能在上传解压后被运行。</li>
+</ol>
+<p>像一些大型的CMS，用户量很多，他们的安全也做的较好，前台直接上传绕过执行任意代码的漏洞很少。一旦前台存在这种漏洞，任何人都能上传webshell到网站中。</p>
+<p>但据说一年前phpcms就有这个0day了，知道昨天才被公开。</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 过程演示</a></h2>
+<p>首先找到目标网站（使用phpcms搭建），注册一个账号。来到用户中心 - 上传头像</p>
+<p><a href="../content/uploadfile/201312/4efd1386236427.jpg" target="_blank"><img alt="01.jpg" src="../content/uploadfile/201312/thum-4efd1386236427.jpg" /></a></p>
+<p>先选择一个正常的头像：</p>
+<p><a href="../content/uploadfile/201312/3fb51386236429.jpg" target="_blank"><img alt="02.jpg" src="../content/uploadfile/201312/thum-3fb51386236429.jpg" /></a></p>
+<p>打开burp_suite，这是我很喜欢的一个工具，里面有一个抓包、改包的功能，我们就需要改我们上传时发送的数据包，绕过客户端的后缀验证。</p>
+<p>具体的burp_suite怎么用就不是重点了，想了解的同学自己谷歌。</p>
+<p>打开burp_suite后，监听8080，然后我们把浏览器代理开成localhost:8080，点击这里的“保存图片”。<br />
+这时，burp_suite中就截获了上传的数据包：</p>
+<p><a href="../content/uploadfile/201312/f9961386236430.jpg" target="_blank"><img alt="03.jpg" src="../content/uploadfile/201312/thum-f9961386236430.jpg" /></a></p>
+<p>从那个“PK”到最后结尾，一大段东西，实际上就是我们上传的这个图片。我们把它们全部删掉，包括“PK”。</p>
+<p>然后我们要构造一个包含恶意代码的数据包，我新建了一个zip压缩包，里面包含一个文件夹“phi”，这个文件夹里包含一个我的webshell：“xm.php”。就是/phi/xm.php</p>
+<p>然后我们回到burp_suite中，在刚才PK的位置右键 - Paste from file：</p>
+<p><a href="../content/uploadfile/201312/2de41386236432.jpg" target="_blank"><img alt="04.jpg" src="../content/uploadfile/201312/thum-2de41386236432.jpg" /></a></p>
+<p>选择我们这个压缩包：</p>
+<p><a href="../content/uploadfile/201312/13501386236433.jpg" target="_blank"><img alt="05.jpg" src="../content/uploadfile/201312/thum-13501386236433.jpg" /></a></p>
+<p>然后点上面的Forward，将数据包放行。</p>
+<p>然后来到历史记录，翻一下，应该会看到返回一个类似 phpsso_server/uploadfile/avatar/1/1/1/90*90.jpg的文件，这里就是我们的头像上传目录。</p>
+<p><a href="../content/uploadfile/201312/fac41386236434.jpg" target="_blank"><img alt="06.jpg" src="../content/uploadfile/201312/thum-fac41386236434.jpg" /></a></p>
+<p>其实到这里我们已经上传成功了，我们上传的这个webshell就在这里：<a href="http://www.xxx.com/" target="_blank">http://www.xxx.com/</a>phpsso_server/uploadfile/avatar/1/1/1/phi/xm.php</p>
+<p>红色的就是你的头像上传目录。蓝色的是你压缩包的文件结构。</p>
+<p>访问这个地址发现OK了。</p>
+<p><a href="../content/uploadfile/201312/e4bd1386236435.jpg" target="_blank"><img alt="07.jpg" src="../content/uploadfile/201312/thum-e4bd1386236435.jpg" /></a></p>
+<p>菜刀连一下成功，在剩下的事我就没兴趣了：</p>
+<p><a href="../content/uploadfile/201312/86c31386236436.jpg" target="_blank"><img alt="08.jpg" src="../content/uploadfile/201312/thum-86c31386236436.jpg" /></a></p>
+<h2 id="0x03"><a class="toclink" href="#0x03">0x03 漏洞原理</a></h2>
+<p>说一下为什么我们构造一个这样的压缩包就能getshell。<br />
+phpcms对头像上传是这么处理，上传上去的zip文件，它先解压好，然后删除非图片文件。<br />
+关键地方代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">//</span><span class="err">存储</span><span class="n">flashpost图片</span>
+<span class="o">$</span><span class="n">filename</span> <span class="o">=</span> <span class="o">$</span><span class="n">dir</span><span class="o">.$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">uid</span><span class="o">.</span><span class="s1">&#39;.zip&#39;</span><span class="p">;</span>
+<span class="n">file_put_contents</span><span class="p">(</span><span class="o">$</span><span class="n">filename</span><span class="p">,</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">avatardata</span><span class="p">);</span>
+
+<span class="o">//</span><span class="err">此时写入压缩文件夹内容</span>
+
+<span class="o">//</span><span class="err">解压缩文件</span>
+<span class="n">pc_base</span><span class="p">::</span><span class="n">load_app_class</span><span class="p">(</span><span class="s1">&#39;pclzip&#39;</span><span class="p">,</span> <span class="s1">&#39;phpsso&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="o">$</span><span class="n">archive</span> <span class="o">=</span> <span class="n">new</span> <span class="n">PclZip</span><span class="p">(</span><span class="o">$</span><span class="n">filename</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">$</span><span class="n">archive</span><span class="o">-&gt;</span><span class="n">extract</span><span class="p">(</span><span class="n">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="o">$</span><span class="n">dir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">die</span><span class="p">(</span><span class="s2">&quot;Error : &quot;</span><span class="o">.$</span><span class="n">archive</span><span class="o">-&gt;</span><span class="n">errorInfo</span><span class="p">(</span><span class="bp">true</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="o">//</span><span class="mi">568</span> <span class="err">行</span>
+
+<span class="o">//</span><span class="err">判断文件安全，删除压缩包和非</span><span class="n">jpg图片</span>
+  <span class="o">$</span><span class="n">avatararr</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;180x180.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;30x30.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;45x45.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;90x90.jpg&#39;</span><span class="p">);</span>
+  <span class="k">if</span><span class="p">(</span><span class="o">$</span><span class="n">handle</span> <span class="o">=</span> <span class="n">opendir</span><span class="p">(</span><span class="o">$</span><span class="n">dir</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">while</span><span class="p">(</span><span class="bp">false</span> <span class="o">!==</span> <span class="p">(</span><span class="o">$</span><span class="n">file</span> <span class="o">=</span> <span class="n">readdir</span><span class="p">(</span><span class="o">$</span><span class="n">handle</span><span class="p">)))</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">$</span><span class="n">file</span> <span class="o">!==</span> <span class="s1">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="o">$</span><span class="n">file</span> <span class="o">!==</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">in_array</span><span class="p">(</span><span class="o">$</span><span class="n">file</span><span class="p">,</span> <span class="o">$</span><span class="n">avatararr</span><span class="p">))</span> <span class="p">{</span>
+      <span class="err">@</span><span class="n">unlink</span><span class="p">(</span><span class="o">$</span><span class="n">dir</span><span class="o">.$</span><span class="n">file</span><span class="p">);</span>
+     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="o">$</span><span class="n">info</span> <span class="o">=</span> <span class="err">@</span><span class="n">getimagesize</span><span class="p">(</span><span class="o">$</span><span class="n">dir</span><span class="o">.$</span><span class="n">file</span><span class="p">);</span>
+      <span class="k">if</span><span class="p">(</span><span class="o">!$</span><span class="n">info</span> <span class="o">||</span> <span class="o">$</span><span class="n">info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+       <span class="err">@</span><span class="n">unlink</span><span class="p">(</span><span class="o">$</span><span class="n">dir</span><span class="o">.$</span><span class="n">file</span><span class="p">);</span>
+      <span class="p">}</span>
+     <span class="p">}</span>
+    <span class="p">}</span>
+      <span class="p">}</span>
+</code></pre></div>
+
+<p>可以看到，它删除的时候没有递归删除，也没有删除文件夹。这样，只要我们的webshell放在压缩包的文件夹中，即可避免被删除了。</p>
+<p>所以我就创建了一个包含phi文件夹的压缩包，phi里面放上小马xm.php，上传上去。</p>
+<h2 id="0x04"><a class="toclink" href="#0x04">0x04 防范上传漏洞</a></h2>
+<p>首先必须在服务器验证用户上传，可以不用检查ContentType，直接检查后缀，如果在白名单中，就对该文件重命名后再复制到网站目录中，重命名时就用白名单里的后缀。重命名的方式可以是 "时间戳 + 随机数.jpg"等。</p>
+<p>尽量不允许前台用户上传压缩包，如果上传压缩包，一定要递归检查压缩包中所有文件后缀，删除非法的文件。</p>
+<p>最后，将上传目录设置成不可执行。这样就算webshell被上传了也不能被执行，比如我测试的某大型黑客网站，虽然xm.php上传成功了，但被禁止执行了：</p>
+<p><a href="../content/uploadfile/201312/ae561386236437.jpg" target="_blank"><img alt="10.jpg" src="../content/uploadfile/201312/thum-ae561386236437.jpg" /></a></p>
+<h2 id="0x05-phpcms"><a class="toclink" href="#0x05-phpcms">0x05 附加篇：怎么找到使用phpcms的网站</a></h2>
+<p>我前两篇都有这个栏目，因为大家处在web安全初期，平时要多练手，所以可以找一些网站进行实战。</p>
+<p>phpcms是一个大型的cms，用的人很多，基本上是以万计数，所以找起来很容易。</p>
+<p>直接百度 powered by phpcms即可：</p>
+<p><a href="../content/uploadfile/201312/10581386236437.jpg" target="_blank"><img alt="09.jpg" src="../content/uploadfile/201312/thum-10581386236437.jpg" /></a></p>
+<p>大家学习的时候请低调，不要惹出什么事端，被请去喝茶。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/phpcms.html">phpcms</a>
+                
+                    <a href="../tag/0day.html">0day</a>
+                
+                    <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 3 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3287">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">轻熟男</a></div>
+                    <p>从入门到入狱~</p>
+                    <span class="comment-time">时间: 2019-01-31 09:48</span>
+                    <span class="comment-reply"><a href="#comment-3287" onclick="reply_to('3287','轻熟男')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1519">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">聚合新闻</a></div>
+                    <p>不错，学习了。</p>
+                    <span class="comment-time">时间: 2013-12-05 21:11</span>
+                    <span class="comment-reply"><a href="#comment-1519" onclick="reply_to('1519','聚合新闻')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1518">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">趣购网</a></div>
+                    <p>不错不错，学习了</p>
+                    <span class="comment-time">时间: 2013-12-05 17:58</span>
+                    <span class="comment-reply"><a href="#comment-1518" onclick="reply_to('1518','趣购网')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="8051782bff2561d20dd5ec71853b3bfbb301332f" />
+</div><div class="col-6">
+<img src="../captcha/image/8051782bff2561d20dd5ec71853b3bfbb301332f/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="289" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="oUx7cQlYqki6iHSnbWeFwF38lDudQURQasVYKVWHOGwPQfGLdXbqt86dG0Lopw38">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%AE%89%E5%85%A8%E7%8B%97.html">安全狗</a>
+        
+        <a rel="tag" href="../tag/md5.html">md5</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.html">端口扫描</a>
+        
+        <a rel="tag" href="../tag/%E5%AE%A2%E6%88%B7%E7%AB%AFXSS.html">客户端XSS</a>
+        
+        <a rel="tag" href="../tag/appcms.html">appcms</a>
+        
+        <a rel="tag" href="../tag/ctf.html">ctf</a>
+        
+        <a rel="tag" href="../tag/java.html">java</a>
+        
+        <a rel="tag" href="../tag/%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90.html">好物推荐</a>
+        
+        <a rel="tag" href="../tag/%EF%B9%AA00%E6%88%AA%E6%96%AD.html">%00截断</a>
+        
+        <a rel="tag" href="../tag/%E6%90%AC%E5%AE%B6.html">搬家</a>
+        
+        <a rel="tag" href="../tag/jar%E6%89%93%E5%8C%85.html">jar打包</a>
+        
+        <a rel="tag" href="../tag/fineCMS.html">fineCMS</a>
+        
+        <a rel="tag" href="../tag/Mysql.html">Mysql</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%8A%A8%E8%AE%BE%E7%BD%AE.html">自动设置</a>
+        
+        <a rel="tag" href="../tag/exe.html">exe</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/WAF.html">WAF</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/string.html">string</a>
+        
+        <a rel="tag" href="../tag/Vulhub.html">Vulhub</a>
+        
+        <a rel="tag" href="../tag/%E5%BA%93%E5%87%BD%E6%95%B0.html">库函数</a>
+        
+        <a rel="tag" href="../tag/CSRF%E6%BC%8F%E6%B4%9E.html">CSRF漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8A%A0%E5%AF%86.html">加密</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91.html">端口转发</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/ipv6.html">ipv6</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

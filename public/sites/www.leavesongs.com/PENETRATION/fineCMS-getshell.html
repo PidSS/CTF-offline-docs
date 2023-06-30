@@ -1,0 +1,507 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>一次与fineCMS的偶遇 - fineCMS getshell漏洞 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="fineCMS-getshell.html">一次与fineCMS的偶遇 - fineCMS getshell漏洞</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">一次与fineCMS的偶遇 - fineCMS getshell漏洞</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-1-4 0:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">1条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="fineCMS-getshell.html">12359人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/fineCMS.html">fineCMS</a>
+    
+        <a href="../tag/getshell.html">getshell</a>
+    
+        <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>这个不是0day，我手里也没0day，算是一个漏洞的二次审计，一篇随便写写的记录文，还请各位大牛多多交流。</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 偶遇</a></h2>
+<p>有一个目标站，扫了一下旁站，用工具没有拿到几个cms的指纹。很奇怪，随手点一个，发现下面有powered by fineCMS。我记得以前也见过这个cms，是用CI框架二次编写的cms，网上搜索搜索“finecms漏洞”，找到的都是1.7.2版本以前的（seay博客里有1.7.2注射： <a href="http://www.cnseay.com/tag/finecms%E6%BC%8F%E6%B4%9E/" target="_blank">http://www.cnseay.com/tag/finecms%E6%BC%8F%E6%B4%9E/</a>）。但是这个网站是v2.0.12.版本比较新。</p>
+<p><a href="../content/uploadfile/201401/4efd1388766174.jpg" target="_blank"><img alt="01.jpg" src="../content/uploadfile/201401/4efd1388766174.jpg" /></a><br />
+倔强的我会选择换一个旁站呢，还是继续深入？</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 继续深入</a></h2>
+<p>我们来到finecms的官网：<a href="http://www.dayrui.com/" target="_blank">http://www.dayrui.com/</a></p>
+<p>发现论坛里有这么一个公告，一个补丁。发表日期是12.8，再结合这个“头像上传”，我似乎想到了什么。<br />
+<a href="../content/uploadfile/201401/3fb51388766175.jpg" target="_blank"><img alt="02.jpg" src="../content/uploadfile/201401/3fb51388766175.jpg" /></a></p>
+<p>于是我把补丁下下来，并在网上找了一个没打补丁的v2.1.0源码。</p>
+<p>补丁包里就两个文件，function_helper.php和Account.php。我们来把这两个文件和补丁之前的文件进行比较看看。<br />
+多了一个删除目录下所有文件的函数：</p>
+<p><a href="../content/uploadfile/201401/f9961388766177.jpg" target="_blank"><img alt="03.jpg" src="../content/uploadfile/201401/thum-f9961388766177.jpg" /></a></p>
+<p>判断文件名并删除多余目录。之前的代码之所以有问题就是因为它没有递归删除用户上传的压缩包内的文件夹内的内容。</p>
+<p><a href="../content/uploadfile/201401/2de41388766180.jpg" target="_blank"><img alt="04.jpg" src="../content/uploadfile/201401/thum-2de41388766180.jpg" /></a></p>
+<p>这不就是phpcms那个头像上传getshell吗，原来fineCMS中头像上传的地方使用的是phpcms的源码。而且这个开发者也很负责，在phpcms出事以后很快就发布了自己的补丁。</p>
+<p>所以，我们就可以利用头像上传的getshell方法秒拿fineCMSv2.1.0以前版本的shell。</p>
+<h2 id="0x03-shellphpcms"><a class="toclink" href="#0x03-shellphpcms">0x03 老办法拿shell（这部分不理解的话参考phpcms那个漏洞）</a></h2>
+<p>注册会员，来到上传头像处，选择一个正常图片点保存：</p>
+<p><a href="../content/uploadfile/201401/13501388766182.jpg" target="_blank"><img alt="05.jpg" src="../content/uploadfile/201401/thum-13501388766182.jpg" /></a></p>
+<p>burpsuite抓包改包：</p>
+<p><a href="../content/uploadfile/201401/fac41388766183.jpg" target="_blank"><img alt="06.jpg" src="../content/uploadfile/201401/thum-fac41388766183.jpg" /></a></p>
+<p>shell成功上传运行：</p>
+<p><a href="../content/uploadfile/201401/e4bd1388766187.jpg" target="_blank"><img alt="07.jpg" src="../content/uploadfile/201401/thum-e4bd1388766187.jpg" /></a></p>
+<p>所以这里给大家一个思路，如果网上找不到现有版本的漏洞，可以去官网看一下补丁包，自己二次审计一下代码，也许有意想不到的收获。</p>
+<p>百度一下powered by fineCMS，也是有很多的，你们懂得！！</p>
+<p><a href="../content/uploadfile/201401/86c31388766190.jpg" target="_blank"><img alt="08.jpg" src="../content/uploadfile/201401/thum-86c31388766190.jpg" /></a></p>
+<h2 id="0x04"><a class="toclink" href="#0x04">0x04 后话</a></h2>
+<p>系统是linux，菜刀连接可以执行命令，用户组是www，内核版本是2.6.32</p>
+<p><a href="../content/uploadfile/201401/10581388766193.jpg" target="_blank"><img alt="09.jpg" src="../content/uploadfile/201401/10581388766193.jpg" /></a></p>
+<p>作为一个写代码的，提权什么的其实我不太清楚也不太精通。但因为可以执行命令而且是www用户（不是虚拟主机）所以可以直接往目标写shell（找个目标的有写权限的目录就行了），目标就算拿下了。</p>
+<p>提权算是后话，Linux提权基本上就是靠内核漏洞了。先反弹一个shell到本地（用nc什么的），然后在它服务器上编译好提权exp，运行就可以获得一个root权限的shell了。</p>
+<p>这里给大家推荐一个工具：Linux_Exploit_Suggester，地址 <a href="https://github.com/PenturaLabs/Linux_Exploit_Suggester" target="_blank">https://github.com/PenturaLabs/Linux_Exploit_Suggester</a></p>
+<p>只要输入内核版本，它就帮你咨询出来能使用的exp：</p>
+<p><a href="../content/uploadfile/201401/ae561388766195.jpg" target="_blank"><img alt="10.jpg" src="../content/uploadfile/201401/thum-ae561388766195.jpg" /></a></p>
+<p>附件里我会提供未修复漏洞的fineCMS，和漏洞补丁，给各位想学习php和代码审计的同学使用。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/fineCMS.html">fineCMS</a>
+                
+                    <a href="../tag/getshell.html">getshell</a>
+                
+                    <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 1 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-1536">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://WWW.WANZAILA.COM" target="_blank" rel="nofollow noopener">万载啦</a></div>
+                    <p>漏洞。。。。。</p>
+                    <span class="comment-time">时间: 2014-01-04 09:51</span>
+                    <span class="comment-reply"><a href="#comment-1536" onclick="reply_to('1536','万载啦')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="297fc7a78bbcbf2b651c7730ba6634612b2ee966" />
+</div><div class="col-6">
+<img src="../captcha/image/297fc7a78bbcbf2b651c7730ba6634612b2ee966/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="295" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="eSCBPl8NGCR9sKYmBcRPUu1lPvsv7vgS0q0snqJw4Y5S0iMKDdOARX4qaSJGG7sa">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

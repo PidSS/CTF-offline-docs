@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>OI 教育漫谈（二）：信息学竞赛算法自学指南</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="OI 教育漫谈（二）：信息学竞赛算法自学指南" />
+    <meta property="og:description" content="「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。" />
+    <meta property="og:url" content="https://www.ruanx.net/how-to-study-oi/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2023/02/output-5.jpg" />
+    <meta property="article:published_time" content="2023-01-30T06:35:25.000Z" />
+    <meta property="article:modified_time" content="2023-02-02T05:59:31.000Z" />
+    <meta property="article:tag" content="oi" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OI 教育漫谈（二）：信息学竞赛算法自学指南" />
+    <meta name="twitter:description" content="「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/how-to-study-oi/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2023/02/output-5.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="oi" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "OI 教育漫谈（二）：信息学竞赛算法自学指南",
+    "url": "https://www.ruanx.net/how-to-study-oi/",
+    "datePublished": "2023-01-30T06:35:25.000Z",
+    "dateModified": "2023-02-02T05:59:31.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2023/02/output-5.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "oi",
+    "description": "「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-oi">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">OI 教育漫谈（二）：信息学竞赛算法自学指南</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-oi ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/oi/index.html">oi</a>
+                </section>
+
+                <h1 class="post-full-title">OI 教育漫谈（二）：信息学竞赛算法自学指南</h1>
+
+                <p class="post-full-custom-excerpt">「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2023-01-30">30 Jan 2023</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 18 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2023/02/output-5.jpg 300w,
+                            ../content/images/size/w600/2023/02/output-5.jpg 600w,
+                            ../content/images/size/w1000/2023/02/output-5.jpg 1000w,
+                            ../content/images/size/w2000/2023/02/output-5.jpg 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2023/02/output-5.jpg"
+                    alt="OI 教育漫谈（二）：信息学竞赛算法自学指南"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>《OI 教育漫谈》系列目录：<br><a href="../why-study-oi/index.html">OI 教育漫谈（一）：为什么学习信息学竞赛</a><br><a href="index.html">OI 教育漫谈（二）：信息学竞赛算法自学指南</a><br><a href="../how-to-teach-oi/index.html">OI 教育漫谈（三）：如何教好基础算法</a></p><hr><h3 id="%E5%BA%8F%E8%A8%80%EF%BC%9Aoi-%E5%9F%B9%E8%AE%AD%E6%9C%89%E4%BD%95%E6%84%8F%E4%B9%89%EF%BC%9F">序言：OI 培训有何意义？</h3><p>　　本文是《OI 教育漫谈》系列的第二篇，主要为想要自学算法竞赛的选手提供指导。笔者自执教 OI 以来，面对的绝大部分选手都是「弱省、弱校、缺专业教练」。这类选手一部分选择参加线上或线下的各种培训，另一部分则全程自学。在文章的最开头，笔者讲两个观点：<strong>算法知识应该靠自学来掌握；OI 培训的主要意义不在教授算法，而在其他方面。</strong></p><p>　　<strong>首先说第一点，为何算法知识应当靠自学而非老师讲授。</strong>绝大部分 OI 讲师的教课能力颇有限，即使是业内拥有良好声誉的培训机构，其讲师的表达能力也难以保证。另外，笔者注意到，一个讲师的讲课能力，与其本人获了多大的奖几乎没有关联；一味寻求优秀的 OI 选手去讲课，除了给培训机构妆点门面、在家长面前更能夸口之外，是没有意义的。普及组的算法本身便很简单，若认为一个 NOI 金牌选手必定比一个提高组一等奖选手讲得更好，那没有道理：他们本身的水平都远远溢出了普及组教学所需。在此情境下，教师的表达能力便成为了最重要的因素；<strong>遗憾的是，以大部分 OI 教师的表达能力，其传播知识的效率甚至不如学生自己在网上搜寻博客文章。</strong></p><p>　　即使寻到了好的 OI 教师，能把知识清晰地传递给学生、能启发学生的思考、还能带领学生培养代码能力，我们仍然反对过度依赖教师。<strong>自学能力是计算机从业者最为核心的能力。离了自学能力，在计算机世界寸步难行。算法竞赛本来是培养自学能力的极好机会，若依赖于老师讲课，等于白白浪费了这一机遇。</strong>诚然，在一个好教师的带领下学习 OI 的效率比自学更高；但原本能在自学过程中锻炼的各种能力便被忽视。对算法竞赛教育从业者而言，「传递知识与培养学生自学能力」的权衡是一项很精细的工作，笔者将在后续的「如何教好算法竞赛」文章中详述。</p><p>　　应当指出一个现实：<strong>高水平的 OIer，他的自学时间必定大于听课时间。</strong>第一，他的教练水平极大概率不如他，没法教他高难度知识；第二，即使参加高难度集训，也是短期内快速教一些主流知识点，还有大量的边缘知识没有覆盖到，这些知识都需要靠自学获得。这群人的自学手段包括：在网上浏览博客；在 OJ 刷题；参加各种在线竞赛；阅读集训队论文；互相讨论等。</p><p>　　那么，既然笔者前文说算法知识主要应当靠自学，为何又要鼓励学生参与一些培训、甚至亲身举办 OI 夏令营呢？这个矛盾的核心，即是<a href="../why-study-oi/index.html">上一篇文章</a>所讨论的「OI 学习与算法学习之割裂」。 <strong>从「学习算法」的角度，笔者鼓励自学；但如果一个选手准备参与 NOIP 竞赛，纯自学是不够的，因为考场上需要一些算法以外的特殊技术</strong>，包括：</p><ul><li>做题顺序规划</li><li>造数据、对拍</li><li>打表或骗分技巧</li></ul><p>　　这类技术难以通过阅读教程去学会，必须去参加一些模拟赛，才能熟练掌握。简要来说，笔者认为<strong> OI 培训的主要意义在于：指导学习方向和节奏；参加模拟赛积累经验。如果一个人只想要学习算法、不打算参与 OI 赛事，那他完全可以不参加 OI 培训。</strong></p><p>　　在这基础之上，我们来讨论一个人应该如何自学算法。这些经验源于笔者亲身参赛时的感受，以及教 OI 途中的思考。有部分观点去年已经发表在洛谷的微信公众号上，可供读者参考；该文中的广告部分敬请忽略。</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://mp.weixin.qq.com/s/TNOKbaiLN7FrSKsDF5pFFw"><div class="kg-bookmark-content"><div class="kg-bookmark-title">【经验】阮行止：如何打好信息学竞赛基础</div><div class="kg-bookmark-description">作者系洛谷知名讲师阮行止，参与了《深入浅出程序设计竞赛》编著。高中毕业于湖南师大附中，现于哈尔滨工业大学攻读</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://res.wx.qq.com/a/wx_fed/assets/res/OTE0YTAw.png" alt=""><span class="kg-bookmark-author">微信公众平台</span><span class="kg-bookmark-publisher">阮行止</span></div></div><div class="kg-bookmark-thumbnail"><img src="http://mmbiz.qpic.cn/mmbiz_jpg/rRVialdSTpyicYBDo2gUicubpU6rfnLkmuvaDLs8IrtpKibAYszIIDN8wudiclufWGGbq7kibGciasCibxiarSM0xxgOVtA/0?wx_fmt=jpeg" alt=""></div></a></figure><h3 id="%E7%AE%97%E6%B3%95%E7%AB%9E%E8%B5%9B%E9%9C%80%E8%A6%81%E5%93%AA%E4%BA%9B%E8%83%BD%E5%8A%9B%EF%BC%9F">算法竞赛需要哪些能力？</h3><p>　　笔者将算法竞赛需要的能力分为三种：</p><ul><li><strong>知识储备。</strong>这是算法学习的直接目标，选手学会的各种算法、数据结构，做过的各种题目，都是他的知识储备。</li><li><strong>代码能力。</strong>即选手能否高效、无 bug 地实现他的算法和数据结构。这项能力极为重要，但常常被忽视，笔者将在后续篇幅重点讨论。</li><li><strong>问题转化能力。</strong>即选手将「遇到的原始问题」转化成「可解决问题」的能力。</li></ul><p>　　应当指出，这三种能力是缺一不可的。我们见到过大量非常聪明但学得少的选手（知识储备低，问题转化能力高）；见到过大量学了不少知识但是看到题目仍然没有思路的选手（知识储备高，问题转化能力低）；还见过大量能想出来题目做法，但就是写不出代码的选手（代码水平低）。他们都无法在 OI 中取得好的成绩。接下来，笔者将简要介绍这些能力该如何提升。</p><h3 id="%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90%E4%B9%8B%E9%80%89%E6%8B%A9">学习资源之选择</h3><p>　　显然，提升知识储备的直接方法就是去学习新的算法和数据结构。然而，当今的 OIer 面临一个困境：<strong>如今的学习资源不是太少了，而是太多了。以至于大部分的资源是无价值的</strong>，我们的选手需要耗费额外的精力，去找出有价值的学习资源，再去学习。</p><p>　　不好的教程会带人走弯路。每年笔者教 DP，都会发现有学生把 DP 和递推对立起来、把 DP 和记忆化搜索对立起来，事实上它们和 DP 并非是竞品。递推和记忆化搜索是 DP 的两种实现方式，谈何对立。可见一些错误教材带给人的毒害之深。</p><p>　　在纸质教材中，笔者推荐洛谷的《深入浅出程序设计竞赛（基础篇）》，涵盖了 C++ 编程和基本算法，笔者也参与编著了其中的数据结构和数学部分。《算法竞赛入门经典》和《信息学奥赛一本通》亦有一定价值，但学习效率可能不如网络资源。</p><p>　　网络上可以找出不少的博客和课件，这<strong>很依赖于学习者的搜索引擎使用能力。</strong>如何使用搜索引擎是一项专门的话题，笔者不能详述，但有几个基本的建议：</p><ul><li>使用 Google。如果无法使用到 Google，则考虑 Bing。</li><li>不要输入完整的句子。将自己的问题拆分成关键词。</li></ul><p>　　Github 和知乎上有一些不错的资源。<a href="https://github.com/hzwer/shareOI">hzwer/shareOI</a> 项目中汇集了许多课件，笔者也把一部分课件上传到了这个项目中，选手可以阅读。洛谷日报的一些文章也有学习价值。</p><h3 id="%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B">循序渐进</h3><p>　　笔者在工作中看到许多「点歪技能树」的选手。这<strong>部分选手没有学习完基础算法，但学了一些比较怪异的算法，并引以为能事，深感自豪。</strong>笔者反对这样的学习顺序，因为这样的学习是不长效的。如果选手把这部分时间拿去学习其他基础算法，他将有更好的进一步学习高难度算法的潜力。</p><p><strong>　　算法学习是循序渐进的过程。没有办法让选手一下子掌握所有的知识，但有办法让选手从浅入深地一步步掌握知识。</strong></p><p>　　譬如一个普及组的选手想要学主席树（可持久化线段树），那笔者会先建议他掌握线段树，再写一些线段树的题目、学一下权值线段树，建立「用线段树维护序列」的思维。接下来笔者会教他 Trie 树，让他掌握「动态开点」这一个思想。然后教他动态开点线段树，让他能用线段树维护 1e18 级别长度的数据；然后笔者会抛开 OI，跟他讲讲 git （现代最流行的版本管理软件）对文件管理的实现方法，让他建立「版本管理可以复用之前的节点」这样的意识；最后笔者再教主席树，这就是水到渠成的了。</p><p>　　你如果直接教他主席树，他也许可以把代码背下来，甚至可能 AC 掉你教的例题，但他没法解出其他题目，而且过几个月就忘了这套数据结构。这是因为<strong>在没有完全掌握基础理论的情况下，去学习高级算法，无异于搭起脚手架在空中建房子，脚手架拆了房子也就塌了。</strong></p><p>　　「点歪技能树」对低年级选手有某种强大的吸引力，甚至在同学中具有一定的传播能力，这是人性使然。但笔者希望 OIer 克制住这样的冲动。</p><h3 id="%E6%8F%90%E5%8D%87%E9%97%AE%E9%A2%98%E8%BD%AC%E5%8C%96%E8%83%BD%E5%8A%9B">提升问题转化能力</h3><p>　　一个人的天赋，即我们说的「聪明」，常常表现在问题转化能力上。当然，后天的训练更加重要。想要提升问题转化能力，至少需注意两件事：</p><ul><li>学习算法和数据结构时，多进行本质性讨论，并关注不同知识之间的联系。<br>例如，选手在学习完序列分块和线段树之后，应当考虑这两种算法各自的使用范围、各自的高效之处。</li><li>多做题，并归纳题目之间的联系。<br>例如，选手可能发现某题的手段与另一题类似，此时应当把这个「相似性」整理出来。</li></ul><h3 id="%E6%B3%A8%E9%87%8D%E4%BB%A3%E7%A0%81%E8%83%BD%E5%8A%9B">注重代码能力</h3><p>　　我们首先解释一下何谓「代码能力」。笔者将其定义为「得知确切的算法思路之后，选手将其实现的能力」。笔者曾专门写文讨论选手如何提升代码能力，今予摘抄。</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://mp.weixin.qq.com/s/G-aOA9qcPuJXQFT6slx0Fw"><div class="kg-bookmark-content"><div class="kg-bookmark-title">​【经验】阮行止：浅谈代码能力 &amp; 如何更轻松地写代码</div><div class="kg-bookmark-description">​尽管大家都致力于提升选手的知识储备，但代码能力，这个非常重要的能力，常常被信息学竞赛从业者忽略。</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://res.wx.qq.com/a/wx_fed/assets/res/OTE0YTAw.png" alt=""><span class="kg-bookmark-author">微信公众平台</span><span class="kg-bookmark-publisher">阮行止</span></div></div><div class="kg-bookmark-thumbnail"><img src="http://mmbiz.qpic.cn/mmbiz_jpg/rRVialdSTpy81DhR39FHyR9fxb5hogpROluZtgvuUAhDDu6QOQEUsRzEEGR2TMeV2oXB3jd2ZdFW8ajmseyibekA/0?wx_fmt=jpeg" alt=""></div></a></figure><p><strong>　　代码能力，这个非常重要的能力，常常被信息学竞赛从业者忽略。</strong>我们基本看不到关心学生代码能力的机构；即使是在中学，也很少有教师能指导学生形成科学的代码习惯。在这个环境下，选手提升代码能力如同在黑夜中摸索，全靠熟能生巧了。</p><p><strong>　　信息学竞赛圈有一个流传非常广、危害极其深的误解（甚至很多中学教练都有这样的误解）：「代码能力完全靠刷题，题刷得越多代码能力越强」。</strong>这个说法有一定的正确性，但是很不全面。真实情况是：</p><ul><li><strong>做题 + 反思可以培养选手的代码能力。反思是非常重要的过程，只做题不反思的效率很低。</strong></li><li><strong>选手可以通过一些手段，降低打出题目所需要的代码能力。</strong></li></ul><p>　　在实践中，选手如果常常出现「看完了题解的详细算法思路，但无法实现代码」的情况，那么可以判断选手的代码能力较弱。传统上，一般认为提升硬核代码能力的唯一途径是多刷题。但是笔者需要在这里指出：<strong>反思比刷题本身更重要。</strong></p><p>　　粗浅地讲，如果「把一道题 AC 掉」会花费 10 个单位的时间、得到 10 个单位的代码能力提升，那么反思自己的代码并加以改进，只需要额外花费 2 个单位的时间，却能再得到 15 个单位的代码能力提升。</p><p>　　反思，是给自己已经 AC 题目的代码挑出不优雅的地方，并改写成优雅代码的行为。这要求选手脱离「代码作者」的身份，以客观的视角，去审视代码中设计不合理的细节，并且加以改正，形成更加良好的代码。</p><p>　　怎样的代码是优雅的、怎样的代码是不优雅的？这就需要选手拥有对代码的品味，以及对代码质量的孜孜追求。应当诚实地说，代码是否优雅，没有很统一的标准。<strong>工程上有一个「Keep It Simple &amp; Stupid」的原则，笔者认为这很适合信息学竞赛。</strong></p><p>　　<strong>代码也并非越短越好。</strong>很多选手喜欢写技巧性高的代码，一方面可能是为了时间效率，另一方面可能是 OIer 群体的风气使然。但是应当意识到，通过代码炫技获得的时间效率提升，几乎是微不足道的。复杂的代码难以 debug，最终是一种得不偿失的行为。</p><p>　　<strong>贯彻自己的代码风格。</strong>每个人喜欢的代码风格不同，但有一点是很重要的：代码风格应当从一而终。不能这道题用这种代码风格、下一道题就用另一种代码风格；也不能在一份代码里面混用多种代码风格。代码风格至少包含缩进风格（例如左花括号换不换行）、命名风格（驼峰还是 snake）、注释的时机等等。选择了一种代码风格之后，应当将它坚持下去。</p><p>　　<strong>多想想细节，再开始写代码。</strong>即我们常说的「Think twice, code once」。这是一句谁都知道的道理，但是付诸实践确实非常艰难。初学者常常在代码细节还没有想清楚（或者以为想清楚了，但实际上有些东西没有考虑到）的时候就去编码，这样写出来的代码质量是很差的。应当提倡在写代码之前，先在草稿纸上写出自己能考虑到的所有细节和边界情况、每个函数具体要做什么事之类的信息。这有助于检视自己的设计是否合理，也能提升后续实现代码的效率。</p><p>　　<strong>减少分类讨论。</strong>corner case （边界情况）是大量程序 bug 的源头。一个程序不得不照顾到尽可能多的 corner case，于是欠缺经验的编程者常常陷入无尽的分类讨论中。而海量分类讨论对 debug 效率的打击是致命的。</p><p>　　举一个经典的例子：输入两个形如 <code>yyyy/MM/dd hh:mm</code> 的时间 $A, B$，问它们之间的间隔是多少分钟。如果直接考虑将两个时间按分钟、小时、日期相减，则会陷入大量的细节讨论中。但如果换一个思路，首先写一个「求 0000 年 1 月 1 日 0 时到时间点 $x$ 经过的分钟数」的函数 <code>getPassedMinutes(x)</code>，那么立刻就可以通过初始时刻到 $B$ 经过的分钟数，减去初始时刻到 $A$ 经过的分钟数，得到 $A$ 与 $B$ 之间的间隔。而 <code>getPassedMinutes</code> 是很容易实现的，需要考虑的边界情况也远比「直接把 $B$、$A$ 相减」少。于是我们以更简单的方式解决了问题。</p><p>　　<strong>做好封装。</strong>对数据结构和算法的封装是很有必要的。有一个著名原则叫 Don't Repeat Yourself，如果很多地方需要用到相同的逻辑，那就应该把这套逻辑提取出来，而不是将它的代码复制粘贴多次。</p><h3 id="%E5%86%99%E5%8D%9A%E5%AE%A2%E8%AE%B0%E5%BD%95%E7%9F%A5%E8%AF%86">写博客记录知识</h3><p>　　这是一个很重要的活动。选手应当写博客记录自己学到的知识，<strong>而且最好以「讲述者」的身份写文章，即把自己学到的东西教给读者。</strong>实践表明，写博客的好处至少有二：</p><p>　　第一，帮助选手理清头绪。一个算法或数据结构可能比较复杂，而把这些知识以文字的方式整理出来，相当于梳理了一遍内容，加深认知。</p><p>　　第二，便于日后复习。选手透过阅读自己博客来复习，效率远远高于重新阅读当时的学习教材，并更能抓住一些值得注意的重点。</p><p>　　笔者不建议选手写「题解」类的博客，除非该题目很有启发性，此时选手应该把这些启示记录下来。此外，选手应当以严肃的态度去编写博文，逻辑要通顺，标点符号要准确。</p><h3 id="%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%96%E7%9A%84%E7%AB%9E%E6%8A%80%E6%8A%80%E6%9C%AF">算法之外的竞技技术</h3><p>　　<strong>笔者最后要再次强调，考场上的竞技技术难以自学，想要参加 OI 系列赛事的选手，应当至少参加一次有大量模拟赛的培训。</strong>即使是一个很会算法的选手，如果从来没有 OI 赛制考试的经验，那么他上场之后可能会因为不懂 NOI Linux 的使用、将代码放错文件夹、忘记 freopen 等种种问题而获得零分。</p><p>　　如果选手的学校有此类模拟赛，那是最好的情况；退而求其次，有些线上培训，或专门的线上 NOIP 模拟赛是值得参加的。</p><hr><p>　　欢迎读者来信交流，笔者邮箱是 ruanxingzhi@gmail.com 。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/oi/index.html">oi</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../how-to-teach-oi/index.html">OI 教育漫谈（三）：如何教好基础算法</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-02-02">2 Feb 2023</time> –
+                                        22 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../why-study-oi/index.html">OI 教育漫谈（一）：为什么学习信息学竞赛</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-01-29">29 Jan 2023</time> –
+                                        23 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/oi/index.html">See all 2 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="../how-to-teach-oi/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2023/02/output-6.jpg 300w,
+                    ../content/images/size/w600/2023/02/output-6.jpg 600w,
+                    ../content/images/size/w1000/2023/02/output-6.jpg 1000w,
+                    ../content/images/size/w2000/2023/02/output-6.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2023/02/output-6.jpg"
+            alt="OI 教育漫谈（三）：如何教好基础算法"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../how-to-teach-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（三）：如何教好基础算法</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-02-02">2 Feb 2023</time> <span class="bull">&bull;</span> 22 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="../why-study-oi/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2023/02/output-4.jpg 300w,
+                    ../content/images/size/w600/2023/02/output-4.jpg 600w,
+                    ../content/images/size/w1000/2023/02/output-4.jpg 1000w,
+                    ../content/images/size/w2000/2023/02/output-4.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2023/02/output-4.jpg"
+            alt="OI 教育漫谈（一）：为什么学习信息学竞赛"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../why-study-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（一）：为什么学习信息学竞赛</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第一篇。主要探讨学习 OI 的得失，以及对算法初学者的建议。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-01-29">29 Jan 2023</time> <span class="bull">&bull;</span> 23 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

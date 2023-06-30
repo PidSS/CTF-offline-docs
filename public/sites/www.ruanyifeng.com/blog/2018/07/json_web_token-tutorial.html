@@ -1,0 +1,6914 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="Movable Type  5.2.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--link rel="stylesheet" href="http://www.ruanyifeng.com/blog/styles.css" type="text/css" /-->
+<link rel="start" href="https://www.ruanyifeng.com/blog/" title="Home" />
+<link rel="alternate" type="application/atom+xml" title="Recent Entries" href="https://feeds.feedburner.com/ruanyifeng" />
+<script type="text/javascript" src="https://www.ruanyifeng.com/blog/mt.js"></script>
+<script type="text/javascript" src="https://www.ruanyifeng.com/blog/advertisements.js"></script>
+<!--
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="http://www.ruanyifeng.com/blog/2008/04/who_will_feed_china.html">
+<dc:title>谁来养活中国？</dc:title>
+<dc:description> 1. 最近，世界粮价暴涨，达到了历史最高价，联合国秘书长说全球粮食危机已经爆发。...</dc:description>
+<dc:creator>阮一峰</dc:creator>
+<dc:date>2008-04-19T01:55:53+08:00</dc:date>
+<license rdf:resource="http://creativecommons.org/licenses/by-nc-nd/3.0/" />
+</Work>
+<License rdf:about="http://creativecommons.org/licenses/by-nc-nd/3.0/">
+</License>
+</rdf:RDF>
+-->
+
+<style>body {
+  background-color: #f5f5d5;
+}
+
+#container::before {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.1);
+  text-align: center;
+  content: "本站显示不正常，可能因为您使用了广告拦截器。";
+}
+
+</style>
+<script>
+function loadjscssfile(filename, filetype){
+    if (filetype=="js"){ //if filename is a external JavaScript file
+        var fileref=document.createElement('script')
+        fileref.setAttribute("type","text/javascript")
+        fileref.setAttribute("src", filename)
+    }
+    else if (filetype=="css"){ //if filename is an external CSS file
+        var fileref=document.createElement("link")
+        fileref.setAttribute("rel", "stylesheet")
+        fileref.setAttribute("type", "text/css")
+        fileref.setAttribute("href", filename)
+    }
+    if (typeof fileref!="undefined")
+        document.getElementsByTagName("head")[0].appendChild(fileref)
+}
+//loadjscssfile("http://www.ruanyifeng.com/blog/styles.css", "css");
+loadjscssfile('/static/themes/theme_scrapbook/theme_scrapbook.min.css', "css");
+
+
+function checker() {
+  if (/mobile|android/i.test(navigator.userAgent)) return; 
+  window.comments && window.comments.setAttribute("style", "!important");
+  // var img = document.querySelector('img[src^="http://www.ruanyifeng.com/blog/images"]');
+  var img = document.querySelector('a > img[src*="wangbase.com/blogimg/asset/"]');
+  var isAdblocker = (typeof adblock === 'undefined');
+  if (
+    /*isAdblocker || */
+    (img && window.getComputedStyle(img).display === 'none') ||
+    (img && window.getComputedStyle(img.parentElement).display === 'none')
+  ){
+    var sponsor = document.querySelector('#main-content');
+    var prompt = document.createElement('div');
+    prompt.style = 'border: 1px solid #c6c6c6;border-radius: 4px;background-color: #f5f2f0;padding: 15px; font-size: 14px;';
+    prompt.innerHTML = '<p>您使用了广告拦截器，导致本站内容无法显示。</p><p>请将 www.ruanyifeng.com 加入白名单，解除广告屏蔽后，刷新页面。谢谢。</p>';
+    sponsor.parentNode.replaceChild(prompt, sponsor);
+    // document.querySelector('#main-content').innerHTML = '';
+  }
+}
+
+setTimeout(checker, 1000);
+</script>
+
+
+    
+    <link rel="prev" href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-14.html" title="每周分享第 14 期" />
+    <link rel="next" href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-15.html" title="每周分享第 15 期" />
+    
+    <title>JSON Web Token 入门教程 - 阮一峰的网络日志</title>
+</head>
+<body id="scrapbook" class="mt-entry-archive one-column">
+<script>
+if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) document.body.classList.add('mobile');
+
+/*
+window.addEventListener('load', function(event) {
+  setTimeout(function () {
+    hab('#sup-post-2');
+    hab('#cre-inner');
+  }, 1000);
+});
+*/
+</script>
+    <div id="container">
+        <div id="container-inner">
+
+            <div id="header">
+    <div id="header-inner">
+        <div id="header-content">
+
+
+            <div id="header-name">阮一峰的网络日志 <span id="site_location"> » <a href="https://www.ruanyifeng.com/blog/" accesskey="1">首页</a></span><span id="site_archive"> » <a href="https://www.ruanyifeng.com/blog/archives.html">档案</a></span>
+</div>
+
+<div id="google_search">
+<!-- SiteSearch Google -->
+<form action="https://www.baidu.com/s" target="_blank" method="get" id="cse-search-box">
+  <div>
+  <input type="text" size="20" name="origin" class="searchbox" id="sbi" value="" />
+  <input type="hidden" name="wd" value="" />
+  <!--input type="image" src="/static/themes/theme_scrapbook/images/top_search_submit.gif" class="searchbox_submit" value="" alt="搜索" name="sa" onclick="this.form.wd.value = this.form.origin.value + ' inurl:www.ruanyifeng.com/blog'" /-->
+  <input type="image" src="https://www.ruanyifeng.com/static/themes/theme_scrapbook/images/top_search_submit.gif" class="searchbox_submit" value="" alt="搜索" name="sa" onclick="this.form.wd.value = this.form.origin.value + ' 阮一峰'" />
+</div>
+</form>
+
+<!-- SiteSearch Google -->
+</div>
+<div id="feed_icon">
+<a href="https://www.ruanyifeng.com/feed.html?utm_source=" title="订阅Feed">
+<!--img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAUzSURBVHjavFdbbFRVFF3nPjoz7dTWTittaW0jUDRAUqaNojyqREnEQKgfUj9MqqAmhqRt/OCD4CuY+Kckoh+aiGKC+gMJbdHoRysJ8dkhhmJLNdDKtJU+6GMK87j3Hs85d2Z6HzNtMYWb3Dn3NWftvfba+5xNYDl+e6Fkj6yqb/oDRbWq14vlPBLRKCITkxf0ROLt+hNjp1PPSRK4kA3vF1dXNRcWlyA2OQU9eos9opAkAiKxD+XkKO6t15aRWO7J/MgmAZU8MEgexgZHMX518Dh72sYMmVKShnxWuWHdHtxKIDIYTgMuDzgfmSOIQkYMpdUF8OY92Hytt4/jvkg47czzU16iQovM3QFwmNck+Yyduu7D6NA0Z6JR4THntFs9V4tWQg6Ui3s6MwKDncsFTnXKLJhDSeUK3AgPtyhccDzmVs999buRt/1Vm4i0od+hX7+MRG87jPGB/w1u8FPj9xEw7McVrnYuOCvtpjTth3J/nTg99c8LRhKhr6D3dTB5R24bXFwbMXBsyZzeoXaycEpJ95TB09AGX/NpqLVNtw8urnVzLvHjFNxiFqRy2OOHuqUVnue+ACkoWzo4O6lGzTmuHq6nPvY2m9rVqjrIK2rMEKxqyG5NPAKt+wjo0LklgfNxJkZMA3KJvqRUk3z5UFY3QH14P0h+WUY79HPvgv7VuSg4ZRGY1YgZgqXmORccF17sy2ehnf9AeO085K2HQFbtXBScj0LcpgF2cN+WV+DZ/LJQu6gD4R7oV7pBJwbSgtMvfiPoVp56DySwxm7EtkMs1WdAB7qzggsDJKQYsHucSkOudrkiCPWR/fA2nYCn8SNIK4NptSMyAu3sAdDRkIsJdfth0LzSrODUoPNZ4KI9SxJI5UHk7D4GdQfz2us31c7CoHMjRkKuDPHseCMrONVhNcDJwMJpKFVvg9L4OaTiNWm1x789KCqkrXhVBiEz0WYCT2nAzQAD1/vaETv1GrRfP4Vx5cfMNcDPwvP0h0DhanPym7OIf/+O67vcJ1/PCJ4KgdzaUP6Wz+dU+5yIL6fV+PsHGAOdwlPpvvUOyeeAVGyCdqkDNB6DPjsBSrnndfOGevOh3RhGItxvA+fX1CtbGFhgYUFkFMZPR6F1HnClHq8HyubWtJexX06CRmdt33hrd7nA7SFY4qoGpnYuOKcRykPPgDCBcsHx9Iv+fNL2PueBehCWUfYQIIMGLOCcOmXDXsh1+yCt35tUPfvzGFuSvzvoinXOxqa02qOhM6733nVP2MAdaej2XN11DPKjLZCD+yBvahGCo7JfTKAN9UD7s8Oe9zUNIhz8fWI8DG2k38WCFdxugANcXrvTVd1IEbuv3Jour7Hzn7jLMBNfKs7R3i67gRVrbeCOEDhinmWhAatsqdquM2XzHZINhK2cqTjHr/XZdVJUbgN3MWAVXKbSyg9jesRW2xP9di+lwrL5ojM3m2H/kG9hwcIA37c71W6wJdW2J2S5nrjYbq/t1AHAhJsKQeyfPvf6IMJgghPJhFZ4x0KlfLFvt22du45Au/A1SOlGc0P672XXwhLtOcM0kTTEMMd0qkVmMNXxMd/tsedUjInr4SQDgOfeXMSiN0FCL5WHah4L1qqYXPJOJlttd+a5M+YpcG5poLYKQ5f+6JJ4r8bbJYP47hq4r7QAs9PjYNhHJd4o8l5taiwuOpa7AS4XKqI/5NjJbTnaWK92nLdLuhQAJayRNMiygXPBeQN+Qbvu0zDc3y+aUzhbkGR73sI7ljvUnndx2q3t+X8CDAD66FtrIL864AAAAABJRU5ErkJggg==" alt="" style="border: 0pt none;" /-->
+<img src="https://wangbase.com/blogimg/asset/202107/bg2021072117.png" alt="" style="border: 0pt none;" />
+</a></div>
+
+        </div>
+    </div>
+</div>
+
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <div id="entry-2004" class="entry-asset asset hentry">
+                                <div class="asset-header">
+<div class="asset-nav entry-nav">
+
+<div class="entry-location">
+<ul>
+<li>上一篇：<a href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-14.html" title="每周分享第 14 期">每周分享第&nbsp;14&nbsp;期&nbsp;</a></li>
+<li>下一篇：<a href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-15.html" title="每周分享第 15 期">每周分享第&nbsp;15&nbsp;期&nbsp;</a></li>
+</ul>
+</div>
+
+
+    
+                                    <div class="entry-categories">
+                                        <p>分类<span class="delimiter">：</span></p>
+                                        <ul>
+                                            <li><a href="https://www.ruanyifeng.com/blog/developer/" rel="tag">开发者手册</a></li>
+                                        </ul>
+                                    </div>
+    
+
+
+                                            
+<div class="entry-location-mobile" style="float: right;">
+<ul>
+<li><a href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-14.html" title="每周分享第 14 期">⇐&nbsp;</a></li>
+<li><a href="https://www.ruanyifeng.com/blog/2018/07/weekly-issue-15.html" title="每周分享第 15 期">&nbsp;⇒</a></li>
+</ul>
+</div>
+
+</div>
+</div>
+
+                          
+<article class="hentry">
+                                    <h1 id="page-title" class="asset-name entry-title">JSON Web Token 入门教程</h1>
+
+
+
+<div class="asset-meta">
+                                        
+
+                                            <p class="vcard author">作者： <a class="fn url" href="https://www.ruanyifeng.com">阮一峰</a></p>
+                                    <p>日期： <a href="https://www.ruanyifeng.com/blog/2018/07/"><abbr class="published" title="2018-07-23T17:10:58+08:00">2018年7月23日</abbr></a></p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+                                
+                                <div class="asset-content entry-content" id="main-content">
+
+                                    <!-- div class="asset-body" -->
+                                        <p>JSON Web Token（缩写 JWT）是目前最流行的跨域认证解决方案，本文介绍它的原理和用法。</p>
+
+                                    <!-- /div -->
+
+
+                                    <!-- div id="more" class="asset-more" -->
+                                        <p><img src="https://www.wangbase.com/blogimg/asset/201807/bg2018072301.jpg" alt="" title="" /></p>
+
+<h2>一、跨域认证的问题</h2>
+
+<p>互联网服务离不开用户认证。一般流程是下面这样。</p>
+
+<blockquote>
+  <p>1、用户向服务器发送用户名和密码。</p>
+
+<p>2、服务器验证通过后，在当前对话（session）里面保存相关数据，比如用户角色、登录时间等等。</p>
+
+<p>3、服务器向用户返回一个 session_id，写入用户的 Cookie。</p>
+
+<p>4、用户随后的每一次请求，都会通过 Cookie，将 session_id 传回服务器。</p>
+
+<p>5、服务器收到 session_id，找到前期保存的数据，由此得知用户的身份。</p>
+</blockquote>
+
+<p>这种模式的问题在于，扩展性（scaling）不好。单机当然没有问题，如果是服务器集群，或者是跨域的服务导向架构，就要求 session 数据共享，每台服务器都能够读取 session。</p>
+
+<p>举例来说，A 网站和 B 网站是同一家公司的关联服务。现在要求，用户只要在其中一个网站登录，再访问另一个网站就会自动登录，请问怎么实现？</p>
+
+<p>一种解决方案是 session 数据持久化，写入数据库或别的持久层。各种服务收到请求后，都向持久层请求数据。这种方案的优点是架构清晰，缺点是工程量比较大。另外，持久层万一挂了，就会单点失败。</p>
+
+<p>另一种方案是服务器索性不保存 session 数据了，所有数据都保存在客户端，每次请求都发回服务器。JWT 就是这种方案的一个代表。</p>
+
+<h2>二、JWT 的原理</h2>
+
+<p>JWT 的原理是，服务器认证以后，生成一个 JSON 对象，发回给用户，就像下面这样。</p>
+
+<blockquote><pre><code class="language-javascript">
+{
+  "姓名": "张三",
+  "角色": "管理员",
+  "到期时间": "2018年7月1日0点0分"
+}
+</code></pre></blockquote>
+
+<p>以后，用户与服务端通信的时候，都要发回这个 JSON 对象。服务器完全只靠这个对象认定用户身份。为了防止用户篡改数据，服务器在生成这个对象的时候，会加上签名（详见后文）。</p>
+
+<p>服务器就不保存任何 session 数据了，也就是说，服务器变成无状态了，从而比较容易实现扩展。</p>
+
+<h2>三、JWT 的数据结构</h2>
+
+<p>实际的 JWT 大概就像下面这样。</p>
+
+<p><img src="https://www.wangbase.com/blogimg/asset/201807/bg2018072304.jpg" alt="" title="" /></p>
+
+<p>它是一个很长的字符串，中间用点（<code>.</code>）分隔成三个部分。注意，JWT 内部是没有换行的，这里只是为了便于展示，将它写成了几行。</p>
+
+<p>JWT 的三个部分依次如下。</p>
+
+<blockquote>
+  <ul>
+<li>Header（头部）</li>
+<li>Payload（负载）</li>
+<li>Signature（签名）</li>
+</ul>
+</blockquote>
+
+<p>写成一行，就是下面的样子。</p>
+
+<blockquote><pre><code class="language-javascript">
+Header.Payload.Signature
+</code></pre></blockquote>
+
+<p><img src="https://www.wangbase.com/blogimg/asset/201807/bg2018072303.jpg" alt="" title="" /></p>
+
+<p>下面依次介绍这三个部分。</p>
+
+<h3>3.1 Header</h3>
+
+<p>Header 部分是一个 JSON 对象，描述 JWT 的元数据，通常是下面的样子。</p>
+
+<blockquote><pre><code class="language-javascript">
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+</code></pre></blockquote>
+
+<p>上面代码中，<code>alg</code>属性表示签名的算法（algorithm），默认是 HMAC SHA256（写成 HS256）；<code>typ</code>属性表示这个令牌（token）的类型（type），JWT 令牌统一写为<code>JWT</code>。</p>
+
+<p>最后，将上面的 JSON 对象使用 Base64URL 算法（详见后文）转成字符串。</p>
+
+<h3>3.2 Payload</h3>
+
+<p>Payload 部分也是一个 JSON 对象，用来存放实际需要传递的数据。JWT 规定了7个官方字段，供选用。</p>
+
+<blockquote>
+  <ul>
+<li>iss (issuer)：签发人</li>
+<li>exp (expiration time)：过期时间</li>
+<li>sub (subject)：主题</li>
+<li>aud (audience)：受众</li>
+<li>nbf (Not Before)：生效时间</li>
+<li>iat (Issued At)：签发时间</li>
+<li>jti (JWT ID)：编号</li>
+</ul>
+</blockquote>
+
+<p>除了官方字段，你还可以在这个部分定义私有字段，下面就是一个例子。</p>
+
+<blockquote><pre><code class="language-javascript">
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "admin": true
+}
+</code></pre></blockquote>
+
+<p>注意，JWT 默认是不加密的，任何人都可以读到，所以不要把秘密信息放在这个部分。</p>
+
+<p>这个 JSON 对象也要使用 Base64URL 算法转成字符串。</p>
+
+<h3>3.3 Signature</h3>
+
+<p>Signature 部分是对前两部分的签名，防止数据篡改。</p>
+
+<p>首先，需要指定一个密钥（secret）。这个密钥只有服务器才知道，不能泄露给用户。然后，使用 Header 里面指定的签名算法（默认是 HMAC SHA256），按照下面的公式产生签名。</p>
+
+<blockquote><pre><code class="language-javascript">
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  secret)
+</code></pre></blockquote>
+
+<p>算出签名以后，把 Header、Payload、Signature 三个部分拼成一个字符串，每个部分之间用"点"（<code>.</code>）分隔，就可以返回给用户。</p>
+
+<h3>3.4 Base64URL</h3>
+
+<p>前面提到，Header 和 Payload 串型化的算法是 Base64URL。这个算法跟 Base64 算法基本类似，但有一些小的不同。</p>
+
+<p>JWT 作为一个令牌（token），有些场合可能会放到 URL（比如 api.example.com/?token=xxx）。Base64 有三个字符<code>+</code>、<code>/</code>和<code>=</code>，在 URL 里面有特殊含义，所以要被替换掉：<code>=</code>被省略、<code>+</code>替换成<code>-</code>，<code>/</code>替换成<code>_</code> 。这就是 Base64URL 算法。 </p>
+
+<h2>四、JWT 的使用方式</h2>
+
+<p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage。</p>
+
+<p>此后，客户端每次与服务器通信，都要带上这个 JWT。你可以把它放在 Cookie 里面自动发送，但是这样不能跨域，所以更好的做法是放在 HTTP 请求的头信息<code>Authorization</code>字段里面。</p>
+
+<blockquote><pre><code class="language-javascript">
+Authorization: Bearer &lt;token>
+</code></pre></blockquote>
+
+<p>另一种做法是，跨域的时候，JWT 就放在 POST 请求的数据体里面。</p>
+
+<h2>五、JWT 的几个特点</h2>
+
+<p>（1）JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次。</p>
+
+<p>（2）JWT 不加密的情况下，不能将秘密数据写入 JWT。</p>
+
+<p>（3）JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。</p>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>（5）JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</p>
+
+<p>（6）为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</p>
+
+<h2>六、参考链接</h2>
+
+<ul>
+<li><a href="https://jwt.io/introduction/">Introduction to JSON Web Tokens</a>， by Auth0</li>
+<li><a href="https://medium.com/@bryanmanuele/sessionless-authentication-withe-jwts-with-node-express-passport-js-69b059e4b22c">Sessionless Authentication using JWTs (with Node + Express + Passport JS)</a>, by Bryan Manuele</li>
+<li><a href="https://github.com/dwyl/learn-json-web-tokens/blob/master/README.md">Learn how to use JSON Web Tokens</a>, by dwyl</li>
+</ul>
+
+<p>（完）</p>
+
+                                    <!-- /div -->
+
+                                </div>
+    <script type="text/javascript" src="https://www.ruanyifeng.com/newwindow.js"></script>
+                                <div class="asset-footer">
+
+<h3>文档信息</h3>
+<ul>
+<li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">创意共享3.0许可证</a>）</li>
+<li>发表日期： <abbr class="published" title="2018-07-23T17:10:58+08:00">2018年7月23日</abbr></li>
+
+</ul>
+                                </div>
+</article>
+                            </div>
+
+
+  
+  <div style="display: inline-block ! important;width: 100%;">
+  </div>
+
+
+
+<div id="related_entries">
+<h2>相关文章</h2>
+<ul>
+
+<li><strong>2023.03.21: <a href="https://www.ruanyifeng.com/blog/2023/03/platform-engineering.html">运维的未来是平台工程</a></strong>
+
+                           <div class="entry-body">
+                              互联网公司有一个重要工种，叫做"运维"。
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2022.10.23: <a href="https://www.ruanyifeng.com/blog/2022/10/git-server.html">最简单的 Git 服务器</a></strong>
+
+                           <div class="entry-body">
+                              程序员的代码仓库，总是需要托管一份在服务器，这样才保险，也方便使用。
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2022.06.29: <a href="https://www.ruanyifeng.com/blog/2022/06/cloud-server-getting-started-tutorial.html">云主机上手教程：轻量应用服务器体验</a></strong>
+
+                           <div class="entry-body">
+                              很多同学都希望架设自己的云服务，这就离不开云主机（cloud server）。
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2022.04.29: <a href="https://www.ruanyifeng.com/blog/2022/04/microservice.html">微服务是什么？</a></strong>
+
+                           <div class="entry-body">
+                              微服务（microservice）是一种软件架构，正得到越来越多的关注。
+
+                           </div>
+
+</li>
+
+ 
+</ul>
+</div>
+
+
+<div id="cre" style="display: block;">
+<h2>广告<a href="https://www.ruanyifeng.com/support.html">（购买广告位）</a></h2>
+<div id="cre-inner">
+
+<div id="cre-left">
+<p style="font-size:16px;text-align:center;"><a title="亮数据" href="https://www.bright.cn/proxy-types/?utm_source=brand&amp;utm_campaign=brnd-mkt_CN_pw_ruanyifeng" target="_blank">亮数据</a></p>
+<a title="亮数据" href="https://www.bright.cn/proxy-types/?utm_source=brand&amp;utm_campaign=brnd-mkt_CN_pw_ruanyifeng" target="_blank">
+  <image alt=="亮数据" src="https://cdn.beekka.com/blogimg/asset/202306/bg2023062208.webp" style="border:none;" />
+</a>
+</div>
+
+<div id="cre-right">
+</div>
+
+</div>
+</div>
+
+
+
+
+
+
+
+                    
+
+                    <div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">留言（174条）</h2>
+
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-391309" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">小胡子哥</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391309">
+            <p>可以说讲的很清楚了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  5:58 PM">2018年7月23日 17:58</abbr>
+ | <a href="#comment-391309">#</a>
+ | <a href="#comment-text" title="引用小胡子哥的这条留言" onclick="return CommentQuote('comment-quote-391309','小胡子哥');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391311" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">moyo</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391311">
+            <p>没质量，这种网上一抓一大把。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  6:28 PM">2018年7月23日 18:28</abbr>
+ | <a href="#comment-391311">#</a>
+ | <a href="#comment-text" title="引用moyo的这条留言" onclick="return CommentQuote('comment-quote-391311','moyo');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391312" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">jiajunhuang</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391312">
+            <p>无状态的东西好在方便扩展，例如map reduce。不过通常服务器还是需要对session或者token有比较高的掌控权。JWT还是用在一些不那么需要保证安全的地方会好一些例如确认退订邮件等。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  6:29 PM">2018年7月23日 18:29</abbr>
+ | <a href="#comment-391312">#</a>
+ | <a href="#comment-text" title="引用jiajunhuang的这条留言" onclick="return CommentQuote('comment-quote-391312','jiajunhuang');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391313" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">anix</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391313">
+            <p>看懂了，哈哈，算是入门了吗？<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  6:41 PM">2018年7月23日 18:41</abbr>
+ | <a href="#comment-391313">#</a>
+ | <a href="#comment-text" title="引用anix的这条留言" onclick="return CommentQuote('comment-quote-391313','anix');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391314" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">anton</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391314">
+            <p>清晰简洁，????</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  6:51 PM">2018年7月23日 18:51</abbr>
+ | <a href="#comment-391314">#</a>
+ | <a href="#comment-text" title="引用anton的这条留言" onclick="return CommentQuote('comment-quote-391314','anton');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391315" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">令狐洋葱</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391315">
+            <p>如今安全越来越重要，客户端储存永久token，是否有它适用的场景？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  6:54 PM">2018年7月23日 18:54</abbr>
+ | <a href="#comment-391315">#</a>
+ | <a href="#comment-text" title="引用令狐洋葱的这条留言" onclick="return CommentQuote('comment-quote-391315','令狐洋葱');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391316" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Krist Pan</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391316">
+            <p>最近的博客质量不高啊，不过高质量的博文不常有，为了保证文章数量，只能这样了。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  7:22 PM">2018年7月23日 19:22</abbr>
+ | <a href="#comment-391316">#</a>
+ | <a href="#comment-text" title="引用Krist Pan的这条留言" onclick="return CommentQuote('comment-quote-391316','Krist Pan');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391317" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Simon</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391317">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>这都能酸..</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  7:36 PM">2018年7月23日 19:36</abbr>
+ | <a href="#comment-391317">#</a>
+ | <a href="#comment-text" title="引用Simon的这条留言" onclick="return CommentQuote('comment-quote-391317','Simon');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391320" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">seven</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391320">
+            <blockquote>
+<pre>引用令狐洋葱的发言：</pre>
+
+<p>如今安全越来越重要，客户端储存永久token，是否有它适用的场景？</p>
+
+</blockquote>
+
+<p>并没建议让永久储存token啊. 看特点的第5条</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 23, 2018  9:54 PM">2018年7月23日 21:54</abbr>
+ | <a href="#comment-391320">#</a>
+ | <a href="#comment-text" title="引用seven的这条留言" onclick="return CommentQuote('comment-quote-391320','seven');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391323" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">优惠券</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391323">
+            <p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  8:42 AM">2018年7月24日 08:42</abbr>
+ | <a href="#comment-391323">#</a>
+ | <a href="#comment-text" title="引用优惠券的这条留言" onclick="return CommentQuote('comment-quote-391323','优惠券');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391336" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">山西大学</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391336">
+            <p>对于行外人来说，喜欢了解这样的原理性的东西。实话讲，我虽然看不懂，但是希望了解框架知识就够了。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  9:21 AM">2018年7月24日 09:21</abbr>
+ | <a href="#comment-391336">#</a>
+ | <a href="#comment-text" title="引用山西大学的这条留言" onclick="return CommentQuote('comment-quote-391336','山西大学');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391340" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">皮皮</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391340">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>大哥啊，别喷了，如果你懂，那么请你默默的离开，简单明了本身就是质量。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018 10:04 AM">2018年7月24日 10:04</abbr>
+ | <a href="#comment-391340">#</a>
+ | <a href="#comment-text" title="引用皮皮的这条留言" onclick="return CommentQuote('comment-quote-391340','皮皮');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391343" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hooyes</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391343">
+            <p>感觉缺点大于优点。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018 10:19 AM">2018年7月24日 10:19</abbr>
+ | <a href="#comment-391343">#</a>
+ | <a href="#comment-text" title="引用hooyes的这条留言" onclick="return CommentQuote('comment-quote-391343','hooyes');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391344" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Orange</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391344">
+            <p>完全不懂的我竟然看懂了 谁敢说没质量！！！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018 10:33 AM">2018年7月24日 10:33</abbr>
+ | <a href="#comment-391344">#</a>
+ | <a href="#comment-text" title="引用Orange的这条留言" onclick="return CommentQuote('comment-quote-391344','Orange');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391346" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ivan</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391346">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>JWT最大特点不就是状态存储在客户端么，可以实现多点登录，服务端不用做很多的额外工作<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018 10:59 AM">2018年7月24日 10:59</abbr>
+ | <a href="#comment-391346">#</a>
+ | <a href="#comment-text" title="引用ivan的这条留言" onclick="return CommentQuote('comment-quote-391346','ivan');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391350" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">microjan</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391350">
+            <p>很好,看懂了.</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  3:17 PM">2018年7月24日 15:17</abbr>
+ | <a href="#comment-391350">#</a>
+ | <a href="#comment-text" title="引用microjan的这条留言" onclick="return CommentQuote('comment-quote-391350','microjan');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391354" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">swift</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391354">
+            <p>session和jwt都有各自的使用场景，并不是一概而论好坏，各自都有优缺点，取长补短就行了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  3:58 PM">2018年7月24日 15:58</abbr>
+ | <a href="#comment-391354">#</a>
+ | <a href="#comment-text" title="引用swift的这条留言" onclick="return CommentQuote('comment-quote-391354','swift');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391358" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">anonym</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391358">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>不引入数据库支持的话这个的确没法实现。最好的方案是维护一张基于 jti (JWT ID) 的表，将jti和user_id关联起来，生成新的jwt时将该user_id旧的jwt标记为失效就好，具体场景还得看你们的具体业务逻辑。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  6:48 PM">2018年7月24日 18:48</abbr>
+ | <a href="#comment-391358">#</a>
+ | <a href="#comment-text" title="引用anonym的这条留言" onclick="return CommentQuote('comment-quote-391358','anonym');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391359" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">CCTV</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391359">
+            <p>jwt主要还是用在移动端的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2018  7:01 PM">2018年7月24日 19:01</abbr>
+ | <a href="#comment-391359">#</a>
+ | <a href="#comment-text" title="引用CCTV的这条留言" onclick="return CommentQuote('comment-quote-391359','CCTV');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391376" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">mm</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391376">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>有一个老乞丐，天天到捷运站磕头乞讨，小白每次经过，固定都会给他二十元，每天下班遇到就给，这样持续了一年。<br />
+ <br />
+有一天，小白只给乞丐十元，乞丐愣了一下，但还是勉强抬头笑了笑。<br />
+ <br />
+隔天，小白又给十元。再隔天，又是十元。<br />
+ <br />
+到了第七天，老乞丐终于忍不住了，伸手拉住小白说：「以前你都给二十，怎么现在都只给十元？」<br />
+ <br />
+小白被抓住，有点吃惊，旋即回过神来说：「啊，抱歉，我结婚了，要省着点。」<br />
+ <br />
+乞丐怒得一巴掌打过去：「什么玩意]</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018 10:08 AM">2018年7月25日 10:08</abbr>
+ | <a href="#comment-391376">#</a>
+ | <a href="#comment-text" title="引用mm的这条留言" onclick="return CommentQuote('comment-quote-391376','mm');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391380" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">优惠券</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391380">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>软一峰绝对不是编程界代码写的最厉害的，但他一定是编程界教程写的最好的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018 11:56 AM">2018年7月25日 11:56</abbr>
+ | <a href="#comment-391380">#</a>
+ | <a href="#comment-text" title="引用优惠券的这条留言" onclick="return CommentQuote('comment-quote-391380','优惠券');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391382" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">一位过客</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391382">
+            <p>写的好,简单明了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  1:28 PM">2018年7月25日 13:28</abbr>
+ | <a href="#comment-391382">#</a>
+ | <a href="#comment-text" title="引用一位过客的这条留言" onclick="return CommentQuote('comment-quote-391382','一位过客');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391385" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">stong</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391385">
+            <p>通俗易懂~ 小白有个疑问望各位大神解答：<br />
+   用jwt来实现 跨域单点登录：<br />
+       ①A系统登录成功—>jwt 返回tokemn ->客户端保存至 cookie<br />
+       ②同一浏览器进入B 系统-> 浏览器提交token ->服务器验证token 是否有效 ->有效B系统自动登陆用户</p>
+
+<p>   问：1） jwt  不易保存私密信息，A登陆后 必然将用户部分信息存储至 token B才能获取是哪位用户？<br />
+      2）  B验证token 验证登陆后 不在b系统中产生sesion ?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  2:15 PM">2018年7月25日 14:15</abbr>
+ | <a href="#comment-391385">#</a>
+ | <a href="#comment-text" title="引用stong的这条留言" onclick="return CommentQuote('comment-quote-391385','stong');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391386" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">WalkingSun</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391386">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>签名可以加时间戳或这其他随机参与加密，一旦登录就更新签名，之前的签名失效，不会出现多个在线啦</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  2:27 PM">2018年7月25日 14:27</abbr>
+ | <a href="#comment-391386">#</a>
+ | <a href="#comment-text" title="引用WalkingSun的这条留言" onclick="return CommentQuote('comment-quote-391386','WalkingSun');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391388" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">小白</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391388">
+            <p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage</p>
+
+<p>浏览器存在 cookie 中的token 跨域也是非共享的， A系统登录后，浏览器访问B  怎么拿到这个token?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  2:45 PM">2018年7月25日 14:45</abbr>
+ | <a href="#comment-391388">#</a>
+ | <a href="#comment-text" title="引用小白的这条留言" onclick="return CommentQuote('comment-quote-391388','小白');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391392" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Aecced</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391392">
+            <p>JWT的几个特点中第四条，除非服务器部署额外的逻辑，能不能举例说明下，有点困惑</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  3:18 PM">2018年7月25日 15:18</abbr>
+ | <a href="#comment-391392">#</a>
+ | <a href="#comment-text" title="引用Aecced的这条留言" onclick="return CommentQuote('comment-quote-391392','Aecced');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391400" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮老师的小粉丝</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391400">
+            <p>@优惠券：</p>
+
+<p>你可以让他对比维护是否签发token的清单和维护session列表哪个更容易一些，如果在这方面JWT没有优势，也就没有重新发明的必要额。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 25, 2018  5:59 PM">2018年7月25日 17:59</abbr>
+ | <a href="#comment-391400">#</a>
+ | <a href="#comment-text" title="引用阮老师的小粉丝的这条留言" onclick="return CommentQuote('comment-quote-391400','阮老师的小粉丝');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391417" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ixx</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391417">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>JWT 解决的最大问题是跨域，如果你们的业务不涉及跨域完全没有必要用JWT    session 就够用了，如果有跨域需要，那么改造Session实现跨域访问，要比改造JWT实现单用户登陆复杂的多</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 26, 2018 10:41 AM">2018年7月26日 10:41</abbr>
+ | <a href="#comment-391417">#</a>
+ | <a href="#comment-text" title="引用ixx的这条留言" onclick="return CommentQuote('comment-quote-391417','ixx');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391418" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ixx</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391418">
+            <blockquote>
+<pre>引用stong的发言：</pre>
+
+<p>通俗易懂~ 小白有个疑问望各位大神解答：<br />
+ 用jwt来实现 跨域单点登录：<br />
+ ①A系统登录成功—&gt;jwt 返回tokemn -&gt;客户端保存至 cookie<br />
+ ②同一浏览器进入B 系统-&gt; 浏览器提交token -&gt;服务器验证token 是否有效 -&gt;有效B系统自动登陆用户</p>
+
+<p> 问：1） jwt不易保存私密信息，A登陆后 必然将用户部分信息存储至 token B才能获取是哪位用户？<br />
+2）B验证token 验证登陆后 不在b系统中产生sesion ?</p>
+
+</blockquote>
+
+<p>使用JWT用户数据由客户端传入，每个请求都会带着这些信息，也就不需要后端生成Session了，在每次请求的时候验证登陆状态及登陆用户</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 26, 2018 10:45 AM">2018年7月26日 10:45</abbr>
+ | <a href="#comment-391418">#</a>
+ | <a href="#comment-text" title="引用ixx的这条留言" onclick="return CommentQuote('comment-quote-391418','ixx');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391419" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">zw</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391419">
+            <p>阮老师，不聊聊yimiao时间吗</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 26, 2018 10:49 AM">2018年7月26日 10:49</abbr>
+ | <a href="#comment-391419">#</a>
+ | <a href="#comment-text" title="引用zw的这条留言" onclick="return CommentQuote('comment-quote-391419','zw');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391422" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ed</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391422">
+            <p>等了好久阮老师终于也写jwt了，之前网上查的确实没阮老师写的易懂。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 26, 2018 11:31 AM">2018年7月26日 11:31</abbr>
+ | <a href="#comment-391422">#</a>
+ | <a href="#comment-text" title="引用ed的这条留言" onclick="return CommentQuote('comment-quote-391422','ed');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391435" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">donotlb</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391435">
+            <blockquote>
+<pre>引用小白的发言：</pre>
+
+<p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage</p>
+
+<p>浏览器存在 cookie 中的token 跨域也是非共享的， A系统登录后，浏览器访问B怎么拿到这个token?</p>
+
+</blockquote>
+
+<p>跨域这块，前端也是要处理的，两种情况：</p>
+
+<p>1. token 存储在 cookie 里，按传统的跨域方案，共享/传递 cookie 里的 token<br />
+2. token 存储在 localStorage 里，则需要 localStorage 的跨域方案，以便 共享/传递 cookie 里的 token，localStorage 的跨域方案可以搜搜，有开源类库</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 26, 2018  4:22 PM">2018年7月26日 16:22</abbr>
+ | <a href="#comment-391435">#</a>
+ | <a href="#comment-text" title="引用donotlb的这条留言" onclick="return CommentQuote('comment-quote-391435','donotlb');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391472" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">王嘉</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391472">
+            <p>周五了，催更了，哈哈哈</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 27, 2018 10:52 AM">2018年7月27日 10:52</abbr>
+ | <a href="#comment-391472">#</a>
+ | <a href="#comment-text" title="引用王嘉的这条留言" onclick="return CommentQuote('comment-quote-391472','王嘉');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391617" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Value</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391617">
+            <p>@优惠券：</p>
+
+<p>如果是移动端的话，可以考虑签发的时候加入手机的设备编号作为验证。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 30, 2018  3:48 PM">2018年7月30日 15:48</abbr>
+ | <a href="#comment-391617">#</a>
+ | <a href="#comment-text" title="引用Value的这条留言" onclick="return CommentQuote('comment-quote-391617','Value');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391658" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">缺木</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391658">
+            <p>JWT是否只是提供一种思路模式，并没有实际的什么依赖需要添加到系统中，文章中写的官方提供的7个字段以及签名算法是否其实并没有实际的效果，其实只是类似一种规范而已，而开发者自己根据规范去实现？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 31, 2018  4:26 PM">2018年7月31日 16:26</abbr>
+ | <a href="#comment-391658">#</a>
+ | <a href="#comment-text" title="引用缺木的这条留言" onclick="return CommentQuote('comment-quote-391658','缺木');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391729" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">animateJoke</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391729">
+            <p>能否讲解一下，JWT跨二级域名记录登录状态时怎么实现同步登录和退出，之前项目token是存在sessionStorage里面的，但是为了跨二级域名登录，没找到实现的方法就放到了cookie里面，感觉有点不太好，有没有不放到cookie的解决办法</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  2, 2018  5:00 PM">2018年8月 2日 17:00</abbr>
+ | <a href="#comment-391729">#</a>
+ | <a href="#comment-text" title="引用animateJoke的这条留言" onclick="return CommentQuote('comment-quote-391729','animateJoke');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391955" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">创建人</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391955">
+            <p>博客写得很好，很喜欢</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  8, 2018  7:56 PM">2018年8月 8日 19:56</abbr>
+ | <a href="#comment-391955">#</a>
+ | <a href="#comment-text" title="引用创建人的这条留言" onclick="return CommentQuote('comment-quote-391955','创建人');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392019" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">RichardWang</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392019">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>是一抓一大把 但是写的调理这么清楚的只有一家。我之前也做过jwt token的项目，去看英文的文章很多篇才弄清楚的。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  2:56 PM">2018年8月10日 14:56</abbr>
+ | <a href="#comment-392019">#</a>
+ | <a href="#comment-text" title="引用RichardWang的这条留言" onclick="return CommentQuote('comment-quote-392019','RichardWang');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392022" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392022">
+            <blockquote>
+<pre>引用令狐洋葱的发言：</pre>
+
+<p>如今安全越来越重要，客户端储存永久token，是否有它适用的场景？</p>
+
+</blockquote>
+
+<p>没让你永久储存啊，何况你永久储存那也是你的事情，但是啥时候过期是服务端实现啊，你拿着过期的token请求api，会返回错误</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  4:50 PM">2018年8月10日 16:50</abbr>
+ | <a href="#comment-392022">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392022','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392023" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392023">
+            <p>@优惠券：</p>
+
+<p>使用jwt的场景是前后端彻底分离，无法通过session来认证的。默认的确是可以多次登录，发了多个token，也能改成只发一个啊，让前面的失效，这和session是2回事情。拒绝使用jwt那么授权接口怎么知道是哪个用户在请求？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  4:55 PM">2018年8月10日 16:55</abbr>
+ | <a href="#comment-392023">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392023','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392024" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392024">
+            <blockquote>
+<pre>引用CCTV的发言：</pre>
+
+<p>jwt主要还是用在移动端的</p>
+
+</blockquote>
+
+<p>还可以用于前后端分离，对后端来说，没有移动端不移动端的概念，反正你们都是调用接口，我管你是pc，h5 or app</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  4:57 PM">2018年8月10日 16:57</abbr>
+ | <a href="#comment-392024">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392024','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392025" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392025">
+            <p>@stong：</p>
+
+<p>1.其实jwt里面有加密的uid，或者是uid的对应关系</p>
+
+<p>2.b系统产生不产生session，是你b系统的验证登录逻辑决定啊，你要从session验证用户，那就要写session，你如果是从redis验证token，就不需要写session</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  5:01 PM">2018年8月10日 17:01</abbr>
+ | <a href="#comment-392025">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392025','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392027" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392027">
+            <p>@小白：</p>
+
+<p>可以去参考CAS的方案。或者我简单说一下ucenter的方案，a系统登录后，拿到了jwt，访问一下b系统的一个链接，由b系统的此链接将jwt存入localStorage</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  5:04 PM">2018年8月10日 17:04</abbr>
+ | <a href="#comment-392027">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392027','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392029" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392029">
+            <blockquote>
+<pre>引用Aecced的发言：</pre>
+
+<p>JWT的几个特点中第四条，除非服务器部署额外的逻辑，能不能举例说明下，有点困惑</p>
+
+</blockquote>
+
+<p>第四条是JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。？</p>
+
+<p>其实第四条说的有点绝对了，原文第四条的意思应该是jwt颁发后，一般扩展包没提供让其失效方法。但是要让jwt失效依然很简单，因为jwt一般会放在redis或者mysql表，只要逻辑上去找到uid对应的jwt，删了就可以了。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  5:08 PM">2018年8月10日 17:08</abbr>
+ | <a href="#comment-392029">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392029','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392030" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392030">
+            <blockquote>
+<pre>引用ixx的发言：</pre>
+
+<p></p>
+
+<p>JWT 解决的最大问题是跨域，如果你们的业务不涉及跨域完全没有必要用JWTsession 就够用了，如果有跨域需要，那么改造Session实现跨域访问，要比改造JWT实现单用户登陆复杂的多</p>
+
+</blockquote>
+
+<p>个人认为jwt解决最大的问题不是跨域，而是前后端分离后，纯接口方面的用户认证问题。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  5:11 PM">2018年8月10日 17:11</abbr>
+ | <a href="#comment-392030">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392030','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392031" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">清启</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392031">
+            <blockquote>
+<pre>引用缺木的发言：</pre>
+
+<p>JWT是否只是提供一种思路模式，并没有实际的什么依赖需要添加到系统中，文章中写的官方提供的7个字段以及签名算法是否其实并没有实际的效果，其实只是类似一种规范而已，而开发者自己根据规范去实现？</p>
+
+</blockquote>
+
+<p>如你所说，jwt是一种规范，你也可以不按那个字段走，但是不用自己实现，你可以去全球最大的交友网站github上找到你要用，一般别人写的都按规范走了，而且方法都已封装好。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 10, 2018  5:14 PM">2018年8月10日 17:14</abbr>
+ | <a href="#comment-392031">#</a>
+ | <a href="#comment-text" title="引用清启的这条留言" onclick="return CommentQuote('comment-quote-392031','清启');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392223" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">joe</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392223">
+            <p>jwt 验证怎么才能够防止重放攻击呢? 最近正在重构自己的个人网站,想做的更安全一点,有人说用挑战应答?有人说用timeStamp + nonce? 有哪位同仁能解答一下吗?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 16, 2018  1:57 AM">2018年8月16日 01:57</abbr>
+ | <a href="#comment-392223">#</a>
+ | <a href="#comment-text" title="引用joe的这条留言" onclick="return CommentQuote('comment-quote-392223','joe');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392310" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">algery</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392310">
+            <p>@清启：</p>
+
+<p>`但是要让jwt失效依然很简单，因为jwt一般会放在redis或者mysql表，只要逻辑上去找到uid对应的jwt，删了就可以了。`</p>
+
+<p>你这个不就是额外的逻辑了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 19, 2018 10:03 AM">2018年8月19日 10:03</abbr>
+ | <a href="#comment-392310">#</a>
+ | <a href="#comment-text" title="引用algery的这条留言" onclick="return CommentQuote('comment-quote-392310','algery');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392365" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">泫</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392365">
+            <p>@mm：</p>
+
+<p>哈哈，说的真好！话说阮老师有没有捐赠地址啥的。看了挺多好文章了。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 20, 2018 11:46 AM">2018年8月20日 11:46</abbr>
+ | <a href="#comment-392365">#</a>
+ | <a href="#comment-text" title="引用泫的这条留言" onclick="return CommentQuote('comment-quote-392365','泫');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392387" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ahuigo</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392387">
+            <p>@优惠券：</p>
+
+<p>1. session+jwt 结合<br />
+2. session 只存：uid:lastTime,  别什么数据都往session 丢。用lastTime确定是否过期<br />
+3. 密码修改、A/B登录，lastTime都要更新。<br />
+4. 类似腾讯这种，同时支持pc+mobile，就用：uid:{pc:lastTime, mobile:lastTime} </p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 21, 2018  1:25 AM">2018年8月21日 01:25</abbr>
+ | <a href="#comment-392387">#</a>
+ | <a href="#comment-text" title="引用ahuigo的这条留言" onclick="return CommentQuote('comment-quote-392387','ahuigo');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392448" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">黄豆</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392448">
+            <p>很简单明了，看了就懂，赞</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 23, 2018  9:28 AM">2018年8月23日 09:28</abbr>
+ | <a href="#comment-392448">#</a>
+ | <a href="#comment-text" title="引用黄豆的这条留言" onclick="return CommentQuote('comment-quote-392448','黄豆');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392469" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Jerry</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392469">
+            <p>通俗易懂 ~ 可以说说 refresh token 吗？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 23, 2018  9:32 PM">2018年8月23日 21:32</abbr>
+ | <a href="#comment-392469">#</a>
+ | <a href="#comment-text" title="引用Jerry的这条留言" onclick="return CommentQuote('comment-quote-392469','Jerry');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392612" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Tiger</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392612">
+            <p>那是不是一旦黑客截取到JWT就意味着在有效期内就可以为所欲为了？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 27, 2018  8:03 PM">2018年8月27日 20:03</abbr>
+ | <a href="#comment-392612">#</a>
+ | <a href="#comment-text" title="引用Tiger的这条留言" onclick="return CommentQuote('comment-quote-392612','Tiger');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392793" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">BobDu</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392793">
+            <p>我觉得只有在安全要求一般，且需要跨域的情况下才可以考虑JWT技术。</p>
+
+<p>毕竟JWT签发后确实是服务器无法控制，如果你非得要通过维护一张JWT id表单来控制JWT失效，那和session比没有任何优势，反而还引入了安全性问题，得不偿失。</p>
+
+<p>至于说到集群共享session的问题，通过分布式redis应该是可以很好的解决这一问题。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  3, 2018  8:00 PM">2018年9月 3日 20:00</abbr>
+ | <a href="#comment-392793">#</a>
+ | <a href="#comment-text" title="引用BobDu的这条留言" onclick="return CommentQuote('comment-quote-392793','BobDu');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392832" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">AberSheeran</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392832">
+            <p>@BobDu：</p>
+
+<p>JWT签发之后为什么要用JWT id表？JWT里面带失效时间不就行了？只要私钥不泄露又没法伪造。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  4, 2018  9:40 PM">2018年9月 4日 21:40</abbr>
+ | <a href="#comment-392832">#</a>
+ | <a href="#comment-text" title="引用AberSheeran的这条留言" onclick="return CommentQuote('comment-quote-392832','AberSheeran');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392843" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">curry</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392843">
+            <blockquote>
+<pre>引用WalkingSun的发言：</pre>
+
+<p></p>
+
+<p>签名可以加时间戳或这其他随机参与加密，一旦登录就更新签名，之前的签名失效，不会出现多个在线啦</p>
+
+</blockquote>
+
+<p>难道每个用户一个secret ？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  5, 2018  3:01 PM">2018年9月 5日 15:01</abbr>
+ | <a href="#comment-392843">#</a>
+ | <a href="#comment-text" title="引用curry的这条留言" onclick="return CommentQuote('comment-quote-392843','curry');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392879" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">blue water</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392879">
+            <p>哪位大佬能讲一下怎么把token放入HTTP 请求的头信息Authorization字段里面........求解（最好有代码）</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  6, 2018  1:47 PM">2018年9月 6日 13:47</abbr>
+ | <a href="#comment-392879">#</a>
+ | <a href="#comment-text" title="引用blue water的这条留言" onclick="return CommentQuote('comment-quote-392879','blue water');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392940" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hejg</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392940">
+            <p>阮老师的博客能推送微信公众号就更好了，能更方便更及时的看到。。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  7, 2018  5:08 PM">2018年9月 7日 17:08</abbr>
+ | <a href="#comment-392940">#</a>
+ | <a href="#comment-text" title="引用hejg的这条留言" onclick="return CommentQuote('comment-quote-392940','hejg');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392973" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">泫</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392973">
+            <blockquote>
+<pre>引用hejg的发言：</pre>
+
+<p>阮老师的博客能推送微信公众号就更好了，能更方便更及时的看到。。</p>
+
+</blockquote>
+
+<p>RSS订阅了解一下</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  9, 2018 11:13 AM">2018年9月 9日 11:13</abbr>
+ | <a href="#comment-392973">#</a>
+ | <a href="#comment-text" title="引用泫的这条留言" onclick="return CommentQuote('comment-quote-392973','泫');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-393465" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">云有你</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-393465">
+            <p>阮老师的语文水平和我的一样高，因为我能读懂。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 27, 2018  5:23 PM">2018年9月27日 17:23</abbr>
+ | <a href="#comment-393465">#</a>
+ | <a href="#comment-text" title="引用云有你的这条留言" onclick="return CommentQuote('comment-quote-393465','云有你');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-393565" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">云泥</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-393565">
+            <p>大神，清晰、简洁，要是能要实际应用例子就更好了，手动点赞</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 30, 2018 11:26 AM">2018年9月30日 11:26</abbr>
+ | <a href="#comment-393565">#</a>
+ | <a href="#comment-text" title="引用云泥的这条留言" onclick="return CommentQuote('comment-quote-393565','云泥');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-394071" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">李鲁杨</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-394071">
+            <blockquote>
+<pre>引用小白的发言：</pre>
+
+<p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage</p>
+
+<p>浏览器存在 cookie 中的token 跨域也是非共享的， A系统登录后，浏览器访问B怎么拿到这个token?</p>
+
+</blockquote>
+
+<p>如果你要访问B的时候携带 Token 过去，那把 Token 放在  Header参数，Url的Path参数，Query参数，Body参数都可以传过去，不一定非要放在 cookie 里面啊， Token 一般还是放在请求头里面的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 16, 2018 10:31 AM">2018年10月16日 10:31</abbr>
+ | <a href="#comment-394071">#</a>
+ | <a href="#comment-text" title="引用李鲁杨的这条留言" onclick="return CommentQuote('comment-quote-394071','李鲁杨');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-394169" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">luojing</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-394169">
+            <p>@优惠券：</p>
+
+<p>oauth2 了解一下<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 18, 2018 10:04 AM">2018年10月18日 10:04</abbr>
+ | <a href="#comment-394169">#</a>
+ | <a href="#comment-text" title="引用luojing的这条留言" onclick="return CommentQuote('comment-quote-394169','luojing');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-394366" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">freyxian</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-394366">
+            <p>@优惠券：</p>
+
+<p>应用服务器端保留用户的最新token即可。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 25, 2018  9:01 AM">2018年10月25日 09:01</abbr>
+ | <a href="#comment-394366">#</a>
+ | <a href="#comment-text" title="引用freyxian的这条留言" onclick="return CommentQuote('comment-quote-394366','freyxian');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-394450" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">aws</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-394450">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>有质量的人会能说出来你这样的话？<br />
+JWT本来就这点东西，怎么算有质量?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 26, 2018  9:33 PM">2018年10月26日 21:33</abbr>
+ | <a href="#comment-394450">#</a>
+ | <a href="#comment-text" title="引用aws的这条留言" onclick="return CommentQuote('comment-quote-394450','aws');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-394523" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">diamond</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-394523">
+            <p>博主介绍了如何生成token，却没有介绍server端收到token之后如何验证啊</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 29, 2018  7:43 PM">2018年10月29日 19:43</abbr>
+ | <a href="#comment-394523">#</a>
+ | <a href="#comment-text" title="引用diamond的这条留言" onclick="return CommentQuote('comment-quote-394523','diamond');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-396177" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">黄大虾</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-396177">
+            <blockquote>
+<pre>引用diamond的发言：</pre>
+
+<p>博主介绍了如何生成token，却没有介绍server端收到token之后如何验证啊</p>
+
+</blockquote>
+
+<p>我也想问这个问题</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 29, 2018  9:29 AM">2018年11月29日 09:29</abbr>
+ | <a href="#comment-396177">#</a>
+ | <a href="#comment-text" title="引用黄大虾的这条留言" onclick="return CommentQuote('comment-quote-396177','黄大虾');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-396742" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">狗饼</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-396742">
+            <blockquote>
+<pre>引用WalkingSun的发言：</pre>
+
+<p></p>
+
+<p>签名可以加时间戳或这其他随机参与加密，一旦登录就更新签名，之前的签名失效，不会出现多个在线啦</p>
+
+</blockquote>
+
+<p>那不是服务器还要保存签名?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December  7, 2018  4:01 PM">2018年12月 7日 16:01</abbr>
+ | <a href="#comment-396742">#</a>
+ | <a href="#comment-text" title="引用狗饼的这条留言" onclick="return CommentQuote('comment-quote-396742','狗饼');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-398541" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">周华飞</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-398541">
+            <p>通俗易懂。站在你的肩膀上，我可以看的更远。感谢！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 24, 2018  5:32 PM">2018年12月24日 17:32</abbr>
+ | <a href="#comment-398541">#</a>
+ | <a href="#comment-text" title="引用周华飞的这条留言" onclick="return CommentQuote('comment-quote-398541','周华飞');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-398908" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">zard</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-398908">
+            <p>这是翻译官方的吧</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 27, 2018  7:36 AM">2018年12月27日 07:36</abbr>
+ | <a href="#comment-398908">#</a>
+ | <a href="#comment-text" title="引用zard的这条留言" onclick="return CommentQuote('comment-quote-398908','zard');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-399022" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">JS&amp;SJ</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-399022">
+            <blockquote>
+<pre>引用Simon的发言：</pre>
+
+<p></p>
+
+<p>这都能酸..</p>
+
+</blockquote>
+
+<p>不愿看就悄悄走开，没有开源分享精神还跑出来指点江山。。。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 27, 2018  7:43 PM">2018年12月27日 19:43</abbr>
+ | <a href="#comment-399022">#</a>
+ | <a href="#comment-text" title="引用JS&SJ的这条留言" onclick="return CommentQuote('comment-quote-399022','JS&SJ');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-399024" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">JS&amp;SJ</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-399024">
+            <blockquote>
+<pre>引用Simon的发言：</pre>
+
+<p><br />
+这都能酸..</p>
+
+</blockquote>
+
+<p><br />
+Sorry,刚来引用错了，我是支持您怼那个嘴欠moyo的“没质量，这种网上一抓一大把。”的傻评论</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 27, 2018  7:49 PM">2018年12月27日 19:49</abbr>
+ | <a href="#comment-399024">#</a>
+ | <a href="#comment-text" title="引用JS&SJ的这条留言" onclick="return CommentQuote('comment-quote-399024','JS&SJ');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-401541" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wangx</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-401541">
+            <p>请问payload是什么作用，为什么出现2遍（payload、signature）。<br />
+只有加密的不行吗？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  7, 2019 11:12 AM">2019年1月 7日 11:12</abbr>
+ | <a href="#comment-401541">#</a>
+ | <a href="#comment-text" title="引用wangx的这条留言" onclick="return CommentQuote('comment-quote-401541','wangx');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-402218" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">darron</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-402218">
+            <p>“举例来说，A 网站和 B 网站是同一家公司的关联服务。现在要求，用户只要在其中一个网站登录，再访问另一个网站就会自动登录，请问怎么实现？</p>
+
+<p>一种解决方案是 session 数据持久化，写入数据库或别的持久层。各种服务收到请求后，都向持久层请求数据。这种方案的优点是架构清晰，缺点是工程量比较大。另外，持久层万一挂了，就会单点失败。”</p>
+
+<p>请教一下，session数据持久化怎么能解决“A 网站和 B 网站是同一家公司的关联服务。现在要求，用户只要在其中一个网站登录，再访问另一个网站就会自动登录”这个问题呢？A网站和B网站cookie不共享啊。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 10, 2019 10:37 PM">2019年1月10日 22:37</abbr>
+ | <a href="#comment-402218">#</a>
+ | <a href="#comment-text" title="引用darron的这条留言" onclick="return CommentQuote('comment-quote-402218','darron');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-403826" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Bob</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-403826">
+            <p>简单明了，谢谢。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 15, 2019 10:40 AM">2019年1月15日 10:40</abbr>
+ | <a href="#comment-403826">#</a>
+ | <a href="#comment-text" title="引用Bob的这条留言" onclick="return CommentQuote('comment-quote-403826','Bob');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-404404" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hengsha</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-404404">
+            <p>后端用redis或数据库记录一个用户id到token的对应表，token不用有任何意义，也不需要加密解密，随机字符串即可。</p>
+
+<p>客户端发送token的方法跟JWT一样，可以选择用cookie、header或url参数，服务器校验根据 seesion -> 用户id 的公共存储判断。这样可以很简单地在后台根据用户最后访问时间更新token有效时间和自动删除过期token ，还能通过这个表查看在线用户，这些都是JWT不具备的功能。</p>
+
+<p>所以我看不出JWT相比这个方案有什么好处，除了能节约服务器上 token 到 用户ID 表的这一次查询，还有其他好处吗？  而且一般业务请求，除了拿到用户ID，还有更多需要服务器调用的服务，比如拿到用户完整对象、用户权限、用户业务操作对象等等，这些不比 查询 token 到用户ID表的开销大得多吗？  </p>
+
+<p>请大伙指正。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 16, 2019  2:24 PM">2019年1月16日 14:24</abbr>
+ | <a href="#comment-404404">#</a>
+ | <a href="#comment-text" title="引用hengsha的这条留言" onclick="return CommentQuote('comment-quote-404404','hengsha');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-404514" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">genericyzh</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-404514">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>无法反驳</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 16, 2019  7:48 PM">2019年1月16日 19:48</abbr>
+ | <a href="#comment-404514">#</a>
+ | <a href="#comment-text" title="引用genericyzh的这条留言" onclick="return CommentQuote('comment-quote-404514','genericyzh');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-408127" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">韩版女装</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-408127">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>在数据库里或服务端存储机构保存用户等陆状态，如果登录状态发生变化，则重新签发一个包含登录状态码的JWT给客户端，原来的A设备因为登录状态码对不上号而被退出，A设备退出后，如果再次登录时再次重新签一个包含登录状态码的JWT给客户端，这样A手机重新登录后，B手机因为登录状态码对不上而被退出。</p>
+
+<p>注意下：每次使用登录功能登录时登录时，客户端向服务端提交登录数据时，会连同发送重新设定登录状态码的指令，登录状态码为随机字符串。</p>
+
+<p>这是我的想法，哈俣，大神不要喷，毕竟我是新的人。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 11, 2019  7:24 PM">2019年2月11日 19:24</abbr>
+ | <a href="#comment-408127">#</a>
+ | <a href="#comment-text" title="引用韩版女装的这条留言" onclick="return CommentQuote('comment-quote-408127','韩版女装');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-408234" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">让蜡烛代替所有灯</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-408234">
+            <p>什么时候能讲讲jhipster相关的东西呢阮老师</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 15, 2019 10:53 AM">2019年2月15日 10:53</abbr>
+ | <a href="#comment-408234">#</a>
+ | <a href="#comment-text" title="引用让蜡烛代替所有灯的这条留言" onclick="return CommentQuote('comment-quote-408234','让蜡烛代替所有灯');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-408340" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">梁大大</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-408340">
+            <p>阮大神些的教程是我见过最易懂的。没有之一。赞一个！！！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 22, 2019 10:09 AM">2019年2月22日 10:09</abbr>
+ | <a href="#comment-408340">#</a>
+ | <a href="#comment-text" title="引用梁大大的这条留言" onclick="return CommentQuote('comment-quote-408340','梁大大');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-408380" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">廖权名</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-408380">
+            <p>@hengsha：</p>
+
+<p>数据库挂了呢，用户量大需要的空间又是多大。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 22, 2019  3:54 PM">2019年2月22日 15:54</abbr>
+ | <a href="#comment-408380">#</a>
+ | <a href="#comment-text" title="引用廖权名的这条留言" onclick="return CommentQuote('comment-quote-408380','廖权名');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-409739" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">赵庆华</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-409739">
+            <p>JWT的作用是什么?  他就是用来在两个独立系统间建立信任而不需要服务端之间进行通讯. 建立信任之后,你的服务器该做什么session还是要做的. <br />
+A为业务系统<br />
+B为授信系统</p>
+
+<p>认证过程<br />
+A打开B 传入A的标识进行登录授权，B根据A的标识使用对应TOKEN生成JWT<br />
+A获取到JWT，进行校验，匹配的情况下，A生成SESSION返回浏览器前端<br />
+退出登录过程<br />
+A收到退出登录请求，或者关闭浏览器，session失效，下次登录重复此流程<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  6, 2019  9:34 AM">2019年3月 6日 09:34</abbr>
+ | <a href="#comment-409739">#</a>
+ | <a href="#comment-text" title="引用赵庆华的这条留言" onclick="return CommentQuote('comment-quote-409739','赵庆华');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-409786" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">甘训奏</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-409786">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>防止重复登陆，都是通过其他策略，例如：互斥ip控制，互斥设备控制等。token更多的是认证，而不是防重复。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  8, 2019 11:11 AM">2019年3月 8日 11:11</abbr>
+ | <a href="#comment-409786">#</a>
+ | <a href="#comment-text" title="引用甘训奏的这条留言" onclick="return CommentQuote('comment-quote-409786','甘训奏');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410213" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">韩忠康</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410213">
+            <p>"举例来说，A 网站和 B 网站是同一家公司的关联服务。现在要求，用户只要在其中一个网站登录，再访问另一个网站就会自动登录，请问怎么实现？</p>
+
+<p>一种解决方案是 session 数据持久化，写入数据库或别的持久层。各种服务收到请求后，都向持久层请求数据。这种方案的优点是架构清晰，缺点是工程量比较大。另外，持久层万一挂了，就会单点失败。"</p>
+
+<p>个人感觉这种解决方案不是解决单点登录问题。单点登录问题的核心是如何让浏览器拥有目标网站的会话标识。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 29, 2019  9:37 AM">2019年3月29日 09:37</abbr>
+ | <a href="#comment-410213">#</a>
+ | <a href="#comment-text" title="引用韩忠康的这条留言" onclick="return CommentQuote('comment-quote-410213','韩忠康');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410413" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">kevingui</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410413">
+            <p>阮老师的文章从来都是这么通俗易懂，中文教程中最实用的入门内容</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  8, 2019 10:31 AM">2019年4月 8日 10:31</abbr>
+ | <a href="#comment-410413">#</a>
+ | <a href="#comment-text" title="引用kevingui的这条留言" onclick="return CommentQuote('comment-quote-410413','kevingui');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410550" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">游学者</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410550">
+            <p>@hengsha：</p>
+
+<p>你的策略很好，我喜欢。  </p>
+
+<p>但是，试想，如果在你这套机制之上，将无意义的token换成JWT， 在一些需要显示用户昵称、头像的场景（不敏感场景），减少一次数据库查询，又何尝不可呢？ （对于需要使用JWT里面的敏感数据如用户ID时，你就查一下数据库呗。）</p>
+
+<p>那你可能会提出，那我就将我那一串无意义的token换成有意义的昵称、头像，不就好了吗。对于这个问题，你要试想，你没有签名，黑客就能伪造昵称、头像甚至是用户ID，然后提交到服务器上，服务器上也会接收这个昵称、头像甚至是用户ID，那就麻烦大了。</p>
+
+<p>那你可能会提出，那我也搞一个签名，防止黑客伪造不就行了？那你不觉得，你这就是JWT吗，当然你可能不是JSON格式的，那就是AWT、BWT、CWT、XWT，随便啦，其实最终就都是一样的东西了。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2019 11:22 AM">2019年4月13日 11:22</abbr>
+ | <a href="#comment-410550">#</a>
+ | <a href="#comment-text" title="引用游学者的这条留言" onclick="return CommentQuote('comment-quote-410550','游学者');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410585" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">哈哈哈</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410585">
+            <p>JWT跟跨域有个啥的关系。。。。。。。。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 16, 2019  5:25 PM">2019年4月16日 17:25</abbr>
+ | <a href="#comment-410585">#</a>
+ | <a href="#comment-text" title="引用哈哈哈的这条留言" onclick="return CommentQuote('comment-quote-410585','哈哈哈');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410790" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">zbh</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410790">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>网上肯定有类似的东西，但是阮老师讲的言简意赅，且易懂</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 24, 2019  2:53 PM">2019年4月24日 14:53</abbr>
+ | <a href="#comment-410790">#</a>
+ | <a href="#comment-text" title="引用zbh的这条留言" onclick="return CommentQuote('comment-quote-410790','zbh');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-411046" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">someone</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-411046">
+            <p>槽点太多，JWT和跨域有什么关系？？BASE64是加密算法？TOKEN放到url里是因为要满足URL规范所以要urlencode 可是这和BASE64有什么关系？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May  7, 2019  5:21 PM">2019年5月 7日 17:21</abbr>
+ | <a href="#comment-411046">#</a>
+ | <a href="#comment-text" title="引用someone的这条留言" onclick="return CommentQuote('comment-quote-411046','someone');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-411072" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wocacaca</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-411072">
+            <p>有个问题 假如A网站登入后B网站要自动登录，前端把数据存在哪里 不管是cookie 还是 localstorage 如果A和B不在同一个域名下应该是没有办法获取到的吧，比如我把相关token存在A.com的localstorage里，在进入B.com 的时候 localstorage里是没有token的呀？？？？？？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May  9, 2019  2:38 PM">2019年5月 9日 14:38</abbr>
+ | <a href="#comment-411072">#</a>
+ | <a href="#comment-text" title="引用wocacaca的这条留言" onclick="return CommentQuote('comment-quote-411072','wocacaca');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-411423" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">哈哈哈</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-411423">
+            <blockquote>
+<pre>引用ixx的发言：</pre>
+
+<p>JWT 解决的最大问题是跨域，如果你们的业务不涉及跨域完全没有必要用JWTsession 就够用了，如果有跨域需要，那么改造Session实现跨域访问，要比改造JWT实现单用户登陆复杂的多</p>
+
+</blockquote>
+
+<p>扯鸡巴蛋，改造Session怎么就复杂了。服务端不用动，客户端自己添加Cookie就完事了。在Node作为前端服务器，Servlet做后台服务端的情况下。Node自己解析SetCookie:响应头，然后发送第二次访问时，携带Cookie:JESSIONID=xxxx请求头过来不就行了吗。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 28, 2019  3:01 PM">2019年5月28日 15:01</abbr>
+ | <a href="#comment-411423">#</a>
+ | <a href="#comment-text" title="引用哈哈哈的这条留言" onclick="return CommentQuote('comment-quote-411423','哈哈哈');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-411444" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">大大大</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-411444">
+            <p>防止JWT被篡改关键就在最后的签名：当客户端拿着JWT来服务器读取数据时，服务器会对Header和Payload以及秘钥再进行一次签名，和客户端返回的签名进行比对，如果不一致，就是被篡改了。</p>
+
+<p>Header以及Payload都是Base64URL的编码，对应着就可以解码（任何人都可以，因为没有涉及到加密方式）。因此，重要信息不要放在这里面，比如同时存放用户名和密码。</p>
+
+<p>好处我觉得很大啊：第一个，就是服务器的内存中不用和session机制那样存储用户状态数据了，分不式的我还没学到，不乱说；第二个，也不用把token存储在数据库了，如果存数据库，每次去数据库查询开销都不小（redis里存的话，和session区别就不大了，都是占用内存）。</p>
+
+<p>另外，突然想到了如何让账号只能在一台设备登录？我看了各种文章都是登录的时候，在Redis里来保存JWT，客户端每次请求接口判断本次携带的JWT是否和Redis里保存的一直，不一致则登录失效。那如果这样做，感觉JWT的优势就没有了，有没有其他方法可以解决JWT同时只能有一个账号在线的问题？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 29, 2019  5:43 PM">2019年5月29日 17:43</abbr>
+ | <a href="#comment-411444">#</a>
+ | <a href="#comment-text" title="引用大大大的这条留言" onclick="return CommentQuote('comment-quote-411444','大大大');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412129" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">husese</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412129">
+            <p>这个是json web  token 的翻译吧</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 10, 2019 10:09 AM">2019年7月10日 10:09</abbr>
+ | <a href="#comment-412129">#</a>
+ | <a href="#comment-text" title="引用husese的这条留言" onclick="return CommentQuote('comment-quote-412129','husese');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412213" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">欧阳彦祖</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412213">
+            <p>大佬，这篇文我转载了，转载到我的公众号，会标记署名和原文链接的，如果有不便，可以发邮件联系我，我这边马上删除，大家也可以关注一下我的公众号哦，公众号名称：请快点喜欢我。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 15, 2019  4:41 PM">2019年7月15日 16:41</abbr>
+ | <a href="#comment-412213">#</a>
+ | <a href="#comment-text" title="引用欧阳彦祖的这条留言" onclick="return CommentQuote('comment-quote-412213','欧阳彦祖');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412376" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">熊~</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412376">
+            <p>是如何保证同一个用户每次生成的token是不一样的呢？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 24, 2019  8:37 PM">2019年7月24日 20:37</abbr>
+ | <a href="#comment-412376">#</a>
+ | <a href="#comment-text" title="引用熊~的这条留言" onclick="return CommentQuote('comment-quote-412376','熊~');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412459" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Hon</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412459">
+            <p>没有有【有状态】 token 和【无状态】 token 的对比，和相关的应用场景。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 28, 2019  4:47 PM">2019年7月28日 16:47</abbr>
+ | <a href="#comment-412459">#</a>
+ | <a href="#comment-text" title="引用Hon的这条留言" onclick="return CommentQuote('comment-quote-412459','Hon');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412617" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">jackletter</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412617">
+            <p>jwt的最大有点应该是应用于分布式系统和减轻服务器存储状态信息的开销<br />
+不过缺点也很明显：<br />
+    1. 服务器无法控制token失效<br />
+    2. token到期失效后的自动刷新<br />
+解决方案：<br />
+    一 token的到期后失效的问题可以使后台服务器针对每次请求都刷新过期时间（即使有是服务器集群也没关系，拿到刷新后的token在前端直接覆盖就行）。<br />
+    二 服务器控制token失效这个问题必须在后台记录已经颁发的token，但一般这种操作是允许有延迟的并且频率不是太高，所以并发的问题不是太严重。<br />
+详细的解决方案会在我的博客中介绍（正准备写。。。）https://blog.csdn.net/u010476739/article/details/98757471</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  7, 2019  4:25 PM">2019年8月 7日 16:25</abbr>
+ | <a href="#comment-412617">#</a>
+ | <a href="#comment-text" title="引用jackletter的这条留言" onclick="return CommentQuote('comment-quote-412617','jackletter');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412799" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">tmyyss</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412799">
+            <p>其实JWT是可以控制token的失效的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 18, 2019 10:27 AM">2019年8月18日 10:27</abbr>
+ | <a href="#comment-412799">#</a>
+ | <a href="#comment-text" title="引用tmyyss的这条留言" onclick="return CommentQuote('comment-quote-412799','tmyyss');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412800" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">tmyyss</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412800">
+            <p>可以通过控制密钥的方式来实现token的失效</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 18, 2019  2:06 PM">2019年8月18日 14:06</abbr>
+ | <a href="#comment-412800">#</a>
+ | <a href="#comment-text" title="引用tmyyss的这条留言" onclick="return CommentQuote('comment-quote-412800','tmyyss');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412845" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">小星星</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412845">
+            <p>关于jwt 过期的问题。很多人说 可以在服务端记录 点什么东西来实现。<br />
+都这样做了。那还叫jwt吗，， 就和 原来的session 本质上没区别了。<br />
+jwt的核心就是 服务端不存东西。<br />
+传统的session。自己实现的话，那一样可以 服务端只存 sessionid+过期时间<br />
+然后数据加密给客户端。。 </p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 20, 2019 11:42 AM">2019年8月20日 11:42</abbr>
+ | <a href="#comment-412845">#</a>
+ | <a href="#comment-text" title="引用小星星的这条留言" onclick="return CommentQuote('comment-quote-412845','小星星');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413037" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Arcry</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413037">
+            <p>A访问服务器时返回了token，B拿此token访问是不是能获取A的权限呢？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 28, 2019  5:49 PM">2019年8月28日 17:49</abbr>
+ | <a href="#comment-413037">#</a>
+ | <a href="#comment-text" title="引用Arcry的这条留言" onclick="return CommentQuote('comment-quote-413037','Arcry');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413102" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">zicjin</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413102">
+            <blockquote>
+<pre>引用韩版女装的发言：</pre>
+
+<p></p>
+
+<p>在数据库里或服务端存储机构保存用户等陆状态，如果登录状态发生变化，则重新签发一个包含登录状态码的JWT给客户端，原来的A设备因为登录状态码对不上号而被退出，A设备退出后，如果再次登录时再次重新签一个包含登录状态码的JWT给客户端，这样A手机重新登录后，B手机因为登录状态码对不上而被退出。</p>
+
+<p>注意下：每次使用登录功能登录时登录时，客户端向服务端提交登录数据时，会连同发送重新设定登录状态码的指令，登录状态码为随机字符串。</p>
+
+<p>这是我的想法，哈俣，大神不要喷，毕竟我是新的人。</p>
+
+</blockquote>
+
+<p>完全没有理解JWT的意义，你这样表示所有请求全部都要去检查某个单点数据库里的所谓“登陆状态码”，那等于就是一个session。没有哪个数据库吃得消，必须用分布式内存存储。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 30, 2019  2:24 PM">2019年8月30日 14:24</abbr>
+ | <a href="#comment-413102">#</a>
+ | <a href="#comment-text" title="引用zicjin的这条留言" onclick="return CommentQuote('comment-quote-413102','zicjin');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413484" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">胡庆杰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413484">
+            <p>cookie是可以跨域的，CSRF正是利用了这一点<br />
+这说明浏览器自动收发cookie是有利有弊的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 15, 2019 12:02 PM">2019年9月15日 12:02</abbr>
+ | <a href="#comment-413484">#</a>
+ | <a href="#comment-text" title="引用胡庆杰的这条留言" onclick="return CommentQuote('comment-quote-413484','胡庆杰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413954" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">mecode</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413954">
+            <p>有人能解答下下面????这三个问题吗<br />
+受众（audience） 具体指的是什么（最好举例说明）？<br />
+主题（subject）具体指的是什么（最好举例说明）？<br />
+subject 与 audience 有什么区别？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 12, 2019  3:58 PM">2019年10月12日 15:58</abbr>
+ | <a href="#comment-413954">#</a>
+ | <a href="#comment-text" title="引用mecode的这条留言" onclick="return CommentQuote('comment-quote-413954','mecode');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413956" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">六月和饭</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413956">
+            <p>写得不错，比我刚看的另一篇文章好理解些</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 12, 2019  4:44 PM">2019年10月12日 16:44</abbr>
+ | <a href="#comment-413956">#</a>
+ | <a href="#comment-text" title="引用六月和饭的这条留言" onclick="return CommentQuote('comment-quote-413956','六月和饭');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-414380" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">celine</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-414380">
+            <blockquote>
+<pre>引用WalkingSun的发言：</pre>
+
+<p></p>
+
+<p>签名可以加时间戳或这其他随机参与加密，一旦登录就更新签名，之前的签名失效，不会出现多个在线啦</p>
+
+</blockquote>
+
+<p>如果签名里加入了时间戳或者其他随机参数，那服务器端还得持久化每个用户的签名密钥，也就失去了jwt后端不需要存东西的优点了吧。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November  6, 2019  3:04 PM">2019年11月 6日 15:04</abbr>
+ | <a href="#comment-414380">#</a>
+ | <a href="#comment-text" title="引用celine的这条留言" onclick="return CommentQuote('comment-quote-414380','celine');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-414711" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ZHZ</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-414711">
+            <p>如何做到每次请求都会自动延长过期时间。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 22, 2019 12:33 PM">2019年11月22日 12:33</abbr>
+ | <a href="#comment-414711">#</a>
+ | <a href="#comment-text" title="引用ZHZ的这条留言" onclick="return CommentQuote('comment-quote-414711','ZHZ');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-414784" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">zsran</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-414784">
+            <p>简单明了  竟然看懂了 </p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 27, 2019 11:49 AM">2019年11月27日 11:49</abbr>
+ | <a href="#comment-414784">#</a>
+ | <a href="#comment-text" title="引用zsran的这条留言" onclick="return CommentQuote('comment-quote-414784','zsran');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415163" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">kantappa</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415163">
+            <p>高手啊，写得通俗易懂</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 16, 2019  2:21 PM">2019年12月16日 14:21</abbr>
+ | <a href="#comment-415163">#</a>
+ | <a href="#comment-text" title="引用kantappa的这条留言" onclick="return CommentQuote('comment-quote-415163','kantappa');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415319" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Hsing</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415319">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>尽管一大把，看了几篇，但是我认为这篇是相对质量高的一篇</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 20, 2019 10:16 PM">2019年12月20日 22:16</abbr>
+ | <a href="#comment-415319">#</a>
+ | <a href="#comment-text" title="引用Hsing的这条留言" onclick="return CommentQuote('comment-quote-415319','Hsing');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415708" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wztscau</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415708">
+            <blockquote>
+<pre>引用hooyes的发言：</pre>
+
+<p>感觉缺点大于优点。</p>
+
+</blockquote>
+
+<p>我也觉得，始终客户端保存登录信息不可靠，也不够强大。还是老的session有用</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  6, 2020  5:55 PM">2020年1月 6日 17:55</abbr>
+ | <a href="#comment-415708">#</a>
+ | <a href="#comment-text" title="引用wztscau的这条留言" onclick="return CommentQuote('comment-quote-415708','wztscau');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415715" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wzts</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415715">
+            <p>还有你不会的吗？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  7, 2020  2:05 PM">2020年1月 7日 14:05</abbr>
+ | <a href="#comment-415715">#</a>
+ | <a href="#comment-text" title="引用wzts的这条留言" onclick="return CommentQuote('comment-quote-415715','wzts');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415964" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Qingz</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415964">
+            <p>不错，比网上大部分的都详细很多。<br />
+一看就懂，不废话</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 18, 2020  4:19 PM">2020年1月18日 16:19</abbr>
+ | <a href="#comment-415964">#</a>
+ | <a href="#comment-text" title="引用Qingz的这条留言" onclick="return CommentQuote('comment-quote-415964','Qingz');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-416005" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">KSM</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-416005">
+            <p>感觉你把“相同账号异地登录相斥”和“多点登录混淆”？</p>
+
+<p>请再次查看使用JWT的场景：A 网站和 B 网站是同一家公司的关联服务。现在要求，用户只要在其中一个网站登录，再访问另一个网站就会自动登录；</p>
+
+<p>你的场景：“做到B登录后让A过期”，不适合用JWT吧？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 21, 2020 11:36 AM">2020年1月21日 11:36</abbr>
+ | <a href="#comment-416005">#</a>
+ | <a href="#comment-text" title="引用KSM的这条留言" onclick="return CommentQuote('comment-quote-416005','KSM');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417601" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Trinyoung</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417601">
+            <p>如果照阮老师这么写，通过jwt除了加密，就和cookie没有任何区别了。如果把用户数据转成token，保存在服务端，每次请求携带token，如果用户信息数据比较大，那么将严重占用网络带宽。另外把用户数据放在客户端，那么根本就防止不了csrf 攻击。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2020  5:31 PM">2020年4月 9日 17:31</abbr>
+ | <a href="#comment-417601">#</a>
+ | <a href="#comment-text" title="引用Trinyoung的这条留言" onclick="return CommentQuote('comment-quote-417601','Trinyoung');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417702" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ct29</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417702">
+            <blockquote>
+<pre>引用优惠券的发言：</pre>
+
+<p>（4）JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+
+<p>也就是说一个用户在手机A中登录了，然后又在手机B中登录，在过期之前手机A和B都可以登录，无法做到B登录后让A过期，如果要做到这点，就必须让服务器维护一个清单（记录该账号是否已经签发token），这样又回到session的老路了</p>
+
+<p>以上就是我们公司后端拒绝使用jwt的理由，我该怎么驳倒他？</p>
+
+</blockquote>
+
+<p>可以在payload中记录id，在签发token的时候后端记录id和token的map，验证token的时候判断是否后端有记录即可</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2020  3:24 PM">2020年4月13日 15:24</abbr>
+ | <a href="#comment-417702">#</a>
+ | <a href="#comment-text" title="引用ct29的这条留言" onclick="return CommentQuote('comment-quote-417702','ct29');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417704" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">大不点</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417704">
+            <p>非常好的博文，已经入门，跟我公司内部说的jwt加密一毛一样呀</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2020  5:22 PM">2020年4月13日 17:22</abbr>
+ | <a href="#comment-417704">#</a>
+ | <a href="#comment-text" title="引用大不点的这条留言" onclick="return CommentQuote('comment-quote-417704','大不点');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417741" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">儒斌</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417741">
+            <p>HMACSHA256(<br />
+  base64UrlEncode(header) + "." +<br />
+  base64UrlEncode(payload),<br />
+  secret)</p>
+
+<p>为什么还把秘钥生成签名放在token里， 服务端已经保存了secret，为什么还把他传到前端增加被暴露的风险？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 16, 2020 11:02 PM">2020年4月16日 23:02</abbr>
+ | <a href="#comment-417741">#</a>
+ | <a href="#comment-text" title="引用儒斌的这条留言" onclick="return CommentQuote('comment-quote-417741','儒斌');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417820" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">deping</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417820">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>关键就是阮一峰的博客就是质量的保证。别的地方我未必相信正确性。再说有个集中的地方不好吗？本来就是这些内容，你有期待说些什么？怎么不见你对互联网知识做这样的贡献？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 18, 2020  6:10 PM">2020年4月18日 18:10</abbr>
+ | <a href="#comment-417820">#</a>
+ | <a href="#comment-text" title="引用deping的这条留言" onclick="return CommentQuote('comment-quote-417820','deping');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-417872" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hec9527</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-417872">
+            <blockquote>
+<pre>引用ct29的发言：</pre>
+
+<p>可以在payload中记录id，在签发token的时候后端记录id和token的map，验证token的时候判断是否后端有记录即可</p>
+
+</blockquote>
+
+<p>可以在payload中多增加几个属性，用于对用户进行分类，然后服务器只需要维护一个当前使用的分类列表， 不在列表中的403， 优点就是可以初步筛选token，缺点就是没办法删除指定用户的token</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 21, 2020 10:24 AM">2020年4月21日 10:24</abbr>
+ | <a href="#comment-417872">#</a>
+ | <a href="#comment-text" title="引用hec9527的这条留言" onclick="return CommentQuote('comment-quote-417872','hec9527');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-418059" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Bob Linus</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-418059">
+            <p>3.3节的过程不应该叫签名吧，只是用了消息验证码。这里客户端没有密钥，不用解密，解密还是下次发给服务器时进行的。也就是说，自己的消息验证码由自己验证，目的只是防止JWT传给客户端后被篡改。理解对不对？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 29, 2020  9:11 AM">2020年4月29日 09:11</abbr>
+ | <a href="#comment-418059">#</a>
+ | <a href="#comment-text" title="引用Bob Linus的这条留言" onclick="return CommentQuote('comment-quote-418059','Bob Linus');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-418823" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">vipcxj</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-418823">
+            <p>一开始有点理解错了，以为jwt是客户端生成的，后来想想不合理。现在的理解如下，客户端用传统方式登陆一个服务端，用户名密码手机什么的都行，然后服务端用自己不公开密钥签名一个带用户身份信息的jwt字符串发给客户端，之后客户端自然就能用这个jwt令牌来向服务端表明自己的身份。至于如何实现单点登录，多个服务器应该会共享密钥，这样就能验证令牌真伪，然后各个服务端可以用jwt中的用户身份信息来判断是否可以登陆自己的服务器，这样就实现了单点登录。因为每个服务端共用一个密钥，只要约定相同格式的jwt，一个jwt令牌自然就能各个服务端通用了。对于限制重复登陆，一个方法是将客户端ip写在jwt里，这样ip不对不让登陆。难题应该在于不一定能准确获得用户ip，不过短时间内，就算是假的ip，也不会老是变吧，至少不会出现登陆一会又不能登陆的情况。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 31, 2020  9:11 PM">2020年5月31日 21:11</abbr>
+ | <a href="#comment-418823">#</a>
+ | <a href="#comment-text" title="引用vipcxj的这条留言" onclick="return CommentQuote('comment-quote-418823','vipcxj');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-418824" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">vipcxj</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-418824">
+            <blockquote>
+<pre>引用儒斌的发言：</pre>
+
+<p>HMACSHA256(<br />
+base64UrlEncode(header) + "." +<br />
+base64UrlEncode(payload),<br />
+secret)</p>
+
+<p>为什么还把秘钥生成签名放在token里， 服务端已经保存了secret，为什么还把他传到前端增加被暴露的风险？</p>
+
+</blockquote>
+
+<p>并不是放在token里，而是作为生成签名的参数，生成后的签名里面是找不到密钥的影子的。加密领域递归调用是很常见的。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 31, 2020  9:13 PM">2020年5月31日 21:13</abbr>
+ | <a href="#comment-418824">#</a>
+ | <a href="#comment-text" title="引用vipcxj的这条留言" onclick="return CommentQuote('comment-quote-418824','vipcxj');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-419117" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ganoatri</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-419117">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>光会喷的人网上也是一抓一大把。觉得没质量不如你推荐个更好的？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 10, 2020  8:25 AM">2020年6月10日 08:25</abbr>
+ | <a href="#comment-419117">#</a>
+ | <a href="#comment-text" title="引用ganoatri的这条留言" onclick="return CommentQuote('comment-quote-419117','ganoatri');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-419916" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">麦昆</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-419916">
+            <p>为什么要把服务端使用的加密方式alg声明在JWT的header中呢？虽然密钥在服务端，但是也同样增加了暴露和破解的风险呀</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July  1, 2020  2:21 PM">2020年7月 1日 14:21</abbr>
+ | <a href="#comment-419916">#</a>
+ | <a href="#comment-text" title="引用麦昆的这条留言" onclick="return CommentQuote('comment-quote-419916','麦昆');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-420471" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">你好世界</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-420471">
+            <p>最后的总结不错，看懂了。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 18, 2020  3:07 PM">2020年7月18日 15:07</abbr>
+ | <a href="#comment-420471">#</a>
+ | <a href="#comment-text" title="引用你好世界的这条留言" onclick="return CommentQuote('comment-quote-420471','你好世界');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-423308" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">龚欣</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-423308">
+            <p>阮老师，token放在cookie里面，除了不能跨域，还有不能抵抗csrf攻击吧？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 18, 2020  4:29 PM">2020年10月18日 16:29</abbr>
+ | <a href="#comment-423308">#</a>
+ | <a href="#comment-text" title="引用龚欣的这条留言" onclick="return CommentQuote('comment-quote-423308','龚欣');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-423309" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">龚欣</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-423309">
+            <blockquote>
+<pre>引用Trinyoung的发言：</pre>
+
+<p>如果照阮老师这么写，通过jwt除了加密，就和cookie没有任何区别了。如果把用户数据转成token，保存在服务端，每次请求携带token，如果用户信息数据比较大，那么将严重占用网络带宽。另外把用户数据放在客户端，那么根本就防止不了csrf 攻击。</p>
+
+</blockquote>
+
+<p>这个问题我也没想明白，token如果不放在cookie，是不是就可以抵抗csrf。加上jwt有加密过，所以即使存在客户端，别人也不能轻易获取到。不知道我理解的对不对？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 18, 2020  4:34 PM">2020年10月18日 16:34</abbr>
+ | <a href="#comment-423309">#</a>
+ | <a href="#comment-text" title="引用龚欣的这条留言" onclick="return CommentQuote('comment-quote-423309','龚欣');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-423737" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">海门</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-423737">
+            <p>有时候你觉得简单，是因为别人写的清晰明了，而不是自己多厉害。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 12, 2020 12:59 PM">2020年11月12日 12:59</abbr>
+ | <a href="#comment-423737">#</a>
+ | <a href="#comment-text" title="引用海门的这条留言" onclick="return CommentQuote('comment-quote-423737','海门');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-424205" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">在线等</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-424205">
+            <p>jwt中的jti的用法给讲讲呗，尤其是防重放攻击，如何做到的？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December  8, 2020  6:04 PM">2020年12月 8日 18:04</abbr>
+ | <a href="#comment-424205">#</a>
+ | <a href="#comment-text" title="引用在线等的这条留言" onclick="return CommentQuote('comment-quote-424205','在线等');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-424378" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Petty Fox</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-424378">
+            <p>说真的这篇文章至少从客观层面简明、准确的阐述了JWT协议以及特点。<br />
+写的很棒。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 18, 2020 12:40 PM">2020年12月18日 12:40</abbr>
+ | <a href="#comment-424378">#</a>
+ | <a href="#comment-text" title="引用Petty Fox的这条留言" onclick="return CommentQuote('comment-quote-424378','Petty Fox');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-424379" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Petty Fox</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-424379">
+            <blockquote>
+<pre>引用麦昆的发言：</pre>
+
+<p>为什么要把服务端使用的加密方式alg声明在JWT的header中呢？虽然密钥在服务端，但是也同样增加了暴露和破解的风险呀</p>
+
+</blockquote>
+
+<p>1，如果使用的签名算法本身已经有风险，那么不管你告不告诉攻击者它都能破解，因此透露算法就好似再说，签名协议在这里，有本事来破解。我们所认知的签名算法不都是公开的吗，所以破解的难点不在于是否知道是哪个签名算法。</p>
+
+<p>2，在协议头声明算法策略，能保证签名算法的升级、共享、兼容的特性。</p>
+
+<p>3，真正坚固的算法策略，是暴露该暴露的，仅守护自己坚决不能泄露的“密钥”。就如加密算法RSA，透明的加密流程，满世界跑的公钥，但就是不可泄露私钥。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 18, 2020 12:54 PM">2020年12月18日 12:54</abbr>
+ | <a href="#comment-424379">#</a>
+ | <a href="#comment-text" title="引用Petty Fox的这条留言" onclick="return CommentQuote('comment-quote-424379','Petty Fox');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-424433" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">myhlcb</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-424433">
+            <p>阮老师的文章牛逼的地方就是用最简练的语言把要说明的对象表达的很清楚<br />
+网上很多文章或许更详细，但是伴随着的是裹脚布一样的废话<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 21, 2020  6:17 PM">2020年12月21日 18:17</abbr>
+ | <a href="#comment-424433">#</a>
+ | <a href="#comment-text" title="引用myhlcb的这条留言" onclick="return CommentQuote('comment-quote-424433','myhlcb');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-424841" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">AlbertS</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-424841">
+            <blockquote>
+<pre>引用tmyyss的发言：</pre>
+
+<p>其实JWT是可以控制token的失效的</p>
+
+</blockquote>
+
+<p>请问这个怎么处理，还有token刷新要怎么实现呢？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  7, 2021  4:06 PM">2021年1月 7日 16:06</abbr>
+ | <a href="#comment-424841">#</a>
+ | <a href="#comment-text" title="引用AlbertS的这条留言" onclick="return CommentQuote('comment-quote-424841','AlbertS');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-425500" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">小白白</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-425500">
+            <p>谢谢博主的文章，支持！感谢分享知识！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 18, 2021  9:59 AM">2021年2月18日 09:59</abbr>
+ | <a href="#comment-425500">#</a>
+ | <a href="#comment-text" title="引用小白白的这条留言" onclick="return CommentQuote('comment-quote-425500','小白白');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-425782" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">磨刀匠</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-425782">
+            <p>JWT token最大的问题，不在于安全，而是在于token不能携带太多内容，否则每次请求包太大影响性能，内容少就必然导致token验证通过后，还是需要根据token内容查缓存的用户相关信息，这就回到了session分布式缓存一样的问题，采用token跨域到另外的服务器后，仍然绕不过去查询登录用户缓存数据问题</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  5, 2021  4:32 PM">2021年3月 5日 16:32</abbr>
+ | <a href="#comment-425782">#</a>
+ | <a href="#comment-text" title="引用磨刀匠的这条留言" onclick="return CommentQuote('comment-quote-425782','磨刀匠');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-425990" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">多肉动物</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-425990">
+            <p>@优惠券：</p>
+
+<p>老兄，我也是苦恼这个问题，你后来成功干翻了他没有？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 18, 2021  9:48 AM">2021年3月18日 09:48</abbr>
+ | <a href="#comment-425990">#</a>
+ | <a href="#comment-text" title="引用多肉动物的这条留言" onclick="return CommentQuote('comment-quote-425990','多肉动物');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426013" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">张小牛</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426013">
+            <p>算出签名以后，把 Header、Payload、Signature 三个部分拼成一个字符串，每个部分之间用"点"（.）分隔，就可以返回给用户。</p>
+
+<p>这里需要说明一下，算出的Signature也要经过Base64URL处理，处理后再和其他两个字符串拼接，才是对的。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 19, 2021  9:57 AM">2021年3月19日 09:57</abbr>
+ | <a href="#comment-426013">#</a>
+ | <a href="#comment-text" title="引用张小牛的这条留言" onclick="return CommentQuote('comment-quote-426013','张小牛');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426069" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">江无花</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426069">
+            <p>第三遍刷这篇文章了，看到了很多以为没有关注点，阮老师的文章就是耐看</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 24, 2021  1:38 AM">2021年3月24日 01:38</abbr>
+ | <a href="#comment-426069">#</a>
+ | <a href="#comment-text" title="引用江无花的这条留言" onclick="return CommentQuote('comment-quote-426069','江无花');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426135" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">士大夫给</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426135">
+            <p>入门说没质量？？？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 27, 2021  7:48 PM">2021年3月27日 19:48</abbr>
+ | <a href="#comment-426135">#</a>
+ | <a href="#comment-text" title="引用士大夫给的这条留言" onclick="return CommentQuote('comment-quote-426135','士大夫给');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426310" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">请</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426310">
+            <p>有啥是峰子不会的?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2021  3:50 PM">2021年4月 9日 15:50</abbr>
+ | <a href="#comment-426310">#</a>
+ | <a href="#comment-text" title="引用请的这条留言" onclick="return CommentQuote('comment-quote-426310','请');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426352" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">PETE</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426352">
+            <p>我不太懂。既然每次请求都会传送token，而且token中包括了secret。如果被劫取，header，payload又都是明文加密，为什么会安全呢。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2021  5:09 AM">2021年4月13日 05:09</abbr>
+ | <a href="#comment-426352">#</a>
+ | <a href="#comment-text" title="引用PETE的这条留言" onclick="return CommentQuote('comment-quote-426352','PETE');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-426431" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">aaaa</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-426431">
+            <blockquote>
+<pre>引用PETE的发言：</pre>
+
+<p>我不太懂。既然每次请求都会传送token，而且token中包括了secret。如果被劫取，header，payload又都是明文加密，为什么会安全呢。</p>
+
+</blockquote>
+
+<p>secret是生成签名时所使用的盐值，对于生成的结果，你是不可能反推出secret的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 17, 2021  1:43 PM">2021年4月17日 13:43</abbr>
+ | <a href="#comment-426431">#</a>
+ | <a href="#comment-text" title="引用aaaa的这条留言" onclick="return CommentQuote('comment-quote-426431','aaaa');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-427155" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">maooar</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-427155">
+            <p>JWT不应该保存到后端，缓存，数据库，都不行！<br />
+怎么在后端让JWT失效？评论里有说在生成JWT时候保存到redis,mysql...,然后每次请求从redis，mysql查找，找不到就算失效。这个想法有问题，拿着无状态的JWT却用session的思路实现验证逻辑，不觉得搞笑吗？<br />
+无状态就是后端不保存任何JWT信息，只负责签发和验证。脱离了这一条就不叫无状态，应该用session类似机制更合适。<br />
+那如果让已经签发的JWT作废，出现这个需求就说明你们项目不适合JWT或者设计思路不对。对于敏感操作应该再次鉴权验证用户密码之类的实现。<br />
+每次看到把JWT保存到后端就忍不住插一嘴，你们用错了！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June  1, 2021  5:21 PM">2021年6月 1日 17:21</abbr>
+ | <a href="#comment-427155">#</a>
+ | <a href="#comment-text" title="引用maooar的这条留言" onclick="return CommentQuote('comment-quote-427155','maooar');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-427315" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">拖地僧</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-427315">
+            <p>随便说几点：</p>
+
+<p>1.关于应用场景，个人觉得除了站点自已的登录以外，更多的应用场景是第三方授权登录。JWT可以有效减少对第三方站点账号系统的查询。</p>
+
+<p>2.关于让TOKEN失效的问题，个人觉得可以参考SSL证书吊销的办法，在载荷中添加一个查询吊销TOKEN ID的URL，维护一个已吊销TOKEN表就行，由于TOKEN是有过期时间的，已吊销TOKEN表只需要维护在有效期内的已吊销TOKEN ID，理论上这只会是一个很小的表，不会产生很大的性能消耗。</p>
+
+<p>3.关于签名，单纯地HmacSHA256可能不是一个很好的方案，建议加上AES加密，以避免共享密钥带来的安全问题。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June  8, 2021  5:28 PM">2021年6月 8日 17:28</abbr>
+ | <a href="#comment-427315">#</a>
+ | <a href="#comment-text" title="引用拖地僧的这条留言" onclick="return CommentQuote('comment-quote-427315','拖地僧');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-427506" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">拖地僧</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-427506">
+            <p>说错了，是RSA或者其他非对称加密。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 22, 2021  3:27 PM">2021年6月22日 15:27</abbr>
+ | <a href="#comment-427506">#</a>
+ | <a href="#comment-text" title="引用拖地僧的这条留言" onclick="return CommentQuote('comment-quote-427506','拖地僧');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-428676" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">经验分享</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-428676">
+            <p>写的很好。峰哥如果能将前端AJAX携带JWT请求后台、后台验证前端传递过来的JWT的过程描述一下就更好啦~</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  9, 2021  5:16 PM">2021年8月 9日 17:16</abbr>
+ | <a href="#comment-428676">#</a>
+ | <a href="#comment-text" title="引用经验分享的这条留言" onclick="return CommentQuote('comment-quote-428676','经验分享');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429034" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">abc</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429034">
+            <p>jwt是一个token的规范. 很多人把jwt当然认证系统了.</p>
+
+<p><br />
+jwt只提供token的创建和token的验证(这个验证并不是什么认证,而是对jwt本身是否符合rfc规范的基本验证).</p>
+
+<p>首先你要有一个认证系统,再结合jwt.</p>
+
+<p>而不是jwt代替认证系统.</p>
+
+<p>RFC明确说jwt用于OpenID和OAuth,而不是代替.</p>
+
+<p>jwt比自定义token好处就是安全,可以防止客户端破解token生成规则.</p>
+
+<p><br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 25, 2021  8:52 PM">2021年8月25日 20:52</abbr>
+ | <a href="#comment-429034">#</a>
+ | <a href="#comment-text" title="引用abc的这条留言" onclick="return CommentQuote('comment-quote-429034','abc');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429154" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">AllenLeung</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429154">
+            <p>@mm：</p>
+
+<p>这个隐喻好啊！<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 28, 2021  3:14 PM">2021年8月28日 15:14</abbr>
+ | <a href="#comment-429154">#</a>
+ | <a href="#comment-text" title="引用AllenLeung的这条留言" onclick="return CommentQuote('comment-quote-429154','AllenLeung');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429167" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">李坤</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429167">
+            <blockquote>
+<pre>引用anonym的发言：</pre>
+
+<p>不引入数据库支持的话这个的确没法实现。最好的方案是维护一张基于 jti (JWT ID) 的表，将jti和user_id关联起来，生成新的jwt时将该user_id旧的jwt标记为失效就好，具体场景还得看你们的具体业务逻辑。</p>
+
+</blockquote>
+
+<p>整合redis。世界万物很难做到完美，根据需要做一些取舍才是正道。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 29, 2021  8:24 PM">2021年8月29日 20:24</abbr>
+ | <a href="#comment-429167">#</a>
+ | <a href="#comment-text" title="引用李坤的这条留言" onclick="return CommentQuote('comment-quote-429167','李坤');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429389" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">南</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429389">
+            <p>搜了幾篇文章，這篇最清楚，簡單明瞭，一看就懂。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  8, 2021  8:53 PM">2021年9月 8日 20:53</abbr>
+ | <a href="#comment-429389">#</a>
+ | <a href="#comment-text" title="引用南的这条留言" onclick="return CommentQuote('comment-quote-429389','南');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429406" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">李二狗</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429406">
+            <p>@优惠券：</p>
+
+<p>可以不用服务器维护清单呀，B登录时可以通过长链接方式直接让A下线，可以使用极光推送来配合</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  9, 2021  3:00 PM">2021年9月 9日 15:00</abbr>
+ | <a href="#comment-429406">#</a>
+ | <a href="#comment-text" title="引用李二狗的这条留言" onclick="return CommentQuote('comment-quote-429406','李二狗');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429544" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">莎米尔</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429544">
+            <p>讲得很好，但是有一点不明白。特点三说（JWT 不仅可以用于认证，也可以用于交换信息），但是 HMACSHA256 明明是散列的，不是签名，请问如何 ”交换信息“ ？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 13, 2021  8:05 PM">2021年9月13日 20:05</abbr>
+ | <a href="#comment-429544">#</a>
+ | <a href="#comment-text" title="引用莎米尔的这条留言" onclick="return CommentQuote('comment-quote-429544','莎米尔');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429695" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">kamon</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429695">
+            <blockquote>
+<pre>引用李二狗的发言：</pre>
+
+<p>@优惠券：</p>
+
+<p>可以不用服务器维护清单呀，B登录时可以通过长链接方式直接让A下线，可以使用极光推送来配合</p>
+
+</blockquote>
+
+<p>每个人登录都占用一个长链接不是占用了服务器的TCP线程？</p>
+
+<p>以其用长连接不如用redis或memcache来记录JWT信息，每次请求获取进行校验，账号在其它地方登录了会替换redis记录的数据，之前的请求校验不匹配就会失效。<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 22, 2021  7:23 PM">2021年9月22日 19:23</abbr>
+ | <a href="#comment-429695">#</a>
+ | <a href="#comment-text" title="引用kamon的这条留言" onclick="return CommentQuote('comment-quote-429695','kamon');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429696" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">kamon</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429696">
+            <p>我觉得文章介绍JWT只是一个方式，一种解决方案，不一定要按这个标准(Header.Payload.Signature)，完全可以按自己的加密方式来，按自己业务来调整。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 22, 2021  7:35 PM">2021年9月22日 19:35</abbr>
+ | <a href="#comment-429696">#</a>
+ | <a href="#comment-text" title="引用kamon的这条留言" onclick="return CommentQuote('comment-quote-429696','kamon');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-429867" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">alien</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-429867">
+            <blockquote>
+<pre>引用wangx的发言：</pre>
+
+<p>请问payload是什么作用，为什么出现2遍（payload、signature）。<br />
+只有加密的不行吗？</p>
+
+</blockquote>
+
+<p>同样困惑</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October  2, 2021 11:02 PM">2021年10月 2日 23:02</abbr>
+ | <a href="#comment-429867">#</a>
+ | <a href="#comment-text" title="引用alien的这条留言" onclick="return CommentQuote('comment-quote-429867','alien');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-430246" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Kart</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-430246">
+            <blockquote>
+<pre>引用mecode的发言：</pre>
+
+<p>有人能解答下下面????这三个问题吗<br />
+受众（audience） 具体指的是什么（最好举例说明）？<br />
+主题（subject）具体指的是什么（最好举例说明）？<br />
+subject 与 audience 有什么区别？</p>
+
+</blockquote>
+
+<p>sub(subject)即用户ID，如登录账号、手机号、邮箱地址等。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 26, 2021  9:55 PM">2021年10月26日 21:55</abbr>
+ | <a href="#comment-430246">#</a>
+ | <a href="#comment-text" title="引用Kart的这条留言" onclick="return CommentQuote('comment-quote-430246','Kart');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-430868" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">smile的微笑</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-430868">
+            <blockquote>
+<pre>引用alien的发言：</pre>
+
+<p>同样困惑</p>
+
+</blockquote>
+
+<p>payload里面记录了签发时间、生效时间、有效时间，以及自定义数据，`JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。`</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 27, 2021  8:17 PM">2021年11月27日 20:17</abbr>
+ | <a href="#comment-430868">#</a>
+ | <a href="#comment-text" title="引用smile的微笑的这条留言" onclick="return CommentQuote('comment-quote-430868','smile的微笑');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-431830" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">瘾瘾Org</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-431830">
+            <blockquote>
+<pre>引用vipcxj的发言：</pre>
+
+<p>一开始有点理解错了，以为jwt是客户端生成的，后来想想不合理。现在的理解如下，客户端用传统方式登陆一个服务端，用户名密码手机什么的都行，然后服务端用自己不公开密钥签名一个带用户身份信息的jwt字符串发给客户端，之后客户端自然就能用这个jwt令牌来向服务端表明自己的身份。至于如何实现单点登录，多个服务器应该会共享密钥，这样就能验证令牌真伪，然后各个服务端可以用jwt中的用户身份信息来判断是否可以登陆自己的服务器，这样就实现了单点登录。因为每个服务端共用一个密钥，只要约定相同格式的jwt，一个jwt令牌自然就能各个服务端通用了。对于限制重复登陆，一个方法是将客户端ip写在jwt里，这样ip不对不让登陆。难题应该在于不一定能准确获得用户ip，不过短时间内，就算是假的ip，也不会老是变吧，至少不会出现登陆一会又不能登陆的情况。</p>
+
+</blockquote>
+
+<p>他说的重复登录是指不同设备或不同浏览器登录后需要T掉已经在线的另一台设备的登录状态。<br />
+相当于玩网游不能重复登录。<br />
+这个如果仅使用session的话只用随便配置下就能轻松实现，</p>
+
+<p>但是如果使用jwt无视session是否属于同一个就无法实现。</p>
+
+<p>解决方案很多，<br />
+要不就使用session然后解决跨域和分布式的问题，<br />
+      用ip区分session或者token存session id<br />
+要不就jwt持久化或存redis实现session的相关功能。<br />
+      jwt存数据库唯一标识值或限制最大数量</p>
+
+<p>不过jwt甚至是大部分token的实现方式本来就是无状态，他们的产生，是先有需求<br />
+后有方式。jwt持久化或存redis实现session的相关功能其实是返祖现象（但不一定不是好方法）</p>
+
+<p><br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 18, 2022  3:24 PM">2022年1月18日 15:24</abbr>
+ | <a href="#comment-431830">#</a>
+ | <a href="#comment-text" title="引用瘾瘾Org的这条留言" onclick="return CommentQuote('comment-quote-431830','瘾瘾Org');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-432733" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">KE</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-432733">
+            <p>jwt的token自动续约这个也很关键，能讲讲这部分内容吗</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 21, 2022 11:16 AM">2022年3月21日 11:16</abbr>
+ | <a href="#comment-432733">#</a>
+ | <a href="#comment-text" title="引用KE的这条留言" onclick="return CommentQuote('comment-quote-432733','KE');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-433797" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Joe</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-433797">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>把复杂的东西简单明了的写出来是一个非常厉害的能力，<br />
+别把这种能力不当回事，有本事你自己去看英语原文，自己加工</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June  6, 2022  5:01 PM">2022年6月 6日 17:01</abbr>
+ | <a href="#comment-433797">#</a>
+ | <a href="#comment-text" title="引用Joe的这条留言" onclick="return CommentQuote('comment-quote-433797','Joe');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-434358" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">gjhy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-434358">
+            <blockquote>
+<pre>引用vipcxj的发言：</pre>
+
+<p></p>
+
+<p>并不是放在token里，而是作为生成签名的参数，生成后的签名里面是找不到密钥的影子的。加密领域递归调用是很常见的。</p>
+
+</blockquote>
+
+<p>想问个问题,如果别人直接浏览器f12看到你的前端请求头里面的jwt(不就是字符串么),直接复制这段字符串去后端模拟别人访问接口,是不是也是验证通过了吗?<br />
+(虽然说什么秘钥在后台,别人也看不到,但是我在网上看的什么教程,后端校验jwt,秘钥也是定死的),有访问url,就先拦截器拦截验证。jwt是正确的话，解密压根没有问题，这不就是盗用登录状态了么</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 21, 2022  4:53 PM">2022年7月21日 16:53</abbr>
+ | <a href="#comment-434358">#</a>
+ | <a href="#comment-text" title="引用gjhy的这条留言" onclick="return CommentQuote('comment-quote-434358','gjhy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-434962" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">随心而动</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-434962">
+            <p>@gjhy：</p>
+
+<p>你这电脑都被别人控制了，肯定不安全了啊，就算用session，session_id存在cookie里，别人控制你的电脑，获取你的cookie，一样可以实现你说的结果</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 26, 2022  4:15 PM">2022年8月26日 16:15</abbr>
+ | <a href="#comment-434962">#</a>
+ | <a href="#comment-text" title="引用随心而动的这条留言" onclick="return CommentQuote('comment-quote-434962','随心而动');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-435047" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Afon</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-435047">
+            <blockquote>
+<pre>引用gjhy的发言：</pre>
+
+<p></p>
+
+<p>想问个问题,如果别人直接浏览器f12看到你的前端请求头里面的jwt(不就是字符串么),直接复制这段字符串去后端模拟别人访问接口,是不是也是验证通过了吗?<br />
+(虽然说什么秘钥在后台,别人也看不到,但是我在网上看的什么教程,后端校验jwt,秘钥也是定死的),有访问url,就先拦截器拦截验证。jwt是正确的话，解密压根没有问题，这不就是盗用登录状态了么</p>
+
+</blockquote>
+
+<p>密鑰在後端你截封包也沒用啊，難道你要去破解密鑰？那你可能需要很多算力，要不是牽扯巨大的利益怎麼看都不划算</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  2, 2022  1:11 PM">2022年9月 2日 13:11</abbr>
+ | <a href="#comment-435047">#</a>
+ | <a href="#comment-text" title="引用Afon的这条留言" onclick="return CommentQuote('comment-quote-435047','Afon');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-435145" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">DKUN</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-435145">
+            <p>哈哈，看留言就看到JWT的历程，从18年评论区的质疑，到现在大部分应用都是JWT</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  9, 2022  6:47 PM">2022年9月 9日 18:47</abbr>
+ | <a href="#comment-435145">#</a>
+ | <a href="#comment-text" title="引用DKUN的这条留言" onclick="return CommentQuote('comment-quote-435145','DKUN');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-435260" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hu</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-435260">
+            <p>typo： 串型化  应该是 串行化吧</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 19, 2022  6:17 PM">2022年9月19日 18:17</abbr>
+ | <a href="#comment-435260">#</a>
+ | <a href="#comment-text" title="引用hu的这条留言" onclick="return CommentQuote('comment-quote-435260','hu');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-435748" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">HarryLit</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-435748">
+            <blockquote>
+<pre>引用gjhy的发言：</pre>
+
+<p>想问个问题,如果别人直接浏览器f12看到你的前端请求头里面的jwt(不就是字符串么),直接复制这段字符串去后端模拟别人访问接口,是不是也是验证通过了吗?<br />
+(虽然说什么秘钥在后台,别人也看不到,但是我在网上看的什么教程,后端校验jwt,秘钥也是定死的),有访问url,就先拦截器拦截验证。jwt是正确的话，解密压根没有问题，这不就是盗用登录状态了么</p>
+
+</blockquote>
+
+<p>盗用了 token 这种场景没有任何办法防御，除非添加设备码识别校验，但不管是任何方式，这些特征码都是不能被暴露的，不然都有可能被伪造身份进行访问的风险。这已经不是 JWT 或任意一种 token 认证方式的问题了。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 29, 2022 10:08 AM">2022年10月29日 10:08</abbr>
+ | <a href="#comment-435748">#</a>
+ | <a href="#comment-text" title="引用HarryLit的这条留言" onclick="return CommentQuote('comment-quote-435748','HarryLit');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-436432" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">dogdog</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-436432">
+            <blockquote>
+<pre>引用moyo的发言：</pre>
+
+<p>没质量，这种网上一抓一大把。</p>
+
+</blockquote>
+
+<p>请你来点有质量的，我给你点赞、收藏、评论。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 29, 2022  5:45 PM">2022年12月29日 17:45</abbr>
+ | <a href="#comment-436432">#</a>
+ | <a href="#comment-text" title="引用dogdog的这条留言" onclick="return CommentQuote('comment-quote-436432','dogdog');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-436679" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">华晨</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-436679">
+            <blockquote>
+<pre>引用mecode的发言：</pre>
+
+<p>有人能解答下下面????这三个问题吗<br />
+受众（audience） 具体指的是什么（最好举例说明）？<br />
+主题（subject）具体指的是什么（最好举例说明）？<br />
+subject 与 audience 有什么区别？</p>
+
+</blockquote>
+
+<p>举个例子：</p>
+
+<p>```json<br />
+{<br />
+  "sub"："用户 ID",<br />
+  "aud"："网站 X"<br />
+}<br />
+```</p>
+
+<p>表示：这个 JWT 对应 “用户 ID”，且只能在 “网站 X” 中使用。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 24, 2023 10:22 AM">2023年1月24日 10:22</abbr>
+ | <a href="#comment-436679">#</a>
+ | <a href="#comment-text" title="引用华晨的这条留言" onclick="return CommentQuote('comment-quote-436679','华晨');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-436818" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">tg.z</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-436818">
+            <blockquote>
+<pre>引用Simon的发言：</pre>
+
+<p></p>
+
+<p>这都能酸..</p>
+
+</blockquote>
+
+<p>本来就是入门级别的</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February  3, 2023  8:17 PM">2023年2月 3日 20:17</abbr>
+ | <a href="#comment-436818">#</a>
+ | <a href="#comment-text" title="引用tg.z的这条留言" onclick="return CommentQuote('comment-quote-436818','tg.z');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-436844" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Ellis</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-436844">
+            <p>感謝教學，很清楚~</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February  5, 2023  5:01 PM">2023年2月 5日 17:01</abbr>
+ | <a href="#comment-436844">#</a>
+ | <a href="#comment-text" title="引用Ellis的这条留言" onclick="return CommentQuote('comment-quote-436844','Ellis');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-436879" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">啊对对对</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-436879">
+            <p>23年前来考古</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February  9, 2023  5:22 PM">2023年2月 9日 17:22</abbr>
+ | <a href="#comment-436879">#</a>
+ | <a href="#comment-text" title="引用啊对对对的这条留言" onclick="return CommentQuote('comment-quote-436879','啊对对对');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-437140" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">轩爷</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-437140">
+            <p>言简意赅，通俗易懂。先入门，再说深度使用。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February 27, 2023 10:35 AM">2023年2月27日 10:35</abbr>
+ | <a href="#comment-437140">#</a>
+ | <a href="#comment-text" title="引用轩爷的这条留言" onclick="return CommentQuote('comment-quote-437140','轩爷');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-437952" class="comment">
+    <div id="comment-last" class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">。。。</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-437952">
+            <p>简单易懂</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May  5, 2023  3:11 PM">2023年5月 5日 15:11</abbr>
+ | <a href="#comment-437952">#</a>
+ | <a href="#comment-text" title="引用。。。的这条留言" onclick="return CommentQuote('comment-quote-437952','。。。');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">我要发表看法</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="https://www.ruanyifeng.com/cgi-bin/mtos/mt-comments.cgi" name="comments_form" id="comments-form" onsubmit="return pleaseWait();">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="2004" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+            <div id="comments-open-text">
+                    <p><label for="comment-text">您的留言
+                    （HTML标签部分可用）</label></p>
+                    <p><textarea id="comment-text" name="text" rows="10" cols="50"></textarea></p>
+                </div>
+                    <div id="comment-form-name">
+                        <p><label for="comment-author">您的大名：</label></p>
+                        <p><input id="comment-author" name="author" size="30" value="" />  <span class="hint"> &laquo;-必填</span></p>
+                    </div>
+                    <div id="comment-form-email">
+                        <p><label for="comment-email">电子邮件：</label></p>
+                        <p><input id="comment-email" name="email" size="30" value="" />  <span class="hint"> &laquo;-必填，不公开</span></p>
+                    </div>
+                    <div id="comment-form-url">
+                        <p><label for="comment-url">个人网址：</label></p>
+                        <p><input id="comment-url" name="url" size="30" value="" />  <span class="hint"> &laquo;-我信任你，不会填写广告链接</span></p>
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <p>
+                        <label for="comment-bake-cookie">记住个人信息？</label><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="!this.checked?forgetMe(document.comments_form):rememberMe(document.comments_form)" value="1" accesskey="r" /></p>
+                    </div>
+                </div>
+                    <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+<div id="wait" style="display:none;">
+<p><strong>正在发表您的评论，请稍候</strong></p>
+<p>
+<input type="text" name="percent" size="3" style="font-family:Arial; color:black;text-align:center; border-width:medium; border-style:none;">           
+<input type="text" name="chart" size="46" style="font-family:Arial;font-weight:bolder; color:black; padding:0px; border-style:none;">
+</p>
+</div>
+
+                    <p><input type="submit" accesskey="s" name="post" id="comment-submit" value="发表" />  <span class="hint"> &laquo;- 点击按钮</span></p>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+
+    
+
+
+</div>
+
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        <script type="text/javascript" src="https://www.ruanyifeng.com/blog/js/prism.js"></script>
+        <script type="text/javascript" src="https://www.ruanyifeng.com/blog/checker.js"></script> 
+            <div id="footer">
+<div id="footer-inner">
+  <div id="footer-content">
+
+      
+<!--
+      <section> 
+     </section>
+  <p><a title="Instagram" target="_blank" href="http://instagram.com/ruanyf">Instagram</a></p>
+       <p><a title="订阅" href="https://app.feedblitz.com/f/f.fbz?Sub=348868" target="_blank">邮件订阅</a></p>
+  
+       <h2>Feed</h2>
+       <p><a title="FeedBurner" href="http://feeds.feedburner.com/ruanyifeng" target="_blank">FeedBurner</a></p>
+       <p><a title="atom.xml" href="http://www.ruanyifeng.com/blog/atom.xml" target="_blank">atom.xml</a></p>
+     
+      <p>支付宝：<a title="支付宝" href="alipays://platformapi/startapp?appId=20000067&url=http%3A%2F%2Fwww.ruanyifeng.com%2Fblog" target="_blank">yifeng.ruan@gmail.com</a></p>
+-->
+
+     <section>
+<!--
+       <h2>授权方式</h2>
+       <p><a title="许可证" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">自由转载-非商用-非衍生-保持署名</a></p>
+       <h2>微信公号</h2>
+       <h2>社交帐号</h2>
+       <h2>联系方式</h2>
+     -->
+       <p><img src="https://www.wangbase.com/blogimg/asset/202001/bg2020013101.jpg" alt="微信扫描"></p>
+       <p>
+         <a title="微博" href="http://weibo.com/ruanyf" target="_blank">Weibo</a> | 
+         <a title="Twitter" target="_blank" href="https://twitter.com/ruanyf">Twitter</a> |
+         <a title="GitHub" target="_blank" href="https://github.com/ruanyf">GitHub</a>
+       </p>
+     
+     <p>Email: <a title="电子邮件" href="https://www.ruanyifeng.com/cdn-cgi/l/email-protection#a5dcccc3c0cbc28bd7d0c4cbe5c2c8c4ccc98bc6cac8" target="_blank"><span class="__cf_email__" data-cfemail="c3baaaa5a6ada4edb1b6a2ad83a4aea2aaafeda0acae">[email&#160;protected]</span></a></p>
+     </section>
+  
+  
+
+
+  </div>
+</div>
+</div>
+<script data-cfasync="false" src="https://www.ruanyifeng.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function insertLine(e,t){for(var n=0;n<t;n++)e.parentNode.insertBefore(document.createElement("p"),e)}function getImg(){if(!window["main-content"])return!1;for(var e,t=Array.prototype.slice.call(window["main-content"].getElementsByTagName("img")),n=0;n<t.length;n++){if("display: none !important;"===(e=t[n]).getAttribute("style"))return e;if(n===t.length-1)return!1}}function toObjectUrl(e,t){return fetch(e).then(e=>e.blob()).then(e=>{t(URL.createObjectURL(e))})}function toDataURL(e,t){var n=new XMLHttpRequest;n.open("get",e),n.responseType="blob",n.onload=function(){var e=new FileReader;e.onload=function(){t(this.result)},e.readAsDataURL(n.response)},n.send()}setTimeout(function(){var e=getImg();e&&(insertLine(e.parentNode,2),toObjectUrl(e.src,function(t){var n=document.createElement("p"),r=document.createElement("img");r.src=t,n.appendChild(r),e.parentNode.parentNode.insertBefore(n,e.parentNode)}))},3e3);
+</script>                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46829782-1', 'ruanyifeng.com');
+  ga('send', 'pageview');
+
+</script>
+
+<script type="text/javascript" src="https://www.ruanyifeng.com/blog/stats.js"></script>
+<script>
+var supportImg = document.querySelector('#support-img');
+
+if (supportImg && _hmt) {
+  _hmt.push(['_trackEvent', 'banner', 'load']);
+  supportImg.addEventListener('click', function () {
+    _hmt.push(['_trackEvent', 'banner', 'click']);
+  }, false);
+}
+
+var homepageImg = document.querySelector('#homepage_sponsor');
+if (homepageImg && _hmt) {
+  _hmt.push(['_trackEvent', 'homepage-banner', 'load']);
+  homepageImg.addEventListener('click', function () {
+    _hmt.push(['_trackEvent', 'homepage-banner', 'click']);
+  }, false);
+}
+</script>
+
+
+
+        </div>
+    </div>
+<script>(function(){var js = "window['__CF$cv$params']={r:'7dec57f30f78042b',m:'t7yiiGFBJAIjRVD2saDw8dlwpxtTlMoZCe_30toLy70-1688022561-0-AcZVN1eLv3hH10Al1aAQdKFSCRC0RLxhz0RaHBc8e/8E'};_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/scripts/invisible.js',document.getElementsByTagName('head')[0].appendChild(_cpo);";var _0xh = document.createElement('iframe');_0xh.height = 1;_0xh.width = 1;_0xh.style.position = 'absolute';_0xh.style.top = 0;_0xh.style.left = 0;_0xh.style.border = 'none';_0xh.style.visibility = 'hidden';document.body.appendChild(_0xh);function handler() {var _0xi = _0xh.contentDocument || _0xh.contentWindow.document;if (_0xi) {var _0xj = _0xi.createElement('script');_0xj.nonce = '';_0xj.innerHTML = js;_0xi.getElementsByTagName('head')[0].appendChild(_0xj);}}if (document.readyState !== 'loading') {handler();} else if (window.addEventListener) {document.addEventListener('DOMContentLoaded', handler);} else {var prev = document.onreadystatechange || function () {};document.onreadystatechange = function (e) {prev(e);if (document.readyState !== 'loading') {document.onreadystatechange = prev;handler();}};}})();</script></body>
+</html>

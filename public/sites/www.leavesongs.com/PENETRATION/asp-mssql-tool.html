@@ -1,0 +1,709 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>MSSQL语句执行工具asp版 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="asp-mssql-tool.html">MSSQL语句执行工具asp版</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">MSSQL语句执行工具asp版</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-7-21 17:21</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">2条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="asp-mssql-tool.html">10103人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/mssql.html">mssql</a>
+    
+        <a href="../tag/asp.html">asp</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>
+	&nbsp; &nbsp; 之前自己网上找各种方法拼拼凑凑出来的一个脚本，目的是在asp环境下连接mssql并执行命令。
+</p>
+<p>
+	&nbsp; &nbsp; 因为不是webshell所以不用考虑过狗不过狗，过不过WAF，安全狗之类的WAF是不会杀的。但我们要执行sql语句，势必要传递sql语句，传递sql语句的过程中可能被狗的防注入机制拦截（所谓的误杀），所以我又做了一个编码传递的方式，将待执行的SQL语句编码成ascii码再传递，这样就不会被WAF误杀了。
+</p>
+<p>
+	&nbsp; &nbsp; 程序的界面就是这样，简洁干净：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201407/3fb51405949325.jpg" id="ematt:578"><img src="../content/uploadfile/201407/thum-3fb51405949325.jpg" title="点击查看原图" alt="02.jpg" border="0" width="650" height="290" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 如上图，执行结果用表格的形式显示出来。
+</p>
+<p>
+	&nbsp; &nbsp; 执行xp_cmdshell的效果如图：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201407/4efd1405949323.jpg" id="ematt:576"><img src="../content/uploadfile/201407/thum-4efd1405949323.jpg" title="点击查看原图" alt="01.jpg" border="0" width="650" height="298" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 我一向是个不支持低版本浏览器的，所以我也没用低版本浏览器做测试，我只保证在chrome、firefox下可用。
+</p>
+<p>
+	&nbsp; &nbsp; 服务端我测试的环境是windows2003 + IIS6 + MSSQL 2005，其他环境自测。
+</p>
+<p>
+	&nbsp; &nbsp; 代码如下：
+<pre class="brush: vb;auto-links: false;">&lt;%
+''''''''''''''''''''''
+' MSSQL语句执行工具asp版 by phithon
+' blog: www.leavesongs.com 
+' github: https://github.com/phith0n/asp_mssql_tool
+''''''''''''''''''''''
+showcss()
+Dim Sql_serverip,Sql_linkport,Sql_username,Sql_password,Sql_database,Sql_content
+
+Sql_serverip=Trim(Request("Sql_serverip"))
+Sql_linkport=Trim(Request("Sql_linkport"))
+Sql_username=Trim(Request("Sql_username"))
+Sql_password=Trim(Request("Sql_password"))
+Sql_database=Trim(Request("Sql_database"))
+Sql_content =Trim(Request("Sql_content"))
+
+If Sql_linkport="" Then Sql_linkport="1433"
+
+If Sql_serverip&lt;&gt;"" and Sql_linkport&lt;&gt;"" and Sql_username&lt;&gt;"" and Sql_password&lt;&gt;"" and Sql_content&lt;&gt;"" Then
+	if Request("method")="encode" then
+		dim sqlarr
+		sqlarr = Split(Sql_content, "\")
+		Sql_content = ""
+		for each x in sqlarr
+			if IsNumeric(x) then
+			Sql_content = Sql_content &amp; chr(cint(x))
+			else
+			Sql_content = Sql_content &amp; x
+			end if
+		next
+	end if
+
+	Response.Write "&lt;hr width='100%'&gt;&lt;b&gt;执行结果：&lt;/b&gt;&lt;hr width='100%'&gt;"
+	Dim SQL,conn,linkStr
+	SQL=Sql_content
+	
+	set conn=Server.createobject("adodb.connection")
+	If Len(Sql_database)=0 Then
+		linkStr="driver={SQL Server};Server=" &amp; Sql_serverip &amp; "," &amp; Sql_linkport &amp; ";uid=" &amp; Sql_username &amp; ";pwd=" &amp; Sql_password
+	Else
+		linkStr="driver={SQL Server};Server=" &amp; Sql_serverip &amp; "," &amp; Sql_linkport &amp; ";uid=" &amp; Sql_username &amp; ";pwd=" &amp; Sql_password &amp; ";database=" &amp; Sql_database
+	End If
+	conn.open linkStr
+	
+	' "Driver={SQL Server};SERVER=IP,端口号;UID=sa;PWD=xxxx;DATABASE=DB"
+	' update [user] set [name]='admin' where uid=1
+	set rs = Server.CreateObject("ADODB.recordset")
+	rs.open SQL, conn
+	on error resume next
+		if err&lt;&gt;0 then
+		   response.write "错误："&amp;err.Descripting
+		else
+			response.write Replace(SQL,vbcrlf,"&lt;br&gt;") &amp; " &nbsp; 成功！&lt;br /&gt;&lt;br /&gt;"
+			dim record 
+			record = rs.fields.count
+			if record&gt;0 then
+			dim i
+			i = 0 %&gt;
+			&lt;table class="gridtable"&gt;  
+			&lt;tr&gt;
+			&lt;%for each x in rs.fields
+				response.write("&lt;th style=""min-width: 80px""&gt;" &amp; x.name &amp; "&lt;/th&gt;")
+			  next%&gt;
+			&lt;/tr&gt;
+			&lt;%do until rs.EOF%&gt;
+				&lt;tr&gt;
+			&lt;%for each x in rs.Fields%&gt;
+			  &lt;td&gt;&lt;%Response.Write(x.value)%&gt;&lt;/td&gt;
+			&lt;%next
+			rs.MoveNext%&gt;
+			&lt;/tr&gt;
+			&lt;%loop%&gt;
+			&lt;/table&gt;
+			&lt;%
+			end if
+			rs.close
+			conn.close
+			
+		end if
+	Response.End
+	
+End If
+
+If Request("do")&lt;&gt;"" Then
+	Response.Write "请填写数据库连接参数"
+	Response.End
+End If
+
+Sub showcss()
+%&gt;
+&lt;style&gt;
+textarea{resize:none;}
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+table.gridtable th {
+	border-width: 1px;
+	padding: 5px 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+table.gridtable td {
+	border-width: 1px;
+	padding: 5px 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+&lt;/style&gt;
+&lt;%
+End Sub
+
+%&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=gb2312" /&gt;
+&lt;meta http-equiv="pragma" content="no-cache"&gt;
+&lt;meta http-equiv="Cache-Control" content="no-cache, must-revalidate"&gt;
+&lt;meta http-equiv="expires" content="Wed, 26 Feb 2006 00:00:00 GMT"&gt;
+&lt;% showcss() %&gt;
+&lt;title&gt;MSSQL语句执行工具asp版 by phithon&lt;/title&gt;
+&lt;script&gt;
+function encode(s){
+	var r = "";
+	for(var i = 0; i &lt; s.length ; i++){
+		var a = s.charCodeAt(i);
+		if(a &lt; 128 &amp;&amp; a &gt; 0){
+			r += "\\" + a;
+		}else{
+			r += "\\" + s[i];
+		}
+	}
+	return r;
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;hr width="100%"&gt;
+
+&lt;form method="post" action="&lt;%=Request.ServerVariables("SCRIPT_NAME")%&gt;?do=exec" target="ResultFrame" id="submitf"&gt;
+	&lt;table class="gridtable" width="100%" style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#f6ae56,direction:145,strength:15);"&gt;
+		&lt;tr&gt;
+		&lt;td colspan="2" align="center"&gt;
+			&lt;h2&gt;MSSQL语句执行工具asp版 by &lt;a href="https://www.leavesongs.com" target="_blank"&gt;phithon&lt;/a&gt;&lt;/h2&gt;
+		&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+		&lt;td&gt;
+			&lt;table class="gridtable"&gt;
+			&lt;tr&gt;&lt;th colspan="2" align="center"&gt;数据库连接设置&lt;/th&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td width="80"&gt;SERVERIP:&lt;/td&gt;&lt;td&gt;&lt;input type="text"  value="127.0.0.1"   name="Sql_serverip"  style="width:150px;"&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td width="80"&gt;LINKPORT:&lt;/td&gt;&lt;td&gt;&lt;input type="text"  value="1433"   name="Sql_linkport"  style="width:150px;"&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td width="80"&gt;USERNAME:&lt;/td&gt;&lt;td&gt;&lt;input type="text"  value="sa"   name="Sql_username"  style="width:150px;"&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td width="80"&gt;PASSWORD:&lt;/td&gt;&lt;td&gt;&lt;input type="password" name="Sql_password"  style="width:150px;"&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td width="80"&gt;DATABASE:&lt;/td&gt;&lt;td&gt;&lt;input type="text"     name="Sql_database"  style="width:150px;"&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;/table&gt;
+		&lt;/td&gt;
+		&lt;td width="100%"&gt;
+			&lt;DIV align=center
+			style='
+			color: #990099;
+			background-color: #E6E6FA;
+			width: 100%;
+			height: 180px;
+			scrollbar-face-color: #DDA0DD;
+			scrollbar-shadow-color: #3D5054;
+			scrollbar-highlight-color: #C3D6DA;
+			scrollbar-3dlight-color: #3D5054;
+			scrollbar-darkshadow-color: #85989C;
+			scrollbar-track-color: #D8BFD8;
+			scrollbar-arrow-color: #E6E6FA;
+			'&gt;
+			&lt;textarea name="Sql_content" id="sqlc" style='width:100%;height:100%;'&gt;输入你要执行的sql语句&lt;/textarea&gt;
+			&lt;/DIV&gt;
+			&lt;input type="hidden" id="method" name="method" value="common"&gt;
+			&lt;input type="submit" value="普通执行(可能被WAF拦截)"&gt;
+			&lt;input type="button" onclick="var a=sqlc.value;method.value='encode';sqlc.value=encode(a);submitf.submit();method.value='common';sqlc.value = a;" value="编码执行(可绕过WAF)"&gt;
+		&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/table&gt;
+&lt;/form&gt;
+
+&lt;hr width="100%"&gt;
+&lt;iframe name="ResultFrame" frameborder="0" width="100%" style="min-height: 300px;" src="&lt;%=Request.ServerVariables("SCRIPT_NAME")%&gt;?do=exec"&gt;&lt;/iframe&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</p>
+&nbsp; &nbsp; 问题与说明及后续的BUG处理都在&nbsp;<a href="https://github.com/phith0n/asp_mssql_tool" target="_blank">https://github.com/phith0n/asp_mssql_tool</a>&nbsp;。
+<p>
+	<br />
+</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/mssql.html">mssql</a>
+                
+                    <a href="../tag/asp.html">asp</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 2 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-1735">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://th1nk.info/" target="_blank" rel="nofollow noopener">音符</a></div>
+                    <p>有点重复造轮子的感觉。没有遇到过asp执行mssql被怒草的情况<br>话说时雨大牛合适学asp了</p>
+                    <span class="comment-time">时间: 2014-07-23 22:11</span>
+                    <span class="comment-reply"><a href="#comment-1735" onclick="reply_to('1735','音符')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1736">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@音符：我这是在丰富我的github</p>
+                    <span class="comment-time">时间: 2014-07-23 22:12</span>
+                    <span class="comment-reply"><a href="#comment-1736" onclick="reply_to('1736','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="e79d2a1906a8b3bb5090ea4f982d3062f7948ac0" />
+</div><div class="col-6">
+<img src="../captcha/image/e79d2a1906a8b3bb5090ea4f982d3062f7948ac0/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="321" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="4gVEmemFVZ8y4VWjJk6XsKoMr6FE2aKmQOjvUjXojlmhCtKHLl3IpdrRMtWPBMWE">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E9%AB%98%E6%95%B0.html">高数</a>
+        
+        <a rel="tag" href="../tag/hdwiki.html">hdwiki</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/php%E8%84%9A%E6%9C%AC%E5%AE%89%E5%85%A8.html">php脚本安全</a>
+        
+        <a rel="tag" href="../tag/%E5%B0%8F%E4%B8%BB%E6%9C%BA.html">小主机</a>
+        
+        <a rel="tag" href="../tag/exe.html">exe</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/Windows.html">Windows</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/jsonp.html">jsonp</a>
+        
+        <a rel="tag" href="../tag/%E7%A0%B4%E8%A7%A3.html">破解</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/node-postgres.html">node-postgres</a>
+        
+        <a rel="tag" href="../tag/ewebeditor.html">ewebeditor</a>
+        
+        <a rel="tag" href="../tag/string.html">string</a>
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/DOMXSS.html">DOMXSS</a>
+        
+        <a rel="tag" href="../tag/phpmyadmin.html">phpmyadmin</a>
+        
+        <a rel="tag" href="../tag/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">代码审计</a>
+        
+        <a rel="tag" href="../tag/%E4%B8%89%E4%B8%AA%E7%99%BD%E5%B8%BD.html">三个白帽</a>
+        
+        <a rel="tag" href="../tag/sqlite.html">sqlite</a>
+        
+        <a rel="tag" href="../tag/XP.html">XP</a>
+        
+        <a rel="tag" href="../tag/Dvbbs.html">Dvbbs</a>
+        
+        <a rel="tag" href="../tag/mssql.html">mssql</a>
+        
+        <a rel="tag" href="../tag/WAF%E7%BB%95%E8%BF%87.html">WAF绕过</a>
+        
+        <a rel="tag" href="../tag/heroku.html">heroku</a>
+        
+        <a rel="tag" href="../tag/%E5%85%BC%E5%AE%B9%E6%80%A7.html">兼容性</a>
+        
+        <a rel="tag" href="../tag/0day.html">0day</a>
+        
+        <a rel="tag" href="../tag/code-breaking.html">code-breaking</a>
+        
+        <a rel="tag" href="../tag/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93.html">年终总结</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

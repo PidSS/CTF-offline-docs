@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tav's Blog » Paving the Way to Securing the Python Interpreter</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="tweetmeme-title" content="Paving the Way to Securing the Python Interpreter" />
+  <meta name="robots" content="index, follow" />
+  <meta name="revisit-after" content="1 day" />
+  <meta name="author" content="tav" />
+  <meta name="description" content="I'm Tav, a 28-year old from London. I enjoy working on large-scale social, economic and technological systems." />
+  <meta name="copyright" content="This work has been placed into the Public Domain." />
+  <meta name="document-rating" content="general" />
+  <link rel="icon" type="image/png" href="http://tav.espians.com/gfx/aaken.png" />
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed for Tav's Blog" href="http://feeds.feedburner.com/asktav" />
+  <link rel="stylesheet" type="text/css" media="screen" title="default" href="http://tav.espians.com/css/site.css?decafbad2" />
+  <style type="text/css" media="print">#ignore-this { display: none; }
+  </style>
+  <style type="text/css">.ascii-art .literal-block {
+      line-height: 1em !important;
+    }
+    .cmd-line {
+      background-color: #000;
+      color: #fff;
+      padding: 5px;
+      margin-left: 2em;
+      margin-right: 2em;
+    }
+    .cmd-ps1 {
+      color: #999;
+    }
+  </style>
+  <!--[if lte IE 8]>
+    <style type="text/css">
+      ol { list-style-type: disc; }
+	  #site-title { padding-top: 0px; }
+    </style>
+  <![endif]-->
+  <script src="http://code.jquery.com/jquery-1.5.min.js"></script>
+  <script src="http://use.typekit.com/por2lgv.js"></script>
+  <script>
+    GOOGLE_ANALYTICS_CODE = "UA-90176-8";
+    GOOGLE_ANALYTICS_HOST = "tav.epians.com";
+    DISQUS_FORUM = 'asktav';
+    PAGE_URI = 'http://tav.espians.com/paving-the-way-to-securing-the-python-interpreter.html'
+    facebookXdReceiverPath = 'http://tav.espians.com/external/xd_receiver.html';
+  </script>
+  <script src="http://tav.espians.com/js/init.js?decafbad2"></script>
+</head>
+<body>
+<div id="share-box">
+	<div><strong>Share !</strong></div>
+	<div><a href="http://twitter.com/share?text=RT+%40tav+Paving+the+Way+to+Securing+the+Python+Interpreter&amp;url=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html" title="Retweet" class="share-twitter"><img src="http://tav.espians.com/gfx/icon.twitter.png" width="32px" height="32px" /></a></div>
+	<div><a href="http://news.ycombinator.com/submitlink?u=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html&amp;t=Paving+the+Way+to+Securing+the+Python+Interpreter" title="Upvote on Hacker News"><img src="http://tav.espians.com/gfx/icon.hackernews.png" width="32px" height="32px" /></a></div>
+	<div><a href="http://www.reddit.com/submit?url=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html&amp;title=Paving+the+Way+to+Securing+the+Python+Interpreter" title="Reddit"><img src="http://tav.espians.com/gfx/icon.reddit.png" width="32px" height="32px" /></a></div>
+	<div><a href="http://www.facebook.com/sharer.php?t=Paving+the+Way+to+Securing+the+Python+Interpreter&amp;u=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html" title="Share on Facebook" class="share-fb"><img src="http://tav.espians.com/gfx/icon.facebook.png" width="32px" height="32px" /></a></div>
+</div>
+<div id="main">
+	<div id="site-header">
+		<a href="http://tav.espians.com/" id="site-title" title="Tav's Blog">
+			Tav's Blog →
+		</a>
+		<div id="site-links">
+			<form id="translation_form"><select id="lang_select" onchange="translate(this);">
+				<option value="" id="select_language">Select Language</option>
+				<option value="&amp;langpair=en|af" id="openaf">Afrikaans</option><option value="&amp;langpair=en|sq" id="opensq">Albanian</option><option value="&amp;langpair=en|ar" id="openar">Arabic (العربية)</option><option value="&amp;langpair=en|be" id="openbe">Belarusian</option><option value="&amp;langpair=en|bg" id="openbg">Bulgarian (български)</option><option value="&amp;langpair=en|ca" id="openca">Catalan (català)</option><option value="&amp;langpair=en|zh-CN" id="openzh-CN">Chinese (中文 [简体])</option><option value="&amp;langpair=en|zh-TW" id="openzh-TW">Chinese (中文 [繁體])</option><option value="&amp;langpair=en|hr" id="openhr">Croatian (hrvatski)</option><option value="&amp;langpair=en|cs" id="opencs">Czech (česky)</option><option value="&amp;langpair=en|da" id="openda">Danish (Dansk)</option><option value="&amp;langpair=en|nl" id="opennl">Dutch (Nederlands)</option><option value="&amp;langpair=en|et" id="openet">Estonian</option><option value="&amp;langpair=en|fa" id="openfa">Farsi/Persian</option><option value="&amp;langpair=en|tl" id="opentl">Filipino</option><option value="&amp;langpair=en|fi" id="openfi">Finnish (suomi)</option><option value="&amp;langpair=en|fr" id="openfr">French (Français)</option><option value="&amp;langpair=en|gl" id="opengl">Galician</option><option value="&amp;langpair=en|de" id="opende">German (Deutsch)</option><option value="&amp;langpair=en|el" id="openel">Greek (Ελληνικά)</option><option value="&amp;langpair=en|iw" id="openiw">Hebrew (עברית)</option><option value="&amp;langpair=en|hi" id="openhi">Hindi (हिन्दी)</option><option value="&amp;langpair=en|hu" id="openhu">Hungarian</option><option value="&amp;langpair=en|is" id="openis">Icelandic</option><option value="&amp;langpair=en|id" id="openid">Indonesian</option><option value="&amp;langpair=en|ga" id="openga">Irish</option><option value="&amp;langpair=en|it" id="openit">Italian (Italiano)</option><option value="&amp;langpair=en|ja" id="openja">Japanese (日本語)</option><option value="&amp;langpair=en|ko" id="openko">Korean (한국어)</option><option value="&amp;langpair=en|lv" id="openlv">Latvian (latviešu)</option><option value="&amp;langpair=en|lt" id="openlt">Lithuanian (Lietuvių)</option><option value="&amp;langpair=en|mk" id="openmk">Macedonian</option><option value="&amp;langpair=en|ms" id="openms">Malay</option><option value="&amp;langpair=en|mt" id="openmt">Maltese</option><option value="&amp;langpair=en|no" id="openno">Norwegian (norsk)</option><option value="&amp;langpair=en|pl" id="openpl">Polish (Polski)</option><option value="&amp;langpair=en|pt" id="openpt">Portuguese (Português)</option><option value="&amp;langpair=en|ro" id="openro">Romanian (Română)</option><option value="&amp;langpair=en|ru" id="openru">Russian (Русский)</option><option value="&amp;langpair=en|sr" id="opensr">Serbian (српски)</option><option value="&amp;langpair=en|sk" id="opensk">Slovak (slovenčina)</option><option value="&amp;langpair=en|sl" id="opensl">Slovenian (slovenščina)</option><option value="&amp;langpair=en|es" id="openes">Spanish (Español)</option><option value="&amp;langpair=en|sw" id="opensw">Swahili</option><option value="&amp;langpair=en|sv" id="opensv">Swedish (Svenska)</option><option value="&amp;langpair=en|th" id="openth">Thai</option><option value="&amp;langpair=en|tr" id="opentr">Turkish</option><option value="&amp;langpair=en|uk" id="openuk">Ukrainian (українська)</option><option value="&amp;langpair=en|vi" id="openvi">Vietnamese (Tiếng Việt)</option><option value="&amp;langpair=en|cy" id="opency">Welsh</option><option value="&amp;langpair=en|yi" id="openyi">Yiddish</option>
+			</select></form>
+			<a href="http://tav.espians.com/" title="I'm Tav, a 28-year old from London. I enjoy working on large-scale social, economic and technological systems.">Home</a>
+			<a href="http://tav.espians.com/archive.html" title="Site Index">Archive</a>
+			<a href="http://tav.espians.com/about-tav.html" title="About Tav">About Tav</a>
+		</div>
+		<hr class="clear" />
+	</div>
+	<div class="article-nav"></div>
+	<div id="intro">
+		<div class="center">
+			<img src="http://tav.espians.com/gfx/profile-smoking.jpg" />
+		</div>
+		<h1>
+			I'm Tav, a 29yr old from London. I enjoy working on large-scale
+			social, economic and technological systems.
+		</h1>
+		<strong>Follow</strong>
+		<div class="follow-link">
+			<a href="http://twitter.com/tav" title="Follow @tav on Twitter"><img src="http://tav.espians.com/gfx/icon.twitter.png" /></a>  <a href="http://twitter.com/tav" title="Follow @tav on Twitter">tav</a>
+		</div>
+		<div class="follow-link">
+			<a href="http://feeds.feedburner.com/asktav" rel="alternate" type="application/rss+xml" title="Subscribe to Tav's Blog"><img src="http://tav.espians.com/gfx/icon.rss.png" /></a>  <a href="http://feeds.feedburner.com/asktav" rel="alternate" type="application/rss+xml" title="Subscribe to Tav's Blog">tav's blog</a>
+		</div>
+		<div class="follow-link">
+			<a href="https://github.com/tav" title="Follow @tav on GitHub"><img src="http://tav.espians.com/gfx/icon.github.png" class="absmiddle" /></a>  <a href="https://github.com/tav" title="Follow @tav on GitHub">tav</a>
+		</div>
+		<br />
+		<strong>Contact</strong>
+		<div class="follow-link">
+			<a href="mailto:tav@espians.com" title="Email tav@espians.com"><img src="http://tav.espians.com/gfx/icon.gmail.png" /></a>  <a href="mailto:tav@espians.com" title="Email tav@espians.com">tav@espians.com</a>
+		</div>
+		<div class="follow-link">
+			<a href="http://www.facebook.com/asktav" title="Follow @asktav on Facebook"><img src="http://tav.espians.com/gfx/icon.facebook.png" /></a>  <a href="http://www.facebook.com/asktav" title="Follow @asktav on Facebook">asktav</a>
+		</div>
+		<div class="follow-link">
+			<a href="skype:addname?name=tavespian" title="Contact tavespian on Skype"><img src="http://tav.espians.com/gfx/icon.skype.png" /></a>  <a href="skype:addname?name=tavespian" title="Contact tavespian on Skype">tavespian</a>
+		</div>
+	</div>
+	<div id="page">
+		<div><div>
+<div class="article-title">
+	<div class="post-link"><a href="paving-the-way-to-securing-the-python-interpreter.html">Paving the Way to Securing the Python Interpreter</a></div>
+	<div class="additional-content-info">
+		<a href="#disqus_thread" rel="disqus:http://www.asktav.com/paving-the-way-to-securing-the-python-interpreter.html">Add a Comment</a>
+		<script type="text/javascript">
+			tweetmeme_url = 'http://tav.espians.com/paving-the-way-to-securing-the-python-interpreter.html';
+			tweetmeme_source = 'tav';
+			tweetmeme_service = 'bit.ly';
+			tweetmeme_style = 'compact';
+		</script>
+		· 
+		<div class="retweetbutton">
+			<script type="text/javascript" src="http://tweetmeme.com/i/scripts/button.js"></script>
+		</div>
+	</div>
+	<div class="article-info">
+		»  by <a href="http://tav.espians.com">tav</a><span> on <span class="post-date">February 24, 2009 @ <a href="http://github.com/tav/blog/commits/master/paving-the-way-to-securing-the-python-interpreter.txt">15:37</a></span></span>  <a href="http://creativecommons.org/publicdomain/zero/1.0/" title="Public Domain"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Cc-pd.svg/64px-Cc-pd.svg.png" width="20px" height="20px" alt="Public Domain" class="absmiddle" /></a>
+	</div>
+</div>
+<!--<div py:if="not defined('created')" class="attention">
+	This is an early draft. Many sections are incomplete. A lot more is being written.
+</div>-->
+<div class="content">
+	<div><p><strong>Note:</strong> This article isn't about securing the Python interpreter against
+crashes/segfaults or exhaustion of resources attacks. For help with that, take a
+look at the excellent <a class="reference external" href="http://codespeak.net/pypy/dist/pypy/doc/sandbox.html">sandboxing features of PyPy</a>. Those of you wanting
+to just know about the practical applications of this, scroll down to the bottom
+of the article =)</p>
+<p>There have been many attempts to secure the Python interpreter so that untrusted
+code can be safely executed alongside trusted code. Working attempts like
+<a class="reference external" href="http://pypi.python.org/pypi/RestrictedPython/">RestrictedPython</a> and
+<a class="reference external" href="http://pypi.python.org/pypi/zope.proxy">zope.proxy</a> unfortunately come at a
+high cost in terms of performance.</p>
+<p>Old-school Python hackers would probably remember the deprecated <tt class="docutils literal">rexec</tt>
+module which used to be enabled in the standard library. This module, along with
+it's <tt class="docutils literal">Bastion</tt> sibling, provided a framework for &ldquo;restricted execution&rdquo; of
+Python code.</p>
+<p>The rexec module encouraged a certain design pattern which depended on class
+attributes being kept &ldquo;private&rdquo; from untrusted code. Unfortunately, Python's
+introspection powers are heavily geared against this and there are many many
+dark corners from which one can peer deep into the heart of classes.</p>
+<p>So it was no surprise that, soon after the introduction of new-style classes in
+Python, rexec was dumped. And all hopes of securing the Python interpreter in an
+efficient way went the way of <a class="reference external" href="http://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs">Plan 9</a>.</p>
+<p>Now, those in the security world are probably aware of the <a class="reference external" href="http://en.wikipedia.org/wiki/Object-capability_model">Object Capability
+model</a> of security as
+pioneered by the likes of the <a class="reference external" href="http://en.wikipedia.org/wiki/Actor_model">Actors model</a> and the <a class="reference external" href="http://www.erights.org/">E language</a>. Entire Operating Systems have been implemented free
+of viruses thanks to this model.</p>
+<p>For <a class="reference external" href="http://mail.python.org/pipermail/python-dev/2007-June/073724.html">a long while</a> I have
+felt that there exists a major subset of Python that is suited for use through
+the object capability model. After all <em>capabilities</em> are just non-forgeable
+references. We already have this in Python.</p>
+<p>The next step is to simply ensure that there is no global shared state. And
+whilst a lot of existing code uses global shared state, there is nothing in the
+Python language that imposes this limitation. Thus it should be possible to
+isolate a capability-secure subset of Python and build up from there.</p>
+<p>Since I've had this insight, the <a class="reference external" href="http://code.google.com/p/google-caja/">Google Caja</a> project have done the exact same for
+Javascript. They identified a capability-secure subset of Javascript and have
+built up from there&#8230;</p>
+<p>So how can we Python hackers get beyond shared state? After all, there is no
+&ldquo;private&rdquo; in Python. Right?</p>
+<p>Well, not quite. We can use closures as an easy way of emulating a private scope
+in Python. After all this is <a class="reference external" href="http://www.erights.org/elib/capability/ode/index.html">how it's done in other capability-based languages</a>. This is nothing new.
+<a class="reference external" href="http://zesty.ca/">Ka-Ping Yee</a> had this <a class="reference external" href="http://mail.python.org/pipermail/python-dev/2003-March/034287.html">insight on Python-Dev</a> years
+ago!</p>
+<p>But what about Python's various introspective powers you ask? Unlike the deep
+plumbing of classes, Python's functions are relatively isolated and makes our
+life much easier. This makes sense when you realise that Python classes are
+actually syntactic sugar and sets of protocols on <em>top</em> of functions.</p>
+<p>But functions aren't opaque beasts by default. There are a number of variables
+which &ldquo;leak&rdquo; information. The ones I identified were:</p>
+<ul class="simple">
+<li>FunctionType.func_closure/__closure__</li>
+<li>FunctionType.func_code/__code__</li>
+<li>FunctionType.func_globals/__globals__</li>
+<li>GeneratorType.gi_code</li>
+<li>GeneratorType.gi_frame</li>
+<li>type.__subclasses__</li>
+</ul>
+<p>And thanks to the <a class="reference external" href="http://tav.espians.com/a-challenge-to-break-python-security.html">Python security challenge using safelite.py</a> we've been
+able to identify attributes of FrameType as additional ones, e.g.</p>
+<ul class="simple">
+<li>FrameType.f_locals</li>
+</ul>
+<p>As you can see this is a pretty small list. (Especial thanks to <a class="reference external" href="http://thepaulprog.blogspot.com/">Paul Cannon</a> for being the first with his <a class="reference external" href="http://thepaulprog.blogspot.com/2009/02/safelite-exploit.html">hardcore hack</a> to show that
+frame objects are accessible.)</p>
+<p>Now this list is in no way the definitive final list. The Python challenge is
+still ongoing &mdash; try <a class="reference external" href="http://github.com/tav/scripts/blob/master/safelite.py">safelite.py</a> yourself and see if
+you can find more! But the fact that there have been no new exploits in the last
+24 hours despite over a 1,000 unique downloads of safelite.py in the same time
+gives me <em>some</em> confidence that we are getting towards a comprehensive list.</p>
+<p>If we can ensure that untrusted code will never be able to access the final list
+of these variables, then we can ensure that &ldquo;private&rdquo; data using closures stays
+private. And from that basis, we can start building an object capability
+framework in Python!!</p>
+<p>In safelite.py, I use ctypes to completely remove these variables from the
+Python interpreter. This is a neat approach which <a class="reference external" href="http://dirtsimple.org/">Phillip J. Eby</a> <a class="reference external" href="http://mail.python.org/pipermail/python-dev/2007-June/073736.html">showed me</a> and means
+that we can start building an object capability framework in Python <em>today</em>!</p>
+<p>The flip-side of removing these variables however is that the code which uses
+these variables won't work. Boo! So I made getter functions like
+<tt class="docutils literal">sys.get_func_code</tt> and patched the handful of functions in the standard
+library like <tt class="docutils literal">inspect.getargspec</tt> to use these instead.</p>
+<p>The idea being that trusted code would have a reference to the <tt class="docutils literal">sys</tt> module
+and be able to use them whilst untrusted code would not. But <a class="reference external" href="http://www.python.org/~guido/">Guido van Rossum</a> &mdash; in the conversation that started <a class="reference external" href="http://code.google.com/p/googleappengine/issues/detail?id=671">here</a> &mdash; convinced
+me that Python already has the support for doing this!</p>
+<p>And this is where our old friend rexec deserves some thanking. It turns out that
+rexec is only one half of Python's restricted execution support. The other half
+has been living inside the Python Interpreter for well over a decade. For the
+sake of simplicity let's call this PIRE &mdash; Python Interpreter's Restricted
+Execution.</p>
+<p>And since there is seemingly no comprehensive documentation of PIRE, I'll
+provide a summary here.</p>
+<p>Whenever you read/write an attribute on one of Python's builtin objects, it will
+raise a <tt class="docutils literal">RuntimeError</tt> stating that the attributed is restricted if both of
+the following conditions are true:</p>
+<ul class="simple">
+<li>The attribute has a <tt class="docutils literal">READ_RESTRICTED</tt> and/or <tt class="docutils literal">WRITE_RESTRICTED</tt> flag set.</li>
+<li><tt class="docutils literal">PyEval_GetRestricted()</tt> returns True.</li>
+</ul>
+<p>The flags are set when members of an object are defined. For example, in
+<tt class="docutils literal">funcobject.c</tt> we find:</p>
+<div class="syntax c"><pre><span class="k">static</span> <span class="n">PyMemberDef</span> <span class="n">func_memberlist</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><br/>  <span class="p">{</span><span class="s">&quot;func_closure&quot;</span><span class="p">,</span> <span class="n">T_OBJECT</span><span class="p">,</span> <span class="n">OFF</span><span class="p">(</span><span class="n">func_closure</span><span class="p">),</span> <span class="n">RESTRICTED</span><span class="o">|</span><span class="n">READONLY</span><span class="p">},</span><br/>  <span class="p">{</span><span class="s">&quot;func_doc&quot;</span><span class="p">,</span> <span class="n">T_OBJECT</span><span class="p">,</span> <span class="n">OFF</span><span class="p">(</span><span class="n">func_doc</span><span class="p">),</span> <span class="n">WRITE_RESTRICTED</span><span class="p">},</span><br/>  <span class="p">{</span><span class="s">&quot;__doc__&quot;</span><span class="p">,</span> <span class="n">T_OBJECT</span><span class="p">,</span> <span class="n">OFF</span><span class="p">(</span><span class="n">func_doc</span><span class="p">),</span> <span class="n">WRITE_RESTRICTED</span><span class="p">},</span><br/>  <span class="p">{</span><span class="s">&quot;func_globals&quot;</span><span class="p">,</span> <span class="n">T_OBJECT</span><span class="p">,</span> <span class="n">OFF</span><span class="p">(</span><span class="n">func_globals</span><span class="p">),</span> <span class="n">RESTRICTED</span><span class="o">|</span><span class="n">READONLY</span><span class="p">},</span><br/>  <span class="p">{</span><span class="s">&quot;__module__&quot;</span><span class="p">,</span> <span class="n">T_OBJECT</span><span class="p">,</span> <span class="n">OFF</span><span class="p">(</span><span class="n">func_module</span><span class="p">),</span> <span class="n">WRITE_RESTRICTED</span><span class="p">},</span><br/>  <span class="p">{</span><span class="nb">NULL</span><span class="p">}</span>  <span class="cm">/* Sentinel */</span><br/><span class="p">};</span><br/></pre></div>
+<p>where <tt class="docutils literal">RESTRICTED</tt> is just a shorthand for
+<tt class="docutils literal">READ_RESTRICTED|WRITE_RESTRICTED</tt>.</p>
+<p>As for <tt class="docutils literal">PyEval_GetRestricted</tt>, a pure Python equivalent would look like:</p>
+<div class="syntax python"><pre><span class="kn">import</span> <span class="nn">__builtin__</span><br/><br/><span class="k">def</span> <span class="nf">PyEval_GetRestricted</span><span class="p">():</span><br/>    <span class="sd">&quot;&quot;&quot;Return if the we are in restricted execution.&quot;&quot;&quot;</span><br/><br/>    <span class="n">current_frame</span> <span class="o">=</span> <span class="n">PyEval_GetFrame</span><span class="p">()</span><br/>    <span class="k">if</span> <span class="n">current_frame</span><span class="o">.</span><span class="n">__builtins__</span> <span class="o">!=</span> <span class="n">__builtin__</span><span class="p">:</span><br/>        <span class="k">return</span> <span class="bp">True</span><br/>    <span class="k">else</span><span class="p">:</span><br/>        <span class="k">return</span> <span class="bp">False</span><br/></pre></div>
+<p>In other words, it checks to see if the <tt class="docutils literal">__builtins__</tt> variable in the current
+execution frame is the exact same as the default <tt class="docutils literal">__builtin__</tt> module [Note
+the difference in spelling of the two variables]. If they differ, restricted
+execution is assumed.</p>
+<p>Let's see how this works out in practice:</p>
+<div class="syntax pycon"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">md5</span><span class="o">,</span> <span class="nn">inspect</span><br/><br/><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">dummy</span><span class="p">(</span><span class="n">secret</span><span class="p">):</span><br/><span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;A dummy function which creates a closure.&quot;&quot;&quot;</span><br/><span class="gp">...</span><br/><span class="gp">... </span>    <span class="k">def</span> <span class="nf">get_secret_hash</span><span class="p">(</span><span class="n">hexdigest</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span><br/><span class="gp">... </span>        <span class="k">if</span> <span class="n">hexdigest</span><span class="p">:</span><br/><span class="gp">... </span>            <span class="k">return</span> <span class="n">md5</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span><br/><span class="gp">... </span>        <span class="k">return</span> <span class="n">md5</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span><br/><span class="gp">...</span><br/><span class="gp">... </span>    <span class="k">return</span> <span class="n">get_secret_hash</span><br/><br/><span class="gp">&gt;&gt;&gt; </span><span class="n">get_secret_hash</span> <span class="o">=</span> <span class="n">dummy</span><span class="p">(</span><span class="s">&#39;My Secret.&#39;</span><span class="p">)</span><br/></pre></div>
+<p>In normal execution, we can access the <tt class="docutils literal">func_closure</tt> attribute:</p>
+<div class="syntax pycon"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">get_secret_hash</span><span class="o">.</span><span class="n">func_closure</span><br/><span class="go">(&lt;cell at 0x23da10: str object at 0x23ef98&gt;,)</span><br/></pre></div>
+<p>And use that to get at the secret:</p>
+<div class="syntax pycon"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">get_secret_hash</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span><br/><span class="go">&#39;My Secret.&#39;</span><br/></pre></div>
+<p>But if we set the <tt class="docutils literal">__builtins__</tt> variable, restricted execution mode kicks in:</p>
+<div class="syntax pycon"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">__builtins__</span> <span class="o">=</span> <span class="p">{}</span><br/><br/><span class="gp">&gt;&gt;&gt; </span><span class="n">get_secret_hash</span><span class="o">.</span><span class="n">func_closure</span><br/><span class="gt">Traceback (most recent call last):</span><br/><span class="c">...</span><br/><span class="nc">RuntimeError</span>: <span class="n-Identifier">restricted attribute</span><br/></pre></div>
+<p>Tada!!</p>
+<p>Now the eagle-eyed amongst you would have noticed the import of the <tt class="docutils literal">inspect</tt>
+module above. We will use this to show how trusted code can still access
+restricted attributes whilst within restricted execution. The inspect module has
+a useful <tt class="docutils literal">getargspec</tt> function which accesses restricted attributes to find a
+function's signature. And, as we can see, it works even in restricted execution
+mode:</p>
+<div class="syntax pycon"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">inspect</span><span class="o">.</span><span class="n">getargspec</span><span class="p">(</span><span class="n">get_secret_hash</span><span class="p">)</span><br/><span class="go">([&#39;hexdigest&#39;], None, None, (True,))</span><br/></pre></div>
+<p>Why does this work? Because the scope in which <tt class="docutils literal">getargspec</tt> was <em>defined</em>
+didn't have a custom __builtins__ and this was captured in the
+<tt class="docutils literal">getargspec.func_globals</tt>. This is just genius! And it provides us with a
+framework on top of which we can build the object capability secure Python.</p>
+<p>All we need to do is add the identified set of leak variables to the existing
+set of restricted attributes. For those who are not familiar with the internals
+of PIRE, I present a summary here of the <em>current</em> (in Python's SVN trunk) set
+of restricted attributes.</p>
+<p>The bitwise-OR-able flag contants are defined in <em>structmember.h</em>:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="70%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><cite>READ_RESTRICTED</cite></td>
+<td>Not readable in restricted mode.</td>
+</tr>
+<tr><td><cite>WRITE_RESTRICTED</cite></td>
+<td>Not writable in restricted mode.</td>
+</tr>
+<tr><td><cite>RESTRICTED</cite></td>
+<td>Not readable or writable in restricted mode.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>classobject.c</em>, instance method objects:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">im_class</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">im_func</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__func__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">im_self</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__self__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>classobject.c</em>, class objects:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">__dict__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__class__</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>classobject.c</em>, instance objects:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">__dict__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__class__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>cPickle.c</em>:</p>
+<blockquote>
+A private copy of the Pickler registry tables is used when
+PyEval_GetRestricted().</blockquote>
+<p>In <em>fileobject.c</em>:</p>
+<blockquote>
+The file() constructor will raise an error when PyEval_GetRestricted().</blockquote>
+<p>In <em>funcobject.c</em>, function objects:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">func_closure</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__closure__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_code</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__code__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_defaults</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__defaults__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_dict</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__dict__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_doc</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__doc__</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_globals</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__globals__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">func_name</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__name__</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__module__</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>marshal.c</em>:</p>
+<blockquote>
+Unmarshalling code objects will raise an error when PyEval_GetRestricted().</blockquote>
+<p>In <em>methodobject.c</em>, bultin functions:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">__self__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">__module__</tt></td>
+<td>WRITE_RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>As you can see some of the &ldquo;leak&rdquo; attributes that I want to restrict are already
+restricted in Python! All we need to do is add the following changes:</p>
+<p>In <em>codeobject.c</em>:</p>
+<blockquote>
+Creating new code objects directly will raise an error when
+PyEval_GetRestricted().</blockquote>
+<p>In <em>frameobject.c</em>:</p>
+<blockquote>
+All attributes of Frame objects are restricted except for <tt class="docutils literal">f_restricted</tt>.</blockquote>
+<p>In <em>genobject.c</em>:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">gi_code</tt></td>
+<td>RESTRICTED</td>
+</tr>
+<tr><td><tt class="docutils literal">gi_frame</tt></td>
+<td>RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>In <em>typeobject.c</em>:</p>
+<blockquote>
+<table class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">__subclasses__</tt></td>
+<td>RESTRICTED</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>The nice thing about this is that we can then use it in environments like
+<a class="reference external" href="http://code.google.com/appengine/">Google App Engine</a>, where we cannot use
+the ctypes-based approach.</p>
+<p>Here's my patch for Python's SVN trunk: <a class="reference external" href="http://cloud.github.com/downloads/tav/plexnet/pytrunk.secure.patch">pytrunk.secure.patch</a></p>
+<p>You can review the patch for acceptance into Python core here:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://codereview.appspot.com/20051/show">http://codereview.appspot.com/20051/show</a></li>
+</ul>
+<p>With this patch in place (and assuming that there aren't more &ldquo;leak&rdquo; attributes
+lying around), we can start building up a true, secure, object-capability
+framework in Python.</p>
+<p>We'd need to add things like import mechanisms and start whitelisting builtin
+functions for use. This is a big undertaking and is one that I am committed to
+&mdash; and will appreciate fellow collaborators who want to make this happen. That
+includes you hopefully =)</p>
+<p>Now, some of you may be wondering what the fuss is? Why bother creating such an
+object capability framework in Python? For that let me give you a few use cases.
+All on App Engine.</p>
+<p><strong>Custom Templates by Users</strong></p>
+<p>Web applications like Blogger don't allow users to customise their blogs using a
+rich language. Instead they have a proprietary templating system which for the
+most part is just variable substitution.</p>
+<p>Imagine instead if you could let your users use a templating language like
+<a class="reference external" href="http://genshi.edgewall.org/">Genshi</a>. Users could have the full expresivity
+of the Python language to generate the output they want.</p>
+<p>The problem with letting users do that today is that they would be able to use
+it to get at the rest of your application and start doing evil things to your
+database.</p>
+<p>But with an object capability based framework in place, you could give users the
+capability to execute Genshi templates without worrying about them somehow
+getting access to your database.</p>
+<p>And the nice thing about App Engine is that they already have something similar
+to PyPy's sandbox running &mdash; so your users won't be able to segfault your
+processes.</p>
+<p><strong>UserScripts: Python Services in Apps</strong></p>
+<p>Web applications like <a class="reference external" href="http://www.twitter.com">Twitter</a> and <a class="reference external" href="http://www.facebook.com">Facebook</a> provide APIs which let developers write services
+which run on their own servers. Imagine instead a &lsquo;Plex&rsquo; application on App
+Engine which allowed users to create and run arbitrary Python services on their
+data.</p>
+<p>Not only would this save resources &mdash; how many copies of Twitter's database are
+there?? &mdash; but it could allow for interesting <em>and</em> composable services. Perhaps
+even a <a class="reference external" href="http://tav.espians.com/espra-bootstrap.html">command line for the internet</a>?</p>
+<p>Services could be provided with a minimal __builtins__ which allowed them to
+access the <em>current</em> user's data and not anyone else's.</p>
+<p>Here's a minimal example to get you thinking:</p>
+<div class="syntax python"><pre><span class="k">def</span> <span class="nf">create_safe_get</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">):</span><br/>    <span class="k">def</span> <span class="nf">_safe_get</span><span class="p">(</span><span class="n">key_name</span><span class="p">):</span><br/>        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span> <span class="o">+</span> <span class="n">key_name</span><span class="p">)</span><br/>    <span class="k">return</span> <span class="n">_safe_get</span><br/><br/><span class="n">safe_builtins</span><span class="p">[</span><span class="s">&#39;db_get&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">create_safe_get</span><span class="p">(</span><span class="s">&#39;tav&#39;</span><span class="p">)</span><br/><br/><span class="k">exec</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;__builtins__&#39;</span><span class="p">:</span> <span class="n">safe_builtins</span><span class="p">})</span><br/></pre></div>
+<p>There are lots and lots of possibilities &mdash; imagine a GreaseMonkey-like system
+but running on the server-side and with Python&#8230; the possibilities are only
+limited by our imagination.</p>
+<p>But in order for any of this to be possible, the patch has to be accepted first.
+Guido has already promised to accept the patch (for both Core Python and App
+Engine!) if it gets reviewed.</p>
+<p>So, if you are a Python-Dev-er, can you please review it:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://codereview.appspot.com/20051/show">http://codereview.appspot.com/20051/show</a></li>
+</ul>
+<p>If not, can you at least let <a class="reference external" href="http://mail.python.org/mailman/listinfo/python-dev">Python-Dev</a> know that you'd like to
+see this patch through? Thanks!</p>
+<p>Let me know what you think in the comments below.</p>
+<p>&mdash; With love, <a class="reference external" href="http://twitter.com/tav">&#64;tav</a></p>
+<style type="text/css">table.docutils { border-color: #ffffff; }
+  table.docutils tr { border-color: #ffffff; }
+  table.docutils tr td { border-color: #ffffff; }
+</style></div>
+</div>
+<hr class="clear" />
+<div class="share">
+	If you found this post useful, then please<br />
+	<a href="http://www.facebook.com/sharer.php?t=Paving+the+Way+to+Securing+the+Python+Interpreter&amp;u=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html" title="Share on Facebook" class="fb-share share-fb">share on Facebook</a>
+	<a href="http://twitter.com/share?text=RT+%40tav+Paving+the+Way+to+Securing+the+Python+Interpreter&amp;url=http%3A%2F%2Ftav.espians.com%2Fpaving-the-way-to-securing-the-python-interpreter.html" title="Retweet" class="twitter-share share-twitter">or Tweet</a>
+</div>
+<div class="metrics">
+	<table cellspacing="0" cellpadding="3px">
+		<tr>
+			<td rowspan="2" width="24px" valign="top">
+				<a href="http://twitter.com/tav" title="Follow @tav on Twitter"><img src="http://tav.espians.com/gfx/icon.twitter.png" width="24px" height="24px" /></a>
+			</td>
+			<td valign="top">
+				<a href="http://twitter.com/tav" title="Follow @tav on Twitter"><strong class="twitter-followers">800+ followers</strong></a>
+			</td>
+			<td rowspan="2" width="24px" valign="top">
+				<a href="https://github.com/tav" title="Follow tav on GitHub"><img src="http://tav.espians.com/gfx/icon.octocat.png" width="24px" height="24px" /></a>
+			</td>
+			<td valign="top">
+				<a href="https://github.com/tav" title="Follow tav on GitHub"><strong class="github-followers">50+ followers</strong></a>
+			</td>
+			<td rowspan="2" width="24px" valign="top">
+				<a href="http://feeds.feedburner.com/asktav" rel="alternate" type="application/rss+xml" title="Subscribe to Tav's Blog"><img src="http://tav.espians.com/gfx/icon.rss.png" width="24px" height="24px" /></a>
+			</td>
+			<td valign="top">
+				<a href="http://feeds.feedburner.com/asktav" rel="alternate" type="application/rss+xml" title="Subscribe to Tav's Blog"><strong class="rss-readers">120+ readers</strong></a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="http://twitter.com/tav" title="Follow @tav on Twitter">Follow tav</a>
+			</td>
+			<td>
+				<a href="https://github.com/tav" title="Follow tav on GitHub">Follow on Github</a>
+			</td>
+			<td>
+				<a href="http://feeds.feedburner.com/asktav" rel="alternate" type="application/rss+xml" title="Subscribe to Tav's Blog">Subscribe via RSS</a>
+			</td>
+		</tr>
+	</table>
+</div>
+<hr class="clear" />
+<br />
+<script type="text/javascript">
+	ARTICLE_NAME = 'paving-the-way-to-securing-the-python-interpreter.html';
+</script>
+<script type="text/javascript" src="http://tav.espians.com/index.js?325104544"></script>
+<div id="disqus-comments-section">
+	<script type="text/javascript">
+		disqus_url = "http://www.asktav.com/paving-the-way-to-securing-the-python-interpreter.html";
+		disqus_title = "Paving the Way to Securing the Python Interpreter";
+	</script>
+	<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/asktav/embed.js"></script><noscript><a href="http://asktav.disqus.com/?url=http%3A%2F%2Fwww.asktav.com%2Fpaving-the-way-to-securing-the-python-interpreter.html">View the forum
+	thread.</a></noscript>
+</div>
+<script type="text/javascript" src="http://tav.espians.com/js/metrics.js?325104544"></script>
+</div></div>
+	</div>
+	<hr class="clear" />
+	<div class="article-nav"></div>
+</div>
+</body>
+</html>

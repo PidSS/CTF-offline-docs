@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>机器学习复习笔记</title>
+
+    <meta name="description" content="哈工大2020秋季学期机器学习课程的复习笔记。按照教师给的复习提纲来做，记录了一些机器学习知识。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="机器学习复习笔记" />
+    <meta property="og:description" content="哈工大2020秋季学期机器学习课程的复习笔记。按照教师给的复习提纲来做，记录了一些机器学习知识。" />
+    <meta property="og:url" content="https://www.ruanx.net/ml-review/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-11-20T07:08:04.000Z" />
+    <meta property="article:modified_time" content="2020-11-22T02:53:30.000Z" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="机器学习复习笔记" />
+    <meta name="twitter:description" content="哈工大2020秋季学期机器学习课程的复习笔记。按照教师给的复习提纲来做，记录了一些机器学习知识。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/ml-review/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "机器学习复习笔记",
+    "url": "https://www.ruanx.net/ml-review/",
+    "datePublished": "2020-11-20T07:08:04.000Z",
+    "dateModified": "2020-11-22T02:53:30.000Z",
+    "keywords": "algorithm",
+    "description": "哈工大2020秋季学期机器学习课程的复习笔记。按照教师给的复习提纲来做，记录了一些机器学习知识。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">机器学习复习笔记</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2020-11-20">20 Nov 2020</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>这个学期出去打了一大堆比赛，课程几乎没怎么上，当然与我自己懒也有关系；过几天就考试了，现在边复习边写这篇笔记。其实有些东西是预习，我在此之前会搞的只有那四次实验，即多项式拟合、Logistic回归、GMM和PCA。一大堆东西需要从头学起，学了后面的忘了前面的，故在此记录一下。</p><h2 id="-">第一章：机器学习基础</h2><p>机器学习的概念：若一种算法在某项<strong>任务(T)</strong>中，通过一些<strong>经验(E)</strong>，提升了它的<strong>性能(P)</strong>，则我们称为这个算法进行了学习。对这个学习任务定义为 <code>&lt;P, T, E&gt;</code> .</p><h4 id="--1">几种机器学习类型</h4><ul><li>监督学习：‌‌给定数据 $D=\{X_i, Y_i\}$‌‌学习 $F(~ \cdot ~ ; \theta)$‌‌使得 $Y_i = F(x_i)$（拟合给定的数据集），且生成 $D^{\text{new}}=\{X_j\} \Rightarrow \{Y_j\}$ （对新数据的预测）</li><li>无监督学习：‌‌给定数据 $D=\{X_i\}$ （没有 tag） ‌‌学习 $F( ~ \cdot ~ ;\theta)$ ‌‌使得 $Y_i = F(X_i)$，且生成 $D^{\text{new}} = \{X_j\} \Rightarrow \{Y_j\}$</li><li>强化学习：‌‌给定 $D=\{\text{env, actions, rewards, simulator/trace/real game}\}$ ‌‌学习 $\text{policy:} ~ e, r \to a ~ ; ~ \text{utility:} ~ a, e \to r$ ‌‌使得 $\{\text{env, new real game}\} \Rightarrow a_1, a_2, a_3,\cdots$</li></ul><p>课程主要学习了监督学习、无监督学习。</p><p>‌</p><h4 id="--2">决策树的概念</h4><p>决策树的输入是属性向量$X$，输出是$Y$.</p><p>从根节点开始，在每一个内节点，测试一个属性； 对于被测属性的结果，进入各个分支； 叶子节点预测 $Y$.</p><h4 id="--3">自顶向下构造决策树</h4><p>以二分类问题为例。在一个节点上，有若干正例、若干反例。需要选择一个属性、划分出一些分支，来将这些个案最好地分开。</p><p>若样本已经被很好地分类，则停止；否则划分样本到各个子节点后，递归上述过程。</p><h4 id="--4">各种切分方案</h4><p>对于类别变量：可以考虑多路切分，一个取值对应一路切分。也可以考虑两路切分，此时将类别分成两个子集，此时需要找到最优切分方案。</p><p>对于连续变量：可以考虑先离散化（例如聚类等手段），转为类别变量；也可以考虑二值决策（小于V的放在一路，大于等于V的放另一路），不过计算量可能很大。</p><h4 id="--5">如何评判切分方案</h4><p>一个好的切分方案，会把样本分成几个子集，最好的情况是每个子集“皆为正例”或者“皆为反例”，不过显然这很难达到。所以我们需要一个手段，来测量划分后各个子集的纯度。我们提出“节点混杂度”的概念。先来讨论几个基础概念。</p><p><strong>熵</strong> ：假设我们要给一个数据集（属性是类别变量）编码。回顾哈夫曼编码，出现频率越多的字符会得到尽量短的编码，在这里亦然。从信息论的角度，我们给出现概率为 $p$ 的属性，分配 $\log_2 (1/p)$ 的编码长度。最后来计算任意一条数据的期望编码长度：$$H(x) := \sum_{i} P(X=i)\cdot \log_2 P(X=i)^{-1} = {\color{red}{-}}\sum_{i} P(X=i)\log_2{P(X=i)}$$ 我们称这个期望编码长度为这个信源的熵，记作 $H(x)$. 显然，若信源（这个数据集）只会产生一种属性，则熵为 0；若信源可以等概率地产生两种属性，则熵为 1。</p><p>于是我们认同：熵可以衡量一个数据集的信息“纯度”。信息越纯，熵就越低；信息越混杂，熵就越高。</p><p>特定条件熵：是指 $X$ 在给定 $Y=v$ 这个条件时的熵 $H(X\mid Y=v)$ $$H(X|Y=v) := -\sum_{i}P(X=i \mid Y=v) \log_2 P(X=i\mid Y=v)$$</p><p><strong>条件熵</strong> ：是指 $X$ 在给定 $Y$ 条件下的熵 $H(X\mid Y)$ $$H(X\mid Y) = \sum_{v\in \text{var}(Y)} P(Y=v)H(X\mid Y=v)$$</p><p>在给定条件 $Y$ 之后， $X$ 的熵与原先的 $H(X)$ 相比显然有差异。我们定义 <strong>互信息</strong> ：$$I(X ~ ; ~ Y) = H(X) - H(X\mid Y) = H(Y) - H(Y\mid X) = H(X) + H(Y) - H(X, Y)$$</p><p>现在回到决策树。假设有三个数据集，正反例个数是 $(0+, 6-), (1+,5-), (2+,4-)$，显然第一个混杂度最低。我们来分别计算它们的熵：</p><ul><li>$(0+,6-)$，此时 $P_+ = 0, P_- = 1, H = - (0 \log 0 + 1 \log 1) = 0$</li><li>$(1+, 5-)$，此时 $P_+ = 1/6, P_- = 5/6, H = -(\frac16\log\frac16 + \frac56\log\frac56) = 0.6500$</li><li>$(2+, 4-)$，此时 $P_+ = 1/3, P_= = 2/3, H=-(\frac13\log\frac13 + \frac23\log\frac23) = 0.9183$</li></ul><p>可见，熵越小，混杂度越低，信息越纯。现在考虑决策树，一个节点有若干正例、若干反例，于是它有一个熵；现在把这些样本划到子节点，子节点上的样本熵的加权平均数，应该可以衡量这个划分的优劣。我们定义信息增益：$$\text{Gain} = Entropy(\text{parent}) - \sum_{\text{child}} \frac{N_{\text{child}}}{N_{\text{parent}}} Entropy(\text{child})$$</p><p>不难注意到，信息增益就是父亲节点上的数据集$S$，与切分分支变量$A$的互信息。我们测量各种切分方案的信息增益，选择具有最大信息增益的切分方式，即可确定决策树上这一个父亲节点的切分。ID3 和 C4.5 均采用了信息增益来衡量切分方案。</p><h4 id="--6">何时停止递归</h4><p>当一个结点上，所有样本同属一个类别，就停止扩展； 当一个结点上，所有样本都具有相似的属性值，就停止扩展（因为再往下面走也分不出什么东西）； 也可以强行把整棵树建成，然后再剪枝。</p><h4 id="--7">如何处理缺失的属性</h4><p>在考虑利用属性 $X_i$ 进行切分时，计算信息增益的时候忽略掉缺失 $X_i$ 属性的个案；在执行划分时，将缺失属性的个案以不同的权重划分到每个子树，权重为各个子树的大小。譬如原来有10个个案，划分给左边3个，右边9个，则把那个缺失的个案拆成两份，1/3的那份划分到左边，2/3的那份划分到右边。递归之后再计算熵时，也要依据权重来计算概率（而不是点算个案数量）。</p><p>‌             ‌‌</p><h2 id="--8">第二章：统计学习的建模工具</h2><h4 id="--9">期望和方差</h4><p>$$E(X) =  \begin{cases}‌‌\sum_x x\cdot P(x) &amp; \text{discrete} \\‌‌\int_{-\infty}^{+\infty}x\cdot p(x)\text d x &amp; \text{continuous}‌‌\end{cases} $$ $$D(X) =  \begin{cases}‌‌\sum_x (x-E(x))^ 2 \cdot P(x) &amp; \text{discrete} \\‌‌\int_{-\infty}^{+\infty} (x - E(X)) ^ 2\cdot p(x)\text d x &amp; \text{continuous}‌‌\end{cases} $$</p><p>‌</p><h4 id="--10">高斯分布</h4><p>一维：$N(\mu, \sigma^2)$，PDF:</p><p>$$p(x) = \frac1{\sqrt{2\pi}\sigma}\exp \left\{-\frac{(x-\mu) ^ 2 }{2\sigma ^ 2} \right \}$$</p><p>多维（多元正态分布）： $N(\mu, \Sigma)$，PDF：</p><p>$$p(x) = \frac1{\sqrt{(2\pi) ^ k |\Sigma|}} \exp\left\{ -\frac12 (x-\mu) ^ T \Sigma ^ {-1} (x-\mu) \right\}$$</p><p>‌</p><h4 id="--11">贝叶斯公式</h4><p>$$P(A\mid B) = \frac{P(A\cap B)}{P(B)} = \frac{P(B\mid A) P(A)}{P(B)}$$</p><p>可知 $$P(Y=y\mid X) = \frac{P(X\mid Y=y) P(Y=y)}{\sum_k P(X\mid Y=y_k) P(Y=y_k)}$$</p><p>这是很多机器学习模型的基础。譬如GMM模型，有多个待选的类，我们想要在给定$X$的情况下选择概率最大的类$Y$，就需要知道在给定$X$的条件下，$Y=y$ 的概率 $P(Y=y \mid X)$. 它正比于 $P(X\mid Y=y)P(y)$，而乘法左项是对应类的PDF，右项是对应类的先验概率，均为已知量。</p><h4 id="--12">最大似然估计</h4><p>假设我们的数据集$D$是独立同分布的，现在想从 hypothesis set (候选函数) 里面找一个函数来拟合这个数据集。一种方式是进行最大似然估计(maxmimum likelihood estimation, MLE)。它的核心思想是：特定的参数 $\theta$ 指定了一个候选函数，这个候选函数产生 $D$ 这个数据集的概率是可以计算的。那么我们对于所有的 $\theta$，它生成 $D$ 这个数据集的概率值（称为likelihood），也就是：</p><p>$$\begin{aligned}L(\theta) &amp; = P(D ~ ; ~ \theta) \\ &amp;= P(x_1 , x_2, \cdots, x_N ~ ; ~ \theta) \\ &amp;= P(X=x_1 ~ ; ~ \theta)  P(X=x_2 ~ ; ~ \theta) \cdots P(X=x_N ~ ; ~ \theta)  \\ &amp;=\prod_i P(X = x_i ~ ; \theta) \end{aligned} $$</p><p>‌</p><p>第三个等号，是因为 $x_1, x_2,\cdots, x_N$ 是独立同分布的变量的实例。于是每一个参数 $\theta$ 都有一个描述“$\theta$ 生成样本集 $D$ 的概率”的似然值，我们比较各个似然值，取出最大的，这就是MLE的思想：$$\hat \theta = \text{argmax}_\theta ~ L(\theta)$$</p><p>显然，数据集很多的时候，似然值会越乘越小，给数值计算带来麻烦。我们一般对上面的式子取一个 log 再最小化。由于 log 是递增的，所以求出来的 argmax 不会变。</p><p>举一个例子，我们抛硬币 100 次，其中 70 次正面朝上。我们设硬币符合伯努利分布，每次抛硬币有 $\theta$ 的概率正面朝上。那么对于一个参数 $\theta$，它生成这个数据集，也就是70次正面、30次反面的概率是：$$L(\theta) = \theta ^ {70} (1-\theta) ^ {30}$$ 这显然很难求 argmax，我们给它取对数。</p><p>$$\begin{aligned}\log L(\theta) &amp;=  \log(\theta ^ {70} \cdot (1-\theta) ^ {30}) \\ &amp;= 70\log\theta + 30\log(1-\theta) \end{aligned}$$</p><p>‌</p><p>想要最小化之，于是对$\theta$求导，最终得到方程$$\frac{70}{\theta} - \frac{30}{1-\theta}=0$$ 解得 $\theta = 0.7$，和我们预想的吻合。</p><p>若某变量服从正态分布，也可以用最大似然法估出 $\mu, \sigma$，结果与均值、方差（有偏）是一致的。过程略。</p><h4 id="--13">最大后验方法</h4><p>我们抛硬币10次，其中8次朝上，按照MLE的思路，这个硬币抛出正面朝上的概率就是0.8，然而实际生活中，我们不太会据此判断抛这个硬币八成正面朝上。这是因为我们见过的硬币都是比较均匀的，我们有“硬币一般是均匀的”这一个先验知识。</p><p>MLE的思想中，实际参数$\theta$是一个<strong>定值</strong>，我们需要通过观测，来直接估计这个值，没有利用任何先验知识。而贝叶斯思想中，$\theta$是一个<strong>随机变量</strong>，不同的取值概率是不一样的，具体的概率分布是由我们依据经验来估计。比如我们可以估计，人民币硬币的“正面朝上概率”服从以0.5为均值的正态分布。</p><p>最大后验方法(MAP)不是尝试最大化$P(D;\theta)$，而是尝试最大化$P(\theta \mid D)$. 也就是说，MLE是对于每一个$\theta$，比较<strong>参数$\theta$生成这个数据集的概率</strong>，是在$\theta$指定的情况下求生成数据集$D$的概率；MAP是考虑“数据集已知的情况下，<strong>$\theta$最有可能的取值</strong>”，是在数据集$D$给定的情况下，求$\Theta = \theta$的概率。我们注意到：$$P(\theta \mid D) = \frac{P(D \mid \theta)P(\theta)}{P(D)} \propto P(D\mid \theta)P(\theta)$$ 亦即，我们关注的是<strong>似然值与 $\theta$ 先验概率的乘积</strong>。哪个 $\theta$ 这个值最大，我们就取哪个 $\theta$ 作为最终的参数。</p><p>与MLE的式子相比，我们利用了先验知识 $P(\theta)$. 仅仅最大化似然值是不够的，似然值很大但先验概率很小（也就是说，很不合常理）的例子，将会被拒绝。以硬币问题为例，10次实验得到8个正例，并不会让我们认为硬币正面朝上概率是0.8，只会让我们认为其概率稍大于0.5；但如果我们做10000次实验得到8000个正例，最大后验方法得到的$\theta$会比较接近0.8，此时似然值占据主要地位。</p><p>通过上面的讨论，我们发现最大后验方法是适应性很强的方法，也可以充分利用我们人的生活经验等先验知识。但是，对于MAP而言，先验概率$P(\theta)$是完全凭借人的估计，不同的研究者采用的先验概率分布千差万别，导致结果差异很大。从这个角度来讲，MAP是主观的。</p><p>‌             ‌‌</p><h2 id="--14">第三章：回归分析与过拟合</h2><h4 id="--15">线性回归和最小二乘法</h4><p>最简单的线性回归，是给定若干个点 $X\in R^m$，要求尽可能地拟合出一个 $m-1$ 维的超平面。在$n=2$的时候，就是在平面直角坐标系上给出很多个点，要画一条直线经过这些点。</p><p>一个思路是，我们对于一个参数 $w$，输出$w^T\cdot x$ 。（为了计算简便，我们钦定$x^{(0)}=1$，这样就可以把偏移$b$看作$w_0$）。接下来，不同的 $w$ 会给出不同的超平面，需要一种方法来衡量直线的好坏。采用最小二乘误差，也就是：</p><p>$$E(w) = \frac12 \sum_{i=1}^N ( w^T\cdot x_{(i)} - y_{(i)} )^2$$</p><p>求个导，有方程 $$\frac{\partial E}{\partial w} = \sum_{i=1}^N (w ^ T x_i - y_i) x_i = 0$$</p><p>解出来 $w^*$ 就行了。</p><h4 id="--16">多项式拟合</h4><p>显然，用多项式拟合一些点，本质上等价于线性拟合，只不过线性拟合的输入 $X = (1, x, x^2, x^3, \cdots, x^m)$. 需要找到最优参数 $w$，使得 $w_0 + w_1x + w_2x^2 + \cdots + w_mx^m $ 尽可能等于 $y$. 这和我们刚刚解决的线性拟合问题一模一样，直接套用即可。</p><h4 id="--17">过拟合</h4><p>我们刚刚的拟合过程，<strong>只对数据负责，不对分布负责</strong>，亦即不对未来的数据负责。最小二乘只保证了“对于这些给定的点而言，我拟合出的超平面是最好的”；没有保证对于其他的点，也能与实际情况一致。此时，模型只注重于提升“在当前数据集下的性能”，亦即把训练误差降得很低；但没有考虑<strong>泛化能力</strong>，从而测试误差会很高。</p><p>我们在多项式拟合的过程中观测到，产生过拟合时，$w$ 的各个参数往往非常大。于是我们考虑能不能在训练误差较小的同时，让 $w$ 尽可能小。办法就是往误差函数里面加惩罚项（亦称正则项）：$w$的参数越大，惩罚项越大，会增加误差。显然，当误差最小时，应该训练误差很小、惩罚项也很小。于是误差式（在最小二乘误差的基础上）改为： $$\hat E(w) = E(w) + \frac{\lambda}{2} ||w|| ^ 2$$ 其中的正则项是 $w$ 的 L2 范数。当然惩罚项有很多种选取方式，这里选择了比较常用的 L2-norm.在超参数 $\lambda$ 比较合适的情况下（本例中可能是$10^{-5}$量级），训练结果极大地缓解了过拟合。当然 $\lambda$ 设得太大也不行，$\lambda$太大了就会变成 $w$ 向量的长度竞赛。</p><h4 id="--18">最小二乘与最大似然</h4><p>需要指出的是，如果我们确信对于指定的若干个采样点$x_i$，观测到的数据$Y_i$等于真实值$f_\theta(x_i)$加一个高斯噪声 $\epsilon$（方差随便），亦即 $Y_i \sim N(f_\theta(x_i), \sigma) $，那么最大似然与最小二乘是<strong>等价</strong>的。我马上来证明这一点。考虑似然值</p><p>$$\begin{aligned}L(\theta) &amp;= P(D; \theta) \\ &amp;= \prod_i P(Y_i=y_i ; ~ \theta) \\ &amp;=\prod_i \frac1{\sqrt{2\pi} \sigma} \exp\left\{ -\frac{(y_i - f(x)) ^ 2 }{2\sigma ^ 2} \right\} \end{aligned}$$</p><p>取对数，有 $$\ln L = \sum_i [\ln \frac1{\sqrt{2\pi}\sigma} - \frac{(y_i - f(x)) ^ 2}{2\sigma ^ 2}] $$ 从而 $$\text{argmax}_\theta \ln L = \text{argmax}_\theta  \sum_i - \frac1{2\sigma ^ 2} \cdot (y_i - f(x)) ^ 2  = \text{argmin}_\theta (y _ i - f_\theta(x)) ^ 2$$至此和最小二乘法的优化目标一模一样了。</p><p></p><h4 id>特征变换</h4>
+<p>简要来讲，特征变换就是从一组已有的特征，进行数学运算，得到一组新特征；新特征相比于旧特征有一些优势。例如异或本来是线性不可分的，但我们做一组新特征：$(x, y, xy)$，这样就可分了，分界面可以是 $x+y-2z=0.5$。从而特征变换可以提取隐含的特征。</p>
+<p>另一个特征变换的例子是PCA。PCA是从众多的特征中，选择一些<strong>主要</strong>的特征向量，来尽可能地表达原来的特征。而这些主要的特征，是从各个维度变量的协方差矩阵的特征向量中取的。特征值越大，在对应特征向量方向上，数据点投影的方差越大。于是取最大的 $k$ 个特征值对应的特征向量即可。</p>
+<hr></hr><h2 id>第四章：贝叶斯判别</h2>
+<h4 id>贝叶斯判别规则</h4>
+<p>假设我们正在分类一个样本。对于每一个类，我们已知这个类生成这个样本的概率（典型例子是GMM）。那么现在想要判断个案 $x$ 出自哪个样本，只需要知道 $P(Y=i\mid X=x)$，亦即 $$P(Y=i\mid x) = \frac{P(x\mid Y=i)P(Y=i)}{P(x)} = \frac{\pi_i p_i(x)}{\sum _ k \pi_k p_k (x)} \equiv q_i (x)$$</p>
+<p>这里的 $P(Y=i \mid x)$ 也就是 $q_i (x)$ 亦称似然函数。</p>
+<p>在执行判别时，分母显然是个定值，我们只需要判断分子的大小。也就是说，若 $\pi_a p_a(x) &gt; \pi_b p_b(x)$，我们就判断 $a$ 类胜出。写作另一种形式：$$\ell_{ab} = \frac{p_a(x)}{p_b(x)} &gt; \frac{\pi_b }{\pi_a} $$ 上式中 $\ell_{ab}$ 称为似然比，$\pi_b / \pi_a = \theta_{ba}$ 称为判决阈值。这种判别方式就是贝叶斯判别。</p>
+<p>与之等价地，实践上可以两边取对数，再比较。决策函数是：$$h(X) : -\ln p_1(X) + \ln p_2(X) &gt; \ln \frac{\pi_1}{\pi_2}$$</p>
+<h4 id>贝叶斯误差</h4>
+<p>依据<strong>预先知道的真实分布</strong>而作出决策，其误差称为贝叶斯误差。很明显，既然我们已经掌握了真实的分布，此时仍然存在的误差是偶然性的误差，是无法消除的。贝叶斯误差是理论上最小的误差。</p>
+<h4 id="k">k临近分类器</h4>
+<p>kNN的思想如下：对于一个个案，找到它附近的 $k$ 个个案（邻居），把这些邻居的类别的众数作为自己的类别。</p>
+<p>kNN是比较接近于最优解的。有证据证明，渐近情况下，1-临近的分类器的误差小于2倍贝叶斯误差，不过这毕竟是理论结果。另外，若贝叶斯分类器误差为0，渐进地，k临近也会为0。</p>
+<p>kNN的显著缺陷是，数据很大的情况下计算量太大；另外，若某一个类的个案特别多，如果 k 选得稍大了一点，就会导致错误分类。</p>
+<p>kNN是基于实例的学习。需要确定一个距离函数，需要确定超参数k，然后kNN会根据手上已有的实例来进行分类。常用的距离函数有欧氏距离（L2范数）、曼哈顿距离（L1范数）等。</p>
+<h4 id>参数分类器和非参数分类器</h4>
+<p>参数分类器假设了数据分布符合某种形式，亦即特定的hypothesis set，一个参数对应一个hypothesis function，然后通过调整自己的参数，来最优化分类结果。</p>
+<p>非参数分类器没有假设数据分布，完全依赖自己已有的样本。</p>
+<p>我们称一个分类器是<strong>贝叶斯分类器</strong>，当且仅当它对样本生成概率的估计，等于真实分布。贝叶斯分类器显然是最优的分类器，其误差也等于贝叶斯误差。</p>
+<h4 id>线性分类器</h4>
+<p>所谓线性分类器，就是采用一个超平面为分界面，在不同侧的就是不同的类。决策函数一般符合$$h(x): w^T x &gt; b$$常见的线性分类器有Logistic分类器、SVM等。</p>
+<h4 id>生成式模型和判别式模型</h4>
+<figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2020/11/image-3.png" class="kg-image" alt width="1133" height="798" layout="responsive"></amp-img></figure><p>如上图所示。<strong>判别式模型</strong>直接对$P(Y\mid X)$建模，试图在样本$X$的条件下直接找到概率最大的 $Y=f(x)$。判别式模型可以一步到位地给出分类结论。而<strong>生成式模型</strong>是对联合分布$p(x,y)$建模，当取得样本$X$（例如右图中的红色三角形）时，在$p(X,Y)$里面选最大的。实践上可能是这样操作：求出蓝色类生成它的概率$P(X\mid 蓝)$、求出黄色类生成它的概率$P(X\mid 黄)$，进而利用贝叶斯，依据蓝色、黄色各自的先验概率$\pi$，推断出$P(蓝\mid X),P(黄\mid X)$（它们正比于联合分布），选择更大的那一个。</p>
+<p>判别式模型的典型例子有逻辑回归、SVM；生成式模型的典型例子有GMM、朴素贝叶斯。</p>
+<hr></hr><h2 id>第五章：朴素贝叶斯与逻辑回归</h2>
+<h4 id>条件独立</h4>
+<p>我们称$X$在给定$Z$的条件下条件独立于$Y$，当且仅当 $X$ 的分布在给定$Z$的条件下与$Y$无关。形式化地：$$\forall i, j, k \quad P(X=x_i \mid Y=Y_j , Z=z_k) = P(X=x_i \mid Z=z_k)$$缩写为$$P(X\mid Y,Z) = P(X\mid Z)$$</p>
+<p>若$X_1,X_2$在给定$Y$时条件独立，那么立即有</p>
+<p>$$\begin{aligned}P(X_1, X_2 \mid Y) &amp;= P(X_1 \mid X_2, Y) P(X_2 \mid Y) \\ &amp;= P(X_1 \mid Y)P(X_2\mid Y) \end{aligned}$$</p><p>一般化，若$X_i$ 与$Y$条件独立，那么有$$P(X_1, X_2, \cdots, X_n \mid Y) = \prod_i P(X_i \mid Y)$$这是朴素贝叶斯的基础。</p>
+<h4 id>朴素贝叶斯</h4>
+<p>首先，假设我们想从2个二值离散变量里面学它的分类。这显然是很好做的，一共只有四种情况，求出对应的概率 $P(X_1, X_2 \mid Y)$ 即可。</p>
+<p>然而，当离散变量有数十个、上百个，我们要学的参数会指数级地增加；另外，数据也明显不够（这种暴力学习相当于对每一个个案，生成一条决策树从根到叶子节点的路径，需要指数级的数据才能学到整棵树）。</p>
+<p>但我们仍然想利用现有的少量数据，学到判别策略，也就是对于任何一个给定的$X_1, X_2,\cdots, X_n$，需要生成$$P(Y=y_k \mid X_1, X_2, \cdots, X_n)$$</p>
+<p>我们采用贝叶斯定理，上面式子改写为$$\frac{P(Y= y_k) P(X_1, X_2, \cdots, X_n \mid Y=y_k)}{P(X_1, X_2, \cdots, X_n)}$$</p>
+<p>对于某个给定的$X$，分母是恒定的。我们只需要最大化分子，也就是：$$\text{argmax}_k ~  P(Y=y_k)P(X_1, X_2, \cdots, X_n \mid Y=y_k)$$</p>
+<p>现在，朴素贝叶斯假设<strong>各个$X_i$之间是无关的</strong>。上式转化为$$\text{argmax}_k ~  P(Y=y_k) \prod _i P(X_i  = x_i\mid Y=y_k)$$</p>
+<p>先验分布 $P(Y=y_k) = \pi_k$ 是可求的，$P(X_i = x_i \mid Y=y_k)$也是可求的：它等于在$y_k$这一类别中，第 $i$ 个属性等于 $x_i$ 的个案占样本数的比例。我们记 $\theta_{i,j,k}$ 为“类别为$k$的样本中，第$i$个属性为$j$的个案占样本总量的比”，那么就可以给出分类判别：</p>
+<p>$$Y ^ {\text{new}} = \text{argmax} _k ~ P(Y = y_k) \prod_i  \theta _ {i,x_i,k} $$</p>
+<h4 id>零概率问题与拉普拉斯平滑</h4>
+<p>在朴素贝叶斯中，如果某属性上的概率为0，则会产生零概率问题。譬如100份调查问卷，“你是否出生于1926年8月17日”这个问题所有人都填了“否”，从而这个属性的反例概率为1；现在来了一个you-know-who，填写这份表之后，我们要给他判断一个类别，然而对于任何类别，因为有$P(出生于19260817\mid Y)$这个为0的因数，得到的结果全为0.</p>
+<p>处理办法是拉普拉斯平滑。令$N$表示训练集$D$中可能的类别数，$N_i$表示第$i$个属性可能的取值数，把$P(c)$和$P(X_i\mid c)$的公式分别修正为：$$\hat P(c) = \frac{|D_c| + 1}{|D| + N}$$ $$\hat P(X_i = x_i \mid c) = \frac{|D_{c, x_i}| + 1}{|D_c| + N_i}$$</p>
+<h4 id>处理连续属性</h4>
+<p>修改朴素贝叶斯模型，将 $P(X=x_i \mid Y=y_k)$ 改为其概率密度函数。譬如我们采用高斯分布：$$P(X=x_i \mid Y=y_k) = \frac{1}{\sqrt{2\pi}\sigma_{i,k}}\exp\left(-\frac{(x-\mu_{i,k})^2}{2\sigma_{i,k} ^ 2}\right)$$</p>
+<p>参数$\sigma,\mu$需要学习。可以采用最大似然来产生$\sigma, \mu$，即让$\sigma$为第$k$类样本第$i$个属性的标准差，让$\mu$为均值。当然也可以采用最大后验方法，加一些先验知识进去。</p>
+<h4 id="logistic">Logistic回归</h4>
+<p>现在我们考虑一个线性可分的二分类问题。接下来我们构造一个判别式模型，假定数据满足以下条件：</p>
+<ul>
+<li>属性 $X\in R^{n}$</li>
+<li>输出 $Y$ 是布尔变量</li>
+<li>给定 $Y$ 时，$X_i$ 相互条件独立</li>
+<li>$P(X_i \mid Y=y_k)$ 符合高斯分布 $N(\mu_{ik}, \sigma_i)$ （每个属性是从一个高斯分布中取出的）</li>
+<li>$P(Y)$ 符合伯努利分布</li>
+</ul>
+<p>那么我们来看给定一个输入$X$，其为正例的概率。</p>
+<p>$$\begin{aligned}P(Y=1\mid X) &amp;= \frac{P(Y=1)P(X\mid Y=1)}{P(Y=1)P(X\mid Y=1) + P(Y=0)P(X\mid Y=0)}  \\ &amp;=\frac1{1 + \frac{P(Y=0)P(X\mid Y=0)}{P(Y=1)P(X\mid Y=1)}}  \\ &amp;= \frac{1}{1+\exp\{\ln  \frac{P(Y=0)P(X\mid Y=0)}{P(Y=1)P(X\mid Y=1)} \}}  \\  &amp;= \frac{1}{1+\exp\left\{ {\color{blue}{(\ln \frac{1-\pi}{\pi})}} + {\color{red}{\sum_i \ln \frac{P(X_i \mid Y=0)}{P(X_i \mid Y=1)} }}\right \}} \end{aligned}$$</p><p>蓝色式子是常量，而红色式子等于 $$\sum_i\left( \frac{\mu_{i0}-\mu_{i1}}{\sigma_i ^ 2} X_i + \frac{\mu_{i1} ^ 2 - \mu_{i0} ^ 2}{2\sigma_i ^ 2} \right)$$</p>
+<p>可见是 $X$ 向量点乘一个常量，再加上一个常量。从而整个式子可以表达为：$$P(Y=1\mid X) = \frac{1}{1+\exp(w_0 + \sum_i w_i X_i)} = \frac{1}{1 + \exp(w^T X)}$$</p>
+<p>通过一系列运算，我们得到一些将来会有用的性质。记 $f(x) = P(Y=1\mid X=x)$，有$$P(Y=0\mid x) = 1-f(x) = f(-x)$$</p>
+<p>另外，我们做决策时，是比较$f(x)$与$1-f(x)$的大小，也就是若 $\frac{1-f(x)}{f(x)} &lt; 1$ 则判断是正例，否则判断是反例。也即判断 $exp(w^TX) &lt; 1$，也就是判断 $w^TX&lt;0$. 我们发现这是一个超平面，故 Logistic 回归是线性分类器。</p>
+<h4 id>扩展：更多的类</h4>
+<p>在二分类任务中，正例的权重是 $1$，反例的权重是 $\exp(w^Tx)$. 若 $Y$ 有更多类，可以扩展Logistic回归，此时需要学习多个$w$向量。若有 $R$ 个类，则概率值改为：</p>
+<p>$$P(Y=y_k\mid X) = \begin{cases}\frac{\exp(w_k ^T X)}{1+\sum_{j=1}^{R-1}\exp(w_j ^T X)} &amp; \text{for } k &lt; R \\ \frac{1}{1+\sum_{j=1}^{R-1}\exp(w_j ^T X)}  &amp; \text{for } k = R\end{cases}  $$</p><h4 id="mcle">条件最大似然估计(MCLE)</h4>
+<p>现在我们需要训练Logistic回归分类器。手上有若干个样本：$&lt;X^1, Y^1&gt;, &lt;X^2, Y^2&gt;, \cdots$ 现在我们想让似然值最大。</p>
+<p>$$w_{MLE} = \arg\max_w P(&lt;X^1, Y^1&gt;\dots&lt;X^L,Y^L&gt;\mid w)$$</p>
+<p>由于各个数据独立，有$$w_{MLE} = \arg\max_w\prod_l P(&lt;X^l, Y^l&gt; \mid w) = \arg\max_w\prod_l P(Y^l \mid X^l, w)$$</p>
+<p>现在，我们需要选择一个向量$w$，来最大化这个条件似然值。</p>
+<p>$$\begin{aligned}l(w) &amp;= \sum_l\ln P(Y^l \mid X^l, w) \\  &amp;= \sum_l \left(  Y ^ l \ln P(Y ^l =1 \mid X ^ l, w) + (1-Y ^ l) \ln P(Y ^ l = 0 \mid X ^ l ,w) \right)  \\ &amp;= \sum_l \left(  Y ^ l \ln  \frac{P(Y ^l=1 \mid X ^l, w)}{P(Y ^l = 0 \mid X ^ l, w)} + \ln P(Y ^l = 0 \mid X ^ l, w)  \right)  \\ &amp;=  \sum_l \left(  Y ^ l (w^T X ^l) - \ln (1 + \exp(w ^ T X^l))  \right) \end{aligned}$$</p><p>很遗憾，它没有解析解。我们需要通过梯度下降求出近似解。</p>
+<h4 id="mclemap">MCLE与MAP</h4>
+<p>它们的共同点是$\theta$有某种先验。例如上例，递归下降算法中，$\theta$的初值是一个先验知识。</p>
+<p>它们都可以利用先验知识，抑制过拟合。不过 MAP 直接把 $P(\theta)$ 乘在了最大化的式子上。</p>
+<p>MAP：$$\arg\max_w ~ \ln {\color{blue}P(w)} \prod_l P(Y ^ l\mid X ^ l, W)$$MCLE：$$\arg\max_w ~ \ln \prod_l P(Y ^ l\mid X ^ l, W)$$</p>
+<hr></hr><h2 id="svm">第六章：SVM与核方法</h2>
+<h4 id>最大间隔方法</h4>
+<p>若在平面上想要为线性可分的两类数据进行划分，显然，为了避免过拟合，分界线离两个类都应该尽可能远。现在我们考虑分界线方程 $w^Tx+b = 0$，若$w ^T x + b &gt; c$，则判断为正例；若小于 $-c$，则判断为反例。显然，$c$ 并不需要取遍所有的值，事实上我们只需要让$c=1$，因为若为其他值，则等式左右两边同时除以$c$即可变成$c=1$的情况。至此我们总结出SVM的判断方式：若$w^T x+b&gt;1$，则为正例；若$w^Tx+b&lt;-1$，则为反例。</p>
+<p>我们的分界线显然在$w^Tx+b=1, w^Tx+b=-1$这两条平行线正中间，现在我们希望间隔距离最大。这就是最大间隔方法。</p>
+<p>现在考虑如何求出这个最大间隔。现在我们随便取个点$x_1$使得$w^Tx_1 + b = -1$。由线性代数基础知识，注意到 $w$ 向量与分界线垂直，于是$x_1$对面那个点 $x_2 = x_1 + \lambda \frac{w}{||w||}$，其中 $\lambda$ 即为margin。同时 $x_2$ 需要满足 $w^Tx_2 + b = 1$，综合我们得到</p>
+<p>$$\begin{aligned} w^T (x_1 + \lambda \frac{w}{||w||}) + b &amp;= 1 \\  w ^ T x_1 +b+\lambda \frac{w^Tw}{||w||} &amp;= 1  \\ \lambda \frac{w ^ T w}{||w||} &amp;= 2\\ \lambda &amp;= \frac{2}{||w||} \end{aligned}$$</p><p>从而我们想要最大化margin，就是最大化$\lambda=\frac{2}{||w||}$，也等价于最小化 $w^T w$. 形式化地：</p>
+<p>$$\begin{align*}\min_w \qquad \frac{w^Tw}{2}\\ s.t. \quad y_i (w^T x_i + b) \geq 1  ~~~, \forall i\end{align*}$$</p><p>这就是支持向量机。$y_i (w^Tx_i +b) = 1$ 的个案，称为“<strong>支持向量</strong>”。形象地，它们支撑起了两条线，这两条线的距离是margin.</p>
+<p>这个形式的优化问题是二次优化问题，已经可以直接求解。接下来我们会利用拉格朗日对偶性来优化。此外，接下来的推导将很容易地引出 kernel trick.</p>
+<h4 id>拉格朗日乘子法</h4>
+<p>等式条件的拉格朗日乘子法我们已经会了，现在来考虑不等式约束。首先，我们想要优化的函数是 $f$。但是需要满足若干个不等式条件$g$，也就是</p>
+<p>$$\begin{aligned}\min_{w}&amp;\quad f(w) \\ s.t.&amp;\quad g_i(w) \leq 0, ~ ~ ~ ~ i=1,2\dots,k \end{aligned}$$</p><p>现在对于我们要解决的问题，我们的不等式约束是 $y_i (w^Tx_i +b) \geq 1$，写成 $1-y_i(w^Tx_i + b) \leq 0$ ，发现形式与拉格朗日乘子的约束对应上了。现在假设我们手上有一份$w,b$，想要衡量它是否合法，我们考虑$$\sum_i\max_{\alpha_i \geq 0} \alpha_i(1-y_i(w^Tx _i + b))$$<br />
+显然，这个$w,b$要是合法，那么上面式子必然为0，因为每一项都为非负，$\alpha$又不小于0；事实上，大部分时候$\alpha_i$必须等于0才能最大化 $\alpha_i(1-y_i(w^Tx _i + b))$。如果 $w,b$ 不合法，那么必然有一个 $1-y_i(w^Tx _i + b)$ 是大于0的，此时 $\alpha_i$ 会往无穷大发展，来取得max值。于是如果 $w,b$ 不合法，这整个式子的值是趋向于正无穷大的。</p>
+<p>总结一下，现在我们有了这样一个工具：如果$w,b$不合法，则它为正无穷大；如果$w,b$合法，则为0. 现在我们考虑</p>
+<p>$${\color{blue}\frac{w^Tw}{2}} + \color{green} \sum_i\max_{\alpha_i \geq 0} \alpha_i(1-y_i(w^Tx _i + b))  $$</p><p>来考虑这个式子在什么时候取到min. 这里面有两项，蓝色为SVM的优化目标，绿色为我们刚刚弄出来的工具。如果$w,b$非法，那么整个式子会是无穷大，因此整个式子的min值一定在$w,b$合法的时候才能取到；此时绿色部分为0，于是整个式子的min值就恰好等于 $\frac{w^Tw}{2}$ 的min值。通过拉格朗日乘子法，我们成功地将有约束极值改造成了无约束极值。</p>
+<p>接下里的目标是求</p>
+<p>$$\min_{w,b} \left\{ \frac{w^Tw}{2} + \sum_i \max_{\alpha _ i\geq 0} \alpha_i [1-y_i (w ^ T x_i + b)] \right\}$$</p><p>比较遗憾，这很难求。上面的式子是固定$w,b$，变动$\alpha$，很难求出解来；但如果我们换一个思路：先固定$\alpha$，在$\alpha$指定的情况下变动$w,b$，这个问题称为对偶问题：$$\max_{\alpha_i \geq 0} (\min _{w,b} J(w,b;\alpha)) \quad \text{where} ~ J(w,b;\alpha) = \frac{w^Tw}{2} + \sum_i \alpha_i (1-y_i (w^T x _i + b))$$</p>
+<p>我们通过解对偶问题，可以获得原问题的一个比较优的解（如果符合强对偶性，那么对偶问题的最优解 $d^*$ 就是原问题的最优解 $p ^ *$）. 既然 $\alpha$ 是固定的，想要让 $J$ 取最小值，需要让 $\frac{\partial J}{\partial w} = \frac{\partial J}{\partial b} = 0$. 一番求导之后我们得到 $w=\sum_i \alpha_i y_i x_i$ 且 $\sum_i \alpha_iy_i=0$. 整个式子的最小值为 $$\min_{w,b} J(w,b;\alpha) = \sum_i \alpha_i - \frac12 \sum_{i,j} \alpha_i\alpha_jy_i y_j x_i^T x_j$$</p>
+<p>于是对偶问题就是：$$\max_{\alpha \geq 0} \left( \sum_i \alpha_i - \frac12 \sum_{i,j} \alpha_i\alpha_jy_i y_j x_i^T x_j \right)$$约束条件：$\sum_i \alpha_iy_i = 0$，且$\alpha_i \geq 0$. 这又是一个二次规划问题，但是比原来那个要好解一些。</p>
+<p>求出 $\alpha$ 之后，我们用 $w=\sum_i \alpha_iy_ix_i$ 即可恢复出 $w$.</p>
+<p>实际上，我们拿着 $\alpha, b$，也可以直接用来分类数据。这是因为：</p>
+<p>$$w^Tz + b = \left(\sum_{i} \alpha_i y_i x_i^T z\right)  + b$$</p>
+<p>我们甚至能做得更快：注意到只有支持向量的$\alpha$才可以非0，在求和的时候只需要取支持向量就行了。另外，我们这里向量 $x_i$、$z$ 唯一参与的运算是内积，这将在未来被核函数替代。</p>
+<h4 id>数据噪音的处理</h4>
+<p>如果数据不是完全线性可分的，我们必须允许一些点被分错类。而若第$i$个点不满足 $1-y_i(w^Tx_i + b) \geq 0$，则$\alpha_i$有变大的趋势；此时我们加一条限制 $\alpha\leq C$，即可让 $\alpha$ 在错误分类的情况下顶多达到 $C$，等价于添加了惩罚项。对偶问题的约束变为：$\sum_i \alpha_iy_i = 0$，且$0\leq \alpha_i \leq C$.</p>
+<h4 id>核方法</h4>
+<p>如果原来的数据本身就是线性不可分的，SVM就炸了。譬如一个数据集，以 $x^2 + y^2 = 1$ 为界，里面的是正例，外面的是反例。这显然线性不可分，于是SVM对这种情况无能为力。</p>
+<p>但是，如果我们做一个特征变换：$$\varphi(x) = (1,\sqrt2 x_1, \sqrt2x_2, \sqrt2x_1x_2, x_1^2, x_2^2)$$<br />
+数据从二维升到五维之后，数据将会变得线性可分。另外说一句，异或在这个特征变换之后也可分。</p>
+<p>但是这个方法并非完美。有些隐特征是需要很高的维度，才能线性地切分开来。如果我们需要把数据升到100维，每一个向量都会变成100维，这会大幅增加计算。</p>
+<p>回顾之前的过程：我们优化对偶问题的时候，并不需要真正地给向量做特征变换，而只需要知道特征变换之后<strong>向量的内积</strong>；在分类的时候，也只需要<strong>向量的内积</strong>。所以我们可以这样做：并不显式地升维变量，而是在向量需要求内积的时候，<strong>用我们新的函数来替换内积函数</strong>。这就是核函数。</p>
+<p>上面那一个从二维升到五维的例子，其特征变换之后再点积，实际上等于$$K(x_1, x_2) = (1+x_1^Tx_2) ^ 2$$这并不需要太多的计算。所以我们通过核函数，避免了真正执行升维，只需要在计算内积的时候采用核函数来替代。</p>
+<p>常用的核函数有：</p>
+<ul>
+<li>线性核 $K(x_1, x_2) = x_1^T x_2$ ，它就是内积，写成这样是为了把采用核函数、不采用核函数的SVM形式统一起来。</li>
+<li>多项式核 $K(x_1, x_2) = (1+x_1^Tx_2)^p$ ，其中 $p$ 决定了特征变换之后的维度。</li>
+<li>径向基 $K(x_1, x_2) = \exp ( -\frac12 ||x_1 - x_2|| ^ 2 )$</li>
+<li>高斯核 $K(x,z) = \exp(-\frac{||x-z|| ^ 2}{2\sigma ^ 2})$，它的特征变换之后的维度是无穷大。</li>
+</ul>
+<hr></hr><h2 id>第七章：无监督学习</h2>
+<h4 id>距离</h4>
+<p>聚类(clustering)的主要思想是将无标签的数据分为若干个组，其中类内聚集、类间分离。</p>
+<p>想要衡量“相似度”，我们需要有对距离的定义。首先，无论如何，距离必须满足以下条件：</p>
+<ul>
+<li>对称性：$D(A, B) = D(B, A)$</li>
+<li>同一性：$D(A, B)= 0$ 当且仅当 $A=B$</li>
+<li>三角不等式：$D(A, B) \leq D(A,C) + D(B,C)$</li>
+</ul>
+<p>闵可夫斯基距离定义了一系列距离，$r$阶闵可夫斯基距离是：$$d(x,y) = \sqrt[r]{\sum_{i}|x_i - y_i| ^ r}$$显然，$r=1$时为曼哈顿距离，$r=2$时为欧几里得距离（L2范数），$r=+\infty$时是两个向量各个维度之差的绝对值的最大值。</p>
+<p>还有各种其他的距离，例如汉明距离、最小编辑距离等。</p>
+<h4 id="kmeans">k-Means</h4>
+<p>一个迭代式的聚类算法。首先随机选择 $k$ 个中心点，然后：</p>
+<ol>
+<li>对于每一个点，划分到距离自己最近的中心点的类</li>
+<li>对于每一个类，以类内点的坐标均值作为新的中心</li>
+</ol>
+<p>重复以上过程直到收敛为止。</p>
+<h4 id>类的个数</h4>
+<p>首先我们可以钦定一个 $k$，作为聚类的个数。但是很多情况下我们不知道应该分出多少类，在此情况下会很麻烦。</p>
+<p>直观上讲，类越多当然越满足“类内聚集、类间分离”；但是类太多了的话（例如每个点自己就是一个类），聚类并不能给之后要进行的工作带来实际好处。因此我们需要选取适当的 $k$.</p>
+<p>顺带一提，要衡量两个聚类方案之间的相似程度，可以采用RI。它的计算方法是：对于每一对样本点$(x,y)$，它可能在A、B中都被划分到同一类；可能A、B都不把它们划分进同一类；可能A划分到同类而B划分到不同类，可能反之。一共就是这四种情况。我们记“被A、B方案均划分到同类”的点对个数为 $a$，“被A、B方案均划分到不同类”的点对个数为 $b$，则 $$RI = \frac{a+b}{\frac12n(n+1)}$$</p>
+<p>RI越接近1，两个划分方案越相似。可以用来评估聚类的性能。</p>
+<h4 id="gmm">GMM算法</h4>
+<p>GMM假定有 $k$ 个类，而每个类生成点，服从多元正态分布。从而我们一共有三个参数：$\pi_t$ 是划分到第 $t$ 类的先验概率；$\mu, \Sigma$ 是每个类的正态分布参数。</p>
+<p>实践上，我们无法直接最大化似然值。EM算法的方案是：首先固定住 $\mu, \Sigma$，然后去优化 $\pi$；做完之后，固定住 $\pi$，然后优化 $\mu$ 和 $\Sigma$。迭代若干次，就可以取得较好的参数。</p>
+<p>推导很复杂，略。</p>
+<h4 id="pca">PCA</h4>
+<p>PCA是特征提取的算法。其基于这样一种思想：所有数据点如果在某一方向的投影方差很小，说明数据在这一方向上并没有多少信息，可以去除掉。依据这种思路，有PCA算法：</p>
+<ol>
+<li>各个数据点都减去所有数据点的均值 $\mu$。此后数据点均值为0。</li>
+<li>对数据点的各个维度，求协方差矩阵 $\Sigma$.</li>
+<li>对 $\Sigma$ 求特征值和特征向量。</li>
+<li>保留下前$k$大特征值对应的 $k$ 个向量，每个旧点生成一个新的表示：其在这 $k$ 个特征向量上的投影长度（实现时，用单位特征向量点乘旧的向量）。</li>
+</ol>
+<p>如果想要恢复数据，做法如下：以新特征的各个属性为系数，线性组合这 $k$ 个特征向量，最后加上 $\mu$，得到重建的点。显然PCA会损耗掉一些信息，但鉴于损耗的信息方差很小，并没有太多的特征，所以有时可以忽略这些不重要的特征，换取更小的对点的表达方式，以加速后续的处理过程。</p>
+<p></p><p></p>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

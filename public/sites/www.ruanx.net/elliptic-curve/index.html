@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>有限域上的椭圆曲线</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="椭圆曲线密码学系列的第一篇。本文介绍了椭圆曲线，并将其扩展到有限域 GF(p) 上，给出了加法和离散对数的定义及计算方法。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="有限域上的椭圆曲线" />
+    <meta property="og:description" content="椭圆曲线密码学系列的第一篇。本文介绍了椭圆曲线，并将其扩展到有限域 GF(p) 上，给出了加法和离散对数的定义及计算方法。" />
+    <meta property="og:url" content="https://www.ruanx.net/elliptic-curve/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-05-05T01:34:46.000Z" />
+    <meta property="article:modified_time" content="2020-05-25T02:02:47.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="ecc" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="有限域上的椭圆曲线" />
+    <meta name="twitter:description" content="椭圆曲线密码学系列的第一篇。本文介绍了椭圆曲线，并将其扩展到有限域 GF(p) 上，给出了加法和离散对数的定义及计算方法。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/elliptic-curve/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, ecc" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "有限域上的椭圆曲线",
+    "url": "https://www.ruanx.net/elliptic-curve/",
+    "datePublished": "2020-05-05T01:34:46.000Z",
+    "dateModified": "2020-05-25T02:02:47.000Z",
+    "keywords": "Crypto, ecc",
+    "description": "椭圆曲线密码学系列的第一篇。本文介绍了椭圆曲线，并将其扩展到有限域 GF(p) 上，给出了加法和离散对数的定义及计算方法。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto tag-ecc">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">有限域上的椭圆曲线</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto tag-ecc no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">有限域上的椭圆曲线</h1>
+
+                <p class="post-full-custom-excerpt">椭圆曲线密码学系列的第一篇。本文介绍了椭圆曲线，并将其扩展到有限域 GF(p) 上，给出了加法和离散对数的定义及计算方法。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-05-05">5 May 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 14 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <h3 id="-">椭圆曲线是什么</h3><p>　　满足 Weierstrass 方程$$Y^ 2 = X ^ 3 + AX + B$$的点集，称为椭圆曲线(elliptic curve)。下面给出两个椭圆曲线的例子：</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2020/05/e1.png" width="665" height="595" loading="lazy" alt srcset="../content/images/size/w600/2020/05/e1.png 600w, ../content/images/2020/05/e1.png 665w"></div><div class="kg-gallery-image"><img src="../content/images/2020/05/e2.png" width="758" height="566" loading="lazy" alt srcset="../content/images/size/w600/2020/05/e2.png 600w, ../content/images/2020/05/e2.png 758w" sizes="(min-width: 720px) 720px"></div></div></div><figcaption>▲ 两个椭圆曲线。左图：$y^2 = x ^ 3 - 3x + 3$ ，右图： $y ^ 2 = x ^ 3 - 6x + 5$</figcaption></figure><p> 　　可见它的长相与椭圆并没有什么联系。我们可以在椭圆曲线 $E$ 上定义“加”的运算：假设有两个点 $P,Q$，则 $P$ 与 $Q$ 的和  $P\oplus Q$ 由如下步骤得到：</p><ul><li>连接 $PQ$ 形成一条直线，这条直线交 $E$ 于 $R$ 点。</li><li>$R$ 相对于 $x$ 轴的对称点，就是 $P\oplus Q$ 的结果 $R'$</li></ul><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-16.png" class="kg-image" alt loading="lazy"><figcaption>▲ 椭圆曲线上的加法。 图源：<em>An Introduction to Mathematical Cryptography</em></figcaption></figure><p>　　这个运算的定义看起来很奇怪，不过我们马上就去证明它有非常优良的性质。</p><p>　　先展示一个例子：假设我们手上的椭圆曲线是 $E: Y ^ 2 = X ^ 3 - 15 X + 8$，P 点坐标是 $(7, 16)$，Q 点坐标是 $(1,2)$，如下图所示：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-17.png" class="kg-image" alt loading="lazy"><figcaption>▲ 在 $E: Y ^ 2 = X ^ 3 - 15 X + 8$ 上计算 $(7,16) + (1,2)$</figcaption></figure><p>　　首先，需要获取 $PQ$ 这条直线的表达式。显然斜率为$$\lambda = \frac{x_P- x _Q}{y_P - y_Q} = \frac{7}{3}$$再代入点 $P$ 得到截距，于是得到了直线的表达式：$$PQ: Y = \frac{7}{3}X - \frac13$$用这里的 $Y$ 去替换方程 $E$ 左边的 $Y$，化简之后有：$$X^ 3 - \frac{49}{9}x^2 - \frac{121}{9} X + \frac{161}{9} = 0$$我们懒得直接解这个一元三次方程。注意到直线与 $E$ 交于三个点，那么上面这条方程等价于$$(x-e_1)(x-e _2)(x-e _3) = 0$$而我们已经知道了直线与 $E$ 的两个交点 $P,Q$，对应着 $x$ 的两个解 ，故有$$(x-7)(x-1)(x-e _ 3) = 0$$观察两个等价方程的零次项，有$$-7e_ 3 = \frac{161}{9} \quad \Rightarrow  \quad e _ 3 =  \frac{23}{9}$$x轴坐标知道了，y轴左边代进直线就知道。于是我们得到 $R=(-\frac{23}{9}, -\frac{170}{27})$，于是 $$P\oplus Q = R' = (-\frac{23}{9}, \frac{170}{27})$$</p><p></p><p>　　$P\oplus Q$的问题解决了，那么 $P\oplus P$ 呢？微积分的经验告诉我们，采用 $P$ 的切线来代替 $PQ$ 比较恰当。它仍然满足“直线与 $E$ 交于三个点”，只不过有两个点重合在 $P$. 反映到刚刚谈论的方程上，就是 $e_1 = e_2$. 此时 $e _3$ 仍然是很好求的。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-18.png" class="kg-image" alt loading="lazy"><figcaption>▲ 在 $E$ 上进行 $P\oplus P$</figcaption></figure><p>　　举个例子。还是用刚刚的椭圆曲线，$P = (7, 16)$。为了计算 $P \oplus P$，需要先求出 $P$ 点的切线方程。把方程 $E$ 左右都取微分，有$$2y dy = (3x ^ 2 - 15) dx$$从而在 $P$ 点，有$$\frac{dy}{dx} = \frac{3x ^ 2 - 15}{2y} = \frac{33}{8}$$于是得到直线方程：$$L: Y = \frac{33}{8}X - \frac{103}{8}$$回代到曲线 $E$：$$X^ 3 - \frac{1089}{64} X ^ 2 + \frac{2919}{32} X - \frac{9457}{64} = 0$$这个方程等价于交点方程：$$(x-7)(x-7)(x-e _ 3) = 0$$考察零次项，有$$-49e_3 = -\frac{9457}{64} \quad\Rightarrow\quad e_3 = \frac{193}{64}$$于是终于得到 $P\oplus P = (\frac{193}{64}, \frac{223}{512})$</p><p>　　计算确实挺麻烦的，但这里的运算全是四则运算，在计算机的帮助下可以飞快地完成。</p><h3 id="--1">无穷远点</h3><p>　　我们解决了 $P\oplus Q$ 和 $P \oplus P$ 的问题，但这是不完备的——是不是任意两个点，都允许进行加法呢？我们刚刚的计算，取决于一个前提条件——连线也好，切线也好，与椭圆曲线都有三个交点，在已经知道其中两个交点的情况下，可以求第三个交点。但有的时候，$PQ$的连线与椭圆曲线只有两个交点！这种情况发生在 $P$ 和 $Q$ 关于 x 轴对称的情况下，如下图：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-19.png" class="kg-image" alt loading="lazy"><figcaption>▲ 关于 x 轴对称的两个点，它们的连线与 $E$ 只交于两个点</figcaption></figure><p>　　我们现在有两条道路：一种是声明这种情况下的加法不合法；第二种是引入一条特殊的加法规则，来解决困境。最终人们选择了第二种，那就是引入无穷远点。</p><p>　　假设 $P$ 与 $P'$ 的连线交 $E$ 于某个无穷远的点，记为 $\mathcal{O}$，也就是说：$$P \oplus P' = \mathcal{O}$$</p><p>　　需要注意的是，我们只引入了<strong>一个</strong>无穷远点，假想它在每一条铅直线上。</p><p>　　如果把某个点加上无穷远点，会发生什么情况呢？$P$ 与 $\mathcal{O}$ 的连线交 $E$ 于三个点—— $\mathcal{O}, P, P'$，于是把 $P'$ 作为直线与 $E$ 相交得到的点；再关于 x 轴对称一次，又回到了 $ P $. 这也就是说：$$P + \mathcal{O} = P$$</p><p>　　我们意识到，$\mathcal{O}$ 是加法运算的单位元。</p><h3 id="--2">椭圆曲线加法群</h3><p>　　由于 $\mathcal{O}$ 的存在，任意两个点都是可加的。现在，带着刚刚引进的无穷远点 $\mathcal{O}$ ，我们重新定义椭圆曲线。</p><blockquote>一个椭圆曲线(elliptic curve) $E$ 是满足 Weierstrass 方程 $$E: Y ^ 2 = x ^ 3 + AX + B$$ 的解集，以及无穷远点 $\mathcal{O}$. 其中 $A, B$ 满足$$4A ^ 3 + 27 B^2 \neq 0$$</blockquote><p>　　先解释为什么要 $4A ^ 3 + 27 B^2 \neq 0$.</p><p>　　我们知道 $x^ 3 + Ax + B$ 可以表达为 $(x-p_1) (x - p_2) (x - p_3)$，此时当且仅当  $p_1, p_2, p_3$ 互不相同，才会有 $4A ^ 3 + 27 B^2 \neq 0$. 至于如果 $4A ^ 3 + 27 B^2 = 0$，会出现什么情况？</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2020/05/e1-1.png" width="696" height="563" loading="lazy" alt srcset="../content/images/size/w600/2020/05/e1-1.png 600w, ../content/images/2020/05/e1-1.png 696w"></div><div class="kg-gallery-image"><img src="../content/images/2020/05/e2-1.png" width="958" height="680" loading="lazy" alt srcset="../content/images/size/w600/2020/05/e2-1.png 600w, ../content/images/2020/05/e2-1.png 958w" sizes="(min-width: 720px) 720px"></div></div></div><figcaption>▲ 两条不合法的椭圆曲线</figcaption></figure><p>　　这与我们平常见到的两类椭圆曲线，长相差异有点大。它们存在奇点，这会导致我们一些算法失效（例如，左图中的 $(1,1)$ 加上自己应该等于什么呢？），既然如此，我们干脆不讨论这一类曲线，以后使用椭圆曲线的时候，都选用那些形态比较正常的。</p><p>　　在椭圆曲线上，$\oplus$ 满足加法的性质，以下简写为 “$+$”。我们有：</p><ul><li>有单位元：$P+O = O + P = P$.</li><li>有逆元：$P+(-P) = \mathcal{O}$，其中 $-P$ 是 $P$ 关于 x 轴的对称点。</li><li>结合律：$(P+Q)+R = P+ (Q+R)$</li><li>交换律：$P+Q = Q+P$</li></ul><p> 　　以上每一条性质都可以手工验证。从而 $(E, +)$ 是一个阿贝尔群。于是立刻可以定义数乘运算：</p><blockquote>对于正整数 $n$ 和椭圆曲线上的点 $P$，定义 $$nP = P+P+P+\cdots + P$$ <br>显然，$nP$ 可以通过类似于快速幂的算法，以 $O(\log n)$ 次加法的代价求出来。<br>给定 $P$ 和 $Q=nP$，求解 $n$，就是椭圆曲线上的离散对数问题。</blockquote><p>　　最后，我们给出离散对数加法算法的精确描述。设 $E: Y ^ 2 = X^3 + AX + B$ 是椭圆曲线，则可以使用如下算法计算 $P_1 + P_2$：</p><ol><li>若 $P_1 = \mathcal{O}$，则 $P_1 + P_2 = P_2$.</li><li>否则，若 $P_2 = \mathcal{O}$，则 $P_1 + P_2 = P_1$.</li><li>否则，记 $P_1 = (x_1, y_1), P_2 = (x_2, y_2)$.</li><li>若 $x_1 = x_2$ 且 $y_1 = -y_2$，则 $P_1 + P_2 = \mathcal{O}$.</li><li>否则，记 $$\lambda = \begin{cases}\frac{y_2 - y_1}{x_2 - x_1},\quad  P_1 \neq P_2 \\ \frac{3x_1^2 + A }{2y_1}, \quad P_1 = P_2\end{cases}$$ <br>令$$x_3 = \lambda ^ 2 - x_1 - x_2, \quad y_3 = \lambda(x_1 - x_3) - y_1$$<br>则 $P_1 + P_2 = (x_3, y_3)$.</li></ol><p>　　上面的过程 (5) 和我们那套手工做法是一致的。</p><p>　　Sage为椭圆曲线提供了很好的支持。下面创建一个有理数域上的椭圆曲线：</p><pre><code class="language-python">E=EllipticCurve([-3,3])
+show(E)
+E.plot()</code></pre><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-22.png" class="kg-image" alt loading="lazy"><figcaption>▲ Sage 创建椭圆曲线</figcaption></figure><p>　　可以获取 $x=1$ 时 $y$ 的坐标：</p><pre><code class="language-python">P = E.lift_x(1)
+P.xy()
+# (1, 1)</code></pre><p>　　可以进行加法和数乘：</p><pre><code class="language-python">P = E(1, 1)
+print((P+P).xy())
+# (-2, -1)
+
+print((10*P).xy())
+# (-534970997642/1270419782641, -2930599739414754541/1431926979188367689)</code></pre><p>　　单位元（无穷远点）用 <code>E(0)</code> 来得到。可以进行运算：</p><pre><code class="language-python">O = E(0)
+P = E(1, 1)
+print((O+O) == O)
+# True
+
+print((O+P).xy())
+# (1, 1)
+
+print((O+P) == P)
+# True</code></pre><p>　　现在我们造一个实数域上的椭圆曲线：</p><pre><code class="language-python">E=EllipticCurve(RealField(), [-15,8])
+show(E)
+E.plot()</code></pre><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-23.png" class="kg-image" alt loading="lazy"><figcaption>▲ 实数域上的椭圆曲线</figcaption></figure><p>　　运算：</p><pre><code class="language-python">P = E.lift_x(666)
+Q = E.lift_x(233)
+
+print(P.xy())
+# (666.000000000000, 17187.1554947292)
+
+print(Q.xy())
+# (233.000000000000, 3556.10039228366)
+
+print((P+Q).xy())
+# (92.0216770365539, 881.967248744277)
+
+print((100*(P+Q)).xy())
+# (4.19546744213511, 4.34929697563973)</code></pre><h3 id="--3">有限域上的椭圆曲线</h3><p>　　密码学专注于离散的数学，而上面介绍的椭圆曲线是连续的。我们想把椭圆曲线及其加法应用于密码学，就需要在它上面定义一个有限群。</p><blockquote>设 $p$ 为质数，有限域 $\mathbb{F}_p$ 上的椭圆曲线是下面的方程：$$E: Y^2 = X ^ 3 + AX + B\quad with ~ A,B \in \mathbb{F}_p, 4 A ^ 3 + 27 B ^ 2 \neq 0$$其点集为：$$E(\mathbb{F}_p) = \{(x, y) ~ : ~ x, y\in \mathbb{F} _ p , ~ y ^ 2 = x ^ 3 + Ax + B\} \cup \{ \mathcal{O} \}$$其中所有的运算在模 $p$ 意义下进行。</blockquote><p>　　看一个例子。考虑 $\mathbb{F}_{13}$ 上的椭圆曲线$$E: Y^2 = X ^ 3 + 3 X + 8$$</p><p>　　想找出这个椭圆曲线上的点集，只需要枚举 $x$，然后看是不是有 $y$ 使得 $y ^ 2$ 等于 $x ^ 3 + 3x + 8$. 这是一个二次剩余问题，我们已经解决得比较好了。在 $x=0$ 的时候，没有 $y$ 与之对应；在 $x=1$ 的时候，$\sqrt{12} = 5, 8$，从而 $(1,5)$ 和 $(1, 8)$ 是椭圆曲线上的点。</p><p>　　Sage 可以在有限域上建立椭圆曲线，并枚举所有点：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">E = EllipticCurve(GF(13), [3, 8])
+E.points()
+# [(0 : 1 : 0), (1 : 5 : 1), (1 : 8 : 1), (2 : 3 : 1), (2 : 10 : 1), (9 : 6 : 1), (9 : 7 : 1), (12 : 2 : 1), (12 : 11 : 1)]</code></pre><figcaption>▲ 枚举椭圆曲线上的所有点。 z 轴分量为 0 的是无穷远点，其余的是平凡点</figcaption></figure><p>　　在有限域椭圆曲线上进行加法：</p><pre><code class="language-python">E = EllipticCurve(GF(13), [3, 8])
+print(E(1, 5) + E(1, 8))
+# (0 : 1 : 0), 无穷远点
+
+print(E(12, 2) + E(9, 7))
+# (2 : 3 : 1)</code></pre><p>　　来观察有限域 $\mathbb{F}_{13}$ 上的椭圆曲线的加法表：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-24.png" class="kg-image" alt loading="lazy"><figcaption>▲ $F_{13}$ 上的椭圆曲线 $E: Y ^ 2 = X ^ 3 + 3 X + 8$&nbsp;的加法表</figcaption></figure><p>　　有限域上的椭圆曲线以及加法，构成了一个<strong>有限群</strong>。现在来研究这个群里的元素个数。我们知道，一个整数在有限域内，大概有一半的概率是二次剩余，一半的概率不是。所以我们猜测$$\text{card} ~ E(\mathbb{F}_p) \approx 50\% \cdot p \cdot 2 + 1 = p+1$$</p><p>　　这个猜测挺准确。事实上$$\text{card} ~ E(\mathbb{F}_p) = p+1 - t_p \quad where ~ |t_p| \leq 2\sqrt p $$</p><p>　　有限域上的椭圆曲线，点的分布与实数域上的椭圆曲线非常不同。来看两个例子。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2020/05/x1.png" width="588" height="388" loading="lazy" alt></div><div class="kg-gallery-image"><img src="../content/images/2020/05/x2.png" width="588" height="387" loading="lazy" alt></div></div></div><figcaption>▲ 有限域上椭圆曲线的点分布。它们 $A=3, B=8$，左：$\mathbb{F}_{13}$，右：$\mathbb{F}_{101}$</figcaption></figure><p>　　在建立了“离散”的椭圆曲线之后，我们来看它的离散对数问题。</p><h3 id="--4">椭圆曲线离散对数问题</h3><p>　　经典的椭圆曲线上的离散对数问题，是给定点 $P$ 和 $nP$，要推出 $n$ 的值。有限域椭圆曲线上的离散对数问题亦然。</p><blockquote>设 $E$ 是有限域 $\mathbb{F}_p$ 上的椭圆曲线，$P, Q \in E(\mathbb{F}_p)$. 椭圆曲线离散对数问题(Elliptic Curve Discrete Logarithm Problem) 是指：找到一个整数 $n$ 使得 $Q = nP$. 我们记 $$n = \log_P(Q)$$并称 $n$ 是以 $P$ 为底 $Q$ 的椭圆曲线离散对数。</blockquote><p>　　举一个离散对数的例子。考虑 $\mathbb{F}_{73}$ 上的椭圆曲线$$E: Y^2 = X ^ 3 + 8X + 7$$其上有点 $P=(32, 53)$ 和点 $Q=(39, 17)$. 计算得知 $Q=11P$，于是 $\log_P(Q) = 11$.</p><pre><code class="language-python">E = EllipticCurve(GF(73), [8, 7])
+P = E(32, 53)
+Q = E(39, 17)
+
+P.discrete_log(Q)
+# 11</code></pre><p>　　很明显，符合条件的 $n$ 会有很多很多个，就像有限域上的离散对数也有无限多个一样。为了简化问题，我们定义 $P$ 的<strong>阶</strong>是使得 $xP = yP, x&gt;y$ 的最小的 $s := x-y$，于是 $sP$ 显然就是无穷远点。顺带一提，由于拉格朗日定理，$s$ 是 $\text{card } ~ E(\mathbb{F}_p)$ 的因数。离散对数是一个解系，每个解可以表示成 $n_0 + k \cdot s, k\in Z$. </p><p>　　所以现在，离散对数的全体解，是集族 $\mathbb{Z}/s\mathbb{Z}$ 中的一个元素。以后可以直接取 $[0, p)$ 之间的一个代表元 $n_0$，来代表离散对数的解了。另外，我们发现$$\log_{P} (Q_1 + Q_2) = \log_{P} (Q_1) + \log_P (Q_2)$$</p><p>　　从而 $\log_P  :  E(\mathbb{F}_p) \to \mathbb{Z} / s\mathbb{Z}$ 是群 $E(\mathbb{F}_p)$ 到群 $\mathbb{Z} / s\mathbb{Z}$ 的一个同态映射！</p><p>　　最后，需要注意的一点是，并不是全体 $\log_P(Q)$ 都可以求出解。举个例子：在我们刚刚讨论的那条曲线上，存在 $(20, 65)$ 这个点，但它不是 $P$ 的倍数。群论上这是很好理解的，因为这一个 $P$ 的阶不等于 $E$ 的阶，它无法生成整个 $E$：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">E = EllipticCurve(GF(73), [8, 7])
+
+P.discrete_log(Q)
+# ValueError: ECDLog problem has no solution
+
+E.order(), P.order()
+# (82, 41)</code></pre><figcaption>▲&nbsp;离散对数无解的情况</figcaption></figure><p>　　目前已知的最快的 ECDLP 算法，需要 $\sqrt{p}$ 次运算来求解 $E(\mathbb{F}_p)$ 上的离散对数问题。因此 ECDLP 是一个相当困难的问题。我们将在之后的几篇文章中，讨论基于椭圆曲线的密码学。</p><h3 id="--5">例题</h3><blockquote>Jarvis OJ: 简单ECC概念<br>已知椭圆曲线加密 Ep(a,b) 参数为 p = 15424654874903,<br>a = 16546484, b = 4548674875, G(6478678675,5636379357093)<br>私钥为 k = 546768，求公钥 K(x,y)<br>提示：K=kG<br><br>注：题目来源XUSTCTF2016</blockquote><p>　　直接用 Sage 算出 $kG$ 就行。</p><pre><code class="language-python">E = EllipticCurve(GF(15424654874903), [16546484, 4548674875])
+G = E(6478678675,5636379357093)
+
+K = 546768 * G
+K.xy()
+# (13957031351290, 5520194834100)
+# x+y = 19477226185390</code></pre>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-crypto tag-ecc no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../ecc-df/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">基于椭圆曲线的 Diffie-Hellman 密钥交换</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>椭圆曲线密码学系列的第二篇。讨论了基于椭圆曲线的 Diffie-Hellman 密钥交换算法以及代码实现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-05">5 May 2020</time> <span class="bull">&bull;</span> 3 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-compute no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../ecs-to-compute/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">compute</div>
+                <h2 class="post-card-title">租用云服务器进行计算</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>本文以一个密码学问题的爆破为例，记录了租用 x86 抢占式实例云服务器进行计算的过程。操作系统类似于 CentOS ，采用了多进程。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-03">3 May 2020</time> <span class="bull">&bull;</span> 3 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

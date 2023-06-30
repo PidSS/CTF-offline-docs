@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>自动生成博客题图</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="Ghost 默认采用博客首页图片作为文章的 og:image 标签，导致分享到第三方平台时抓取到的图片与内容无关。我们造一个自动生成题图的工具。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="自动生成博客题图" />
+    <meta property="og:description" content="Ghost 默认采用博客首页图片作为文章的 og:image 标签，导致分享到第三方平台时抓取到的图片与内容无关。我们造一个自动生成题图的工具。" />
+    <meta property="og:url" content="https://www.ruanx.net/auto-blog-banner/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/04/output--1-.jpg" />
+    <meta property="article:published_time" content="2022-04-23T01:12:02.000Z" />
+    <meta property="article:modified_time" content="2022-04-26T07:07:25.000Z" />
+    <meta property="article:tag" content="Python" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="自动生成博客题图" />
+    <meta name="twitter:description" content="Ghost 默认采用博客首页图片作为文章的 og:image 标签，导致分享到第三方平台时抓取到的图片与内容无关。我们造一个自动生成题图的工具。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/auto-blog-banner/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/04/output--1-.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Python" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "自动生成博客题图",
+    "url": "https://www.ruanx.net/auto-blog-banner/",
+    "datePublished": "2022-04-23T01:12:02.000Z",
+    "dateModified": "2022-04-26T07:07:25.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/04/output--1-.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "Python",
+    "description": "Ghost 默认采用博客首页图片作为文章的 og:image 标签，导致分享到第三方平台时抓取到的图片与内容无关。我们造一个自动生成题图的工具。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-python">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">自动生成博客题图</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-python ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/python/index.html">Python</a>
+                </section>
+
+                <h1 class="post-full-title">自动生成博客题图</h1>
+
+                <p class="post-full-custom-excerpt">Ghost 默认采用博客首页图片作为文章的 og:image 标签，导致分享到第三方平台时抓取到的图片与内容无关。我们造一个自动生成题图的工具。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-04-23">23 Apr 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 5 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/04/output--1-.jpg 300w,
+                            ../content/images/size/w600/2022/04/output--1-.jpg 600w,
+                            ../content/images/size/w1000/2022/04/output--1-.jpg 1000w,
+                            ../content/images/size/w2000/2022/04/output--1-.jpg 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/04/output--1-.jpg"
+                    alt="自动生成博客题图"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　本文要实现「自动生成博客题图」。研究这件事情的起因，是我在 Telegram 里面分享了几篇博客，它的效果如下：</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/image.png" width="1264" height="830" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image.png 600w, ../content/images/size/w1000/2022/04/image.png 1000w, ../content/images/2022/04/image.png 1264w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/image-1.png" width="1130" height="832" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image-1.png 600w, ../content/images/size/w1000/2022/04/image-1.png 1000w, ../content/images/2022/04/image-1.png 1130w" sizes="(min-width: 720px) 720px"></div></div></div></figure><p>　　这两篇文章中都是有图片的，但是 Telegram 仍然抓取了我的首页图片。而我希望博客内的图片被抓取，所以首先我应该研究一下 Telegram 的抓取机制。</p><p></p><p></p><h3 id="0x01-og-%E6%A0%87%E7%AD%BE">0x01 OG 标签</h3><p>　　查阅<a href="https://telegram.org/blog/link-preview">文档</a>，rich link preview 是 Telegram 在 2015 年引入的功能。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/04/image-2.png" class="kg-image" alt loading="lazy" width="2000" height="1413" srcset="../content/images/size/w600/2022/04/image-2.png 600w, ../content/images/size/w1000/2022/04/image-2.png 1000w, ../content/images/size/w1600/2022/04/image-2.png 1600w, ../content/images/2022/04/image-2.png 2037w" sizes="(min-width: 720px) 720px"><figcaption>▲ Telegram 对 link preview&nbsp;的描述</figcaption></figure><p>　　于是找到一篇 <a href="https://medium.com/@richardoosterhof/how-to-optimize-your-site-for-rich-previews-527ed13a6d69">Richard Oosterhof 的文章</a>，据其描述，<code>og:image</code><strong> </strong>这个 meta 标签是「a JPG or PNG image, minimum dimensions of 300 x 200 pixels are advised」，形如：</p><pre><code class="language-html">&lt;meta property="og:image" content="http://richpreview.com/richpreview.jpg" /&gt;</code></pre><p>　　我们默认情况下的博客文章，返回的 <code>og:image</code> 确实是博客主题图：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-3.png" class="kg-image" alt loading="lazy" width="2000" height="1052" srcset="../content/images/size/w600/2022/04/image-3.png 600w, ../content/images/size/w1000/2022/04/image-3.png 1000w, ../content/images/size/w1600/2022/04/image-3.png 1600w, ../content/images/size/w2400/2022/04/image-3.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　给文章指定一个 feature image，Telegram 可以爬取正确的图片。</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/image-4.png" width="2000" height="929" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image-4.png 600w, ../content/images/size/w1000/2022/04/image-4.png 1000w, ../content/images/size/w1600/2022/04/image-4.png 1600w, ../content/images/2022/04/image-4.png 2248w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/image-5.png" width="999" height="1123" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image-5.png 600w, ../content/images/2022/04/image-5.png 999w" sizes="(min-width: 720px) 720px"></div></div></div></figure><p>　　因此我们确定，只需要修改 <code>og:image</code>，就能让 Telegram 等第三方平台爬取到合适的图片。</p><p>　　然而，我有不少的文章，里面一张图片都没有；或是图片太杂乱，不适合做题图。所以今天来研究一下如何对这些博客生成合适的图片。</p><h3 id="0x02-%E7%AE%97%E6%B3%95">0x02 算法</h3><p>　　我参考了机核网电台转视频的风格：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/04/image-6.png" class="kg-image" alt loading="lazy" width="2000" height="1124" srcset="../content/images/size/w600/2022/04/image-6.png 600w, ../content/images/size/w1000/2022/04/image-6.png 1000w, ../content/images/size/w1600/2022/04/image-6.png 1600w, ../content/images/2022/04/image-6.png 2150w" sizes="(min-width: 720px) 720px"><figcaption>▲ 图源：<a href="https://www.bilibili.com/video/BV1J34y1e7g3">游戏潮里那些让我们失望的游戏-游戏茶话会Vol.35丨机核</a></figcaption></figure><p>　　机核网的这个生成器是开源的，源码在 <a href="https://github.com/rabbitism/GadioVideo">https://github.com/rabbitism/GadioVideo</a> 。看了一下<a href="https://github.com/rabbitism/GadioVideo/blob/master/gadio/media/frame.py">主要逻辑</a>，背景图片的来历是：</p><pre><code class="language-python">image = cv2.imread(image_dir)
+image_suffix = page.image.suffix
+background_image = Frame.expand_frame(image, Frame.width, Frame.height)
+background_image = cv2.GaussianBlur(background_image, (255, 255), 255)
+content_image = Frame.shrink_frame(image, 550, 550)</code></pre><p>　　将主要图片扩张到 box 大小，然后做一个高斯模糊。图片扩张的算法是：首先把图片缩放到长或宽符合目标尺寸，然后裁剪取中心部分。</p><p>　　我希望生成的图片是：尺寸 640×480；以博客中的图片生成背景；加上白色的博客标题。用 GIMP 做了个样例：</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/image-7.png" width="2000" height="1218" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image-7.png 600w, ../content/images/size/w1000/2022/04/image-7.png 1000w, ../content/images/size/w1600/2022/04/image-7.png 1600w, ../content/images/size/w2400/2022/04/image-7.png 2400w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/image-8.png" width="997" height="919" loading="lazy" alt srcset="../content/images/size/w600/2022/04/image-8.png 600w, ../content/images/2022/04/image-8.png 997w" sizes="(min-width: 720px) 720px"></div></div></div></figure><p>　　观感还不错。总共用到了三个图层：</p><ul><li>原图图层，做高斯模糊</li><li>纯黑色图层，用于降低亮度，方便显示文字</li><li>文字图层</li></ul><p>　　现在我们写一个 Python 脚本来做这件事。</p><h3 id="0x03-%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%8E%9F%E5%9B%BE%E5%9B%BE%E5%B1%82">0x03 实现：原图图层</h3><p>　　首先缩放原图，然后高斯模糊，再裁剪。</p><pre><code class="language-python">blured = img.filter(ImageFilter.GaussianBlur(radius=5))
+bg = ImageOps.fit(blured, target_size)</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-10.png" class="kg-image" alt loading="lazy" width="1982" height="580" srcset="../content/images/size/w600/2022/04/image-10.png 600w, ../content/images/size/w1000/2022/04/image-10.png 1000w, ../content/images/size/w1600/2022/04/image-10.png 1600w, ../content/images/2022/04/image-10.png 1982w" sizes="(min-width: 720px) 720px"></figure><h3 id="0x04-%E5%AE%9E%E7%8E%B0%EF%BC%9A%E9%BB%91%E8%89%B2%E5%9B%BE%E5%B1%82">0x04 实现：黑色图层</h3><p>　　最简单的黑色图层是全黑，但图片的所有部分都被同等地遮盖，视觉不太美观。我们加一点类似于光晕的效果，让中心部分更黑。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/04/image-14.png" class="kg-image" alt loading="lazy" width="1935" height="1546" srcset="../content/images/size/w600/2022/04/image-14.png 600w, ../content/images/size/w1000/2022/04/image-14.png 1000w, ../content/images/size/w1600/2022/04/image-14.png 1600w, ../content/images/2022/04/image-14.png 1935w" sizes="(min-width: 720px) 720px"><figcaption>▲ 不同的 shadow&nbsp;产生不同的最终效果</figcaption></figure><p>　　代码实现，先画一个椭圆，然后做高斯模糊即可。</p><pre><code class="language-python">def make_shadow(bg, non_transparency=0.75):
+    shadow = Image.new('L', bg.size, color=220)
+    draw = ImageDraw.Draw(shadow)
+    
+    h, w = bg.size
+    draw.ellipse([h//6, w//6, h*5//6, w*5//6], fill=255)
+    
+    shadow = shadow.filter(ImageFilter.GaussianBlur(radius=64))
+    
+    black_layer = Image.new('RGBA', bg.size, color='#000000')
+    black_layer.putalpha(shadow)
+    
+    return Image.blend(bg, black_layer, non_transparency)</code></pre><h3 id="0x05-%E5%AE%9E%E7%8E%B0%EF%BC%9A%E6%96%87%E5%AD%97%E5%B1%82">0x05 实现：文字层</h3><p>　　文字分行采用 <code>wrapper</code> 库。尝试了几种字体，最终选择苹方 light。</p><pre><code class="language-python">def make_text(img, text, font):
+    res = img.copy()
+    draw = ImageDraw.Draw(res)
+    
+    w, h = res.size
+    
+    font = ImageFont.truetype(font, 48)
+    
+    text_lines = '\n'.join(textwrap.wrap(text, 12))
+    draw.text([w/2, h/2], text_lines, anchor='mm', font=font)
+    return res</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-15.png" class="kg-image" alt loading="lazy" width="1853" height="524" srcset="../content/images/size/w600/2022/04/image-15.png 600w, ../content/images/size/w1000/2022/04/image-15.png 1000w, ../content/images/size/w1600/2022/04/image-15.png 1600w, ../content/images/2022/04/image-15.png 1853w" sizes="(min-width: 720px) 720px"></figure><p>　　这样显示出来的文字有些单调。我们参考一下《杀戮尖塔》游戏的效果：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-16.png" class="kg-image" alt loading="lazy" width="1524" height="826" srcset="../content/images/size/w600/2022/04/image-16.png 600w, ../content/images/size/w1000/2022/04/image-16.png 1000w, ../content/images/2022/04/image-16.png 1524w" sizes="(min-width: 720px) 720px"></figure><p>　　给字加上阴影。改改代码：</p><pre><code class="language-python">def make_text(img, text, font):
+    res = img.copy()
+    draw = ImageDraw.Draw(res)
+    
+    w, h = res.size
+    
+    font = ImageFont.truetype(font, 48)
+    
+    text_lines = '\n'.join(textwrap.wrap(text, 12))
+    
+    
+    draw.text([w/2+5, h/2+5], text_lines, fill=(0, 0, 0, 200), anchor='mm', font=font)
+    draw.text([w/2, h/2], text_lines, anchor='mm', font=font)
+    
+    
+    return res</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-17.png" class="kg-image" alt loading="lazy" width="2000" height="772" srcset="../content/images/size/w600/2022/04/image-17.png 600w, ../content/images/size/w1000/2022/04/image-17.png 1000w, ../content/images/size/w1600/2022/04/image-17.png 1600w, ../content/images/size/w2400/2022/04/image-17.png 2400w" sizes="(min-width: 720px) 720px"></figure><h3 id="0x06-%E6%95%88%E6%9E%9C">0x06 效果</h3><p>　　用生成器做了几组题图，效果都还不错：</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/tg.png" width="1130" height="832" loading="lazy" alt srcset="../content/images/size/w600/2022/04/tg.png 600w, ../content/images/size/w1000/2022/04/tg.png 1000w, ../content/images/2022/04/tg.png 1130w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/output.jpg" width="640" height="480" loading="lazy" alt srcset="../content/images/size/w600/2022/04/output.jpg 600w, ../content/images/2022/04/output.jpg 640w"></div></div></div></figure><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/input.png" width="1566" height="943" loading="lazy" alt srcset="../content/images/size/w600/2022/04/input.png 600w, ../content/images/size/w1000/2022/04/input.png 1000w, ../content/images/2022/04/input.png 1566w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/output-1.jpg" width="640" height="480" loading="lazy" alt srcset="../content/images/size/w600/2022/04/output-1.jpg 600w, ../content/images/2022/04/output-1.jpg 640w"></div></div></div></figure><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/input-1.png" width="2000" height="1024" loading="lazy" alt srcset="../content/images/size/w600/2022/04/input-1.png 600w, ../content/images/size/w1000/2022/04/input-1.png 1000w, ../content/images/size/w1600/2022/04/input-1.png 1600w, ../content/images/2022/04/input-1.png 2339w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/output-2.jpg" width="640" height="480" loading="lazy" alt srcset="../content/images/size/w600/2022/04/output-2.jpg 600w, ../content/images/2022/04/output-2.jpg 640w"></div></div></div></figure><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/04/input-2.png" width="2000" height="1490" loading="lazy" alt srcset="../content/images/size/w600/2022/04/input-2.png 600w, ../content/images/size/w1000/2022/04/input-2.png 1000w, ../content/images/size/w1600/2022/04/input-2.png 1600w, ../content/images/2022/04/input-2.png 2232w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/04/output-3.jpg" width="640" height="480" loading="lazy" alt srcset="../content/images/size/w600/2022/04/output-3.jpg 600w, ../content/images/2022/04/output-3.jpg 640w"></div></div></div></figure><p></p><p>　　用 Telegram 发送，正确加载图片：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/04/image-18.png" class="kg-image" alt loading="lazy" width="1387" height="924" srcset="../content/images/size/w600/2022/04/image-18.png 600w, ../content/images/size/w1000/2022/04/image-18.png 1000w, ../content/images/2022/04/image-18.png 1387w" sizes="(min-width: 720px) 720px"></figure>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/python/index.html">Python</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../pickle-pop/index.html">Python pickle 的 POP 指令码及其优化</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-01-15">15 Jan 2022</time> –
+                                        10 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../des/index.html">DES算法原理及实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-04-13">13 Apr 2020</time> –
+                                        26 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../pohlig-hellman/index.html">Pohlig-Hellman 算法</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-03-26">26 Mar 2020</time> –
+                                        6 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/python/index.html">See all 5 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-reproduce ">
+
+    <a class="post-card-image-link" href="../umbrella/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/05/umbrella-4807314_1920.jpg 300w,
+                    ../content/images/size/w600/2022/05/umbrella-4807314_1920.jpg 600w,
+                    ../content/images/size/w1000/2022/05/umbrella-4807314_1920.jpg 1000w,
+                    ../content/images/size/w2000/2022/05/umbrella-4807314_1920.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/05/umbrella-4807314_1920.jpg"
+            alt="转载：雨伞"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../umbrella/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reproduce</div>
+                <h2 class="post-card-title">转载：雨伞</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>川端康成的一篇短篇小说。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        reproduce
+                    </div>
+            
+                    <a href="../author/reproduce/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/06/world-908894_640.png" alt="reproduce" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/reproduce/index.html">reproduce</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-05-06">6 May 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-reproduce ">
+
+    <a class="post-card-image-link" href="../manuel-blum-advice/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/04/blum.jpg 300w,
+                    ../content/images/size/w600/2022/04/blum.jpg 600w,
+                    ../content/images/size/w1000/2022/04/blum.jpg 1000w,
+                    ../content/images/size/w2000/2022/04/blum.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/04/blum.jpg"
+            alt="转载：Manuel Blum 给研究生的建议"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../manuel-blum-advice/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reproduce</div>
+                <h2 class="post-card-title">转载：Manuel Blum 给研究生的建议</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>转载自 Manuel Blum 的个人主页。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        reproduce
+                    </div>
+            
+                    <a href="../author/reproduce/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/06/world-908894_640.png" alt="reproduce" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/reproduce/index.html">reproduce</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-03-07">7 Mar 2022</time> <span class="bull">&bull;</span> 12 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>块加密的工作模式</title>
+
+    <meta name="description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="块加密的工作模式" />
+    <meta property="og:description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <meta property="og:url" content="https://www.ruanx.net/block-cipher-mode/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-04-14T03:14:52.000Z" />
+    <meta property="article:modified_time" content="2020-04-15T01:45:16.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="块加密的工作模式" />
+    <meta name="twitter:description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/block-cipher-mode/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "块加密的工作模式",
+    "url": "https://www.ruanx.net/block-cipher-mode/",
+    "datePublished": "2020-04-14T03:14:52.000Z",
+    "dateModified": "2020-04-15T01:45:16.000Z",
+    "keywords": "Crypto, algorithm",
+    "description": "DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">块加密的工作模式</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2020-04-14">14 Apr 2020</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　上一篇文章讨论了 DES 算法，现在我们有了“给定 64-bit 的明文、64-bit 的密钥，输出 64-bit 的密文”的加密手段。这离实际应用还有一点点距离，因为要传递的信息当然不止 64 位。</p><p>　　要用 DES 加密一条信息，一般先把信息填充到 64 的倍数，于是就可以分成许多组，每组 8 个字节。利用密钥对每一组进行加密，最终的结果拼接起来，这就是 ECB(Electronic Code Book，电子密码本) 模式。</p><h3 id="pkcs-5">PKCS#5</h3><p>　　现在我们要把信息填充到 8 的倍数个字节，还得能无歧义地恢复。PKCS#5 就是用来干这个事的。它的规则是：</p><ul><li>若原文长度不是 8 的倍数，则设其模 8 为 p，在消息后面填充 (8-p) 个 (8-p). <br />例子： <code>12345678hello</code> 被填充为 <code>12345678hello\x03\x03\x03</code></li><li>若原文长度是 8 的倍数，则往消息后面填充 8 个 <code>\x08</code> .</li></ul><p>　　为什么原文长度已经是 8 的倍数时，还要进行填充？这是为了消除歧义。假设信息本来就是 <code>hello\x03\x03\x03</code> ，长度为 8，如果不再填充，解码时可能就认为原文是“hello”. </p><p>　　要解码 PKCS#5 填充的数据，解码器直接去看整个数据的最后一个字节 x，抛弃掉末尾 x 位就得到了原文，这是快速且无歧义的。</p><pre><code class="language-python"># PKCS5
+def addPadding(s):
+    p = 8 - len(s)%8
+    return s + p * chr(p).encode()
+
+def delPadding(s):
+    p = s[-1]
+    return s[:-p]</code></pre><h3 id="ecb-">ECB（电子密码本）</h3><p>　　ECB 是最朴素的工作模式。把明文每 8 位一组进行加密，得到的密文直接拼接。代码如下：</p><pre><code class="language-python">def des_ecb_enc(plain, key):
+    m = addPadding(plain)
+    m = [m[x : x+8] for x in range(0, len(m), 8)]
+
+    c = [DES(int.from_bytes(x, 'big'), 
+             int.from_bytes(key, 'big'), 
+             'encrypt') for x in m]
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_ecb_dec(enc, key):
+    assert len(enc) % 8 == 0
+
+    c = [enc[x : x+8] for x in range(0, len(enc), 8)]
+
+    c = [DES(int.from_bytes(x, 'big'), 
+             int.from_bytes(key, 'big'), 
+             'decrypt') for x in c]
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return delPadding(reduce(lambda x, y: x + y, c))
+
+m = b'helloQAQwww'
+key = b'lilac666'
+
+c = des_ecb_enc(m, key)
+print(c)
+# b'w\xb4\n\xccM\xd6\xd1\xcd4\xe6aQ\x0c\x88\x826'
+
+p = des_ecb_dec(c, key)
+print(p)
+# b'helloQAQwww'</code></pre><p>　　ECB 模式是最简单的模式。由于每个块都是独立加密的，所以它对并行加密解密很友好。此外，传输过程中出现的偶然错误，不会扩大到影响整个数据。但正因为每个块都独立加密，重复的块会被加密成重复的明文。这会导致泄漏明文的一些统计信息。</p><p>　　下面演示一个例子。对 Lilac 的 logo 位图（左）进行加密，得到的结果修复一下文件头，即得到加密后的 logo（右）。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2020/04/lilac-square.png" width="600" height="600" alt srcset="https://www.ruanx.net/content/images/2020/04/lilac-square.png 600w" layout="responsive"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2020/04/ecb.png" width="600" height="600" alt srcset="https://www.ruanx.net/content/images/2020/04/ecb.png 600w" layout="responsive"></amp-img></div></div></div><figcaption>ECB 模式加密的 Lilac 队徽。 左：原图　右：加密后的位图</figcaption></figure><p>　　可见，图像的轮廓被完整地保留了下来。所以 ECB 显然不是一个好的工作模式：尽管窃听者不知道原图的任何一个像素，但他一眼可以看出原图大概是长什么样的。</p><p></p><h3 id="cbc-">CBC（密码块链接）</h3><p>　　CBC（Cipher-block chaining，密码块链接）模式需要一个初始向量 IV. 加密过程中，先把 IV 与第一块明文混合，再交由 DES 加密；对于下一块，其 IV 采用这一块的加密结果。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/04/image-5.png" class="kg-image" alt width="1202" height="484" layout="responsive"></amp-img><figcaption>CBC 加密流程图。 图源：<a href="https://zh.wikipedia.org/wiki/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F">wikipedia </a></figcaption></figure><p>　　CBC 由于每一个块在加密的时候，都需要把明文与上一个块的加密结果进行异或，故加密是串行的。不过解密可以并行，因为解密时已知每一个密文块，直接拿来异或即可。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/04/image-6.png" class="kg-image" alt width="1202" height="484" layout="responsive"></amp-img><figcaption>CBC 解密流程图</figcaption></figure><p>　　代码实现如下：</p><pre><code class="language-python">def des_cbc_enc(plain, key, iv):
+    key = int.from_bytes(key, 'big')
+    iv = int.from_bytes(iv, 'big')
+
+    m = addPadding(plain)
+    m = [int.from_bytes(m[x : x+8], 'big') for x in range(0, len(m), 8)]
+    
+    c = []
+
+    for i in range(len(m)):
+        r = iv ^ m[i]
+        iv = DES(r, key, 'encrypt')
+        c.append(iv)
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_cbc_dec(enc, key, iv):
+    key = int.from_bytes(key, 'big')
+    iv = int.from_bytes(iv, 'big')
+
+    c = [int.from_bytes(enc[x : x+8], 'big') for x in range(0, len(enc), 8)]
+    
+    m = []
+
+    for i in range(len(c)):
+        p = DES(c[i], key, 'decrypt')
+
+        m.append(p ^ iv)
+        iv = c[i]
+
+    m = [x.to_bytes(8, 'big') for x in m]
+    
+    return delPadding(reduce(lambda x, y: x + y, m))
+
+m = b'helloQAQwww'
+key = b'lilac666'
+iv = b'ruan1234'
+
+c = des_cbc_enc(m, key, iv)
+print(c)
+# b'\x93W\xb7\xf5\x93\xd2?\n\xe2\x9bR\x179\x94\xa1\x00'
+
+p = des_cbc_dec(c, key, iv)
+print(p)
+# b'helloQAQwww'</code></pre><p>　　显然，由于明文每次加密开始的时候，都得异或上前一块的密文，故对任何明文的改动，都将会影响到此后的所有块。CBC 克服了 ECB “相同明文块变成相同密文块” 的缺点。以 CBC 模式加密 Lilac logo，得到的结果如右图，就像整个图都是噪点：</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2020/04/lilac-square-1.png" width="600" height="600" alt srcset="https://www.ruanx.net/content/images/2020/04/lilac-square-1.png 600w" layout="responsive"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2020/04/ecb-1.png" width="600" height="600" alt srcset="https://www.ruanx.net/content/images/2020/04/ecb-1.png 600w" layout="responsive"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2020/04/cbc.jpg" width="600" height="600" alt srcset="https://www.ruanx.net/content/images/2020/04/cbc.jpg 600w" layout="responsive"></amp-img></div></div></div><figcaption>左：原图 中：ECB 加密模式 右：CBC 加密模式</figcaption></figure><p>　　从 CBC 模式加密后的图像上，已经看不出原图的特点。</p><h3 id="cfb-">CFB（密文反馈）</h3><p>　　CFB（Cipher feedback，密文反馈）是一种接近于<strong>流密码</strong>的工作模式。它不用 DES 加密明文，而是把 DES 作为伪随机数生成器，把 IV 作为种子。这样就可以从 IV 和指定的 key 生成字节流，然后把明文与这个字节流异或。</p><p>　　CFB 模式中，每次加密明文的一个字节。故 CFB 模式不需要添加Padding. 工作流程如下：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/04/image-7.png" class="kg-image" alt width="632" height="470" layout="responsive"></amp-img><figcaption>CFB 加密流程，图片来源：<a href="https://www.cnblogs.com/happyhippy/archive/2006/12/23/601353.html">对称加密和分组加密中的四种模式</a></figcaption></figure><p>　　加密过程中，维护了一个寄存器 <code>reg</code> ，长度为 64-bit，初始值为 IV. 每次对明文的一个字节进行加密时，把这个 <code>reg</code> 交给 DES 加密，生成一个 64-bit 的结果 <code>K</code>；然后把 <code>K</code> 的高 8-bit 与明文的这一个字节异或，得到了一个字节的密文。接下来，把这个 8-bit 密文补充到移位寄存器 <code>reg</code> 的最右边，抛弃 <code>reg</code> 此前的高 8 位。</p><p>　　随着加密的进行， <code>reg</code> 不断地变化，每次都往右边加 8 位（也就是上一轮得到的密文）、抛弃掉最左边的 8 位。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/04/image-8.png" class="kg-image" alt width="608" height="295" layout="responsive"></amp-img><figcaption>CFB 模式的加密（左）和解密（右）。 图片来源：<a href="https://www.cnblogs.com/slqt/p/6559828.html">DES加密模式详解 </a></figcaption></figure><p>　　而解密过程也很简单：既然 CFB 模式是流密码，那么解密的时候，只要得到<strong>与加密过程一样的密钥流</strong>，拿去与密文异或就能得到明文了。加密、解密代码如下：　</p><figure class="kg-card kg-code-card"><pre><code class="language-python">def des_cfb_enc(plain, key, iv):
+    key = int.from_bytes(key, 'big')
+    reg = int.from_bytes(iv, 'big')
+
+    m = [x for x in plain]
+
+    c = []
+
+    for i in range(len(m)):
+        K = DES(reg, key, 'encrypt')
+        cip = (K &gt;&gt; 56) ^ m[i]
+
+        c.append(cip)
+        reg = ((reg &lt;&lt; 8) &amp; 0xFFFFFFFFFFFFFFFF) | cip
+
+    c = [x.to_bytes(1, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_cfb_dec(enc, key, iv):
+    key = int.from_bytes(key, 'big')
+    reg = int.from_bytes(iv, 'big')
+
+    c = [x for x in enc]
+
+    m = []
+
+    for cip in c:
+        K = DES(reg, key, 'encrypt')
+        msg = (K &gt;&gt; 56) ^ cip
+
+        m.append(msg)
+        reg = ((reg &lt;&lt; 8) &amp; 0xFFFFFFFFFFFFFFFF) | cip
+
+    m = [x.to_bytes(1, 'big') for x in m]
+    
+    return reduce(lambda x, y: x + y, m)
+
+m = b'helloQAQwww'
+key = b'lilac666'
+iv = b'ruan1234'
+
+c = des_cfb_enc(m, key, iv)
+print(c)
+# b'\xaf\x1a\xba\xeb-\xc2\xaa\x0b\t\xea\x83'
+
+p = des_cfb_dec(c, key, iv)
+print(p)
+# b'helloQAQwww'</code></pre><figcaption>与 CyberChef 的结果不一样，但是与 pycrypto 的结果一样。我也不知道为什么。</figcaption></figure><hr></hr><h3 id="-">总结</h3><p>　　我们讨论了 ECB, CBC, CFB 三种工作模式，其中</p><ul><li>ECB 模式是不安全的模式。</li><li>对明文进行改动，CBC、CFB 模式都会使得后序所有块错误。</li><li>CBC 模式，如果密文传输过程中有错误，则后面所有密文都出错。</li><li>CFB 模式，如果密文传输过程中出错，只会影响到之后几个块（因为移位寄存器的存在，在 8 个块之后这个错误就会离开 <code>reg</code> ，此后的数据都会正常）。</li><li>ECB、CBC 模式需要填充。填充常用 PKCS#5 规则。CFB 模式是类似于流密码的逐字节加密，无需填充。</li></ul>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+
+<html class="expanded">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="shortcut icon" href="https://ziyuan.baidu.com/favicon.ico" type="image/x-icon" />
+<link rel="icon" sizes="any" mask href="https://www.baidu.com/img/baidu.svg">
+<title>平台工具使用手册_网站验证_搜索学堂_百度搜索资源平台</title>
+<script>
+        // 已经在DP注册的页面，没注册的扔到默认里
+        var pageNameArr = [
+            'site',
+            'prompt',
+            'mobiletools',
+            'tools',
+            'linksubmit',
+            'badlink',
+            'robots',
+            'pressure',
+            'crawltools',
+            'crawl',
+            'indexs',
+            'sitelink',
+            'itemannotator',
+            'schema',
+            'dataplug',
+            'keywords',
+            'inbound',
+            'safe',
+            'leakdetect',
+            'rewrite',
+            'guide',
+            'tongji',
+            'feedback',
+            'siteclose',
+            'dashboard',
+            'appattribute'
+        ];
+        var pageName = '';
+        if (window.location.pathname !== '/') {
+            if (window.location.pathname.match('/([^/]+)/') === null) {
+                pageName = window.location.pathname.match('/([^/]+)')[1];
+            }
+            else {
+                pageName = window.location.pathname.match('/([^/]+)/')[1];
+            }
+            var inArray = function (needle,array){
+                var len=array.length;
+                for(var i=0;i<len;i++){
+                    if(needle===array[i]){
+                        return true;
+                    }
+                }
+                return false;
+            };
+            if (!inArray(pageName, pageNameArr)) {
+                pageName = '675_1';
+            }
+        }
+        else {
+            pageName = '675_1';
+        }
+        window.alogObjectConfig = {
+            sample: '1',
+
+            product: '657',
+            page: pageName,
+            monkey_page: '',
+            speed_page: '',
+
+            speed: {
+                sample: '1'
+            },
+
+            monkey: {
+                sample: '1'
+            },
+
+            exception: {
+                sample: '1'
+            },
+
+            feature: {
+                sample: '1'
+            },
+
+            cus: {
+                sample: '1'
+            },
+
+            csp: {
+                sample: '',
+                'default-src': [
+                    {match: '*bae.baidu.com', target: 'Accept,Warn'},
+                    {match: '*.baidu.com,*.bdstatic.com,*.baidustatic.com,*.baiduimg.com,*.bdimg.com,localhost,*.hao123.com,*.hao123img.com', target: 'Accept'},
+                    {match: /^(127|172|192|10)(\.\d+){3}$/, target: 'Accept'},
+                    {match: '*', target: 'Accept,Warn'}
+                ]
+            }
+        };
+
+        void function(a,b,c,d,e,f,g){a.alogObjectName=e,a[e]=a[e]||function(){(a[e].q=a[e].q||[]).push(arguments)},a[e].l=a[e].l||+new Date,d="https:"===a.location.protocol?"https://fex.bdstatic.com"+d:"http://fex.bdstatic.com"+d;var h=!0;if(a.alogObjectConfig&&a.alogObjectConfig.sample){var i=Math.random();a.alogObjectConfig.rand=i,i>a.alogObjectConfig.sample&&(h=!1)}h&&(f=b.createElement(c),f.async=!0,f.src=d+"?v="+~(new Date/864e5)+~(new Date/864e5),g=b.getElementsByTagName(c)[0],g.parentNode.insertBefore(f,g))}(window,document,"script","/hunter/alog/alog.min.js","alog"),void function(){function a(){}window.PDC={mark:function(a,b){alog("speed.set",a,b||+new Date),alog.fire&&alog.fire("mark")},init:function(a){alog("speed.set","options",a)},view_start:a,tti:a,page_ready:a}}();
+        void function(n){var o=!1;n.onerror=function(n,e,t,c){var i=!0;return!e&&/^script error/i.test(n)&&(o?i=!1:o=!0),i&&alog("exception.send","exception",{msg:n,js:e,ln:t,col:c}),!1},alog("exception.on","catch",function(n){alog("exception.send","exception",{msg:n.msg,js:n.path,ln:n.ln,method:n.method,flag:"catch"})})}(window);
+    </script>
+<meta name="keywords" content="搜索资源平台" />
+<meta name="description" content="关键词影响力，是百度搜索资源平台针对站点对于关键词数据分析的需求，推出的全新概念。涵盖该关键词下百度搜索可以为站点带来的全部收益指标，包括：排名、百度搜索流量、展现量等。在H5版本的搜索资源平台工具中首发的关键词影响力工具检测数值有：整体影响力、最大影响力、站点影响力。" />
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/style/base_903bded.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/pkg/css/index_1cc0003.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/widget/breadcrumb/breadcrumb_07d7313.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/dropdown/dropdown_462013a.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/widget/college/courseinfo_f82c6b2.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/widget/footer/footer_19b6507.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/alarm/xzh_alarm_adb03d1.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/dialog/dialog_0dffd71.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/zhitong/verification_36f5407.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/siteSelect/site-select_eb9ff67.css"/><link rel="stylesheet" type="text/css" href="https://ziyuan.baidu.com/static/ziyuan/components/mappcreate/mapp_936c1bb.css"/></head>
+<script> alog('speed.set', 'ht', +new Date); </script>
+<body>
+<div class="layout-breadcrumb">
+
+</div>
+<div class="layout-main">
+
+<div class="header-placeholder hide"    >
+</div>
+<div class="nav-area">
+<div class="nav-bar">
+<div class="nav-container">
+<div class="logo">
+<a href="https://ziyuan.baidu.com/">
+<img src="https://ziyuan.baidu.com/static/ziyuan/image/common/logo_bbb4ad1.png" alt="logo">
+</a>
+</div>
+<div class="nav-list">
+<ul>
+<li class="nav-school nav-tab item-on"><a href="https://ziyuan.baidu.com/college#/type=1&amp;cate=newcontent">搜索学堂</a></li>
+<li class="nav-tools nav-tab "><a href="https://ziyuan.baidu.com/dashboard/index">搜索服务</a></li>
+<li class="nav-community nav-tab  "><a>互动交流</a></li>
+<li class="nav-cooperation nav-tab "><a href="https://ziyuan.baidu.com/cooperateresource/index">资源合作</a></li>
+<li class="nav-user-center nav-tab "><a href="https://ziyuan.baidu.com/site/index">用户中心</a></li>
+</ul>
+</div>
+<span class="login">
+<a href="" class="auth-login">登录</a>
+</span>
+</div>
+<div class="search-school nav-dropdown hide">
+<div class="search-college-wrapper">
+<a href="https://ziyuan.baidu.com/college#/type=1&amp;cate=newcontent">
+推荐内容</a>
+<a href="https://ziyuan.baidu.com/college#/type=2&amp;cate=bjh_education">
+创作者小课堂</a>
+<a href="https://ziyuan.baidu.com/college#/type=3&amp;cate=dailysubmit">
+工具解读</a>
+<a href="https://ziyuan.baidu.com/college#/type=4&amp;cate=guides">
+搜索规范</a>
+<a href="https://ziyuan.baidu.com/college#/type=5&amp;cate=ask">
+合作共建</a>
+<a href="https://ziyuan.baidu.com/college#/type=6&amp;cate=develop">
+基础开发</a>
+<a href="https://ziyuan.baidu.com/college#/type=7&amp;cate=searchaccess">
+智能小程序</a>
+</div>
+</div>
+<div class="search-tools nav-dropdown hide">
+<div class="search-tools-wrapper">
+<section>
+<h4>资源提交</h4>
+<h6>小程序资源</h6>
+<ul>
+<li><a href="https://ziyuan.baidu.com/mapp/rescommit/index">资源提交及校验</a></li>
+</ul>
+<h6>站点资源</h6>
+<ul>
+<li><a href="https://ziyuan.baidu.com/dailysubmit/index">快速收录</a></li>
+<li><a href="https://ziyuan.baidu.com/linksubmit/index">普通收录</a></li>
+<li><a href="https://ziyuan.baidu.com/mobile/index">移动适配</a></li>
+<li><a href="https://ziyuan.baidu.com/badlink/index">死链提交</a></li>
+</ul>
+</section>
+<section>
+<h4>数据统计</h4>
+<h6>小程序资源</h6>
+<ul>
+<li><a href="https://ziyuan.baidu.com/mapp/reportflow/index">流量统计</a></li>
+</ul>
+<h6>站点资源</h6>
+<ul>
+<li><a href="https://ziyuan.baidu.com/indexs/index">索引量</a></li>
+<li><a href="https://ziyuan.baidu.com/keywords/index">流量与关键词</a></li>
+<li><a href="https://ziyuan.baidu.com/pressure/index">抓取频次</a></li>
+<li><a href="https://ziyuan.baidu.com/crawltools/index">抓取诊断</a></li>
+<li><a href="https://ziyuan.baidu.com/crawl/index">抓取异常</a></li>
+<li><a href="https://ziyuan.baidu.com/robots/index">Robots</a></li>
+</ul>
+</section>
+<section>
+<h4>搜索展现</h4>
+<ul>
+<li><a href="https://ziyuan.baidu.com/https/index">HTTPS认证</a></li>
+<li><a href="https://ziyuan.baidu.com/sitelink/index">站点子链</a></li>
+<li><a href="https://ziyuan.baidu.com/property/index">站点属性</a></li>
+<li><a href="https://ziyuan.baidu.com/ask/index">专业问答</a></li>
+<li><a href="https://ziyuan.baidu.com/trustpaper/index">专业问答托管页</a></li>
+<li><a href="https://ziyuan.baidu.com/videostore/index">落地页视频转存</a></li>
+<li><a href="https://ziyuan.baidu.com/videomonetize/index">视频极速服务</a></li>
+<li><a href="https://ziyuan.baidu.com/medical/index">医疗权威资源</a></li>
+<li><a href="https://ziyuan.baidu.com/trend/index">热议资源</a></li>
+</ul>
+</section>
+<section>
+<h4>站点优化与维护</h4>
+<ul>
+<li><a href="https://ziyuan.baidu.com/rewrite/index">网站改版</a></li>
+</ul>
+</section>
+</div>
+</div>
+<div class="search-community nav-dropdown hide">
+<div class="search-community-wrapper">
+<a href="http://bbs.zhanzhang.baidu.com/" target="_blank">论坛</a>
+<a href="https://ziyuan.baidu.com/feedback/index" class="feedback-center">反馈中心</a>
+<a href="https://ziyuan.baidu.com/ufo/index" class="ufo-header">搜索用户建议</a>
+<a href="https://ziyuan.baidu.com/vip/index" class="vip-header">VIP俱乐部</a>
+</div>
+</div>
+<div class="search-cooperation nav-dropdown hide">
+<div class="search-cooperation-wrapper">
+<a href="https://ziyuan.baidu.com/cooperateresource/index">合作专题</a>
+<a href="https://ziyuan.baidu.com/cooperateresource/applylist">申请历史</a>
+</div>
+</div>
+<div class="search-user-center nav-dropdown hide">
+<div class="search-user-center-wrapper">
+<a href="https://ziyuan.baidu.com/site/index">站点管理</a>
+<a href="https://ziyuan.baidu.com/prompt/index">消息提醒</a>
+<a href="https://ziyuan.baidu.com/usercfg/editaccount">联系方式</a>
+<a href="https://ziyuan.baidu.com/user/index">管理员设置</a>
+<a href="https://ziyuan.baidu.com/monetize">分润中心</a>
+</div>
+</div>
+</div>
+</div>
+<ul class="feedback-entry">
+<a href="https://zhiqiu.baidu.com/imcswebchat/roulette/in?id=16606&amp;token=i7mdgusjlsnblnfm10iehei4cs56v5p4&amp;domainID=zhanzhang&amp;type=2" target="_blank">
+<li class="user-ask">
+<i class="icon-question"></i>
+<p class="hide">在线咨询</p>
+</li>
+</a>
+<a href="https://ziyuan.baidu.com/feedback/index" target="_blank">
+<li class="user-feedback">
+<i class="icon-feedback"></i>
+<p class="hide">反馈中心</p>
+</li>
+</a>
+<a href="#top" target="_blank">
+<li class="back-top hide">
+<i class="icon-back"></i>
+<p class="hide">回到顶部</p>
+</li>
+</a>
+</ul>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/lib/player/cyberplayer.js"></script>
+<div class="college-main">
+<div class="mod-crumbs" id="toolsBreadcrumbs">
+<a href="https://ziyuan.baidu.com/college/index" class="crumbs-link">搜索学堂</a>
+<i class="icon-angle-right"></i>平台工具使用手册
+</div>
+<div class="main-info">
+<div class="course-title">
+<div class="title-main">
+<img src="https://zhanzhang.bj.bcebos.com/files/072931425612609.jpg" class="title-pic"/>
+<div class="title-info clearfix">
+<div class="title-con">
+<span class="title-s">平台工具使用手册</span>
+<span class="title-time">最新更新章节：<span class="time">2020-08-14</span></span>
+</div>
+<p>关键词影响力，是百度搜索资源平台针对站点对于关键词数据分析的需求，推出的全新概念。涵盖该关键词下百度搜索可以为站点带来的全部收益指标，包括：排名、百度搜索流量、展现量等。在H5版本的搜索资源平台工具中首发的关键词影响力工具检测数值有：整体影响力、最大影响力、站点影响力。</p>
+</div>
+</div>
+<div class="title-footer clearfix" id="titleFooter">
+<div class="title-page">
+<div class="page-btn" id="pageUp"><i class="up up-active"></i></div>
+<div class="page-text"><span class="page-curr">2</span>/25</div>
+<div class="page-btn" id="pageDown"><i class="down down-active"></i></div>
+</div>
+<div class="drop-down page-drop-down">
+<input type="text" class="submit-input online-input" readonly='readonly' value="网站验证"/>
+<span class="icon-drop-down"></span>
+<ul style="display:none;" class="_autohide college-down-a">
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=1">网站验证</a></li>
+<li><a href="courseinfo%EF%B9%96id=267&amp;page=2.html">网站验证</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=3">普通收录</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=4">快速收录</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=5">死链提交</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=6">网站改版</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=7">索引量</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=8">流量与关键词</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=9">抓取异常</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=10">抓取诊断</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=11">外链工具（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=12">抓取频次</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=13">robots</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=14">安全检测（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=15">漏洞检测（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=16">内容生态平台资源接入（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=17">反馈中心</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=18">站点子链</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=19">闭站保护（升级优化中）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=20">链接分析（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=21">移动适配</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=22">打赏功能（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=23">官网保护（已下线）</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=24">分润中心</a></li>
+<li><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=25">站点属性</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="course-info">
+<p></p><h3><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=1">1、网站验证</a></p><p></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=3">2、普通收录</a><br></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=4">3、快速收录</a><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=3"><br></a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=5">4、死链提交</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=6">5、网站改版</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=7">6、索引量</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=8">7、流量与关键词</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=9">8、抓取异常</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=10">9、抓取诊断</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=12">10、抓取频次</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=13">11、robots</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=17">12、反馈中心</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=18">13、站点子链</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=21">14、移动适配</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=24">15、分润中心</a></p><p><a href="https://ziyuan.baidu.com/college/courseinfo?id=267&amp;page=25">16、站点属性</a></p></h3><div><br></div><a name="h2_article_title3" href="#h2_article_title3" class="college-a-link">为什么要验证网站</a><p>搜索资源平台推荐站长添加主站（您网站的链接也许会使用www&nbsp;和非&nbsp;www&nbsp;两种网址，建议添加用户能够真实访问到的网址），添加并验证后，可证明您是该域名的拥有者，可以快捷批量添加子站点，查看所有子站数据，无需再一一验证您的子站点。</p><div><span><br></span></div><div><p></p><p></p><a name="h2_article_title13" href="#h2_article_title13" class="college-a-link">如何验证网站</a><p></p><p><span>百度搜索资源平台提供三种验证方式</span><span>（百度统计的导入方式已下线）</span><span>：</span><strong>文件验证、html标签验证、CNAME验证</strong><span>。</span></p><p><span>1.</span><span>文件验证：您需要下载验证文件，将文件上传至您的服务器，放置于域名根目录下。<br></span></p><p><span>2.html</span><span>标签验证：将html标签添加至网站首页html代码的&lt;head&gt;标签与&lt;/head&gt;标签之间。<br></span></p><p><span>3.CNAME</span><span>验证：您需要登录域名提供商或托管服务提供商的网站，添加新的DNS记录。<br></span></p><p><span>验证完成后，我们将会认为您是网站的拥有者。为使您的网站一直保持验证通过的状态，请保留验证的文件、html标签或CNAME记录，我们会去定期检查验证记录。</span></p><p></p><p><span><br></span></p><a name="h2_article_title14" href="#h2_article_title14" class="college-a-link">网站验证常见错误及解决办法</a><p></p><p></p><p></p><span><table><tbody><tr><td><b>常见错误<br></b></td><td><b>推荐解决办法<br></b></td></tr><tr><td>无法解析您网站的域名<br></td><td>请检查网站的DNS设置是否正确，并更新您网站自己的DNS<br></td></tr><tr><td>无法连接到您网站的服务器<br></td><td>请检查网站服务器设置是否正确，是否可正常访问<br></td></tr><tr><td>获取验证文件或网页发生错误<br></td><td>请检查服务器设置，或者稍后重试<br></td></tr><tr><td>您网站跳转次数过多<br></td><td>请检查服务器设置，是否设置了多次跳转，如果设置了多次跳转，请取消跳转后重新尝试验证您的网站<br></td></tr><tr><td>服务器检查结果为空<br></td><td>请检查服务器是否对百度做了特殊的设置（例如：对百度进行了封禁），或者稍后重试<br></td></tr><tr><td>我们无法访问您的网站<br></td><td>请检查服务器设置是否正确，可能是您的网站是否对百度做了UA/IP封禁，如果做了封禁请解除封禁后重新尝试验证您的网站<br></td></tr><tr><td>找不到验证的html标签或者验证的html标签内容错误<br></td><td>请检查html标签内容是否正确<br></td></tr><tr><td>验证的文件内容错误<br></td><td>请检查html标签内容是否正确<br></td></tr><tr><td>没有找到对应的DNS CNAME记录<br></td><td>请检查您网站的DNS设置是否正确<br></td></tr><tr><td>您的网站跳转到另一个域名下<br></td><td>请检查服务器是否设置了跳转，如果设置了请去掉跳转后重新尝试验证您的网站<br></td></tr></tbody></table><br></span><p><span>点击查看<a href="https://ziyuan.baidu.com/college/articleinfo?id=1003">站点验证图文详解</a></span></p><p><span></span></p><p></p></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<div class="link">
+<div class="footer-info">
+<a href="https://smartprogram.baidu.com/developer/index.html" target="_blank">智能小程序</a>
+<a href="https://help.baidu.com/newadd?prod_id=1&amp;category=1" target="_blank">投诉平台</a>
+<a href="https://tongji.baidu.com/web/welcome/login" target="_blank">百度统计</a>
+<a href="https://cloud.baidu.com/" target="_blank">百度智能云</a>
+<a href="https://su.baidu.com/" target="_blank">百度云加速</a>
+<a href="http://anquan.baidu.com/" target="_blank">百度安全</a>
+<a href="https://ai.baidu.com/" target="_blank">百度大脑</a>
+<a href="https://baozhang.baidu.com/guarantee/?from=ziyuan" target="_blank">百度保障</a>
+<a href="https://developer.baidu.com/?hmsr=%E7%AB%99%E9%95%BF%E5%B9%B3%E5%8F%B0&amp;hmpl=&amp;hmcu=&amp;hmkw=&amp;hmci" target="_blank">百度开发者中心</a>
+<a href="https://ziyuan.baidu.com/college/articleinfo?id=2114" target="_blank">联系我们</a>
+<a href="https://ziyuan.baidu.com/wiki/3148" target="_blank">微信公众号</a>
+</div>
+</div>
+<div class="license">
+©2023&nbsp;Baidu&nbsp;<a href="https://www.baidu.com/duty/" target="_blank">使用百度前必读</a>&nbsp;京ICP证030173号</div>
+</div>
+
+</div>
+<script>
+    void function(e,t){for(var n=t.getElementsByTagName("img"),a=+new Date,i=[],o=function(){this.removeEventListener&&this.removeEventListener("load",o,!1),i.push({img:this,time:+new Date})},s=0;s< n.length;s++)!function(){var e=n[s];e.addEventListener?!e.complete&&e.addEventListener("load",o,!1):e.attachEvent&&e.attachEvent("onreadystatechange",function(){"complete"==e.readyState&&o.call(e,o)})}();alog("speed.set",{fsItems:i,fs:a})}(window,document);
+</script>
+<script src="https://ziyuan.baidu.com/static/ziyuan/lib/jquery-1.7.2.min_4375a23.js"></script>
+<script src="https://ziyuan.baidu.com/static/ziyuan/lib/template_9d8868d.js"></script>
+<script src="https://ziyuan.baidu.com/static/ziyuan/lib/jquery_ext_5183ee3.js"></script>
+<script src="https://ziyuan.baidu.com/static/ziyuan/lib/zhanzhang_9c0be47.js"></script>
+<script type="text/javascript" src="https://passport.baidu.com/passApi/js/uni_login_wrapper.js?cdnversion=202306301405"></script>
+<script src="https://passport.baidu.com/passApi/js/wrapper.js?cdnversion=1688105149"></script>
+<script type="text/javascript">
+    var url_sets = {
+        usermanage : "/user/index",
+        usersetting : "/usercfg/editaccount",
+        siteproperty : "/site/property"
+    }
+
+        var needContactInfo = false;
+        // 初始化用户设置
+    zhanzhang.index.init();
+    // 初始化登陆弹窗
+    var pageUrls = {
+        passdomain: "https://passport.baidu.com/",
+        passreg : "https://passport.baidu.com/v2/?reg&u=https%3A%2F%2Fziyuan.baidu.com%3A8032%2F&tpl=zhanzhang&regType=1",
+        passlogout : "/auth/logout?u=https%3A%2F%2Fziyuan.baidu.com%2Fcollege%2Fcourseinfo%3Fid%3D267%26page%3D2",
+        cas : {"loginurl":"https:\/\/cas.baidu.com\/?action=login","imageurl":"https:\/\/cas.baidu.com\/?action=image","aimappid":12,"appid":63,"fromu":"https:\/\/ziyuan.baidu.com\/auth\/ucfromu","selfu":"https:\/\/ziyuan.baidu.com\/auth\/ucselfu","retriveurl":"https:\/\/cas.baidu.com\/?controller=user&action=retrivepwd&appscope[]=6&appscope[]=12&appscope[]=7"}
+    }
+    
+    // $('body').on('click', '[data-id="zzLogin"]', function (e) {
+    //     e.preventDefault();
+    //     require(['plugins/pop-login'],function(pl){
+    //         pl.init(pageUrls);
+    //     });
+    // });
+
+    </script>
+
+<script src="https://ziyuan.baidu.com/static/ziyuan/lib/ajaxhook_d5a0490.js"></script>
+
+<script type="text/javascript">
+    jQuery(function($){
+        if($.browser.msie && $.browser.version < 8){
+            $('<div class="mod-notice" style="margin:0 auto;line-height:18px;text-align:center;padding:10px;">您正在使用IE'+ $.browser.version +'浏览器，为保证您能正常使用搜索资源平台所有功能，请更新到高版本浏览器</div>').prependTo("body");
+            if($.ext_cookie.get('hideCheckBrowser') != 1){
+                $.ext_dialog.open({
+                    title : "提示",
+                    width:530,
+                    haml : ["%div","您正在使用IE"+ $.browser.version +"浏览器，为保证您能正常使用搜索资源平台所有功能，推荐使用下列浏览器访问：",["%a",{href:"http://www.microsoft.com/zh-cn/download/ie.aspx?q=internet+explorer",target:"_blank"},"IE8或IE8以上浏览器"],"、",["%a",{href:"http://www.google.com/intl/zh-CN/chrome/",target:"_blank"},"Chrome浏览器"],"、",["%a",{href:"http://www.firefox.com.cn/download/",target:"_blank"},"Firefox浏览器"]],
+                    buttons:{
+                        '确定':function(){
+                            $.ext_cookie.set('hideCheckBrowser',1,1,'/');
+                            //统计ie6、7的使用量
+                            $.get("/auth/monitorbrowserforie",function(){});
+                            $.ext_dialog.close();
+                        }
+                    },
+                    close:function(){
+                        $.ext_cookie.set('hideCheckBrowser',1,1,'/');
+                        //统计ie6、7的使用量
+                        $.get("/auth/monitorbrowserforie",function(){});
+                    }
+                });
+                $.ext_dialog.foot().css("textAlign","center");
+
+            }
+        }
+    });
+
+</script>
+
+<script>
+    void function(a,b,c,d,e,f){function g(b){a.attachEvent?a.attachEvent("onload",b,!1):a.addEventListener&&a.addEventListener("load",b)}function h(a,c,d){d=d||15;var e=new Date;e.setTime((new Date).getTime()+1e3*d),b.cookie=a+"="+escape(c)+";path=/;expires="+e.toGMTString()}function i(a){var c=b.cookie.match(new RegExp("(^| )"+a+"=([^;]*)(;|$)"));return null!=c?unescape(c[2]):null}function j(){var a=i("PMS_JT");if(a){h("PMS_JT","",-1);try{a=a.match(/{["']s["']:(\d+),["']r["']:["']([\s\S]+)["']}/),a=a&&a[1]&&a[2]?{s:parseInt(a[1]),r:a[2]}:{}}catch(c){a={}}a.r&&b.referrer.replace(/#.*/,"")!=a.r||alog("speed.set","wt",a.s)}}if(a.alogObjectConfig){var k=a.alogObjectConfig.sample,l=a.alogObjectConfig.rand;d="https:"===a.location.protocol?"https://fex.bdstatic.com"+d:"http://fex.bdstatic.com"+d,k&&l&&l>k||(g(function(){alog("speed.set","lt",+new Date),e=b.createElement(c),e.async=!0,e.src=d+"?v="+~(new Date/864e5)+~(new Date/864e5),f=b.getElementsByTagName(c)[0],f.parentNode.insertBefore(e,f)}),j())}}(window,document,"script","/hunter/alog/dp.min.js");
+</script>
+<script>alog('speed.set', 'drt', +new Date);</script>
+</body><script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/pkg/js/base_ab69b78.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/widget/header/header_3993bbc.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/dropdown/dropdown_429402a.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/widget/college/courseinfo_a0b67a8.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/widget/footer/footer_6b5a84f.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/dialog/haml_f85e8bf.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/dialog/dialog_34cc1f4.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/zhitong/verification_5ab1b5a.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/zhitong/paris.min_01e85f6.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/zhitong/zhitong_538a9b2.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/cookie/cookie_db28195.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/siteSelect/autosuggest_71ad0e2.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/siteSelect/site-select_c7b4e82.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/mappcreate/mapp_2fdaa95.js"></script>
+<script type="text/javascript" src="https://ziyuan.baidu.com/static/ziyuan/components/alarm/alarm_7b3b048.js"></script>
+<script type="text/javascript">!function(){    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6f6d5bc386878a651cb8c9e1b4a3379a";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    }();
+!function(){    var zhitongTip = require('ziyuan:components/zhitong/zhitong.js');
+    zhitongTip.init({
+        expires: 60,
+        site: '',
+    });
+}();
+!function(){    var config = {
+        isLogin: Boolean()
+    }
+    var header =  require('ziyuan:widget/header/header.js')
+    header.init(config);
+}();
+!function(){ require('ziyuan:widget/footer/footer.js'); }();
+!function(){        var courseinfo = require('ziyuan:widget/college/courseinfo.js');
+		courseinfo.init({
+			curr_page:"2",
+			count:"25",
+			curr_id:"267",
+			curr_type:"",
+			page_title:"平台工具使用手册"
+		});
+     }();
+!function(){        var alarm =  require('ziyuan:components/alarm/alarm.js')
+    alarm.init('1')
+}();</script></html>

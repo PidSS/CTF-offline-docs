@@ -1,0 +1,706 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>新博客，新的开始 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/THINK/about-talkbook.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;text=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;title=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;is_video=false&amp;description=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B&amp;body=Check out this article: https%3A//www.leavesongs.com/THINK/about-talkbook.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;title=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;title=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;title=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;title=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/THINK/about-talkbook.html&amp;name=%E6%96%B0%E5%8D%9A%E5%AE%A2%EF%BC%8C%E6%96%B0%E7%9A%84%E5%BC%80%E5%A7%8B&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">新博客，新的开始</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2017年2月2日 01:15" itemprop="datePublished">
+                  2017 二月 02 01:15
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：27097
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/THINK.html">心得与体会</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/talkbook.html">talkbook</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/django.html">django</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>新年新气象，给大家拜个晚年。</p>
+<p>有心的同学可能已经注意到了，新年假期这几天，我更换了自己用了4年多的博客，从后端到前端大换血，变成了现在这个样子。新博客前几天就已经竣工了，这几天一直在做一些功能上的改进，让它真正成为一个功能完善而且强大的博客系统。</p>
+<p>我将其取名为Talkbook，意为“一本娓娓道来的书”。</p>
+<p>Talkbook基于Python3+Django，部署于Docker+Gunicorn+Gevent，数据库是Postgres+Redis，使用Docker-Compose进行一键化管理。其特点如下：</p>
+<ul>
+<li>支持Markdown编写文字</li>
+<li>支持自定义模板</li>
+<li>支持多模板切换</li>
+<li>支持文章多标签</li>
+<li>支持多图片一键上传</li>
+<li>支持图片自动生成缩略图</li>
+<li>支持自定义图片水印</li>
+<li>支持邮件提醒</li>
+<li>评论、回复树形结构</li>
+<li>Docker一键化安装</li>
+<li>兼容老Emlog文章绝对链接</li>
+<li>支持Emlog数据（文章、评论、分类、标签）导入</li>
+<li>一键升级，保持所有依赖组件为最新稳定版</li>
+<li>安全性有保证</li>
+</ul>
+<p>以后还会有如下改进：</p>
+<ul>
+<li>引入插件机制</li>
+<li>搜索引擎优化</li>
+<li>其他博客数据导入</li>
+</ul>
+<p><strong>并不会增加太多功能</strong>，保持博客的轻量与纯粹性。相比于静态的优势：</p>
+<ol>
+<li>URL可定制化，不会因为更换博客导致绝对链接失效</li>
+<li>保持文章的浏览数据</li>
+<li>保持老评论与老评论结构</li>
+<li><strong>Python开发</strong>，让Python选手也拥有了可以自己定制的博客</li>
+</ol>
+<p>当然，静态博客是趋势（上述“优势”静态博客也都能够实现），如果我是一个新入门选手，我应该会选择直接用一个静态博客。</p>
+<p>Talkbook暂时不会开源，也不会出售，但如果你确定你懂上面这些技术中的一些，就可以作为贡献者参与开发了。</p>
+<p>另外，前几天搞了个小投票，你是喜欢老博客的样式还是新博客的样式，结果……微博上喜欢老博客样式的人更多，V2EX（ <a href="https://www.v2ex.com/t/337442">https://www.v2ex.com/t/337442</a> ）上清一色喜欢新博客样式。</p>
+<p><a href="../media/attachment/2017/02/02/9116b7ef-30fb-4a99-9f5f-930c7cf230bb.jpg"><img alt="14859690047182.jpg" src="../media/attachment/2017/02/02/9116b7ef-30fb-4a99-9f5f-930c7cf230bb.75eec2726864.jpg" /></a></p>
+<p>弄的我很尴尬呀，于是我把老博客的模板移植过来了，现在点击博客右下角“更换模板”的链接即可更换模板了。</p>
+<p>希望更多人喜欢。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3851">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">rULe4Ker4pwn</a>
+                    <time datetime="2022年4月14日 13:55" itemprop="datePublished">
+                      2022 四月 14 13:55
+                    </time>
+                    <a href="javascript:reply_to('3851', 'rULe4Ker4pwn')">回复</a>
+                  </p>
+                  <p class="comment-meta">想要源码😢 太喜欢现在这个主题的样子了</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3540">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/6ddffec53570f8eab1affcdc97a13585.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">lu</a>
+                    <time datetime="2020年9月16日 19:49" itemprop="datePublished">
+                      2020 九月 16 19:49
+                    </time>
+                    <a href="javascript:reply_to('3540', 'lu')">回复</a>
+                  </p>
+                  <p class="comment-meta">可以说说老版本是怎么搭建的嘛</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3543">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2020年9月16日 20:04" itemprop="datePublished">
+                      2020 九月 16 20:04
+                    </time>
+                    <a href="javascript:reply_to('3543', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@lu 老版本是emlog，网上应该有教程。</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3340">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">7089bAt</a>
+                    <time datetime="2019年5月5日 16:01" itemprop="datePublished">
+                      2019 五月 05 16:01
+                    </time>
+                    <a href="javascript:reply_to('3340', '7089bAt')">回复</a>
+                  </p>
+                  <p class="comment-meta">求加个微信好友 GDMichiGo ~~</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3341">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2019年5月5日 17:48" itemprop="datePublished">
+                      2019 五月 05 17:48
+                    </time>
+                    <a href="javascript:reply_to('3341', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@7089bAt 你是？</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3258">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Albert</a>
+                    <time datetime="2018年12月28日 07:47" itemprop="datePublished">
+                      2018 十二月 28 07:47
+                    </time>
+                    <a href="javascript:reply_to('3258', 'Albert')">回复</a>
+                  </p>
+                  <p class="comment-meta">留个脚印</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3147">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/5aa192f30f7ccff4be73a3a37e90dd12.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="http://www.verodillan.com/" target="_blank" rel="nofollow noopener">体育用品</a>
+                    <time datetime="2018年9月23日 14:40" itemprop="datePublished">
+                      2018 九月 23 14:40
+                    </time>
+                    <a href="javascript:reply_to('3147', '%E4%BD%93%E8%82%B2%E7%94%A8%E5%93%81')">回复</a>
+                  </p>
+                  <p class="comment-meta">坚持写博客不容易啊！</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3065">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">云顶</a>
+                    <time datetime="2018年4月26日 20:15" itemprop="datePublished">
+                      2018 四月 26 20:15
+                    </time>
+                    <a href="javascript:reply_to('3065', '%E4%BA%91%E9%A1%B6')">回复</a>
+                  </p>
+                  <p class="comment-meta">这个有点厉害了</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3025">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">sun</a>
+                    <time datetime="2018年2月1日 11:56" itemprop="datePublished">
+                      2018 二月 01 11:56
+                    </time>
+                    <a href="javascript:reply_to('3025', 'sun')">回复</a>
+                  </p>
+                  <p class="comment-meta">请问博主用的什么markdown工具</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3022">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">shuteer</a>
+                    <time datetime="2018年1月27日 17:55" itemprop="datePublished">
+                      2018 一月 27 17:55
+                    </time>
+                    <a href="javascript:reply_to('3022', 'shuteer')">回复</a>
+                  </p>
+                  <p class="comment-meta">真漂亮</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-2627">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">闷声发大财</a>
+                    <time datetime="2017年4月20日 16:58" itemprop="datePublished">
+                      2017 四月 20 16:58
+                    </time>
+                    <a href="javascript:reply_to('2627', '%E9%97%B7%E5%A3%B0%E5%8F%91%E5%A4%A7%E8%B4%A2')">回复</a>
+                  </p>
+                  <p class="comment-meta">新的好看</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-2610">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">b34r</a>
+                    <time datetime="2017年4月4日 17:52" itemprop="datePublished">
+                      2017 四月 04 17:52
+                    </time>
+                    <a href="javascript:reply_to('2610', 'b34r')">回复</a>
+                  </p>
+                  <p class="comment-meta">老模板确实好看一点，清爽</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2611">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年4月5日 00:24" itemprop="datePublished">
+                      2017 四月 05 00:24
+                    </time>
+                    <a href="javascript:reply_to('2611', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@b34r 果然安全圈品味和程序员圈品味有所区别</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-2561">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">绿萝</a>
+                    <time datetime="2017年2月27日 16:37" itemprop="datePublished">
+                      2017 二月 27 16:37
+                    </time>
+                    <a href="javascript:reply_to('2561', '%E7%BB%BF%E8%90%9D')">回复</a>
+                  </p>
+                  <p class="comment-meta">怎么切换到新博客模板........</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2564">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年2月27日 21:02" itemprop="datePublished">
+                      2017 二月 27 21:02
+                    </time>
+                    <a href="javascript:reply_to('2564', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@绿萝 右下角点击更换模板。</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2568">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">绿萝</a>
+                    <time datetime="2017年2月28日 09:11" itemprop="datePublished">
+                      2017 二月 28 09:11
+                    </time>
+                    <a href="javascript:reply_to('2568', '%E7%BB%BF%E8%90%9D')">回复</a>
+                  </p>
+                  <p class="comment-meta">@phithon 旧版本找不到切换模板的链接，清除缓存可以的</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2570">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年2月28日 15:13" itemprop="datePublished">
+                      2017 二月 28 15:13
+                    </time>
+                    <a href="javascript:reply_to('2570', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@绿萝 你仔细看一下，其实是有的，只不过颜色比较暗，和背景融入一起了。</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            </div>
+                
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-2547">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">如风</a>
+                    <time datetime="2017年2月17日 20:36" itemprop="datePublished">
+                      2017 二月 17 20:36
+                    </time>
+                    <a href="javascript:reply_to('2547', '%E5%A6%82%E9%A3%8E')">回复</a>
+                  </p>
+                  <p class="comment-meta">以前旧博客的内容在新博客也有，是吗？</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2549">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年2月17日 23:55" itemprop="datePublished">
+                      2017 二月 17 23:55
+                    </time>
+                    <a href="javascript:reply_to('2549', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@如风 是的</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-2532">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">lucy</a>
+                    <time datetime="2017年2月7日 10:38" itemprop="datePublished">
+                      2017 二月 07 10:38
+                    </time>
+                    <a href="javascript:reply_to('2532', 'lucy')">回复</a>
+                  </p>
+                  <p class="comment-meta">切回老博客模板，现在想回去体验一样新模板，找不到回去的路了......</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2533">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年2月7日 11:41" itemprop="datePublished">
+                      2017 二月 07 11:41
+                    </time>
+                    <a href="javascript:reply_to('2533', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@lucy 两种方法。1，也是右下角切换主题 2.清空cookie即可使用默认模板</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-2529">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Magic</a>
+                    <time datetime="2017年2月6日 19:07" itemprop="datePublished">
+                      2017 二月 06 19:07
+                    </time>
+                    <a href="javascript:reply_to('2529', 'Magic')">回复</a>
+                  </p>
+                  <p class="comment-meta">老博客好看，弄个子链放这个也好啊。23333<br>刚刚发现点击刷新验证码的地方，反应略慢了。</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-2530">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2017年2月6日 19:12" itemprop="datePublished">
+                      2017 二月 06 19:12
+                    </time>
+                    <a href="javascript:reply_to('2530', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@Magic 反正模板可以换，为啥要弄子链接</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-2520">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/3b3898290bdcf73f7f1f29a34f2192da.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">落沐萧萧</a>
+                    <time datetime="2017年2月2日 01:30" itemprop="datePublished">
+                      2017 二月 02 01:30
+                    </time>
+                    <a href="javascript:reply_to('2520', '%E8%90%BD%E6%B2%90%E8%90%A7%E8%90%A7')">回复</a>
+                  </p>
+                  <p class="comment-meta">之前评论一直有点问题，现在修复了。</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="2c8269c4fcc8c04199a0ac16b0d488cf9df3feb9" />
+</div><div class="col-6">
+<img src="../captcha/image/2c8269c4fcc8c04199a0ac16b0d488cf9df3feb9/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="405" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="FAu8mSxqgz3aDhlPn9qhI6dpwQJa1PaHr8SZUX89EVhTbP9dpan2FzguRd0lArmZ">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

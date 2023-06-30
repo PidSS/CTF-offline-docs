@@ -1,0 +1,728 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>使用Let&#x27;s Encrypt保护你的数据包 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                资源分享 &raquo; <a href="lets-encrypt-guide.html">使用Let&#x27;s Encrypt保护你的数据包</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">使用Let&#x27;s Encrypt保护你的数据包</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/SHARE.html">资源分享</a></span>
+  
+  <span class="date">时间: 2016-2-13 0:05</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">13条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="lets-encrypt-guide.html">14413人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/ssl%E8%AF%81%E4%B9%A6.html">ssl证书</a>
+    
+        <a href="../tag/%E5%85%8D%E8%B4%B9.html">免费</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>【过年了，每天发一篇以前的存货，一共七篇。】</p>
+<p>Let's Encrypt是去年底推出的一个免费SSL证书，且申请这个证书基本没有任何限制，只要你证明你是域名的所有者，你就可以为你的域名申请一个SSL证书。</p>
+<p>我今天就来为我的 wiki.ioin.in 申请一个时髦的Let's Encrypt证书。</p>
+<p>首先，我利用到的是acme-tiny，这是第三方人士开发的一个扩展。因为Let's Encrypt官方给出的方法比较麻烦，而acme-tiny这个小工具可以让用户敲几条命令即可生成好我们需要的证书。</p>
+<p>下载acme-tiny: <a href="https://github.com/diafygi/acme-tiny"><a href="https://github.com/diafygi/acme-tiny">https://github.com/diafygi/acme-tiny</a></a></p>
+<p>首先，生成一个用户私钥: account.key，acme-tiny通过这个证书来登录Let's Encrypt。再生成一个域名私钥，domain.key</p>
+<div class="codehilite"><pre><span></span>openssl genrsa 4096 &gt; account.key
+openssl genrsa 4096 &gt; domain.key
+</pre></div>
+
+
+<p><a href="../content/uploadfile/201602/340e1455293398.jpg"><img alt="14552588259506.jpg" src="../content/uploadfile/201602/thum-340e1455293398.jpg" /></a> </p>
+<p>然后利用ACME协议，将domain.key生成domain.csr。如果你只有一个域名需要ssl，只需执行下面的语句：</p>
+<div class="codehilite"><pre><span></span>openssl req -new -sha256 -key domain.key -subj &quot;/CN=yoursite.com&quot; &gt; domain.csr
+</pre></div>
+
+
+<p>如果你有多个域名，比如www.xxx.com和xxx.com，你就执行下面的语句：</p>
+<div class="codehilite"><pre><span></span>openssl req -new -sha256 -key domain.key -subj &quot;/&quot; -reqexts SAN -config &lt;(cat /etc/ssl/openssl.cnf &lt;(printf &quot;[SAN]\nsubjectAltName=DNS:yoursite.com,DNS:www.yoursite.com&quot;)) &gt; domain.csr
+</pre></div>
+
+
+<p>我的 wiki.ioin.in 是单域名证书，所以执行下面语句即可：</p>
+<p><a href="../content/uploadfile/201602/77fe1455293399.jpg"><img alt="14552588402436.jpg" src="../content/uploadfile/201602/thum-77fe1455293399.jpg" /></a> </p>
+<p>Let's Encrypt有多种方法来验证你是否是域名的所有人，而acme-tiny这个小工具用的是最简单的方法，也就是利用http文件验证。<br />
+简单来说，就是生成一个验证文件，放在<code>http://example.com/.well-known/acme-challenge/</code>下，Let's Encrypt官方验证这个文件是否存在、内容是否正确。如果一切正确，说明域名是你所有。</p>
+<p>所以我这里，新建了一个/home/www/challenges/目录，将它别名指向 /.well-known/acme-challenge/ 。这样，我在challenges目录里写入的文件，即可通过 <a href="http://xxxx.com/.well-known/acme-challenge/">http://xxxx.com/.well-known/acme-challenge/</a> 访问了。nginx配置如下：</p>
+<p><a href="../content/uploadfile/201602/b1301455293400.jpg"><img alt="14552588522823.jpg" src="../content/uploadfile/201602/thum-b1301455293400.jpg" /></a> </p>
+<p>然后，运行acme_tiny.py脚本：</p>
+<div class="codehilite"><pre><span></span>python acme_tiny.py --account-key /etc/ssl/letsencrypt/account.key --csr /etc/ssl/letsencrypt/domain.csr --acme-dir /home/www/challenges/ &gt; /etc/ssl/letsencrypt/signed.crt
+</pre></div>
+
+
+<p>其中，将--account-key的值改为你生成的account.key的路径；--csr的值改成你生成的domain.csr的路径；--acme-dir的值改为我要写入验证文件的文件夹。<br />
+最后成功生成signed.crt，这就是我的域名证书：</p>
+<p><a href="../content/uploadfile/201602/e0511455293401.jpg"><img alt="14552589980593.jpg" src="../content/uploadfile/201602/thum-e0511455293401.jpg" /></a> </p>
+<p>在nginx里，还需要将Let's Encrypt的中间证书放到自己的证书后面，构成一个证书链chained.pem：</p>
+<div class="codehilite"><pre><span></span>wget -O - https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.pem &gt; intermediate.pem
+cat signed.crt intermediate.pem &gt; chained.pem
+</pre></div>
+
+
+<p>另外，还需要生成一个较强的dh。(位数不要太多！我生成了一个4096位的dh，半个小时还没生成好)。关于dh的安全性，可以关注这个网站： <a href="https://weakdh.org/"><a href="https://weakdh.org">https://weakdh.org</a></a> ，这篇文章：<a href="https://weakdh.org/sysadmin.html"><a href="https://weakdh.org/sysadmin.html">https://weakdh.org/sysadmin.html</a></a></p>
+<div class="codehilite"><pre><span></span>openssl dhparam -out dhparam.pem 2048
+</pre></div>
+
+
+<p><a href="../content/uploadfile/201602/bae31455293402.jpg"><img alt="14552626630232.jpg" src="../content/uploadfile/201602/thum-bae31455293402.jpg" /></a> </p>
+<p>生成好以后，将以上生成的私钥、证书、dh等写入nginx的配置文件：</p>
+<div class="codehilite"><pre><span></span><span class="nt">server</span>
+<span class="p">{</span>
+    <span class="err">listen</span> <span class="err">80</span><span class="p">;</span>
+    <span class="err">listen</span> <span class="err">443</span> <span class="err">ssl</span><span class="p">;</span>
+    <span class="err">#</span><span class="n">listen</span> <span class="cp">[</span><span class="p">::</span><span class="cp">]</span><span class="p">:</span><span class="mi">80</span><span class="p">;</span>
+    <span class="err">server_name</span> <span class="err">wiki.ioin.in</span><span class="p">;</span>
+    <span class="err">index</span> <span class="err">index.html</span> <span class="err">index.htm</span><span class="p">;</span>
+
+    <span class="err">ssl</span> <span class="err">on</span><span class="p">;</span>
+    <span class="err">ssl_certificate</span> <span class="err">/etc/ssl/letsencrypt/chained.pem</span><span class="p">;</span>
+    <span class="err">ssl_certificate_key</span> <span class="err">/etc/ssl/letsencrypt/domain.key</span><span class="p">;</span>
+    <span class="err">ssl_session_timeout</span> <span class="err">5m</span><span class="p">;</span>
+    <span class="err">ssl_protocols</span> <span class="err">TLSv1</span> <span class="err">TLSv1.1</span> <span class="err">TLSv1.2</span><span class="p">;</span>
+    <span class="err">ssl_ciphers</span> <span class="n">ECDHE-RSA-AES256-GCM-SHA384</span><span class="p">:</span><span class="n">ECDHE-RSA-AES128-GCM-SHA256</span><span class="o">:</span><span class="n">DH</span><span class="err">$</span>
+    <span class="n">ssl_session_cache</span> <span class="n">shared</span><span class="o">:</span><span class="n">SSL</span><span class="o">:</span><span class="mi">50</span><span class="n">m</span><span class="p">;</span>
+    <span class="err">ssl_dhparam</span> <span class="err">/etc/ssl/letsencrypt/dhparam.pem</span><span class="p">;</span>
+    <span class="err">ssl_prefer_server_ciphers</span> <span class="err">on</span><span class="p">;</span>
+    <span class="err">...the</span> <span class="err">rest</span> <span class="err">of</span> <span class="err">your</span> <span class="err">config</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>重启nginx，一切万事大吉： <a href="https://wiki.ioin.in/"><a href="https://wiki.ioin.in">https://wiki.ioin.in</a></a> </p>
+<p><a href="../content/uploadfile/201602/d0c11455293404.jpg"><img alt="14552632280629.jpg" src="../content/uploadfile/201602/thum-d0c11455293404.jpg" /></a></p>
+<p>另外，我们看证书的过期日期。算一下这个证书其实只有3个月，也就是一个季度。当证书快要过期的时候，我们还需要重新颁发一下证书。<br />
+重新颁发证书的过程就比较简单了，只需要重新执行acme_tiny.py即可。</p>
+<p>我们可以将重新颁发的过程写在一个脚本里：</p>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/sh</span>
+python /path/to/acme_tiny.py --account-key /path/to/account.key --csr /path/to/domain.csr --acme-dir /var/www/challenges/ &gt; /tmp/signed.crt <span class="o">||</span> <span class="nb">exit</span>
+wget -O - https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.pem &gt; intermediate.pem
+cat /tmp/signed.crt intermediate.pem &gt; /path/to/chained.pem
+service nginx reload
+</pre></div>
+
+
+<p>然后将这个脚本加入cron，每月执行一次：</p>
+<div class="codehilite"><pre><span></span><span class="c1">#example line in your crontab (runs once per month)</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">1</span> * * /path/to/renew_cert.sh <span class="m">2</span>&gt;&gt; /var/log/acme_tiny.log
+</pre></div>
+
+
+<p>就不需要人工操作了~ </p>
+<p>最后，测试一下SSL质量： <a href="https://www.ssllabs.com/ssltest/"><a href="https://www.ssllabs.com/ssltest/">https://www.ssllabs.com/ssltest/</a></a> </p>
+<p><a href="../content/uploadfile/201602/8d031455293404.jpg"><img alt="14552645362489.jpg" src="../content/uploadfile/201602/thum-8d031455293404.jpg" /></a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/ssl%E8%AF%81%E4%B9%A6.html">ssl证书</a>
+                
+                    <a href="../tag/%E5%85%8D%E8%B4%B9.html">免费</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 13 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2471">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/d00e76ce9f3bef812199b4202efa0a8a.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Borel</a></div>
+                    <p>ssllabs评分结果：<br>This server&#x27;s certificate chain is incomplete. Grade capped to B.<br><br>请教如何解决？</p>
+                    <span class="comment-time">时间: 2016-11-08 15:52</span>
+                    <span class="comment-reply"><a href="#comment-2471" onclick="reply_to('2471','Borel')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2472">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/d00e76ce9f3bef812199b4202efa0a8a.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Borel</a></div>
+                    <p>@Borel：https://wiki.ioin.in<br>测试结果也有同样问题</p>
+                    <span class="comment-time">时间: 2016-11-08 15:53</span>
+                    <span class="comment-reply"><a href="#comment-2472" onclick="reply_to('2472','Borel')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2366">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">toysweet</a></div>
+                    <p>国外证书虽然很酷，wosign也有免费的证书，而且更实用，更方便，兼容性更好。</p>
+                    <span class="comment-time">时间: 2016-06-22 14:36</span>
+                    <span class="comment-reply"><a href="#comment-2366" onclick="reply_to('2366','toysweet')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2367">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@toysweet：据说很多人并不信任这个证书，并从根开始拉黑了。国内证书被谷歌chrome等浏览器拉黑的也不在少数。所以我换了。</p>
+                    <span class="comment-time">时间: 2016-06-24 11:47</span>
+                    <span class="comment-reply"><a href="#comment-2367" onclick="reply_to('2367','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2308">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/a6d81783bf7453d84d9d4c404f70f4b0.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">chenkeni</a></div>
+                    <p>Token型的CSRF防御绕过<br><br>这个PPT求再次分享！！<br>http://mhz.pw/ppt/csrf/play.html 已经打不开了。</p>
+                    <span class="comment-time">时间: 2016-02-26 17:19</span>
+                    <span class="comment-reply"><a href="#comment-2308" onclick="reply_to('2308','chenkeni')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2309">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@chenkeni：http://phith0n.github.io/Talks/2015%20July%20Tencent%20Xian%20salon/play.html<br>最新版chrome不兼容，用firefox就可以了</p>
+                    <span class="comment-time">时间: 2016-02-27 18:15</span>
+                    <span class="comment-reply"><a href="#comment-2309" onclick="reply_to('2309','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2301">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/929b43892ddbe6c40261cbdaa9d7d91e.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">chenyuan</a></div>
+                    <p>感觉你的blog有bug呀，点击本页上部的“5条评论”，就会自动跳转到404<br>使用Let&#x27;s Encrypt保护你的数据包<br>作者:  分类: 资源分享 时间: 2016-2-13 0:05 评论: 5条评论 浏览: 305人看过 标签: 免费	ssl证书</p>
+                    <span class="comment-time">时间: 2016-02-19 20:05</span>
+                    <span class="comment-reply"><a href="#comment-2301" onclick="reply_to('2301','chenyuan')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2306">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@chenyuan：感谢提出来蛤，已经修复了</p>
+                    <span class="comment-time">时间: 2016-02-24 00:04</span>
+                    <span class="comment-reply"><a href="#comment-2306" onclick="reply_to('2306','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2300">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/4da279cded23858594cf8834bcf50818.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://ymhack.com" target="_blank" rel="nofollow noopener">沧澜</a></div>
+                    <p>跟随大牛的脚步。。。踏上人生巅峰，早日赢取白富美。</p>
+                    <span class="comment-time">时间: 2016-02-19 15:10</span>
+                    <span class="comment-reply"><a href="#comment-2300" onclick="reply_to('2300','沧澜')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2296">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/f76d95bf5f9681b0bb0467e096db8a33.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://" target="_blank" rel="nofollow noopener">burn_egg</a></div>
+                    <p>ph牛，，为什么chrome和chorome内核的浏览器访问不了你的blog呢？只有firefox才行。。好像和ssl有关？</p>
+                    <span class="comment-time">时间: 2016-02-14 17:05</span>
+                    <span class="comment-reply"><a href="#comment-2296" onclick="reply_to('2296','burn_egg')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2297">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@burn_egg：是不是太老了？<br>你什么系统，chrome什么版本？</p>
+                    <span class="comment-time">时间: 2016-02-14 17:47</span>
+                    <span class="comment-reply"><a href="#comment-2297" onclick="reply_to('2297','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2298">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@burn_egg：Windows XP不支持TLS，已经进入历史的垃圾堆。。建议换win7以上的系统。</p>
+                    <span class="comment-time">时间: 2016-02-14 17:57</span>
+                    <span class="comment-reply"><a href="#comment-2298" onclick="reply_to('2298','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2299">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/f76d95bf5f9681b0bb0467e096db8a33.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://" target="_blank" rel="nofollow noopener">burn_egg</a></div>
+                    <p>@phithon：嘿嘿~原来是这样，谢谢大牛，，不久就准备换mac了，太懒。。</p>
+                    <span class="comment-time">时间: 2016-02-14 18:22</span>
+                    <span class="comment-reply"><a href="#comment-2299" onclick="reply_to('2299','burn_egg')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="2aafbf029a2d8cdcae1b8fdb3c37373c6357a40e" />
+</div><div class="col-6">
+<img src="../captcha/image/2aafbf029a2d8cdcae1b8fdb3c37373c6357a40e/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="382" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="A66VVxMrarrXq0C5vlPi7l1GoXrptz5JmEuMtCnayNFGYyqtxmM34O4LJkIA2bh1">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

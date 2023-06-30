@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Fuzzing 学习笔记：起步</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Fuzzing 学习笔记：起步" />
+    <meta property="og:description" content="开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。" />
+    <meta property="og:url" content="https://www.ruanx.net/fuzzing-startup/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/10/---2022-10-02-17-18-48.png" />
+    <meta property="article:published_time" content="2022-10-02T05:49:19.000Z" />
+    <meta property="article:modified_time" content="2022-10-02T11:58:19.000Z" />
+    <meta property="article:tag" content="Fuzzing" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fuzzing 学习笔记：起步" />
+    <meta name="twitter:description" content="开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/fuzzing-startup/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/10/---2022-10-02-17-18-48.png" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Fuzzing" />
+    <meta property="og:image:width" content="1582" />
+    <meta property="og:image:height" content="1035" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "Fuzzing 学习笔记：起步",
+    "url": "https://www.ruanx.net/fuzzing-startup/",
+    "datePublished": "2022-10-02T05:49:19.000Z",
+    "dateModified": "2022-10-02T11:58:19.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/10/---2022-10-02-17-18-48.png",
+        "width": 1582,
+        "height": 1035
+    },
+    "keywords": "Fuzzing",
+    "description": "开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-fuzzing">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">Fuzzing 学习笔记：起步</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-fuzzing ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/fuzzing/index.html">Fuzzing</a>
+                </section>
+
+                <h1 class="post-full-title">Fuzzing 学习笔记：起步</h1>
+
+                <p class="post-full-custom-excerpt">开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-10-02">2 Oct 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 8 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/10/---2022-10-02-17-18-48.png 300w,
+                            ../content/images/size/w600/2022/10/---2022-10-02-17-18-48.png 600w,
+                            ../content/images/size/w1000/2022/10/---2022-10-02-17-18-48.png 1000w,
+                            ../content/images/size/w2000/2022/10/---2022-10-02-17-18-48.png 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/10/---2022-10-02-17-18-48.png"
+                    alt="Fuzzing 学习笔记：起步"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <h3 id="%E5%89%8D%E8%A8%80">前言</h3><p>　　最近选择了漏洞挖掘作为当前的研究方向，所以开始学习 fuzzing 技术。向 <a href="https://qiuhao.org/">Qiuhao Li</a> 请教经验，对方推荐从 AFL 和 libFuzzer 学起，先学会用工具再说。因此决定先学习 AFL++，在学习的过程中看一些相关领域的技术。这是很冒险的做法，容易漏掉大量基础知识。笔者准备在摸索 fuzzing 一段时间之后，去系统地学习一遍程序分析。预计写一系列文章记录漏洞挖掘的学习过程，本文是第一篇。</p><p>　　笔者用到的设备包括一台 R9-5950X 32G ESXi 虚拟机（Debian testing）和一台 R7-5800X 64G 实体机（Ubuntu 22.04）。本来想在 PC 上也使用 Debian testing（理由是稳定性比 Ubuntu LTS 好、软件包新一些、不存在 snap），折腾了大约 8h 之后发现无论是 Gnome 还是 KDE，都难以在短时间内调整到“用得舒适”的地步，遂与自己和解，去使用 Ubuntu 及其特制版 Gnome。</p><h3 id="%E7%BC%96%E8%AF%91-afl">编译 AFL++</h3><p>　　AFL 项目几年前就不更新了，现在该使用其后继项目 AFL++。尽管 AFL++ 可以透过 docker 容器来运行，但性能会打折扣。具体有多大的影响，我们后续做一个测试。</p><p>　　现在按照<a href="https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md">官方指引</a>编译 AFL++（平台是 Debian testing）。首先安装依赖：</p><pre><code class="language-bash">sudo apt-get install -y build-essential python3-dev automake cmake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools cargo libgtk-3-dev
+sudo apt-get install -y lld llvm llvm-dev clang
+sudo apt-get install -y gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
+sudo apt-get install -y ninja-build # for QEMU mode
+
+gcc --version
+# gcc (Debian 12.2.0-3) 12.2.0
+
+clang --version
+# Debian clang version 14.0.6-2
+# Target: x86_64-pc-linux-gnu
+# Thread model: posix
+
+llvm-ar --version
+# Debian LLVM version 14.0.6
+#  
+#  Optimized build.
+#  Default target: x86_64-pc-linux-gnu
+#  Host CPU: znver3</code></pre><p>　　官方文档说“建议安装尽可能新的 gcc、clang 和 llvm-dev”，由于我们平台是 Debian testing，包都是很新的，所以这里透过 apt 安装的 gcc 版本是 12，clang 版本是 14。笔者在 Ubuntu 22.04 安装时，需要使用 <code>apt install gcc-12 llvm-14</code> 来安装指定版本的 gcc 和 llvm。</p><p>　　接下来，编译 AFL++。现在暂且只编译基本功能（Plain AFL++）：</p><pre><code class="language-bash">git clone https://github.com/AFLplusplus/AFLplusplus.git
+cd AFLplusplus
+make all # 基础 AFL++，不带 FRIDA mode, QEMU mode, unicorn_mode, etc
+</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image.png" class="kg-image" alt loading="lazy" width="1964" height="599" srcset="../content/images/size/w600/2022/10/image.png 600w, ../content/images/size/w1000/2022/10/image.png 1000w, ../content/images/size/w1600/2022/10/image.png 1600w, ../content/images/2022/10/image.png 1964w" sizes="(min-width: 720px) 720px"></figure><p>　　于是编译完成，当前目录下多了 <code>alf-fuzz</code>，<code>afl-clang-fast</code> 等可执行文件。我们可以开始 fuzz 了。</p><h3 id="afl-%E5%9F%BA%E7%A1%80">AFL++ 基础</h3><p>　　阅读 FAQ 文章：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://aflplus.plus/docs/faq/"><div class="kg-bookmark-content"><div class="kg-bookmark-title">Faq | AFLplusplus</div><div class="kg-bookmark-description">The AFLplusplus website</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://aflplus.plus/favicon.png" alt=""><span class="kg-bookmark-author">AFLplusplus</span></div></div><div class="kg-bookmark-thumbnail"><img src="https://aflplus.plus/ogimage.png" alt=""></div></a></figure><p>【项目来历】</p><ul><li>AFL++ 是 Google AFL 的 fork，拥有“more speed, more and better mutations, more and better instrumentation, custom module support”</li><li>Michał "lcamtuf" Zalewski 于 2013/2014 开始开发 AFL，2017 离开 Google 后停止开发</li><li>2019 年，Google 接管了 AFL，但只合并来自社区的 PR，没有进一步开发功能</li><li>2019 年，AFL++ 项目建立，从社区弄来了一些 patch，又从学术界弄来了一些 feature</li></ul><p>【基本术语】</p><ul><li>一个程序包含若干<strong>函数</strong>，函数包含编译后的指令</li><li>函数中的指令，可能构成一个或多个<strong>基本块</strong></li><li>基本块（basic block）是指：尽可能长的指令序列，<strong>只有一个入口</strong>，且线性地执行，<strong>没有分支或跳转</strong>（末尾跳转除外）</li></ul><p>　　举例，下面的代码有 A, B, C, D, E 共五个基本块：</p><pre><code class="language-cpp">function() {
+  A:
+    some
+    code
+  B:
+    if (x) goto C; else goto D;
+  C:
+    some code
+    goto E
+  D:
+    some code
+    goto B
+  E:
+    return
+}</code></pre><p>　　一条“边”指的是两个基本块之间的关联。自环也算是一条边。</p><pre><code class="language-plaintext">              Block A
+                |
+                v
+              Block B  &lt;------+
+            /        \        |
+           v          v       |
+        Block C    Block D  --+
+            \
+              v
+              Block E</code></pre><p>【AFL++ 的目标】</p><ul><li>AFL++ 与 AFL 都是灰盒 fuzzer。</li><li>如果有目标程序的源码，AFL++ 是个很棒的 fuzzer。</li><li>AFL++ 也能 fuzz binary-only 程序。</li><li>AFL++ 不能用于纯黑盒（out of the box） fuzz。</li></ul><h3 id="%E7%AC%AC%E4%B8%80%E6%AC%A1-fuzz">第一次 fuzz</h3><p>　　笔者写了一个存在 bug 的程序：</p><pre><code class="language-cpp">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+int isBigPrime(int n) {
+    if(n &lt;= 5)
+        return 0;
+    for(int i=2; i*i&lt;=n; i++)
+        if(n % i == 0) return 0;
+    return 1;
+}
+
+int main(void) {
+    char s[35];
+    scanf("%s", s);
+
+    char cnt[300] = {0};
+
+    for(int i=0; s[i]; i++) {
+        cnt[s[i]]++;
+        if(s[i] &lt; 'x' || s[i] &gt; 'z') {
+            puts("unacceptable");
+            return 0;
+        }
+    }
+
+    if(isBigPrime(cnt['x']) &amp;&amp; isBigPrime(cnt['y']) &amp;&amp; isBigPrime(cnt['z']))
+        abort();
+
+    puts("Nice string");
+
+    return 0;
+}</code></pre><p>　　程序有两个 bug：</p><ol><li>未检测输入字符串长度，<code>main()</code> 可能栈溢出</li><li>若输入字符串由 <code>x, y, z</code> 组成，且 <code>x, y, z</code> 出现次数都是大于 5 的质数，则程序 abort</li></ol><p>　　会造成 bug 的输入示例：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/10/image-11.png" class="kg-image" alt loading="lazy" width="2000" height="776" srcset="../content/images/size/w600/2022/10/image-11.png 600w, ../content/images/size/w1000/2022/10/image-11.png 1000w, ../content/images/size/w1600/2022/10/image-11.png 1600w, ../content/images/size/w2400/2022/10/image-11.png 2400w" sizes="(min-width: 720px) 720px"><figcaption>▲ 输入超长字符串使程序栈溢出；输入质数个 x, y, z 产生 abort</figcaption></figure><p>　　现在我们开始 fuzz。首先利用 afl-clang-lto 编译程序。AFL++ 文档中有“如何选择编译器”的<a href="https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md#a-selecting-the-best-afl-compiler-for-instrumenting-the-target">指引</a>。我们手上的 llvm 版本大于 11，所以选择 LTO mode。</p><pre><code class="language-bash">afl-clang-lto ./hello.c -o hello</code></pre><p>　　构造一些初始输入，放进 <code>inputs</code> 文件夹里面。笔者使用了两条初始输入： <code>helloworld</code> 以及 <code>anna</code> 。它们自身不会让程序崩溃，我们希望 AFL++ 寻找到能让程序崩溃的输入。</p><p>　　运行 AFL++：</p><pre><code class="language-bash">afl-fuzz -i inputs/ -o out/  -- ./hello</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-13.png" class="kg-image" alt loading="lazy" width="2000" height="1299" srcset="../content/images/size/w600/2022/10/image-13.png 600w, ../content/images/size/w1000/2022/10/image-13.png 1000w, ../content/images/size/w1600/2022/10/image-13.png 1600w, ../content/images/2022/10/image-13.png 2338w" sizes="(min-width: 720px) 720px"></figure><p>　　程序在运行一分钟后，寻找到了 4 个能导致程序崩溃的样例。它们分别是：</p><pre><code class="language-plaintext">yxxyxxxyxxyyzzzzzzzzzzzxxyyxx
+xxxxyyxyyxyzzzzzzzzzzzxxxxxyyxxxxyyyyxx
+xxxxyyxyyxyyzzzzzzxzxxxxxyxxxxxyyyyxx
+xxxxyyxyyxyyzzzzzzyzx&lt;00&gt;&lt;80&gt;xx&lt;00&gt;&lt;80&gt;yyxx</code></pre><p>　　逐个分析这些输入：</p><ol><li>拥有 11 个 <code>x</code>，7 个 <code>y</code>，11 个 <code>z</code> </li><li>拥有 17 个 <code>x</code>，11 个 <code>y</code>，11 个 <code>z</code> </li><li>拥有 19 个 <code>x</code>，11 个 <code>y</code>，7 个 <code>z</code> </li><li>在 <code>\x00</code> 截断之前，拥有 7 个 <code>x</code>，7 个 <code>y</code>，7 个 <code>z</code> </li></ol><p>　　可见，AFL++ 在一分钟内寻找到了触发“质数个 <code>x, y, z</code> 导致崩溃”的输入；但暂未寻找到输入使得程序栈溢出。</p><p>　　继续运行 AFL++ ，它在运行 10 分钟后给出了 12 个样例：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-10.png" class="kg-image" alt loading="lazy" width="2000" height="1460" srcset="../content/images/size/w600/2022/10/image-10.png 600w, ../content/images/size/w1000/2022/10/image-10.png 1000w, ../content/images/size/w1600/2022/10/image-10.png 1600w, ../content/images/2022/10/image-10.png 2043w" sizes="(min-width: 720px) 720px"></figure><p>　　其中有一个样例如下：</p><pre><code class="language-plaintext">zzzzxxxzzzxxxxxxxxxyyyyyyyyxxxxxzyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyyyyyyyyxxxxxyyyyyyyyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyyyyyzyyy</code></pre><p>　　它的长度为 1102 字节，会触发栈溢出。于是 AFL++ 用十分钟时间，寻找到了这个程序的全部两个 bug。</p><h3 id="docker-%E5%AE%B9%E5%99%A8%E6%80%A7%E8%83%BD%E6%8D%9F%E5%A4%B1%E6%B5%8B%E8%AF%95">docker 容器性能损失测试</h3><p>　　前文提到，用 docker 运行 AFL++ 会损失性能。笔者在 R9-5950X 服务器上做了一个性能对比。这台虚拟机是开在 ESXi 上，测试指令均为 <code>afl-fuzz -s 123 -i inputs/ -o bare-out -- ./hello_eg</code> ，其中 <code>-s 123</code> 表示指定随机种子为 <code>123</code>。运行一分钟，测试结果如下：</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/10/image-8.png" width="1567" height="1466" loading="lazy" alt srcset="../content/images/size/w600/2022/10/image-8.png 600w, ../content/images/size/w1000/2022/10/image-8.png 1000w, ../content/images/2022/10/image-8.png 1567w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/10/image-9.png" width="1567" height="1466" loading="lazy" alt srcset="../content/images/size/w600/2022/10/image-9.png 600w, ../content/images/size/w1000/2022/10/image-9.png 1000w, ../content/images/2022/10/image-9.png 1567w" sizes="(min-width: 720px) 720px"></div></div></div><figcaption>▲ 左：docker 外运行；右：docker 内运行</figcaption></figure><p>　　可见 docker 确实有不可忽略的性能损失，在本例中速度损失了约 15%。当然，笔者的程序十分简单，这个结果应该不能推广到一般情况。事实上，笔者发现，如果以 clang++ 而非 clang 来编译目标程序，则容器外 AFL++ 处理速度约 10000/s，容器内 AFL++ 约 9500/s，都比 clang 编译出的程序低效，不过 docker 容器只损失了 5% 的性能。</p><p>　　这台 5950X ESXi 虚拟机上的运行效率比笔者的 5800X bare metal 略低。但由于变量实在太多（CPU 不同、llvm 版本不同），笔者无从测试 ESXi 对性能的影响。</p><p>　　最后放张图。一核有难，十五核围观：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-14.png" class="kg-image" alt loading="lazy" width="1831" height="1042" srcset="../content/images/size/w600/2022/10/image-14.png 600w, ../content/images/size/w1000/2022/10/image-14.png 1000w, ../content/images/size/w1600/2022/10/image-14.png 1600w, ../content/images/2022/10/image-14.png 1831w" sizes="(min-width: 720px) 720px"></figure><p></p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/fuzzing/index.html">Fuzzing</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../afl-source-2/index.html">AFL源码阅读（二）：Main Payload 汇编</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-05-16">16 May 2023</time> –
+                                        12 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../afl-source-1/index.html">AFL源码阅读（一）：启程</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-05-07">7 May 2023</time> –
+                                        25 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../fuzzing101-wp-5/index.html">Fuzzing101-5：LibXML2</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-02">2 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/fuzzing/index.html">See all 8 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="../fuzzing-newbie-guide/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/10/---2022-10-03-14-07-57.png 300w,
+                    ../content/images/size/w600/2022/10/---2022-10-03-14-07-57.png 600w,
+                    ../content/images/size/w1000/2022/10/---2022-10-03-14-07-57.png 1000w,
+                    ../content/images/size/w2000/2022/10/---2022-10-03-14-07-57.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/10/---2022-10-03-14-07-57.png"
+            alt="Fuzzing 学习笔记：Fuzzing Module 练习"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../fuzzing-newbie-guide/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing 学习笔记：Fuzzing Module 练习</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>AFL++ 文档推荐的 Newbie guide 练习。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-03">3 Oct 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-crypto ">
+
+    <a class="post-card-image-link" href="../2022-fall-crypto-problems/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/09/output.jpg 300w,
+                    ../content/images/size/w600/2022/09/output.jpg 600w,
+                    ../content/images/size/w1000/2022/09/output.jpg 1000w,
+                    ../content/images/size/w2000/2022/09/output.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/09/output.jpg"
+            alt="2022秋见到的一些Crypto题"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../2022-fall-crypto-problems/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">2022秋见到的一些Crypto题</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>对 2022 夏、秋季见过的一些 Crypto 题目的讨论。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-09-15">15 Sep 2022</time> <span class="bull">&bull;</span> 38 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

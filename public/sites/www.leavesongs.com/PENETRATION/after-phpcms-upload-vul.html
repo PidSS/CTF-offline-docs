@@ -1,0 +1,829 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>回忆phpcms头像上传漏洞以及后续影响 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="after-phpcms-upload-vul.html">回忆phpcms头像上传漏洞以及后续影响</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">回忆phpcms头像上传漏洞以及后续影响</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-9-8 16:49</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="after-phpcms-upload-vul.html">14686人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/phpcms.html">phpcms</a>
+    
+        <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>暑假写的文章了，最近博客没干货，发出来娱乐一下。</p>
+<p>为了响应爱慕锅（Mramydnei）、撸大师（索马里的海贼）、fd牛（/fd）的号召成立的parsec团队，以及各位老师多年来对我的教育，我要写篇回忆稿。看标题大家可能觉得，这陈芝麻烂谷子的事你还拿出来说啥。当然，我自己搓一点都无所谓，但怎么能丢了parsec的脸，各位还是且听我娓娓道来~</p>
+<h2 id="001-phpcmsgetshell"><a class="toclink" href="#001-phpcmsgetshell">0×01 最初的phpcms头像上传getshell漏洞</a></h2>
+<p>不知道大家还记得phpcms曾经火极一时的头像上传漏洞不，因为这个漏洞，互联网上大量站点被黑，影响极为恶劣。</p>
+<p>那件事以后我分析过漏洞才成因以及利用方法（<a href="phpcms-upload-getshell.html">https://www.leavesongs.com/PENETRATION/phpcms-upload-getshell.html</a>），简单来说phpcms对头像上传是这么处理：上传上去的zip文件，它先解压好，然后删除非图片文件。<br />
+关键地方代码：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="c1">//存储flashpost图片</span>
+  <span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$dir</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span><span class="o">.</span><span class="s1">&#39;.zip&#39;</span><span class="p">;</span>
+  <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">avatardata</span><span class="p">);</span>
+
+<span class="c1">//此时写入压缩文件夹内容</span>
+
+  <span class="c1">//解压缩文件</span>
+  <span class="nx">pc_base</span><span class="o">::</span><span class="na">load_app_class</span><span class="p">(</span><span class="s1">&#39;pclzip&#39;</span><span class="p">,</span> <span class="s1">&#39;phpsso&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nv">$archive</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PclZip</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nv">$archive</span><span class="o">-&gt;</span><span class="na">extract</span><span class="p">(</span><span class="nx">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="nv">$dir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">die</span><span class="p">(</span><span class="s2">&quot;Error : &quot;</span><span class="o">.</span><span class="nv">$archive</span><span class="o">-&gt;</span><span class="na">errorInfo</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+  <span class="p">}</span>
+
+<span class="c1">//568 行</span>
+
+<span class="c1">//判断文件安全，删除压缩包和非jpg图片</span>
+  <span class="nv">$avatararr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;180x180.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;30x30.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;45x45.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;90x90.jpg&#39;</span><span class="p">);</span>
+  <span class="k">if</span><span class="p">(</span><span class="nv">$handle</span> <span class="o">=</span> <span class="nb">opendir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">while</span><span class="p">(</span><span class="k">false</span> <span class="o">!==</span> <span class="p">(</span><span class="nv">$file</span> <span class="o">=</span> <span class="nb">readdir</span><span class="p">(</span><span class="nv">$handle</span><span class="p">)))</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$file</span> <span class="o">!==</span> <span class="s1">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="nv">$file</span> <span class="o">!==</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">in_array</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nv">$avatararr</span><span class="p">))</span> <span class="p">{</span>
+      <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$dir</span><span class="o">.</span><span class="nv">$file</span><span class="p">);</span>
+     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nv">$info</span> <span class="o">=</span> <span class="o">@</span><span class="nb">getimagesize</span><span class="p">(</span><span class="nv">$dir</span><span class="o">.</span><span class="nv">$file</span><span class="p">);</span>
+      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$info</span> <span class="o">||</span> <span class="nv">$info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+       <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$dir</span><span class="o">.</span><span class="nv">$file</span><span class="p">);</span>
+      <span class="p">}</span>
+     <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>可以看到，它删除的时候没有递归删除，也没有删除文件夹。这样，只要我们的webshell放在压缩包的文件夹中，即可避免被删除了。</p>
+<p>所以我就创建了一个包含phi文件夹的压缩包，phi里面放上webshell.php，上传上去。</p>
+<p>这就是phpcms最早的头像上传漏洞。这个漏洞影响的不只是phpcms，也包括抄袭其代码的finecms。</p>
+<p>finecms是一个很喜感的cms，在phpcms出问题以后，finecms偷偷将漏洞修复了，当然修复方法就是直接拷贝了phpcms的补丁。</p>
+<h2 id="002-finecmsgetshellphpcms"><a class="toclink" href="#002-finecmsgetshellphpcms">0×02 finecms前台getshell（phpcms补丁绕过）</a></h2>
+<p>纯属抄袭自己不动脑子的人，最容易出问题，比如finecms的开发者。自以为自己反应速度得当，在迅雷不及掩耳盗铃的时间内将phpcms的补丁抄了过来，然后就安然度过了半年的悠闲时光。<br />
+phpcms的补丁被绕过了无数次难道你不知道么？你这么屌你的用户们知道么？</p>
+<p>那么，我们来看看finecms(phpcms代码类似)是怎么修补这个漏洞的：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">public</span> <span class="k">function</span> <span class="nf">upload</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;HTTP_RAW_POST_DATA&#39;</span><span class="p">]))</span> <span class="p">{</span>
+
+            <span class="k">exit</span><span class="p">(</span><span class="s1">&#39;环境不支持&#39;</span><span class="p">);</span>
+
+        <span class="p">}</span>
+
+        <span class="nv">$dir</span> <span class="o">=</span> <span class="nx">FCPATH</span><span class="o">.</span><span class="s1">&#39;member/uploadfile/member/&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span> <span class="c1">// 创建图片存储文件夹</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$dir</span><span class="p">))</span> <span class="p">{</span>
+
+            <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">,</span> <span class="mo">0777</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+
+        <span class="p">}</span>
+
+        <span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$dir</span><span class="o">.</span><span class="s1">&#39;avatar.zip&#39;</span><span class="p">;</span> <span class="c1">// 存储flashpost图片</span>
+
+        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;HTTP_RAW_POST_DATA&#39;</span><span class="p">]);</span>
+
+        <span class="c1">// 解压缩文件</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">library</span><span class="p">(</span><span class="s1">&#39;Pclzip&#39;</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">PclFile</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">extract</span><span class="p">(</span><span class="nx">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="nv">$dir</span><span class="p">,</span> <span class="nx">PCLZIP_OPT_REPLACE_NEWER</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">exit</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">zip</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+
+        <span class="p">}</span>
+
+        <span class="c1">// 限制文件名称</span>
+
+        <span class="nv">$avatararr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;45x45.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;90x90.jpg&#39;</span><span class="p">);</span>
+
+        <span class="c1">// 删除多余目录</span>
+
+        <span class="nv">$files</span> <span class="o">=</span> <span class="nb">glob</span><span class="p">(</span><span class="nv">$dir</span><span class="o">.</span><span class="s2">&quot;*&quot;</span><span class="p">);</span>
+
+        <span class="k">foreach</span><span class="p">(</span><span class="nv">$files</span> <span class="k">as</span> <span class="nv">$_files</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$_files</span><span class="p">))</span> <span class="p">{</span>
+
+                <span class="nx">dr_dir_delete</span><span class="p">(</span><span class="nv">$_files</span><span class="p">);</span>
+
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">in_array</span><span class="p">(</span><span class="nb">basename</span><span class="p">(</span><span class="nv">$_files</span><span class="p">),</span> <span class="nv">$avatararr</span><span class="p">))</span> <span class="p">{</span>
+
+                <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$_files</span><span class="p">);</span>
+
+            <span class="p">}</span>
+
+        <span class="p">}</span>
+
+        <span class="c1">// 判断文件安全，删除压缩包和非jpg图片</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nv">$handle</span> <span class="o">=</span> <span class="nb">opendir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">))</span> <span class="p">{</span>
+
+            <span class="k">while</span> <span class="p">(</span><span class="k">false</span> <span class="o">!==</span> <span class="p">(</span><span class="nv">$file</span> <span class="o">=</span> <span class="nb">readdir</span><span class="p">(</span><span class="nv">$handle</span><span class="p">)))</span> <span class="p">{</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="nv">$file</span> <span class="o">!==</span> <span class="s1">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="nv">$file</span> <span class="o">!==</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span> <span class="p">{</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">in_array</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nv">$avatararr</span><span class="p">))</span> <span class="p">{</span>
+
+                        <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$dir</span> <span class="o">.</span> <span class="nv">$file</span><span class="p">);</span>
+
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+                        <span class="nv">$info</span> <span class="o">=</span> <span class="o">@</span><span class="nb">getimagesize</span><span class="p">(</span><span class="nv">$dir</span> <span class="o">.</span> <span class="nv">$file</span><span class="p">);</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$info</span> <span class="o">||</span> <span class="nv">$info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+
+                            <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$dir</span> <span class="o">.</span> <span class="nv">$file</span><span class="p">);</span>
+
+                        <span class="p">}</span>
+
+                    <span class="p">}</span>
+
+                <span class="p">}</span>
+
+            <span class="p">}</span>
+
+            <span class="nb">closedir</span><span class="p">(</span><span class="nv">$handle</span><span class="p">);</span>   
+
+        <span class="p">}</span>
+
+        <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</pre></div>
+
+
+<p>好，我们看到，之前产生漏洞的原因就是因为没有考虑文件在文件夹中的情况，只删除了压缩包根目录下的非法文件，而没有删除其文件夹中的非法文件。</p>
+<p>所以补丁就采用了递归删除的方式，将压缩包中所有非法文件删除。就是这个dr_dir_delete函数。</p>
+<p>我们就不研究这个函数了，我们考虑一种情况，那么如果我上传包含这样代码的压缩包：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span> <span class="nb">fputs</span><span class="p">(</span><span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;../../../../../shell.php&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">),</span><span class="s1">&#39;&lt;?php phpinfo();eval($_POST[a]);?&gt;&#39;</span><span class="p">);</span><span class="cp">?&gt;</span>
+</pre></div>
+
+
+<p>在文件上传解压到被删除这个时间差里访问，就能在网站根目录下生成新的php文件，那么新生成的php文件是不会被删除的。</p>
+<p>这就是一个竞争性上传漏洞，需要我们抓住这个时间差，在上传的php文件还没被删除前访问到它，就能够暴力getshell了。</p>
+<p>这是乌云白帽子@felixk3y 在乌云上提出的绕过方法（<a href="http://www.wooyun.org/bugs/wooyun-2014-049794">http://www.wooyun.org/bugs/wooyun-2014-049794</a>），当然我们应用到这里，也成功绕过finecms的补丁，造成getshell（<a href="http://wooyun.org/bugs/wooyun-2010-063369">http://wooyun.org/bugs/wooyun-2010-063369</a>）。</p>
+<h2 id="003-phpcms"><a class="toclink" href="#003-phpcms">0×03 突破程序员的小聪明，phpcms补丁的继续绕过</a></h2>
+<p>于是finecms意识到自己的问题，偷偷修补了这个安全问题。当时的他们是这样修复的：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="c1">// 创建图片存储的临时文件夹</span>
+
+   <span class="nv">$temp</span> <span class="o">=</span> <span class="nx">FCPATH</span><span class="o">.</span><span class="s1">&#39;cache/attach/&#39;</span><span class="o">.</span><span class="nb">md5</span><span class="p">(</span><span class="nb">uniqid</span><span class="p">()</span><span class="o">.</span><span class="nb">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+
+   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$temp</span><span class="p">))</span> <span class="p">{</span>
+
+       <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$temp</span><span class="p">,</span> <span class="mo">0777</span><span class="p">);</span>
+
+   <span class="p">}</span>
+
+   <span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$temp</span><span class="o">.</span><span class="s1">&#39;avatar.zip&#39;</span><span class="p">;</span> <span class="c1">// 存储flashpost图片</span>
+
+   <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;HTTP_RAW_POST_DATA&#39;</span><span class="p">]);</span>
+
+   <span class="c1">// 解压缩文件</span>
+
+   <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">library</span><span class="p">(</span><span class="s1">&#39;Pclzip&#39;</span><span class="p">);</span>
+
+   <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">PclFile</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+
+   <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">extract</span><span class="p">(</span><span class="nx">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="nv">$temp</span><span class="p">,</span> <span class="nx">PCLZIP_OPT_REPLACE_NEWER</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+       <span class="k">exit</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">zip</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+
+   <span class="p">}</span>
+
+   <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</pre></div>
+
+
+<p>说起来这也是phpcms曾经的修复方法，就是将压缩包放在一个随机命名的文件夹中再解压缩，这样你猜不到访问地址也就没法去暴力getshell了。</p>
+<p>但是实质上这也只是解决了一个芝麻小的问题，而真正出现漏洞的点他们并未进行修复。</p>
+<p>我们看到这段代码：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">extract</span><span class="p">(</span><span class="nx">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="nv">$dir</span><span class="p">,</span> <span class="nx">PCLZIP_OPT_REPLACE_NEWER</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">exit</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">zip</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>当解压发生失败时，就退出解压缩过程。</p>
+<p>这也是一个很平常的思路，失败了肯定要报错并退出，因为后面的代码没法运行了。但是，程序员不会想到，有些压缩包能在解压到一半的时候出错。</p>
+<p>什么意思，也就说我可以构造一个“出错”的压缩包，它可以解压出部分文件，但绝对会在解压未完成时出错。这是造成了一个状况：我上传的压缩包被解压了一半，webshell被解压出来了，但因为解压失败这里<code>exit($this-&gt;pclzip-&gt;zip(true));</code>退出了程序执行，后面一切的删除操作都没有了作用。</p>
+<p>首先构造一个解压会出错的压缩包，大家看下图，1-7.php都已经被成功解压了，但6.php解压出错，WinRAR弹出了出错信息：</p>
+<p><a href="../content/uploadfile/201409/c38b1410166610.gif.jpeg"><img alt="01.gif" src="../content/uploadfile/201409/c38b1410166610.gif.jpeg" /></a></p>
+<p>发包的时候，将这个压缩包带上，会发现返回了500，出错信息：</p>
+<p><a href="../content/uploadfile/201409/38841410166611.gif.jpeg"><img alt="02.gif" src="../content/uploadfile/201409/38841410166611.gif.jpeg" /></a></p>
+<p>但你的webshell已经解压完毕了。这个漏洞造成了finecms官网的沦陷：<a href="http://wooyun.org/bugs/wooyun-2010-064128">http://wooyun.org/bugs/wooyun-2010-064128</a>。</p>
+<h2 id="004"><a class="toclink" href="#004">0×04 加了行代码就真的安全了吗？终极手段上！</a></h2>
+<p>在官网被我日了以后finecms依旧无耻地说自己已经修复了这个漏洞，真稀奇。</p>
+<p>过了半个月我看到了他们最新的代码：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;HTTP_RAW_POST_DATA&#39;</span><span class="p">]))</span> <span class="p">{</span>
+
+    <span class="k">exit</span><span class="p">(</span><span class="s1">&#39;环境不支持&#39;</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="c1">// 创建图片存储文件夹</span>
+
+<span class="nv">$dir</span> <span class="o">=</span> <span class="nx">FCPATH</span><span class="o">.</span><span class="s1">&#39;member/uploadfile/member/&#39;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$dir</span><span class="p">))</span> <span class="p">{</span>
+
+    <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">,</span> <span class="mo">0777</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="c1">// 创建图片存储的临时文件夹</span>
+
+<span class="nv">$temp</span> <span class="o">=</span> <span class="nx">FCPATH</span><span class="o">.</span><span class="s1">&#39;cache/attach/&#39;</span><span class="o">.</span><span class="nb">md5</span><span class="p">(</span><span class="nb">uniqid</span><span class="p">()</span><span class="o">.</span><span class="nb">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$temp</span><span class="p">))</span> <span class="p">{</span>
+
+    <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$temp</span><span class="p">,</span> <span class="mo">0777</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$temp</span><span class="o">.</span><span class="s1">&#39;avatar.zip&#39;</span><span class="p">;</span> <span class="c1">// 存储flashpost图片</span>
+
+<span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s1">&#39;HTTP_RAW_POST_DATA&#39;</span><span class="p">]);</span>
+
+<span class="c1">// 解压缩文件</span>
+
+<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">load</span><span class="o">-&gt;</span><span class="na">library</span><span class="p">(</span><span class="s1">&#39;Pclzip&#39;</span><span class="p">);</span>
+
+<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">PclFile</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">extract</span><span class="p">(</span><span class="nx">PCLZIP_OPT_PATH</span><span class="p">,</span> <span class="nv">$temp</span><span class="p">,</span> <span class="nx">PCLZIP_OPT_REPLACE_NEWER</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="o">@</span><span class="nx">dr_dir_delete</span><span class="p">(</span><span class="nv">$temp</span><span class="p">);</span>
+
+    <span class="k">exit</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pclzip</span><span class="o">-&gt;</span><span class="na">zip</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+
+<span class="p">}</span>
+
+<span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</pre></div>
+
+
+<p>加了行代码：<code>@dr_dir_delete($temp);</code>，解压出错后，在exit前将已经解压出来的内容删除了。确实避免了我在0×03中说到的安全问题。</p>
+<p>但finecms的开发者依旧是没有能看到真正造成这个漏洞的原因。</p>
+<p>原因就出在解压压缩包的这个操作上。这个类你就把别人的代码拿来一抄就觉得完毕了，你知道这个类真正的用法么？大家猜猜我这次怎么绕过上诉补丁的。</p>
+<p>压缩包中通常是不含有诸如“../”、“..”这种文件名的，但通常不含有不代表不能含有。我如果把压缩包中某文件名改成../../../../../index.php，是不是就能直接把你首页变成我的webshell呀？</p>
+<p>这就是因为抄袭者并没有真正领悟zip这个类的使用方法，导致了这个安全问题。我在本地用notepad++即可修改、构造一个压缩包。</p>
+<p>先把自己的shell改名字成aaaaaaaaaaaaaaaaaaaa.php</p>
+<p>之所以起这个名字，就是预留一些空间，方便我之后将文件名改成../../../aaaaaaaaaaa.php而不用怕字符串长度不对。</p>
+<p>把文件直接打包成zip，用notepad++打开：</p>
+<p><a href="../content/uploadfile/201409/a2f41410166613.gif.jpeg"><img alt="03.gif" src="../content/uploadfile/201409/thum-a2f41410166613.gif" /></a></p>
+<p>将我画框的俩文件名的前9个字符改成../../../</p>
+<p><a href="../content/uploadfile/201409/e8e41410166615.gif.jpeg"><img alt="04.gif" src="../content/uploadfile/201409/thum-e8e41410166615.gif" /></a></p>
+<p>然后就大功告成。</p>
+<p>上传头像时抓包将刚才构造的压缩包贴进去：</p>
+<p><a href="../content/uploadfile/201409/540a1410166616.gif.jpeg"><img alt="05.gif" src="../content/uploadfile/201409/thum-540a1410166616.gif" /></a></p>
+<p>然后，网站根目录下就会有你的shell了:aaaaaaaaaaa.php</p>
+<p><a href="../content/uploadfile/201409/30f61410166618.gif.jpeg"><img alt="06.gif" src="../content/uploadfile/201409/thum-30f61410166618.gif" /></a></p>
+<p>通过这个方法，就能无限制地getshell：<a href="http://wooyun.org/bugs/wooyun-2010-067512">http://wooyun.org/bugs/wooyun-2010-067512</a></p>
+<h2 id="005"><a class="toclink" href="#005">0×05 未完待续，以及究竟怎么修复这个安全问题</a></h2>
+<p>究竟是什么原因造成了这个漏洞，究其根本还是以为你将用户不安全的POST数据写入了文件，并解压到web目录下了。</p>
+<p>世界上有无数种方法可以避免这个问题，web目录下随便写文件真的好吗？为何你不把压缩包放进tmp目录里，如果上传、解压缩的操作都能在tmp目录里完成，再把我们需要的头像文件拷贝到web目录中，还会有这么麻烦的安全问题吗？</p>
+<p>phpcms已经彻底抛弃了解压缩的方式，直接在前端将图片处理完成后进行上传。但愚昧的finecms开发者还是抱着自己无知的思路，去用近乎“黑名单”的方式去解决这个问题，那就是黑客怎么日，他就怎么补，永远不知道下一步黑客会从哪里进入。这样的人永远只能落后挨打，这样的cms迟早会成为一个打满补丁的破布，每一个补丁都将付出无数速度与效率的代价。</p>
+<p>多说一句，新版本依旧存在缺陷。让他做一个永远补不完的坑吧！</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/phpcms.html">phpcms</a>
+                
+                    <a href="../tag/%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 7 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-4312">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">安澜</a></div>
+                    <p>2014年的文章，今天看来依旧很震撼</p>
+                    <span class="comment-time">时间: 2023-04-12 18:40</span>
+                    <span class="comment-reply"><a href="#comment-4312" onclick="reply_to('4312','安澜')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3814">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">1111</a></div>
+                    <p>&lt;svg&gt;&lt;svg/onload=alert(1)&gt;</p>
+                    <span class="comment-time">时间: 2022-02-17 15:13</span>
+                    <span class="comment-reply"><a href="#comment-3814" onclick="reply_to('3814','1111')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3289">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">轻熟男</a></div>
+                    <p>牛逼~牛逼~~给大佬倒茶~</p>
+                    <span class="comment-time">时间: 2019-01-31 10:51</span>
+                    <span class="comment-reply"><a href="#comment-3289" onclick="reply_to('3289','轻熟男')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2223">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">ST0</a></div>
+                    <p>受教了</p>
+                    <span class="comment-time">时间: 2015-10-02 16:39</span>
+                    <span class="comment-reply"><a href="#comment-2223" onclick="reply_to('2223','ST0')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1896">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://whoami.so" target="_blank" rel="nofollow noopener">test</a></div>
+                    <p>思路很好，受教了。</p>
+                    <span class="comment-time">时间: 2014-12-18 05:28</span>
+                    <span class="comment-reply"><a href="#comment-1896" onclick="reply_to('1896','test')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1836">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/bcb80dec532a1cf533114367adabb85f.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://qoophp.com" target="_blank" rel="nofollow noopener">Roee</a></div>
+                    <p>服了。</p>
+                    <span class="comment-time">时间: 2014-11-06 15:49</span>
+                    <span class="comment-reply"><a href="#comment-1836" onclick="reply_to('1836','Roee')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1778">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c8e1e5dfbddb46fad203b16f5dcdfa62.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://blog.ideafactory.pw" target="_blank" rel="nofollow noopener">mr_lonely</a></div>
+                    <p>好腻害！学习了！</p>
+                    <span class="comment-time">时间: 2014-10-01 22:12</span>
+                    <span class="comment-reply"><a href="#comment-1778" onclick="reply_to('1778','mr_lonely')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="f89deb1ff4c6810a289d2414d1813c49eb63f254" />
+</div><div class="col-6">
+<img src="../captcha/image/f89deb1ff4c6810a289d2414d1813c49eb63f254/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="325" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="tV4Y94Ka267cimyQymF92sSECp1YUVjDftsPH9lTqslVQUmeAnCUZVVJXMi9txvV">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%AE%89%E5%85%A8%E7%8B%97.html">安全狗</a>
+        
+        <a rel="tag" href="../tag/md5.html">md5</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.html">端口扫描</a>
+        
+        <a rel="tag" href="../tag/%E5%AE%A2%E6%88%B7%E7%AB%AFXSS.html">客户端XSS</a>
+        
+        <a rel="tag" href="../tag/appcms.html">appcms</a>
+        
+        <a rel="tag" href="../tag/ctf.html">ctf</a>
+        
+        <a rel="tag" href="../tag/java.html">java</a>
+        
+        <a rel="tag" href="../tag/%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90.html">好物推荐</a>
+        
+        <a rel="tag" href="../tag/%EF%B9%AA00%E6%88%AA%E6%96%AD.html">%00截断</a>
+        
+        <a rel="tag" href="../tag/%E6%90%AC%E5%AE%B6.html">搬家</a>
+        
+        <a rel="tag" href="../tag/jar%E6%89%93%E5%8C%85.html">jar打包</a>
+        
+        <a rel="tag" href="../tag/fineCMS.html">fineCMS</a>
+        
+        <a rel="tag" href="../tag/Mysql.html">Mysql</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%8A%A8%E8%AE%BE%E7%BD%AE.html">自动设置</a>
+        
+        <a rel="tag" href="../tag/exe.html">exe</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/WAF.html">WAF</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/string.html">string</a>
+        
+        <a rel="tag" href="../tag/Vulhub.html">Vulhub</a>
+        
+        <a rel="tag" href="../tag/%E5%BA%93%E5%87%BD%E6%95%B0.html">库函数</a>
+        
+        <a rel="tag" href="../tag/CSRF%E6%BC%8F%E6%B4%9E.html">CSRF漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8A%A0%E5%AF%86.html">加密</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91.html">端口转发</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/ipv6.html">ipv6</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

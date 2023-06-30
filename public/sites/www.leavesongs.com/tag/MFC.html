@@ -1,0 +1,395 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>文章列表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                MFC
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="col-11 columns" id="mainbody">
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../C/Bigfile-divide.html" title="G级大文件分割器 + 核心源码">G级大文件分割器 + 核心源码</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/C.html">C/C++</a></span>
+  
+  <span class="date">时间: 2014-2-2 15:01</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../C/Bigfile-divide.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../C/Bigfile-divide.html">13150人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+    
+        <a href="%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+    
+        <a href="MFC.html">MFC</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">你还在为下载的裤子很大而notepad++打不开而烦恼吗：</span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<ignore_js_op style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"><a target="_blank" href="../content/uploadfile/201402/4efd1391324561.jpg" id="ematt:391"><img src="../content/uploadfile/201402/4efd1391324561.jpg" title="点击查看原图" alt="01.jpg" border="0" width="328" height="178" /></a></ignore_js_op><span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"></span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">你还在为网盘的单个文件大小上限而发愁吗：</span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<ignore_js_op style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"><a target="_blank" href="../content/uploadfile/201402/3fb51391324561.jpg" id="ematt:392"><img src="../content/uploadfile/201402/thum-3fb51391324561.jpg" title="点击查看原图" alt="02.jpg" border="0" width="420" height="84" /></a></ignore_js_op><span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"></span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">“大文件分割器”到来了，用它可以轻松分割数G的大文件：</span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<ignore_js_op style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"><a target="_blank" href="../content/uploadfile/201402/f9961391324564.jpg" id="ematt:394"><img src="../content/uploadfile/201402/thum-f9961391324564.jpg" title="点击查看原图" alt="03.jpg" border="0" width="420" height="250" /></a></ignore_js_op><span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"></span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">网上有很多文件分割器，但效果很差（因为其源码使用的原理不好），很多大型文件（尤其是GB级别的）分割以后可能出现乱码，可能分割以后再次合并时就不是原来的文件了。所以我才自己做了一款文件分割器，分享给各位基友。</span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">至于用处，某些情况下文件太大了确实带来很多麻烦——比如小明前段时间下载的“QQ信封5-10位.txt”，总大小达到了2个多G。小明想看看其中内容，却因为notepad不支持打开这么大的文件而作罢：“file is too big to be open”。用大文件分割器分割以后，就再也不存在这个问题：</span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<ignore_js_op style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"><a target="_blank" href="../content/uploadfile/201402/2de41391324567.jpg" id="ematt:396"><img src="../content/uploadfile/201402/thum-2de41391324567.jpg" title="点击查看原图" alt="04.jpg" border="0" width="420" height="393" /></a></ignore_js_op><span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"></span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<ignore_js_op style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"><a target="_blank" href="../content/uploadfile/201402/13501391324573.jpg" id="ematt:398"><img src="../content/uploadfile/201402/thum-13501391324573.jpg" title="点击查看原图" alt="05.jpg" border="0" width="383" height="460" /></a></ignore_js_op><span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;"></span><br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<br style="word-wrap:break-word;color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;" />
+<p>
+	<span style="color:#444444;font-family:Tahoma, 'Microsoft Yahei', Simsun;font-size:14px;line-height:21px;white-space:normal;background-color:#FFFFFF;">界面是MFC写的，关于如何处理GB级别文件，使用的是windows API，内存映射。不细说，大概流程就是...</span></p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../C/MFCSocket.html" title="MFC实现的Socket通信">MFC实现的Socket通信</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/C.html">C/C++</a></span>
+  
+  <span class="date">时间: 2013-4-28 23:11</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../C/MFCSocket.html#reply-list">41条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../C/MFCSocket.html">54947人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="socket.html">socket</a>
+    
+        <a href="MFC.html">MFC</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>
+	&nbsp; &nbsp; 过五一准备休息两天，正好有朋友要来西安，我也能在西安周边转转，毕竟在这上大学居然还没有好好逛过。所以放假之前的一个晚上我发篇文章。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;我觉得MFC的东西挺难说的，好像代码没有一个头，也没有一个尾，不知道从何讲起。所以我只说说socket的部分，当然包括服务端和客户端。
+</p>
+<p>
+	&nbsp; &nbsp; 这是服务端的样子：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a href="../content/uploadfile/201304/3fb51367165886.jpg" id="ematt:93" target="_blank"><img alt="点击查看原图" border="0" src="../content/uploadfile/201304/thum-3fb51367165886.jpg" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 大家先去&nbsp;<strong>附</strong><strong></strong><strong>件中</strong>&nbsp;把代码下下来，否则看文章是看不懂的。服务端代码，打开类视图，找到ListenThreadFunc函数。这是我们的线程函数，socket代码在该线程里执行。
+</p>
+<pre class="brush:cpp;">DWORD WINAPI ListenThreadFunc(LPVOID Lparam)
+{
+	C...</pre>
+        
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="2019.html">2019</a>
+        
+        <a rel="tag" href="xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="php.html">php</a>
+        
+        <a rel="tag" href="CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="django.html">django</a>
+        
+        <a rel="tag" href="%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="getshell.html">getshell</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="webshell.html">webshell</a>
+        
+        <a rel="tag" href="%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+
+</html>

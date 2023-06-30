@@ -1,0 +1,772 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>谈一谈php://filter的妙用 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="php-filter-magic.html">谈一谈php://filter的妙用</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">谈一谈php://filter的妙用</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2016-7-25 0:28</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">31条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="php-filter-magic.html">92815人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/filter.html">filter</a>
+    
+        <a href="../tag/php.html">php</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>php://filter是PHP中独有的协议，利用这个协议可以创造很多“妙用”，本文说几个有意思的点，剩下的大家自己下去体会。本来本文的思路我上半年就准备拿来做XDCTF2016的题目的，没想到被三个白帽的一题抢先用了，我也就只好提前分享一下。</p>
+<h2 id="xxe"><a class="toclink" href="#xxe">XXE中的使用</a></h2>
+<p>php://filter之前最常出镜的地方是XXE。由于XXE漏洞的特殊性，我们在读取HTML、PHP等文件时可能会抛出此类错误<code>parser error : StartTag: invalid element name</code> 。其原因是，PHP是基于标签的脚本语言，<code>&lt;?php ... ?&gt;</code>这个语法也与XML相符合，所以在解析XML的时候会被误认为是XML，而其中内容（比如特殊字符）又有可能和标准XML冲突，所以导致了出错。</p>
+<p>那么，为了读取包含有敏感信息的PHP等源文件，我们就要先将“可能引发冲突的PHP代码”编码一遍，这里就会用到php://filter。</p>
+<p>php://filter是PHP语言中特有的协议流，作用是作为一个“中间流”来处理其他流。比如，我们可以用如下一行代码将POST内容转换成base64编码并输出：</p>
+<p><code>readfile("php://filter/read=convert.base64-encode/resource=php://input");</code></p>
+<p>如下：</p>
+<p><a href="../content/uploadfile/201607/0f851469385893.png"><img alt="QQ截图20160724234603.png" src="../content/uploadfile/201607/thum-0f851469385893.png" title="点击查看原图" /></a></p>
+<p>所以，在XXE中，我们也可以将PHP等容易引发冲突的文件流用php://filter协议流处理一遍，这样就能有效规避特殊字符造成混乱。</p>
+<p>如下，我们使用的是<code>php://filter/read=convert.base64-encode/resource=./xxe.php</code></p>
+<p><a href="../content/uploadfile/201607/693b1469385893.png"><img alt="QQ截图20160724235335.png" src="../content/uploadfile/201607/thum-693b1469385893.png" title="点击查看原图" /></a></p>
+<h2 id="_1"><a class="toclink" href="#_1">巧用编码与解码</a></h2>
+<p>使用编码不光可以帮助我们获取文件，也可以帮我们去除一些“不必要的麻烦”。</p>
+<p>记得前段时间三个白帽有个比赛，其中有一部分代码大概类似于以下：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nv">$content</span> <span class="o">=</span> <span class="s1">&#39;&lt;?php exit; ?&gt;&#39;</span><span class="p">;</span>
+<span class="nv">$content</span> <span class="o">.=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;txt&#39;</span><span class="p">];</span>
+<span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">],</span> <span class="nv">$content</span><span class="p">);</span>
+</pre></div>
+
+
+<p><code>$content</code>在开头增加了exit过程，导致即使我们成功写入一句话，也执行不了（这个过程在实战中十分常见，通常出现在缓存、配置文件等等地方，不允许用户直接访问的文件，都会被加上if(!defined(xxx))exit;之类的限制）。那么这种情况下，如何绕过这个“死亡exit”？</p>
+<p>幸运的是，这里的<code>$_POST['filename']</code>是可以控制协议的，我们即可使用 php://filter协议来施展魔法：使用php://filter流的base64-decode方法，将<code>$content</code>解码，利用php base64_decode函数特性去除“死亡exit”。</p>
+<p>众所周知，base64编码中只包含64个可打印字符，而PHP在解码base64时，遇到不在其中的字符时，将会跳过这些字符，仅将合法字符组成一个新的字符串进行解码。</p>
+<p>所以，一个正常的base64_decode实际上可以理解为如下两个步骤：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;txt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span><span class="s1">&#39;|[^a-z0-9A-Z+/]|s&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;txt&#39;</span><span class="p">]);</span>
+<span class="nb">base64_decode</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;txt&#39;</span><span class="p">]);</span>
+</pre></div>
+
+
+<p>所以，当<code>$content</code>被加上了<code>&lt;?php exit; ?&gt;</code>以后，我们可以使用 php://filter/write=convert.base64-decode 来首先对其解码。在解码的过程中，字符&lt;、?、;、&gt;、空格等一共有7个字符不符合base64编码的字符范围将被忽略，所以最终被解码的字符仅有“phpexit”和我们传入的其他字符。</p>
+<p>“phpexit”一共7个字符，因为base64算法解码时是4个byte一组，所以给他增加1个“a”一共8个字符。这样，"phpexita"被正常解码，而后面我们传入的webshell的base64内容也被正常解码。结果就是<code>&lt;?php exit; ?&gt;</code>没有了。</p>
+<p>最后效果是 ：</p>
+<p><a href="../content/uploadfile/201607/fca81469385894.png"><img alt="QQ截图20160725005316.png" src="../content/uploadfile/201607/thum-fca81469385894.png" title="点击查看原图" /></a></p>
+<h2 id="_2"><a class="toclink" href="#_2">利用字符串操作方法</a></h2>
+<p>有的同学说，base64的算法我不懂，上面的方法太复杂了。</p>
+<p>其实，除了使用base64特性的方法外，我们还可以利用php://filter字符串处理方法来去除“死亡exit”。我们观察一下，这个<code>&lt;?php exit; ?&gt;</code>实际上是什么？</p>
+<p>实际上是一个XML标签，既然是XML标签，我们就可以利用strip_tags函数去除它，而php://filter刚好是支持这个方法的。</p>
+<p>编写如下测试代码即可查看 php://filter/read=string.strip_tags/resource=php://input 的效果：</p>
+<p><code>echo readfile('php://filter/read=string.strip_tags/resource=php://input');</code></p>
+<p><a href="../content/uploadfile/201607/499a1469385895.png"><img alt="QQ截图20160725010403.png" src="../content/uploadfile/201607/thum-499a1469385895.png" title="点击查看原图" /></a></p>
+<p>可见，<code>&lt;?php exit; ?&gt;</code>被去除了。但回到上面的题目，我们最终的目的是写入一个webshell，而写入的webshell也是php代码，如果使用strip_tags同样会被去除。</p>
+<p>万幸的是，php://filter允许使用多个过滤器，我们可以先将webshell用base64编码。在调用完成strip_tags后再进行base64-decode。“死亡exit”在第一步被去除，而webshell在第二步被还原。</p>
+<p>最终的数据包如下：</p>
+<p><a href="../content/uploadfile/201607/95b61469385895.png"><img alt="QQ截图20160725011007.png" src="../content/uploadfile/201607/thum-95b61469385895.png" title="点击查看原图" /></a></p>
+<p>除此之外，我们还可以利用rot13编码独立完成任务。原理和上面类似，核心是将“死亡exit”去除。<code>&lt;?php exit; ?&gt;</code>在经过rot13编码后会变成<code>&lt;?cuc rkvg; ?&gt;</code>，在PHP不开启short_open_tag时，php不认识这个字符串，当然也就不会执行了：</p>
+<p><a href="../content/uploadfile/201607/1c471469385896.png"><img alt="QQ截图20160725012639.png" src="../content/uploadfile/201607/thum-1c471469385896.png" title="点击查看原图" /></a></p>
+<p>当然，这个方法的条件就是不开启短标签。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/filter.html">filter</a>
+                
+                    <a href="../tag/php.html">php</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 31 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-4068">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/3369232be98944460d98ece2cdae5b35.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">y2tsf</a></div>
+                    <p>膜膜膜拜</p>
+                    <span class="comment-time">时间: 2023-02-26 20:42</span>
+                    <span class="comment-reply"><a href="#comment-4068" onclick="reply_to('4068','y2tsf')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-4028">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">ten</a></div>
+                    <p>p神太佬</p>
+                    <span class="comment-time">时间: 2022-11-24 20:57</span>
+                    <span class="comment-reply"><a href="#comment-4028" onclick="reply_to('4028','ten')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3647">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">mashiro</a></div>
+                    <p>hello,<br>在php7&lt;7.3下面为什么strip_tags+base64decode会直接报错退出呢<br>php &gt; file_put_contents(&#x27;php://filter/write=string.strip_tags|convert.base64-decode/resource=tmp.txt&#x27;<br>, &quot;&lt;?php exit;?&gt;PD9waHAgcGhwaW5mbygpOw==&quot;);</p>
+                    <span class="comment-time">时间: 2021-04-22 11:47</span>
+                    <span class="comment-reply"><a href="#comment-3647" onclick="reply_to('3647','mashiro')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3648">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@mashiro 没有遇到报错退出的情况，麻烦你自己再排除下其他干扰因素。</p>
+                    <span class="comment-time">时间: 2021-04-22 11:55</span>
+                    <span class="comment-reply"><a href="#comment-3648" onclick="reply_to('3648','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3649">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">mashiro</a></div>
+                    <p>@phithon 看到回复火速在phpstudy里面又下了php7.2.9nts，确实成功写入了，但是之前7.0.9和7.1.9都不行，然后用docker测试了多个版本，7.0.x貌似都不行，7.1.20之前不行，7.2.9之前不行。看了release note不知道哪里出了问题....</p>
+                    <span class="comment-time">时间: 2021-04-22 14:55</span>
+                    <span class="comment-reply"><a href="#comment-3649" onclick="reply_to('3649','mashiro')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3650">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@mashiro 试了一下，貌似是php内核的bug。</p>
+                    <span class="comment-time">时间: 2021-04-22 21:42</span>
+                    <span class="comment-reply"><a href="#comment-3650" onclick="reply_to('3650','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3629">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/8f56ebeb8bf6004f4baaa2dd220eabe4.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">fallingskies</a></div>
+                    <p>膜拜P神</p>
+                    <span class="comment-time">时间: 2021-03-01 20:13</span>
+                    <span class="comment-reply"><a href="#comment-3629" onclick="reply_to('3629','fallingskies')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3628">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://hellohy.top/" target="_blank" rel="nofollow noopener">华扬</a></div>
+                    <p>看了不下十遍终于搞懂了，感谢分享！</p>
+                    <span class="comment-time">时间: 2021-02-20 11:42</span>
+                    <span class="comment-reply"><a href="#comment-3628" onclick="reply_to('3628','华扬')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3614">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/6801f7b3aac5b3051dcec4e851180c52.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Rose</a></div>
+                    <p>Spot on with this write-up, I truly feel this amazing site needs much more attention. I&#x27;ll probably be back again to see more,<br>thanks for the information!</p>
+                    <span class="comment-time">时间: 2021-02-07 13:53</span>
+                    <span class="comment-reply"><a href="#comment-3614" onclick="reply_to('3614','Rose')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3579">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">未尽</a></div>
+                    <p>前辈，请问在 include() 函数中，使用php://filter/resource=./xxe.php ,会给出警告但代码也都顺利读取执行了，而使用php://filter/read=convert.base64-encode/resource=./xxe.php或者php://filter/read=string.toupper/resource=./xxe.php 则不会有警告，这是为什么呢？</p>
+                    <span class="comment-time">时间: 2020-11-23 08:58</span>
+                    <span class="comment-reply"><a href="#comment-3579" onclick="reply_to('3579','未尽')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3451">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/bdd4521830041851938782edbd550aec.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.0x002.com" target="_blank" rel="nofollow noopener">Yunen</a></div>
+                    <p>P牛，最近在打CTF是遇到这个知识点(strip_tags+base64-decode)，不过当我base64的payload有等号时会爆出：Invalid byte seccquence的错误，不知道知识为什么求解</p>
+                    <span class="comment-time">时间: 2019-11-22 00:17</span>
+                    <span class="comment-reply"><a href="#comment-3451" onclick="reply_to('3451','Yunen')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3422">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Magic_Zero</a></div>
+                    <p>https://www.sektioneins.de/advisories/advisory-032009-piwik-cookie-unserialize-vulnerability.html<br>piwik cookie注入的真实案例。</p>
+                    <span class="comment-time">时间: 2019-10-14 15:50</span>
+                    <span class="comment-reply"><a href="#comment-3422" onclick="reply_to('3422','Magic_Zero')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3421">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Bad_Monkey</a></div>
+                    <p>膜膜膜膜膜膜膜膜膜膜膜膜膜膜膜膜膜膜</p>
+                    <span class="comment-time">时间: 2019-10-13 16:14</span>
+                    <span class="comment-reply"><a href="#comment-3421" onclick="reply_to('3421','Bad_Monkey')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3072">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">comrade</a></div>
+                    <p>强啊！！！</p>
+                    <span class="comment-time">时间: 2018-05-06 16:20</span>
+                    <span class="comment-reply"><a href="#comment-3072" onclick="reply_to('3072','comrade')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2948">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://cauc.me" target="_blank" rel="nofollow noopener">Yiruma</a></div>
+                    <p>php://filter/write=string.xxx可用的函数应该还有很多吧，我该从哪里找到这些可用的函数呢？google了半天也没找到。。</p>
+                    <span class="comment-time">时间: 2017-10-23 17:01</span>
+                    <span class="comment-reply"><a href="#comment-2948" onclick="reply_to('2948','Yiruma')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3132">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">活该你厉害啊</a></div>
+                    <p>@Yiruma 表哥这里http://php.net/manual/zh/filters.php<br><br>活该你厉害啊！！！！！</p>
+                    <span class="comment-time">时间: 2018-09-03 21:51</span>
+                    <span class="comment-reply"><a href="#comment-3132" onclick="reply_to('3132','活该你厉害啊')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2900">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">wing</a></div>
+                    <p>p牛姿势总是这么骚</p>
+                    <span class="comment-time">时间: 2017-08-25 12:38</span>
+                    <span class="comment-reply"><a href="#comment-2900" onclick="reply_to('2900','wing')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2823">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">s0s</a></div>
+                    <p>深入浅出，厉害了。</p>
+                    <span class="comment-time">时间: 2017-07-26 23:23</span>
+                    <span class="comment-reply"><a href="#comment-2823" onclick="reply_to('2823','s0s')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2449">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Lion EI&#x27;Jonson</a></div>
+                    <p>太腻害啦~T__T，伏地膜~~</p>
+                    <span class="comment-time">时间: 2016-10-08 15:56</span>
+                    <span class="comment-reply"><a href="#comment-2449" onclick="reply_to('2449','Lion EI\u0027Jonson')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+<div class="type-post" id="pagination"><ol class="page-navigator">
+    
+</ol></div>
+
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="e29c0cec8bf6a6d3ec9646105ba7977de9b55b8e" />
+</div><div class="col-6">
+<img src="../captcha/image/e29c0cec8bf6a6d3ec9646105ba7977de9b55b8e/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="390" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="AouRAJkhO78x1uonWnBG6WDrf9SBhwRJmWSI8OV0ctmgz2cLYoyr3pGwAw9MQ831">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E4%BA%8C%E6%89%8B%E5%95%86%E5%93%81.html">二手商品</a>
+        
+        <a rel="tag" href="../tag/%E7%9F%A5%E4%B9%8E.html">知乎</a>
+        
+        <a rel="tag" href="../tag/sqlite_bind.html">sqlite_bind</a>
+        
+        <a rel="tag" href="../tag/flashxss.html">flashxss</a>
+        
+        <a rel="tag" href="../tag/%E7%BB%87%E6%A2%A6.html">织梦</a>
+        
+        <a rel="tag" href="../tag/Go.html">Go</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E5%85%BC%E5%AE%B9%E6%80%A7.html">兼容性</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/php-fpm.html">php-fpm</a>
+        
+        <a rel="tag" href="../tag/goahead.html">goahead</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/emlog%E6%8F%92%E4%BB%B6.html">emlog插件</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B5%84%E6%BA%90.html">自定义资源</a>
+        
+        <a rel="tag" href="../tag/joomla.html">joomla</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E5%8C%96.html">汉化</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5.html">环境变量注入</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%9A%E7%BA%BF%E7%A8%8B.html">多线程</a>
+        
+        <a rel="tag" href="../tag/%E4%B8%8A%E7%BD%91.html">上网</a>
+        
+        <a rel="tag" href="../tag/wopus.html">wopus</a>
+        
+        <a rel="tag" href="../tag/%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2.html">进制转换</a>
+        
+        <a rel="tag" href="../tag/audit.html">audit</a>
+        
+        <a rel="tag" href="../tag/htaccess.html">htaccess</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/yxcms.html">yxcms</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/tea.html">tea</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

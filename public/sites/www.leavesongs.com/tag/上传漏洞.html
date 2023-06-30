@@ -1,0 +1,647 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>文章列表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                上传漏洞
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="col-11 columns" id="mainbody">
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/fanwe-o2o-demo-website-getshell.html" title="那些年我拿下的demo站之方维O2O">那些年我拿下的demo站之方维O2O</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-8-9 20:00</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/fanwe-o2o-demo-website-getshell.html#reply-list">6条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/fanwe-o2o-demo-website-getshell.html">11444人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="getshell.html">getshell</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+        <a href="%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E.html">解析漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>早前一个被我捂烂的漏洞，其实不是要捂的，当注入交到乌云，审核比较忙测试的时候没复现，就给打回来了。我一直想写个详细的再交，结果没时间就没写，这两天上去一看鸡毛都没了，全补完了，shell也掉光了，后台也进不去……</p>
+<p>想想算了不挖了。还好我有记笔记的习惯，拿出来分享一下。</p>
+<p>以下是笔记。</p>
+<p>今天挖了一阵子方维O2O的本地生活系统。这个系统是不开源的，偶然拿到了一个版本的源码，于是有了这次挖洞之旅。</p>
+<p>首先翻到了一个注入，拿下了管理员密码。实际上，demo站已经给了一个低权限的管理员账号demo/demo。</p>
+<p>登录后台：</p>
+<p><a href="../content/uploadfile/201508/29551439122336.png"><img alt="image001.png" src="../content/uploadfile/201508/thum-29551439122336.png" /></a></p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 鸡肋文件包含漏洞</a></h2>
+<p>大概看了一下功能不多，很多敏感功能（如sql操作）demo管理员没权限。</p>
+<p>后台一般安全做的比较差，最容易出现的是文件包含漏洞。我很快在源码里找到一处鸡肋文件包含。/admin/Lib/Action/ApiLoginAction.class.php</p>
+<div class="codehilite"><pre><span></span><span class="cp">&...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/emlog-important-plugin-getshell.html" title="emlog某重要插件前台SQL注入+Getshell">emlog某重要插件前台SQL注入+Getshell</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-11-12 16:37</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/emlog-important-plugin-getshell.html#reply-list">8条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/emlog-important-plugin-getshell.html">16607人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="emlog%E6%8F%92%E4%BB%B6.html">emlog插件</a>
+    
+        <a href="getshell.html">getshell</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>
+	&nbsp; &nbsp; 真是醉了，前两天在鼓捣其他事情需要图片外链，我就直接用了自己博客用了很久的“EM相册”插件。我顺势看了看代码，还真被我看出事了……
+</p>
+<p>
+	&nbsp; &nbsp; EM相册是emlog最早的插件之一（插件页面：<a href="http://www.emlog.net/plugin/6" target="_blank">http://www.emlog.net/plugin/6</a> 。id为6，可想而知），作者是现在身为emlog社区超版的KLLER，下载量也是很大的：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201411/4efd1415784839.jpg" id="ematt:642"><img src="../content/uploadfile/201411/thum-4efd1415784839.jpg" title="点击查看原图" alt="01.jpg" border="0" width="650" height="282" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 下载以后解压，<span style="line-height:1.5;">看到kl_album_ajax_do.php： </span>
+</p>
+<pre class="brush: php;auto-links: false;">&lt;?php
+/**
+ * kl_album_ajax_do.php
+ * design by KLLER
+ */
+require_once('../../../init.php');
+$DB = MySql::getInstance()...</pre>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/after-phpcms-upload-vul.html" title="回忆phpcms头像上传漏洞以及后续影响">回忆phpcms头像上传漏洞以及后续影响</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-9-8 16:49</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/after-phpcms-upload-vul.html#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/after-phpcms-upload-vul.html">14685人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="phpcms.html">phpcms</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>暑假写的文章了，最近博客没干货，发出来娱乐一下。</p>
+<p>为了响应爱慕锅（Mramydnei）、撸大师（索马里的海贼）、fd牛（/fd）的号召成立的parsec团队，以及各位老师多年来对我的教育，我要写篇回忆稿。看标题大家可能觉得，这陈芝麻烂谷子的事你还拿出来说啥。当然，我自己搓一点都无所谓，但怎么能丢了parsec的脸，各位还是且听我娓娓道来~</p>
+<h2 id="001-phpcmsgetshell"><a class="toclink" href="#001-phpcmsgetshell">0×01 最初的phpcms头像上传getshell漏洞</a></h2>
+<p>不知道大家还记得phpcms曾经火极一时的头像上传漏洞不，因为这个漏洞，互联网上大量站点被黑，影响极为恶劣。</p>
+<p>那件事以后我分析过漏洞才成因以及利用方法（<a href="../PENETRATION/phpcms-upload-getshell.html">https://www.leavesongs.com/PENETRATION/phpcms-upload-getshell.html</a>），简单来说phpcms对头像上传是这么处理：上传上去的zip文件，它先解压好，然后删除非图片文件。<br />
+关键地方...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/fineCMS-getshell.html" title="一次与fineCMS的偶遇 - fineCMS getshell漏洞">一次与fineCMS的偶遇 - fineCMS getshell漏洞</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-1-4 0:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/fineCMS-getshell.html#reply-list">1条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/fineCMS-getshell.html">12358人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="fineCMS.html">fineCMS</a>
+    
+        <a href="getshell.html">getshell</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这个不是0day，我手里也没0day，算是一个漏洞的二次审计，一篇随便写写的记录文，还请各位大牛多多交流。</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 偶遇</a></h2>
+<p>有一个目标站，扫了一下旁站，用工具没有拿到几个cms的指纹。很奇怪，随手点一个，发现下面有powered by fineCMS。我记得以前也见过这个cms，是用CI框架二次编写的cms，网上搜索搜索“finecms漏洞”，找到的都是1.7.2版本以前的（seay博客里有1.7.2注射： <a href="http://www.cnseay.com/tag/finecms%E6%BC%8F%E6%B4%9E/" target="_blank">http://www.cnseay.com/tag/finecms%E6%BC%8F%E6%B4%9E/</a>）。但是这个网站是v2.0.12.版本比较新。</p>
+<p><a href="../content/uploadfile/201401/4efd1388766174.jpg" target="_blank"><img alt="01.jpg" src="../content/uploadfile/201401/4efd1388766174.jpg" /></a><br />
+倔强的我会选择换一个旁站呢，还是继续深入？</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 继续深入</a></h2>
+<p>我们来到finecms的官网：<a href="http://www.dayrui.com/" target="_blank">http://www.dayrui.com/</a></p>
+<p>发现论坛里有这么一个公告，一个补丁。发表日期是12.8，再结合这个“头像上传”，我似乎想...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/phpcms-upload-getshell.html" title="phpcms上传导致getshell详解及案例">phpcms上传导致getshell详解及案例</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-12-5 17:34</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/phpcms-upload-getshell.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/phpcms-upload-getshell.html">15236人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="phpcms.html">phpcms</a>
+    
+        <a href="0day.html">0day</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这篇文章好几天前写了，给协会里新成员普及知识，看大家也都玩的差不多了，就发表到博客里，增加一点噱头和访问量，哈哈~</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 什么是上传漏洞</a></h2>
+<p>很多cms为了丰富自己的功能都提供了上传头像、上传图片等功能。但如果上传的内容没有做好过滤，则等于说给了攻击者一个执行任意代码的途径。比如攻击者可以在上传一个含有恶意代码的文件，伪装成图片，来绕过后台的检测机制。</p>
+<p>以前一般的上传漏洞主要有以下几个方式造成：</p>
+<ol>
+<li>在客户端用javascript或flash验证用户上传的文件格式，但上传到服务器后没验证。</li>
+<li>对用户上传的文件只检查了ContentType，但ContentType是可以被用户修改的，所以用户上传的脚本文件可以将ContentType改成image/gif来绕过检查。</li>
+<li>黑名单机制。检查用户上传的文件的后缀，如果是处于黑名单中的后缀，就返回错误信息。但黑名单机制很不好，不够完善，当黑名单中有...</li></ol>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/fornews.html" title="四种简单的漏洞获取webshell解析">四种简单的漏洞获取webshell解析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-2-20 1:03</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/fornews.html#reply-list">2条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/fornews.html">12474人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC.html">一句话木马</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+        <a href="%E6%B8%97%E9%80%8F.html">渗透</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>&nbsp; &nbsp; 很多新手对一些漏洞还有很多不懂，什么情况下用什么漏洞，什么情况下不能用这个漏洞，我自己的见解也不太深。正因如此，我才会想到一些菜鸟才会想到的问题，然后去解决。通过解决这些问题，大家可以学习经验。因为我也是最近才接触，所以应该说是很多东西都还记得，所以趁这时候录点视频，以免以后我自己忘了的时候还能拿出来温习一下。</p>
+
+<p>&nbsp; &nbsp; 这个视频讲了4个漏洞，实战练习，不过都很简单：注入漏洞、数据库备份漏洞、ewebeditor编辑器漏洞、配置文件插入一句话木马漏洞。我分4成个录像，大家如果觉得注入漏洞你懂得，就可以不下，很方便。</p>
+
+<p>&nbsp; &nbsp; 我建议新手都看一下，因为4个漏洞是一套，都是一个网站显示出来的问题。我可以告诉你什么情况下使用什么漏洞，为什么我会注意到这些漏洞。</p>
+
+<p>&nbsp; &nbsp; 还有一些黑客的好习惯...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/UseOfFckeditor.html" title="利用FCKeditor之%00截断获得webshell">利用FCKeditor之%00截断获得webshell</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-2-14 1:50</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/UseOfFckeditor.html#reply-list">16条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/UseOfFckeditor.html">33671人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%EF%B9%AA00%E6%88%AA%E6%96%AD.html">%00截断</a>
+    
+        <a href="fckeditor.html">fckeditor</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+        <a href="IIS.html">IIS</a>
+    
+        <a href="burpsuite.html">burpsuite</a>
+    
+        <a href="%E6%B8%97%E9%80%8F.html">渗透</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p><span style="font-size:14px;">&nbsp; &nbsp; 网上关于fckeditor的漏洞利用教程都很老了，基本上都停留在2.4.x版本之前，但是2.6.x版本提的却很少。(FCKeditor2.6.8应该是它代码重写成CKeditor之后的最新一个版本了)</span></p>
+
+<p><span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;现在针对2.6.8之前版本利用有一个%00截断的漏洞，但是都是只言片语（基本上都是转的一个人写的），唯一一个视频还是国外的，在youtube上需要翻墙才能浏览。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 于是我才想做一个fckeditor2.6.8版本上传漏洞获得webshell的教程。不多内容有点复杂，我就把它做成了视频，这也是我第一次录视频教程，希望大家能够喜欢。</span></p>
+
+<p><span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="../content/uploadfile/201302/4efd1360780038.jpg" id="ematt:70" target="_blank"><img alt="点击查看原图" border="0" src="../content/uploadfile/201302/thum-4efd1360780038.jpg" /></a></span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 教程是实战演练，渗透测试的站点后台含有fckeditor...</span></p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/UseOfDvbbs.html" title="利用Dvbbs上传漏洞得到webshell">利用Dvbbs上传漏洞得到webshell</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-2-12 19:38</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/UseOfDvbbs.html#reply-list">1条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/UseOfDvbbs.html">17499人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E5%8A%A8%E7%BD%91.html">动网</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+        <a href="%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E.html">解析漏洞</a>
+    
+        <a href="Dvbbs.html">Dvbbs</a>
+    
+        <a href="IIS.html">IIS</a>
+    
+        <a href="asp.html">asp</a>
+    
+        <a href="%E6%B8%97%E9%80%8F.html">渗透</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p><span style="font-size:14px;">&nbsp; &nbsp; &mdash;&mdash;通过动网论坛8.2任意文件上传漏洞获取webshell</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 下午通过注入点获得了一个站的后台账号密码，但却没有找到后台地址。不过站点居然还有一个不小的论坛，用的是DVBBS的8.2版本。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 貌似动网论坛的漏洞挺多的，首先看看它的数据库能不能下载，默认地址是/data/dvbbs8.mdb，发现居然可以下载，于是我成功拿到一个20来M的数据库，里面除了包含有管理员的账号密码，还有超过900个会员的信息。可见站点漏洞带来的危害！</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp;&nbsp;<a href="../content/uploadfile/201302/4efd1360670530.jpg" id="ematt:60" target="_blank"><img alt="点击查看原图" border="0" src="../content/uploadfile/201302/4efd1360670530.jpg" /></a></span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 继续，读取mdb文件获得管理员账号密码，进入后台。前面说了，dvbbs有很多漏洞，但是这个站是8.2的版本，已经是比较新的了(现在最新的是8.3)，漏洞也随着版本的不断更新慢慢减少。...</span></p>
+        
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="2019.html">2019</a>
+        
+        <a rel="tag" href="xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="php.html">php</a>
+        
+        <a rel="tag" href="CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="django.html">django</a>
+        
+        <a rel="tag" href="%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="getshell.html">getshell</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="webshell.html">webshell</a>
+        
+        <a rel="tag" href="%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Diffie-Hellman 密钥交换和 Elgamal 加密算法</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="本文讨论了离散对数问题、Diffie-Hellman 密钥交换算法，以及 Elgamal 公钥加密体系。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Diffie-Hellman 密钥交换和 Elgamal 加密算法" />
+    <meta property="og:description" content="本文讨论了离散对数问题、Diffie-Hellman 密钥交换算法，以及 Elgamal 公钥加密体系。" />
+    <meta property="og:url" content="https://www.ruanx.net/diffie-hellman/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-03-26T10:39:33.000Z" />
+    <meta property="article:modified_time" content="2020-03-26T10:40:05.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Diffie-Hellman 密钥交换和 Elgamal 加密算法" />
+    <meta name="twitter:description" content="本文讨论了离散对数问题、Diffie-Hellman 密钥交换算法，以及 Elgamal 公钥加密体系。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/diffie-hellman/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "Diffie-Hellman 密钥交换和 Elgamal 加密算法",
+    "url": "https://www.ruanx.net/diffie-hellman/",
+    "datePublished": "2020-03-26T10:39:33.000Z",
+    "dateModified": "2020-03-26T10:40:05.000Z",
+    "keywords": "Crypto, algorithm",
+    "description": "本文讨论了离散对数问题、Diffie-Hellman 密钥交换算法，以及 Elgamal 公钥加密体系。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto tag-algorithm">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">Diffie-Hellman 密钥交换和 Elgamal 加密算法</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto tag-algorithm no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">Diffie-Hellman 密钥交换和 Elgamal 加密算法</h1>
+
+                <p class="post-full-custom-excerpt">本文讨论了离散对数问题、Diffie-Hellman 密钥交换算法，以及 Elgamal 公钥加密体系。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-03-26">26 Mar 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 6 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　1976年，Diffie-Hellman 密钥交换算法一声炮响，给我们带来了公钥密码学。以 DH 交换算法、RSA 密码体系等全新的密码体系为分水岭，密码学被划分成了泾渭分明的两部分——古典密码学和现代密码学。在数千年的历史上，古典密码学的发展可谓花样百出、脑洞大赛，其能提供的安全性，在现代计算机面前，已经不堪一击；而新生的现代密码学，为我们个人通信、商业机密的传送提供了强有力的保障。<br>　　1976年，Whitfield Diffie 和 Martin Hellman 发表的论文 <em>New directions in cryptography</em> 开篇就是：</p><blockquote><strong>WE STAND TODAT on the brink of a revolution in cryptography.</strong><br><br><a href="https://drive.google.com/open?id=1ROHVZjHb6rskYYETAOaYdIpj7cqmszsX">——IEEE Transactions on Information Theory Volume 22 issue 6 1976 [doi 10.1109_tit.1976.1055638] Diffie, W.; Hellman, M. -- New directions in cryptography</a></blockquote><p>　　Diffie-Hellman 密钥交换算法，称为密码学史上的革命，是毫不为过的。它提出了一种方法，使得：即使双方所有的通讯都被监听，他们仍然可以约定好一个密钥，只有他们俩知道。</p><h3 id="-">离散对数</h3><p>　　离散对数是这样一个问题：在 $GF(p)$ 上，有一个原根 $g$. 今给定 $g, h\neq 0$，要求找出 $x$，使得$$g^x \equiv h \pmod p$$我们称 $x$ 为“以 $g$ 为底，$h$ 的离散对数”，记为 $\log_g(h)$. 之所以称其为对数，是因为它的表现和实数域上的对数非常像。离散对数也满足 $\log_g(ab) =\log_ga + \log_gb$. 事实上，离散对数 $\log_g$ 是一个 $F ^ *_p$ 到 $Z/(p-1)Z$的群同构。 </p><p>　　离散对数的计算是很困难的，因为离散对数的分布没有什么规律性可言。下面给出 $627^i \bmod 941$ 的分布情况：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/03/image-8.png" class="kg-image" alt loading="lazy"><figcaption>图片来源：<em>An Introduction to Mathematical Cryptography&nbsp;</em></figcaption></figure><p>　　离散对数的计算是数学上一个公认的困难问题——目前来讲，我们没有找到多项式算法来求离散对数。在下一篇博客，我会介绍大步小步算法、Pohlig–Hellman 算法，它们能够较快地求离散对数，但仍然不是多项式的。大步小步算法可以在 $O(\sqrt{\text{ord} (g)})$ 的时间复杂度内求出某个数的离散对数，其中 $\text{ord}(g)$ 是 $g$ 在群 $GF(p)$ 中的阶。</p><h3 id="diffie-hellman-">Diffie-Hellman 密钥交换算法</h3><p>　　现在假设 Alice 想和 Bob 约定一个整数作为密钥，但 Alice 与 Bob 素昧平生，且他们通信的信道是完全被监听的。在此情况下，我们的目标是，设计一个方案：经过几次通讯，Alice 和 Bob 掌握了一个相同的整数（密钥），而窃听者 Eve 无法知道这个密钥。</p><p>　　DH 密钥交换算法的思路是：既然求解离散对数是困难的，那么我们可以把信息隐藏在 $g$ 的指数中。传递 $g^x$ 可以使得窃听者无法获取$x$. 于是有了以下算法（下面所有运算在 $F_p$ 进行）：</p><ol><li>Alice 和 Bob 随便通过什么渠道，达成共识 $(g, p)$. 其中 $p$ 是一个质数，$g$ 是它的一个原根。</li><li>Alice 想一个随机的数 $x$，算出 $A = g^x$，把 $A$ 发送给 Bob. <br>Bob 想一个随机数 $y$, 算出 $B=g^b$，把 $B$ 发送给Alice.</li><li>Alice 接到 $B$ 之后，计算 $B^a$ 作为协商好的密钥。<br>Bob 接到 $A$ 之后，计算 $A^ b$作为密钥。</li></ol><p>　　为什么 Alice 和 Bob 计算出来的密钥是一样的？因为$$B^a = (g ^ b) ^ a = (g ^ a)^ b = A ^ b$$</p><p>　　为什么尽管 Eve 监听了所有的对话，仍然没法知道密钥？因为 Eve 只知道 $g, p, A, B$. 仅凭这些信息，想得到 $B ^ a$ 是很困难的。因为 $a$ 只能通过求离散对数获得；而我们刚刚讲过，求离散对数非常困难，只要他俩选个 1000-bits 的 $p$，且原根 $g$ 不乱选，则 Eve 很难得到 $a,b$ 中的任意一个，自然也就没法计算出 $g ^ {ab}$ 了。</p><p>　　下面举一个例子来演示 DH 密钥交换算法。Alice 和 Bob 选择了 $p=941, g=627$. 现在 Alice 心里想了一个数 $a=347$, 算出 $A = g ^ a = 390$. Bob 选的数是 $b=781$, 算出 $B = g ^ b = 691$. 现在他们公布 $A, B$. Alice 计算出 $B ^ a = 470$，Bob 计算出 $A ^ b = 470$, 于是 470 就是他们约定好的密钥。</p><p>　　Eve知道$p=941, g=627, A=390, B=691$，但她没法计算出密钥。至此，我们在不安全的信道里，完成了一次安全的密钥交换。可谓出淤泥而不染。</p><h3 id="elgamal-">Elgamal 公钥加密算法</h3><p>　　尽管 Diffie-Hellman 很好地完成了交换密钥的任务，但密钥毕竟不带有信息，无法直接用于通讯。Elgamal 公钥加密算法解决了通讯的问题。描述如下（下面所有运算在群$GF(p)$中进行）：</p><ol><li>Alice 选取一对 $(g, p)$, 自己想一个 $a$ 作为<strong>私钥</strong>，然后计算出 $A= g ^ a$ 作为<strong>公钥</strong>。<br>Alice 将 $(g, p, A)$ 公布给所有人。</li><li>Bob 现在想给 Alice 传送一条信息 $m$. 于是 Bob 选取一个随机数 $k$, 计算出 $$c_1 = g^k , \qquad c_2 = m A ^ k$$然后将$(c_1, c_2)$ 发送给 Alice.</li><li>Alice 拿到 $(c_1, c_2)$，计算$$c_1^{-a}\cdot c_2 = g ^ {-ka} \cdot m \cdot g^{ak} = m$$于是 Alice 成功获取到了信息 $m$.</li></ol><p>　　Elgamal 的安全性与 DH 是一致的。证明过程很巧妙：</p><ul><li>如果攻击者可以攻破 Elgamal，那么攻击者也能攻破 DH. <br>设攻击者手上有一台魔法机器，给定 $p, g, A$，输入 $(c_1, c_2)$ 就可以输出 $m = c_1^{-a}\cdot c_2$. 那我们给这台机器输入 $(B, 1)$, 则机器会输出 $B ^ {-a}\cdot 1 = g ^ {-ab} $. 我们拿到这个结果，求一下逆元，就得到了 $ g ^ {ab}$. 从而拿到了 DH 的密钥。</li><li>如果攻击者可以攻破 DH，那他也能攻破 Elgamal. <br>设攻击者手上有一台用于攻击DH的机器，输入 $(g ^ a, g ^ b)$，会输出 $g ^ {ab}$. 那我们给它输入 $(c_1, A) = (g^k, g ^ a)$，机器会输出 $ g ^ {ka}$. 于是我们可以拿到 $g ^ {-ka}$. 现在计算 $$g ^ {-ka} \cdot c_2 = g ^ {-ka} \cdot m \cdot g ^ {ak} = m$$ 于是拿到了信息，攻破 Elgamal.</li></ul><p>　　上述过程证明了 DH 与 Elgamal 的攻击难度是一样的。如果 DH 是安全的，则 Elgamal 也是安全的。但是 DH 的安全性不等于离散对数的安全性——如果离散对数可以快速求出来，则 DH、Elgamal 被攻破；但如果 DH 被攻破，走的可能不是离散对数的路子。我们只能说：离散对数是一个比 DH 更难的问题。</p><p>　　目前为止，Diffie-Hellman 密钥交换算法是安全的。它被用于 SSL 协议的握手阶段。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-algorithm tag-crypto tag-python no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../pohlig-hellman/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">algorithm</div>
+                <h2 class="post-card-title">Pohlig-Hellman 算法</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Pohlig-Hellman 算法是一种求离散对数的算法。其应用条件是底数的阶可以分解成若干个小质数之积。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-03-26">26 Mar 2020</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-crypto no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../many-time-pad/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">Many-Time-Pad 攻击</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>以简单异或实现的流密码，如果不能保证一次一密，则是不安全的。本文展示了多次加密采用同一个密钥的情形，此时从密文可能推断出明文和密钥。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-03-22">22 Mar 2020</time> <span class="bull">&bull;</span> 8 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

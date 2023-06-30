@@ -1,0 +1,580 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>从约瑟夫环看循环链表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                C/C++ &raquo; <a href="Josephus.html">从约瑟夫环看循环链表</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">从约瑟夫环看循环链表</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/C.html">C/C++</a></span>
+  
+  <span class="date">时间: 2012-12-21 19:23</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">0条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="Josephus.html">13814人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8.html">循环链表</a>
+    
+        <a href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+    
+        <a href="../tag/%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF.html">约瑟夫环</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>约瑟夫环问题是这样:</p>
+<h2 id="_1"><a class="toclink" href="#_1">描述</a></h2>
+<p>编号为1,2,...,n的n个人按顺时针方向围坐一圈，每人持有一个密码（正整数）。现在给定一个随机数m&gt;0，从编号为1的人开始，按顺时针方向1开始顺序报数，报到m时停止。报m的人出圈，同时留下他的密码作为新的m值，从他在顺时针方向上的下一个人开始，重新从1开始报数，如此下去，直至所有的人全部出圈为止。</p>
+<h2 id="_2"><a class="toclink" href="#_2">输入说明</a></h2>
+<p>仅有一组数据，输入数据第一行为两个正整数n(0&lt;n&lt;100)和m(0&lt;m&lt;99999999)，分别表示人的个数及初始随机数，第二行为n个整数Ai(0&lt;Ai&lt;99999999，i=1..n），表示每个人持有的密码。</p>
+<h2 id="_3"><a class="toclink" href="#_3">输出说明</a></h2>
+<p>在一行输出n个整数表示依次出圈人的编号，整数之间用空格分隔</p>
+<h2 id="_4"><a class="toclink" href="#_4">输入样例</a></h2>
+<div class="codehilite"><pre><span></span>7 5
+3 8 1 22 4 9 15
+</pre></div>
+
+
+<p><strong>输出样例</strong></p>
+<div class="codehilite"><pre><span></span>5 2 6 7 4 3 1
+</pre></div>
+
+
+<p>拿到这一题，潜意识里就想到能不能用循环链表来解决。因为这里所有人都围成一圈，而且要频繁地进行删除的操作，如果用数组来储存数据就显得有些慢了。正好我最近也在自己看数据结构的书，所以这里就借这一题实践一下循环链表。（我的方向从来不是NOI和ACM，写的东西可能比较业余，不伦不类，请大家见谅……）</p>
+<p>循环链表就是把我们线性链表的最后一个节点的指针域指向第一个有效节点。我们完全可以先造一个非循环单链表，然后再把它的尾指针指向首节点。</p>
+<p>首先定义一个结构体，用它来做我们的节点。这个结构体应该保存这几个数据：1.该人是第几号人 2.该人手里的密码 3.下一个人的地址</p>
+<p>于是可以这样定义：</p>
+<div class="codehilite"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">Node</span><span class="p">{</span>
+    <span class="kt">long</span> <span class="n">data</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">Node</span> <span class="o">*</span> <span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span><span class="n">NODE</span><span class="p">,</span><span class="o">*</span> <span class="n">pNODE</span><span class="p">;</span>
+</pre></div>
+
+
+<p>创建一个普通的空链表：</p>
+<div class="codehilite"><pre><span></span><span class="n">pNODE</span> <span class="nf">CreateNode</span><span class="p">(){</span>
+    <span class="n">pNODE</span> <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">pNODE</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">NODE</span><span class="p">));</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+    <span class="p">}</span>
+</pre></div>
+
+
+<p>很简单，再像栈一样，向结尾添加数据。(这些我就不写注释了，因为这个是普通链表的操作，学数据结构的时候应该都写过)</p>
+<div class="codehilite"><pre><span></span><span class="kt">void</span> <span class="nf">AddNode</span><span class="p">(</span><span class="n">pNODE</span> <span class="n">pHead</span><span class="p">,</span><span class="kt">long</span> <span class="n">data</span><span class="p">,</span><span class="kt">int</span> <span class="n">n</span><span class="p">){</span>
+    <span class="n">pNODE</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pHead</span><span class="p">;</span>
+    <span class="n">pNODE</span> <span class="n">pNew</span> <span class="o">=</span> <span class="p">(</span><span class="n">pNODE</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">NODE</span><span class="p">));</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">pNew</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="k">while</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>    
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pNew</span><span class="p">;</span>
+    <span class="n">pNew</span><span class="o">-&gt;</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+    <span class="n">pNew</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">pNew</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">;</span>
+    <span class="p">}</span>
+</pre></div>
+
+
+<p>这两个函数的使用我们等下再说，他们的功能一个就是创建新的空链表，一个是向链表尾部添加数据。</p>
+<p>好，我们还需要一个函数。他的功能是进行删除。因为每报到一个人，这个人就得退出游戏，也就是删除这个人代表的节点。由于链表的特殊性，我们如果要删除p节点，我们得把p前面、后面的两个节点连接。p后面节点的地址很好知道，就是p-&gt;next，但是p前面一个人的地址我们并不知道。所以我用了一个方法解决这个问题，只要我们这个函数的功能不是删除p节点，是删除p后面一个节点。这样问题就解决了，至于如何使用，这个等下写main函数的时候再考虑。</p>
+<p>函数可以这么写：</p>
+<div class="codehilite"><pre><span></span><span class="c1">//删除p后面的节点，返回val</span>
+<span class="n">BOOL</span> <span class="nf">DeleteNode</span><span class="p">(</span><span class="n">pNODE</span> <span class="n">p</span><span class="p">,</span><span class="kt">long</span><span class="o">*</span> <span class="n">val</span><span class="p">){</span>
+    <span class="n">pNODE</span> <span class="n">q</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> 
+        <span class="k">return</span><span class="p">(</span><span class="n">FALSE</span><span class="p">);</span> 
+    <span class="c1">//如果循环链表只剩一个节点了，返回false</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span> 
+    <span class="c1">//将p的指针域指向q的指针域，q是p下一个节点</span>
+    <span class="o">*</span><span class="n">val</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span> 
+    <span class="c1">//将q的数据(也就是删除的这个人的密码)保存在val里返回</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d &quot;</span><span class="p">,</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">n</span><span class="p">);</span> 
+    <span class="c1">//输出删除的这个人的编号</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+    <span class="c1">//勿忘释放内存</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">TRUE</span><span class="p">);</span>
+    <span class="p">}</span>
+</pre></div>
+
+
+<p>函数写好了，我们可以开始写main函数了。main函数的作用是让这几个子函数协同，完成我们约瑟夫环这道题的目标。</p>
+<div class="codehilite"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="kt">int</span> <span class="n">peo</span><span class="p">,</span><span class="n">i</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="n">m</span><span class="p">,</span><span class="n">tmp</span><span class="p">;</span>
+    <span class="n">pNODE</span> <span class="n">pHead</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="p">;</span>
+    <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d%d&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">peo</span><span class="p">,</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+    <span class="n">pHead</span> <span class="o">=</span> <span class="n">InitNode</span><span class="p">();</span>
+    <span class="c1">//建立一个空链表，头指针为pHead</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">peo</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">tmp</span><span class="p">);</span>
+        <span class="n">AddNode</span><span class="p">(</span><span class="n">pHead</span><span class="p">,</span><span class="n">tmp</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="c1">//每读入一个数据(也就是每个人手里的密码)，就添加到链表的后面</span>
+        <span class="p">}</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pHead</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>  
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="c1">//寻找这个链表最后一个节点</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pHead</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="c1">//将尾指针指向首节点，注意不是指向头结点。(如图1)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pHead</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">p</span> <span class="o">!=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">){</span> <span class="c1">//开始游戏了，结束条件是只剩下最后一个人</span>
+          <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">p</span><span class="o">=</span><span class="s">&quot;p-&quot;</span><span class="o">&gt;</span><span class="n">next</span><span class="p">;</span>
+        <span class="c1">//找到第m-1个人(报m的人的前一个人)</span>
+          <span class="n">q</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+          <span class="n">DeleteNode</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+        <span class="c1">//输入的是q，的实际上删除的是q-&gt;next指向的那个人,因为我们函数是这样定义的</span>
+          <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+        <span class="c1">//接着报数则从下一个人开始，故p往后移动</span>
+          <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">n</span><span class="p">);</span>
+    <span class="c1">//输出最后一个人的编号</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span><span class="o">&lt;/</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p><a href="../content/uploadfile/201212/ec5b1356163245.gif"><img alt="循环链表示意图" src="../content/uploadfile/201212/thum-ec5b1356163245.gif" title="循环链表示意图" /></a></p>
+<p>大家可以把程序写好拿去试试。我写的东西肯定不规范，比如对链表操作的那几个英文单词我随便写的。我把我写的传到附件里大家可以下载来看。</p>
+<hr />
+<p>上面的内容有一些错误，不知道大家发现没有。当我们被删除的那个人手里的密码是1的时候，也就是说下一轮提出的人就是他后面那个。但是这时候指针已经指向这个人了，而我们的DeleteNode函数作用是删除后面一个，所以结果就有问题。我暂时还没想到什么好方法，只能判断一下。当m==1时就把循环链表走一遍，走到p之前的那个节点，再执行DeleteNode函数。</p>
+<p>改正的代码已经传到附件里了。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8.html">循环链表</a>
+                
+                    <a href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+                
+                    <a href="../tag/%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF.html">约瑟夫环</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 0 条评论</h3>
+            <ol class="comment-list">
+            
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="38d9604947cad6962174b81867e998dbf8104657" />
+</div><div class="col-6">
+<img src="../captcha/image/38d9604947cad6962174b81867e998dbf8104657/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="213" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="nJ4C9SEZmmUfkttGw5mAO35DugGWTZTT9hstHXfIKI8YS1h4y6jlLw8IPDX7sB5b">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

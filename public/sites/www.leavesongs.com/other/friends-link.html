@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>友情链接 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/other/friends-link.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;text=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;title=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;is_video=false&amp;description=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5&amp;body=Check out this article: https%3A//www.leavesongs.com/other/friends-link.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;title=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;title=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;title=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;title=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/other/friends-link.html&amp;name=%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">友情链接</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2017年2月2日 01:47" itemprop="datePublished">
+                  2017 二月 02 01:47
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：71186
+              </div>
+
+              
+
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>一些大佬和他们的博客。</p>
+<ul>
+<li>西电信息安全协会 <a href="http://xdsec.org/">http://xdsec.org/</a></li>
+<li>先知技术社区 <a href="https://xz.aliyun.com/">https://xz.aliyun.com/</a></li>
+<li>冷夜 <a href="http://le4f.net/">http://le4f.net/</a></li>
+<li>Bigtang <a href="http://bigtang.org/">http://bigtang.org/</a></li>
+<li>Chu <a href="http://sh3ll.me/">http://sh3ll.me/</a></li>
+<li>Flanker <a href="https://blog.flanker017.me">https://blog.flanker017.me</a></li>
+<li>quininer <a href="http://quininer.github.io/">http://quininer.github.io/</a></li>
+<li>wilson <a href="http://blog.wils0n.cn/">http://blog.wils0n.cn/</a></li>
+<li>Sliver <a href="http://iret.xyz/">http://iret.xyz/</a></li>
+<li>AppLeU0 <a href="http://appleu0.sinaapp.com/">http://appleu0.sinaapp.com/</a></li>
+<li>Wrfly <a href="http://wrfly.kfd.me/">http://wrfly.kfd.me/</a></li>
+<li>lostwolf <a href="http://wolvez.club/">http://wolvez.club/</a></li>
+<li>王松_striker <a href="http://www.hackersb.cn/">http://www.hackersb.cn/</a></li>
+<li>imlonghao <a href="https://imlonghao.com/">https://imlonghao.com/</a></li>
+<li>Lcy <a href="https://phpinfo.me/">https://phpinfo.me/</a></li>
+<li>JISEC <a href="https://www.jisec.com/">https://www.jisec.com/</a></li>
+<li>Virink's blog <a href="https://www.virzz.com">https://www.virzz.com</a></li>
+<li>零の杂货铺 <a href="http://phantom0301.cc">http://phantom0301.cc</a></li>
+<li>0h1in9e's Blog <a href="https://www.ohlinge.cn">https://www.ohlinge.cn</a></li>
+<li>Neargle <a href="http://blog.neargle.com/">http://blog.neargle.com/</a></li>
+<li>ZeroKeeper's Blog <a href="http://www.zerokeeper.com/">http://www.zerokeeper.com/</a></li>
+<li>Weaponx's Blog <a href="http://weaponx.site">http://weaponx.site</a></li>
+<li>Tr3jer_CongRong <a href="http://www.thinkings.org/">http://www.thinkings.org/</a></li>
+<li>l3m0n <a href="http://iamstudy.cnblogs.com/">http://iamstudy.cnblogs.com/</a></li>
+<li>Magic_Zero <a href="http://www.cnblogs.com/magic-zero/">http://www.cnblogs.com/magic-zero/</a></li>
+<li>virusdefender's blog <a href="https://virusdefender.net">https://virusdefender.net</a></li>
+<li>RicterZ <a href="https://ricterz.me/">https://ricterz.me/</a></li>
+<li>Niexinming <a href="https://blog.csdn.net/niexinming">https://blog.csdn.net/niexinming</a></li>
+<li>deamwork <a href="https://dwx.io/">https://dwx.io/</a></li>
+<li>国光 <a href="https://www.sqlsec.com">https://www.sqlsec.com</a></li>
+<li>do9gy <a href="http://www.moonslow.com/">http://www.moonslow.com/</a></li>
+<li>七友 <a href="https://www.redteaming.top/">https://www.redteaming.top/</a></li>
+<li>zjun's blog <a href="http://zjun.info/">http://zjun.info/</a></li>
+<li>小北 <a href="https://blog.happysec.cn/">https://blog.happysec.cn/</a></li>
+<li>Alili丶前端大爆炸 <a href="https://alili.tech">https://alili.tech</a></li>
+<li>熊本熊本熊  <a href="https://kumamon.fun/">https://kumamon.fun/</a></li>
+<li>panda <a href="https://www.cnpanda.net/">https://www.cnpanda.net/</a></li>
+<li>L0ki <a href="https://www.l0ki.top">https://www.l0ki.top</a></li>
+<li>Swing <a href="https://bestwing.me/">https://bestwing.me/</a></li>
+<li>xxxeyJ <a href="https://tricksongs.com">https://tricksongs.com</a> </li>
+</ul>
+<p>定时清理访问不了的博客，如果误清理（或博客重新开张），请留言恢复~</p>
+<p>2020-04-27: 可以重新申请友链了，但需要几个要求：</p>
+<ul>
+<li>只能是个人博客，且非营利性</li>
+<li>最近一年内需要有至少5篇原创文章，且文章具有一定质量</li>
+<li>安全或开发相关</li>
+</ul>
+<p>2021-01-10：暂时不交换友链了。</p>
+<p>写这些要求不是为了“面试”，而是希望友链不仅仅是“友情链接”，而是一个让我的读者能发现更多值得学习的文章的地方。大家都能互相学习进步，而不是一个展现自己“认识很多人”的地方。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-4136">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">ne0ac2g</a>
+                    <time datetime="2023年3月19日 01:09" itemprop="datePublished">
+                      2023 三月 19 01:09
+                    </time>
+                    <a href="javascript:reply_to('4136', 'ne0ac2g')">回复</a>
+                  </p>
+                  <p class="comment-meta">谢谢你的分享，给我带来很多帮助，也让我从浮躁之人仔细思索眼前技术的本源</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3911">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://freeme.cc" target="_blank" rel="nofollow noopener">freeme</a>
+                    <time datetime="2022年7月17日 05:37" itemprop="datePublished">
+                      2022 七月 17 05:37
+                    </time>
+                    <a href="javascript:reply_to('3911', 'freeme')">回复</a>
+                  </p>
+                  <p class="comment-meta">newb 都是好文，看完了</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3854">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/15b35a79088b9091a3431d651ef76641.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://surmon.me" target="_blank" rel="nofollow noopener">Surmon</a>
+                    <time datetime="2022年4月18日 09:33" itemprop="datePublished">
+                      2022 四月 18 09:33
+                    </time>
+                    <a href="javascript:reply_to('3854', 'Surmon')">回复</a>
+                  </p>
+                  <p class="comment-meta">最后一句说的很对。https://surmon.me 随缘看</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3847">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="http://bigyoung.cn" target="_blank" rel="nofollow noopener">BigYoung</a>
+                    <time datetime="2022年4月7日 15:00" itemprop="datePublished">
+                      2022 四月 07 15:00
+                    </time>
+                    <a href="javascript:reply_to('3847', 'BigYoung')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神，先留个友链：https://bigyoung.cn<br>啥时候开了，我排个号。</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3842">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.shenhuo.net/" target="_blank" rel="nofollow noopener">一点笔记</a>
+                    <time datetime="2022年3月30日 01:50" itemprop="datePublished">
+                      2022 三月 30 01:50
+                    </time>
+                    <a href="javascript:reply_to('3842', '%E4%B8%80%E7%82%B9%E7%AC%94%E8%AE%B0')">回复</a>
+                  </p>
+                  <p class="comment-meta">可以换友链吗？https://www.shenhuo.net/</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3808">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/d1b35d6872ee83923e7b3f644cf12383.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.jgeek.cn" target="_blank" rel="nofollow noopener">0x584a</a>
+                    <time datetime="2022年2月11日 15:15" itemprop="datePublished">
+                      2022 二月 11 15:15
+                    </time>
+                    <a href="javascript:reply_to('3808', '0x584a')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神还可以互换友链吗？https://www.jgeek.cn</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3695">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Magus</a>
+                    <time datetime="2021年9月13日 15:18" itemprop="datePublished">
+                      2021 九月 13 15:18
+                    </time>
+                    <a href="javascript:reply_to('3695', 'Magus')">回复</a>
+                  </p>
+                  <p class="comment-meta">請問台灣地區有辦法加入 代码审计 知識星球嗎？</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3696">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2021年9月13日 17:33" itemprop="datePublished">
+                      2021 九月 13 17:33
+                    </time>
+                    <a href="javascript:reply_to('3696', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@Magus 你好，由于知识星球这个应用程序的限制，暂时只支持WeChat登录。<br><br>登录后，支付是使用WeChat钱包，如果你没有WeChat钱包，可以联系这个WeChat：zhang_buchan，通过paypal等方式支付~</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3697">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Magus</a>
+                    <time datetime="2021年9月17日 16:10" itemprop="datePublished">
+                      2021 九月 17 16:10
+                    </time>
+                    <a href="javascript:reply_to('3697', 'Magus')">回复</a>
+                  </p>
+                  <p class="comment-meta">@phithon 您好我有用WeChat聯繫這個帳號了，再麻煩他看到的話給我個回覆，不太熟悉WeChat的機制</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3687">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://mixin.pro" target="_blank" rel="nofollow noopener">秘信</a>
+                    <time datetime="2021年8月29日 16:11" itemprop="datePublished">
+                      2021 八月 29 16:11
+                    </time>
+                    <a href="javascript:reply_to('3687', '%E7%A7%98%E4%BF%A1')">回复</a>
+                  </p>
+                  <p class="comment-meta">名称：秘信<br>地址：https://mixin.pro<br>描述：匿名信|私密信|阅后销毁</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3673">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/14ab1fd188c8425376b7af5ef7066d31.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://checkscope.cn/" target="_blank" rel="nofollow noopener">阅镜</a>
+                    <time datetime="2021年8月9日 19:49" itemprop="datePublished">
+                      2021 八月 09 19:49
+                    </time>
+                    <a href="javascript:reply_to('3673', '%E9%98%85%E9%95%9C')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神可以换个友链吗，关注你很久了！我在做c/c++代码检测</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3666">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/6453229c98ff324b25099afe4c079b78.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://whoamianony.top/" target="_blank" rel="nofollow noopener">WHOAMI</a>
+                    <time datetime="2021年6月29日 18:15" itemprop="datePublished">
+                      2021 六月 29 18:15
+                    </time>
+                    <a href="javascript:reply_to('3666', 'WHOAMI')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神可以换个友链吗，看了您的文章之后，感谢学到了很多东西，让我这个小白真正的受益匪浅！<br>名称：WHOAMI<br>地址：https://whoamianony.top/</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3596">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">无名</a>
+                    <time datetime="2021年1月8日 17:03" itemprop="datePublished">
+                      2021 一月 08 17:03
+                    </time>
+                    <a href="javascript:reply_to('3596', '%E6%97%A0%E5%90%8D')">回复</a>
+                  </p>
+                  <p class="comment-meta">从知乎看到的：：：要说个人博客，那一定安利我ph师傅@周佩雨的https://www.leavesongs.com/。看ph牛博客长大的，学到了很多。不论是代码审计，还是编程开发，亦或是内网渗透，不单单是技术，更多的是解决问题的方法。在这个浮躁的安全圈中，真正能做到授人以渔，坚持分享干货的也只有那么一撮人了吧。<br><br>申请友链：www.6b8.me</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3597">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">无名1</a>
+                    <time datetime="2021年1月8日 17:05" itemprop="datePublished">
+                      2021 一月 08 17:05
+                    </time>
+                    <a href="javascript:reply_to('3597', '%E6%97%A0%E5%90%8D1')">回复</a>
+                  </p>
+                  <p class="comment-meta">@无名 你回复互链你的关键词和域名 我这边帮你添加呀  P神</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3598">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2021年1月10日 19:54" itemprop="datePublished">
+                      2021 一月 10 19:54
+                    </time>
+                    <a href="javascript:reply_to('3598', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@无名1 不好意思，暂时不交换友链了。</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3591">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="http://L0ki.top" target="_blank" rel="nofollow noopener">L0ki</a>
+                    <time datetime="2020年12月14日 10:24" itemprop="datePublished">
+                      2020 十二月 14 10:24
+                    </time>
+                    <a href="javascript:reply_to('3591', 'L0ki')">回复</a>
+                  </p>
+                  <p class="comment-meta">P师傅可否换个友链~<br>url:www.l0ki.top<br>name:L0ki</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3592">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2020年12月16日 00:47" itemprop="datePublished">
+                      2020 十二月 16 00:47
+                    </time>
+                    <a href="javascript:reply_to('3592', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@L0ki 已添加~</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3553">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">熊本熊本熊</a>
+                    <time datetime="2020年10月12日 15:50" itemprop="datePublished">
+                      2020 十月 12 15:50
+                    </time>
+                    <a href="javascript:reply_to('3553', '%E7%86%8A%E6%9C%AC%E7%86%8A%E6%9C%AC%E7%86%8A')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神交换个友链吧~<br>博客内容也是关于web安全研究的<br>https://kumamon.fun/<br>熊本熊本熊&#x27;s Studio.</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3556">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2020年10月13日 15:08" itemprop="datePublished">
+                      2020 十月 13 15:08
+                    </time>
+                    <a href="javascript:reply_to('3556', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@熊本熊本熊 好的，保持更新</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3548">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://kumamon.fun/" target="_blank" rel="nofollow noopener">熊本熊本熊</a>
+                    <time datetime="2020年9月28日 14:51" itemprop="datePublished">
+                      2020 九月 28 14:51
+                    </time>
+                    <a href="javascript:reply_to('3548', '%E7%86%8A%E6%9C%AC%E7%86%8A%E6%9C%AC%E7%86%8A')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神可以换个友链吗~  <br>https://kumamon.fun/  <br>熊本熊本熊&#x27;s Studio.</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3542">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/25b1990677c4c529fff7fc427935cb5c.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://alili.tech" target="_blank" rel="nofollow noopener">Alili丶前端大爆炸</a>
+                    <time datetime="2020年9月16日 19:56" itemprop="datePublished">
+                      2020 九月 16 19:56
+                    </time>
+                    <a href="javascript:reply_to('3542', 'Alili%E4%B8%B6%E5%89%8D%E7%AB%AF%E5%A4%A7%E7%88%86%E7%82%B8')">回复</a>
+                  </p>
+                  <p class="comment-meta">P神换个友链吧,写了好几年.<br>最近日更了.加我吧!加我吧!加我吧!!<br><br>Alili丶前端大爆炸<br>https://alili.tech</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3544">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2020年9月17日 01:55" itemprop="datePublished">
+                      2020 九月 17 01:55
+                    </time>
+                    <a href="javascript:reply_to('3544', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@Alili丶前端大爆炸 <br>可以的，已添加~</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+          
+        </div>
+
+        
+          
+
+<nav role="navigation">
+  <ul class="cd-pagination">
+    
+      <li class="button"><a href="javascript:;"></a></li>
+    
+    
+      
+        <li><a class="current"
+               href="friends-link%EF%B9%96page=1.html#reply-list">1</a></li>
+      
+    
+      
+        <li><a 
+               href="friends-link%EF%B9%96page=2.html#reply-list">2</a></li>
+      
+    
+      
+        <li><a 
+               href="friends-link%EF%B9%96page=3.html#reply-list">3</a></li>
+      
+    
+      
+        <li><a 
+               href="friends-link%EF%B9%96page=4.html#reply-list">4</a></li>
+      
+    
+      
+        <li><a 
+               href="friends-link%EF%B9%96page=5.html#reply-list">5</a></li>
+      
+    
+    
+      <li class="button"><a href="friends-link%EF%B9%96page=2.html#reply-list"></a></li>
+    
+  </ul>
+</nav>
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="8d031d5519555697fb267be6380287cf49b7f300" />
+</div><div class="col-6">
+<img src="../captcha/image/8d031d5519555697fb267be6380287cf49b7f300/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="406" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="BHzRnMzAJ2dNz5SbAmhkyDDB8ZvHZz6DnfXIVRaj7orw7DGzCne5v6GGtmMSybiV">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

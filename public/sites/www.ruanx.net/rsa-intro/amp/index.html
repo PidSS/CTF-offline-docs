@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>RSA原理和实现</title>
+
+    <meta name="description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="RSA原理和实现" />
+    <meta property="og:description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <meta property="og:url" content="https://www.ruanx.net/rsa-intro/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-03-18T06:33:42.000Z" />
+    <meta property="article:modified_time" content="2022-11-04T07:41:19.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RSA原理和实现" />
+    <meta name="twitter:description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/rsa-intro/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "RSA原理和实现",
+    "url": "https://www.ruanx.net/rsa-intro/",
+    "datePublished": "2020-03-18T06:33:42.000Z",
+    "dateModified": "2022-11-04T07:41:19.000Z",
+    "keywords": "Crypto, algorithm",
+    "description": "RSA算法的原理及Python代码实现，以及在CTF中的简单利用。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">RSA原理和实现</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2020-03-18">18 Mar 2020</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　RSA是一种非对称加密算法。谓之“非对称”，是因为加密和解密使用的是不同的密钥。RSA算法利用公钥来加密，用私钥来解密；公钥可以随意公布，任何人都可以利用公钥来加密一条信息，但只有私钥持有者才能把信息解密。</p><p>　　这是非常有用的加密体系。譬如，Alice 想给 Bob 发送一条信息，那么她可以在网上找到 Bob 的公钥，然后加密信息，并通过随便什么渠道传送给 Bob. 假设有一位窃听者 Eve 得到了加密后的信息，他也无法解密，因为没有私钥。</p><p>　　RSA另有一个特点：用私钥加密的信息，用公钥可以解密。这让基于RSA的数字签名成为可能。假如我写了一篇文章，我可以用私钥加密这一篇文本的md5值，把密文（也就是签名）附在文章后面。读者从可信的渠道得到我的公钥，利用公钥解密签名，发现与这篇文章的md5值一致，于是可以确信这篇文章确实是我写的。</p><p>　　RSA是极其巧妙的算法，而它的数学基础却出奇地简单，代码实现也不复杂。RSA同时是一个难以破解的密码体系，破解RSA的速度取决于大整数分解的速度。从RSA中，我们可以看到数论在现实生活中的运用，以及令人惊叹的人类智慧。</p><p>　　RSA算法的发明者是：Ron Rivest、Adi Shamir、Leonard Adleman，算法提出于1977年。</p><h3 id="rsa-">RSA的数学基础</h3><p>　　学过数论的同学，对欧拉函数不会陌生。它是一个数论函数（定义域为正整数集，值域为复数集），定义是：$\varphi(n)$ 为 $\{1, 2,3,\cdots ,n\}$ 中与$n$互质的数的个数。</p><p>　　举几个例子：$\varphi(6)=2$，因为6以内与6互质的数只有1和5. 而$\varphi(10)=4$，因为10以内与10互质的数有1、3、7、9，共4个。另外，不难发现，对于质数$p$，有$\varphi(p) = p-1$.</p><p>　　为了更深入地讨论欧拉函数的性质，我们需要知道欧拉函数的通项公式。<u>如果您只是想知道 RSA 算法怎么写、怎么用，则下面一段可以跳过。</u></p><hr></hr><p>　　欧拉函数的通项公式是什么？我们先给出结论，再谈谈是如何找到这个结论的。$$\varphi(n) = n \cdot \prod_{p}(1 - \frac1p)~~,其中p是n的质因子$$</p><p>　　想求出$\varphi(n)$，那就得统计出 $n$ 以内有多少个与 $n$ 互质的数。那么，与 $n$ 互质的数 $r$ 有什么特点呢？关键在于： $n$ 拥有的质因子， $r$ 全都没有。换句话讲：假设 $n$ 的质因数分解为$$n = p_1^{k_1}\cdot p_2 ^ {k_2} \cdots p_c ^{k_c}$$则 $r$ 必然满足 $r \% p_1 = 0, r\% p_2=0,\cdots$ 既然如此，研究 $r$ 模掉 $n$ 的质因子们所得到的结果，就可以看出 $r$ 的一些性质。我们来造一个函数：$G(x) = (x\% p_1^ {k_1}, ~ x\% p_2 ^ {k_2},  ~ \cdots x \% p_c ^ {k_c})$，有性质如下：</p><p>　　$r$ 与 $n$ 互质，<strong>当且仅当</strong> $G(r)$ 生成的元组中，对于第 $i$ 位，总有它不能被 $p_i$ 整除。我们把这种元组称为合法元组。</p><p>　　这是一条很平凡的性质，但它可以成为计数的一把钥匙。直接统计 $n$ 以内与 $n$ 互质的数是困难的，但统计有多少个合法元组则简单得多。合法元组的第 $i$ 位不能是 $p_i$ 的倍数或0，那么这一位有 $p_i^{k_i} \cdot (1-\frac1{p_i})$ 种取值，故依据乘法原理，合法元组的总数是：$$\prod_{i&lt;c}p_i ^ {k_i} (1-\frac1{p_i}) ~ = ~ \prod_{i&lt;c}p_i ^ {k_i} \prod_{i&lt;c}(1-\frac1{p_i})  ~ =  ~ n \prod_{i&lt;c}(1-\frac1{p_i})$$</p><p>　　这个式子要成为欧拉函数的通项公式，还有最后一步路要走：$G$目前只是一个普通映射，既有可能多个 $r$ 对应同一个合法元组，也可能一个合法元组对应不了任何 $r$. 从而合法元组的数量未必恰好就是与 $n$ 互质的数的数量。接下来的任务是：证明 $G: \{1,2,3,\cdots ,n\} \to (元组)$ 是一个双射。</p><p>　　还记得<strong>中国剩余定理（CRT）</strong>吗？它通过一个精妙的构造，指出了 $(元组)\to \{1,2,3,\cdots ,n\}$是一个双射（当然了，这个结论只是CRT的一个副产品）。中国剩余定理在这里不再赘述，感兴趣的读者可以去查阅相关资料。总之，既然元组与 $n$ 以内的整数是一一对应的，那么合法元组的数量就是 $n$ 以内与 $n$ 互质的数的个数。从而我们得到了欧拉函数的通项公式：$$\varphi(n) = n \cdot \prod_{p}(1 - \frac1p)~~,其中p是n的质因子$$</p><hr></hr><p>　　现在我们手上有欧拉函数的通项公式了。可以随便挑几个数验证一下：$$\varphi(10) = 10 \times \frac12 \times \frac45 = 4,\quad \varphi(24) = 24 \times \frac12 \times \frac23 = 8$$</p><p>　　利用欧拉函数的通项公式，可以得到两条性质：</p><ol><li>$\varphi$ 是积性函数。若 $a,b$ 互质，则有$\varphi(ab) = \varphi(a)\cdot \varphi(b)$      </li><li><strong>欧拉定理</strong>。若 $a, m$ 互质，则有 $a^{\varphi(m)} \equiv 1 \pmod m$<br />不难发现，费马小定理是欧拉定理在 $m$ 为质数下的情形。               </li></ol><p>　　以上这堆性质的证明、欧拉函数通项的求法、线性筛欧拉函数、扩展欧几里得算法，是接下来代码实现的基础。我一年前给高中生讲数论的时候做了篇课件，恰好涵盖了这些内容，<strong><a href="https://www.jianguoyun.com/p/DQEFzTgQyNGbCBi_pfcC">点这里下载</a></strong>。</p><p>　　<strong>欧拉定理</strong>是欧拉函数最大的作用。利用欧拉定理可以得到结论：若$a,m$互质，则$$a^b \equiv a ^ {b \% \varphi(m)} \pmod m$$ 这不仅大大降低了计算复杂度（可以利用快速幂算法），也是 RSA 算法的基石。</p><h3 id="rsa--1">RSA算法</h3><p>　　RSA算法的过程如下：</p><ol><li>随便选择两个极大的质数，分别记为 $p, q$. 当然这里 $p\neq q$.</li><li>记 $N = p\cdot q$, 则由欧拉函数的积性有 $\varphi(N) = (p-1)(q-1)$.</li><li>选取一个小于 $ N $ 的 $e$, 使得 $\gcd(e, \varphi(N))=1$. 求出 $e$ 在模 $\varphi(N)$ 意义下的逆元，记为$d$.</li><li>我们得到了$(N, e)$作为公钥，$(N, d)$作为私钥。 <br />P.S. 注意到 $e$ 和 $d$ 是对称的，把 $e$ 拿去当私钥，把 $d$ 拿去当公钥也可行。 </li></ol><p>　　公钥可以分发给所有人，私钥必须保存好。接下来，别人可以用公钥加密信息发给我，我用私钥可以解密这条信息。下面来讨论加密、解密算法。</p><p>　　假设 Alice 想给 Bob 发一条信息，于是搞到了 Bob 的公钥$(N, e)$. 设 $m$ 为明文，则我们这样计算出密文：$$c \equiv m^e \pmod N$$ Bob 收到密文 $c$ 之后，用自己手上的私钥解密：$$m \equiv c^ d \pmod N$$</p><p>　　为什么这样就可以恢复出明文 $m$？注意到$$c^d \equiv (m^e) ^ d \equiv m^{ed} \equiv m^ {ed \% \varphi(N)} \pmod N$$而 $e,d$ 在模$\varphi(N)$意义下互为逆元，故$ed \% \varphi(N) = 1$. 从而 $m^ {ed \% \varphi(N)} \equiv m \pmod N$. 证毕。</p><p></p><p>　　代码实现RSA加密、解密异常简单，只需要会扩展欧几里得算法、快速幂就行了。如下：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">def exgcd(a, b):                   # 扩展欧几里得算法
+    if b==0: return (1, 0)
+    x, y = exgcd(b, a%b)
+    return (y, x-a//b*y)
+
+def getInv(a, mod):                # exgcd求逆元
+    x, y = exgcd(a, mod)
+    return x
+    # Python下负数模正数得到正数。如果是其他语言，得返回 (x % mod + mod) % mod
+
+def quickPow(x, p, mod):           # 模 mod 意义下求 x 的 p 次方
+    if p==0: return 1
+    if p==1: return x
+
+    t = quickPow(x, p//2, mod)
+    if p%2 == 0: return t * t % mod
+    return t * t * x % mod
+
+def encrypt(m, N, e):           # 加密
+    return quickPow(m, e, N)
+
+def decrypt(c, N, d):           # 解密
+    return quickPow(c, d, N)
+
+# 拿 bsdgames 里面的 `primes` 程序随便造的 p, q
+p = 100088459
+q = 1000049473
+
+N = p * q
+phi = (p-1) * (q-1)
+e = 2333333
+d = getInv(e, phi)
+
+c = encrypt(123454321, N, e)
+print(c) # 加密 `123454321`，得到密文：`8922052926595796`
+
+m = decrypt(c, N, d)
+print(m) # 解密，得到明文 `123454321`</code></pre><figcaption>RSA加密和解密</figcaption></figure><h3 id="rsa--2">RSA的安全性</h3><p>　　RSA是一个简单的算法，（主流的）攻击思路也不复杂：解密是需要私钥 $(N, d)$ 的，那么目标就是取得 $d$；由于$d$是 $e$ 在模 $\varphi(N)$ 意义下的逆元，故只需要知道 $\varphi(N)$ 就可以由公钥推出私钥；而要想知道 $\varphi(N)$ 是多少，只需要质因数分解$N$——因此，一般认为，RSA的安全性取决于分解$N$的难度。</p><p>　　目前，分解质因数是极端困难的。人们没有找到多项式时间内分解质因数的做法。而生成一个质数却很简单——我们拥有判断一个数是否为质数的快速算法（例如Miller-Rabin算法），又有质数定理： $\Pi (n) \sim n/\ln n$ 保证了 $n$ 附近期望每 $\ln n$ 个数里面就有一个质数。想找到适合RSA的大质数 $p,q$，只需要随机生成很大的数，然后检验是不是质数，重复几次就可以达到目标。</p><p>　　尽管现在没有多项式时间内分解质因数的算法，但有些算法还是比较快的——例如 Pollard's rho. 此外，量子计算机上可以实现Shor算法，但目前没有多大的应用价值。推荐使用不低于2048位的密钥，这里的密钥长度是指模数 $N$ 的二进制长度。</p><h3 id="-rsa-">生成RSA密钥对</h3><p>　　<code>ssh-keygen</code> 程序可以造一个RSA密钥对，接下来这个密钥对可以用于git身份验证、ssh服务器身份验证等很多功能。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/03/image-3.png" class="kg-image" alt width="1084" height="637" layout="responsive"></amp-img><figcaption>生成一个RSA密钥对 </figcaption></figure><p>　　接下来，我们来看这里面有什么东西。 <code>hello</code> 是私钥文件， <code>hello.pub</code> 是公钥文件。里面的东西都是base64编码过的，可以用RsaCtfTool来查看。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/03/image-4.png" class="kg-image" alt width="1368" height="341" layout="responsive"></amp-img><figcaption>公钥文件 </figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2020/03/image-5.png" class="kg-image" alt width="1368" height="699" layout="responsive"></amp-img><figcaption>私钥文件 </figcaption></figure><h3 id="-ctf-">几道CTF题</h3><blockquote>Jarvis OJ: veryeasyRSA<br /><br />已知RSA公钥生成参数：<br />p = 3487583947589437589237958723892346254777 <br />q = 8767867843568934765983476584376578389<br />e = 65537, 求d</blockquote><pre><code class="language-python">In [2]: p = 3487583947589437589237958723892346254777
+
+In [3]: q = 8767867843568934765983476584376578389
+
+In [4]: e = 65537
+
+In [5]: phi = (p-1) * (q-1)
+
+In [6]: gmpy2.invert(e, phi)
+Out[6]: mpz(19178568796155560423675975774142829153827883709027717723363077606260717434369)</code></pre><blockquote>JarvisOJ: Easy RSA<br /><br />还记得veryeasy RSA吗？是不是不难？那继续来看看这题吧，这题也不难。<br />已知一段RSA加密的信息为：0xdc2eeeb2782c<br />已知加密所用的公钥：(N=322831561921859 e = 23)<br />请解密出明文，提交时请将数字转化为ascii码提交</blockquote><pre><code class="language-python">In [2]: c = 0xdc2eeeb2782c
+
+In [3]: n = 322831561921859
+
+In [4]: e = 23
+
+In [7]: !factor {n}
+322831561921859: 13574881 23781539
+
+In [8]: p = 13574881; q = 23781539
+
+In [9]: phi = (p-1)*(q-1)
+
+In [10]: d = gmpy2.invert(e, phi)
+
+In [14]: hex(gmpy2.powmod(c, d, n))
+Out[14]: '0x33613559'
+
+In [16]: codecs.decode('33613559', 'hex')
+Out[16]: b'3a5Y'</code></pre><blockquote>BUUCTF: RSA<br /><br />在一次RSA密钥对生成中，假设p=473398607161，q=4511491，e=17<br />求解出d作为flag提交</blockquote><pre><code class="language-python">In [21]: p = 473398607161
+
+In [22]: q = 473398607161
+
+In [23]: e = 17
+
+In [24]: gmpy2.invert(e, (p-1)*(q-1))
+Out[24]: mpz(13182720074178117839153)</code></pre><blockquote>BUUCTF: rsarsa<br /><br />Math is cool! Use the RSA algorithm to decode the secret message, c, p, q, and e are parameters for the RSA algorithm.<br />(给定了 p, q, e, c)<br />Use RSA to find the secret message</blockquote><pre><code class="language-python">In [25]: p =  96484230290105156765905517400104265349457376392357398006439893520398525072984913995610350091634    ...: 27050370107570733633350911691280297777160200625281665378483
+
+In [26]: q =  11874843837980297032092405848653656852760910154543380907650040190704283358909208578251063047732    ...: 443992230647903887510065547947313543299303261986053486569407
+
+In [27]: e =  65537
+
+In [28]: c =  83208298995174604174773590298203639360540024871256126892889661345742403314929861939100492666605    ...: 6473166465764865262174570063768422808697285817267464015837058999417682141387422596893348407356335530    ...: 5388764184765117377625182029308721288567018036740680740676592363897316137581739273774783276275169010    ...: 4423869019034
+
+In [29]: d = gmpy2.invert(e, (p-1)*(q-1))
+
+In [30]: gmpy2.powmod(c, d, p*q)
+Out[30]: mpz(5577446633554466577768879988)</code></pre>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

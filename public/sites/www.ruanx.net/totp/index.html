@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>二步验证 TOTP 协议及其实现</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="TOTP 协议在 ESP8266 上的实现。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="二步验证 TOTP 协议及其实现" />
+    <meta property="og:description" content="TOTP 协议在 ESP8266 上的实现。" />
+    <meta property="og:url" content="https://www.ruanx.net/totp/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/11/QQ--20221118220509.png" />
+    <meta property="article:published_time" content="2022-11-18T09:40:01.000Z" />
+    <meta property="article:modified_time" content="2022-11-18T14:05:29.000Z" />
+    <meta property="article:tag" content="embedded" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="二步验证 TOTP 协议及其实现" />
+    <meta name="twitter:description" content="TOTP 协议在 ESP8266 上的实现。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/totp/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/11/QQ--20221118220509.png" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="embedded, Crypto" />
+    <meta property="og:image:width" content="861" />
+    <meta property="og:image:height" content="594" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "二步验证 TOTP 协议及其实现",
+    "url": "https://www.ruanx.net/totp/",
+    "datePublished": "2022-11-18T09:40:01.000Z",
+    "dateModified": "2022-11-18T14:05:29.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/11/QQ--20221118220509.png",
+        "width": 861,
+        "height": 594
+    },
+    "keywords": "embedded, Crypto",
+    "description": "TOTP 协议在 ESP8266 上的实现。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-embedded tag-crypto">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">二步验证 TOTP 协议及其实现</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-embedded tag-crypto ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/embedded/index.html">embedded</a>
+                </section>
+
+                <h1 class="post-full-title">二步验证 TOTP 协议及其实现</h1>
+
+                <p class="post-full-custom-excerpt">TOTP 协议在 ESP8266 上的实现。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-11-18">18 Nov 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 5 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/11/QQ--20221118220509.png 300w,
+                            ../content/images/size/w600/2022/11/QQ--20221118220509.png 600w,
+                            ../content/images/size/w1000/2022/11/QQ--20221118220509.png 1000w,
+                            ../content/images/size/w2000/2022/11/QQ--20221118220509.png 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/11/QQ--20221118220509.png"
+                    alt="二步验证 TOTP 协议及其实现"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　很多网站的登录系统都支持二步验证（双因素验证，Two-factor authentication, 2FA）以增强安全性。所谓二步验证，即是在检查口令之外，还检查一个<strong>一次性认证码</strong>。典型的二步认证手段包括有：</p><ul><li>短信/邮箱验证码</li><li>银行发的密码器</li><li>基于 HOTP/TOTP 协议的应用程序</li></ul><p>　　我们主要讨论最流行的 TOTP 协议，这也是 Authy、Google Authenticator 等流行的二步认证应用所支持的协议。</p><h3 id="0x01-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B">0x01 工作流程</h3><p>　　如果用户选择打开 2FA，网站会生成一个预共享的 secret key。后续的验证码都是从这个 secret key 派生出来的，这个 secret key 应该严格保密，只有服务器和客户应当知晓。</p><p>　　用户登录时，首先输入口令，这是第一步验证。口令验证通过之后，服务器要求用户提供 6 位数字认证码（这个认证码由 secret key 与当前时间计算得出，每 30s 变一次），若与服务器的计算结果一致，则完成认证。</p><p>　　一般而言，secret key 由服务器生成，并在用户选择开启 TOTP 时提供给客户。客户的手机上预装有 Authy 等软件，扫描服务器给出的二维码，即可获取到 secret key 并保存。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2022/11/a0.png" width="1248" height="918" loading="lazy" alt srcset="../content/images/size/w600/2022/11/a0.png 600w, ../content/images/size/w1000/2022/11/a0.png 1000w, ../content/images/2022/11/a0.png 1248w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2022/11/a1.png" width="854" height="1696" loading="lazy" alt srcset="../content/images/size/w600/2022/11/a1.png 600w, ../content/images/2022/11/a1.png 854w" sizes="(min-width: 720px) 720px"></div></div></div><figcaption>▲ 左图：服务器正在要求客户提供 2FA 验证码；右图：Authy 展示的当前验证码，其中红色进度条指示失效时间</figcaption></figure><p>　　如此一来，即使客户的密码被盗取，只要攻击者不知道 secret key，则仍然无法登录上网站。由于 secret key 保存在手机 APP 上，一般是比较安全的（如果不是物理黑客的话）。</p><h3 id="0x02-%E7%AE%97%E6%B3%95">0x02 算法</h3><p>　　在讲 TOTP 之前，我们先来看它的初级版——HOTP。HOTP 与 TOTP 的区别在于：HOTP 是用一个整数 counter 来计算一次性验证码，而 TOTP 是基于当前时间来计算。显然，实现了前者就能实现后者——只需要把当前时间除以 30s 向下取整，就能得到一个整数 counter 送进 HOTP 协议里。</p><p>　　HOTP 的全称是 HMAC-based One-Time Password，由 RFC 4226 定义。一次性验证码是 secret key $K$ 与计数器 $C$ 的函数：$$HOTP(K, C) = \text{truncate}(\text{HMAC}_H(K, C))$$而用户实际所使用的六位数字认证码，即为 $HOTP(K, C) \bmod 10^6$。上面的 HMAC 过程使用的哈希函数 $H$ 默认为 SHA-1。</p><p>　　truncate 过程用于从 160bit 的 SHA-1 结果中，提取出 31bit 的摘要。<a href="https://github.com/pyauth/pyotp/blob/develop/src/pyotp/otp.py">代码</a>如下：</p><pre><code class="language-python">offset = hmac_hash[-1] &amp; 0xF
+code = (
+    (hmac_hash[offset] &amp; 0x7F) &lt;&lt; 24
+    | (hmac_hash[offset + 1] &amp; 0xFF) &lt;&lt; 16
+    | (hmac_hash[offset + 2] &amp; 0xFF) &lt;&lt; 8
+    | (hmac_hash[offset + 3] &amp; 0xFF)
+)</code></pre><p>　　可见 HOTP 是一个非常简单的协议。而 TOTP（Time-based One-Time Password），就是把 unix 时间戳（1970 年 1 月 1 日至今所经过的秒数），除以 30 向下取整，作为 counter 丢进 HOTP 进行计算。</p><h3 id="0x03-%E7%89%A9%E8%81%94%E7%BD%91%E5%AE%9E%E7%8E%B0">0x03 物联网实现</h3><p>　　现在，我们在 ESP8266 上实现 TOTP 协议，显示于 8 位数码管上。</p><p>　　首先要解决的是时间问题。显然，我们的开发板不像电脑主板一样拥有 CMOS 电池（即主板上那颗 CR2032 型号的纽扣电池，可以在电脑关机时也维护时间信息），上电的时候肯定不知道现在是什么时间的；因此我们需要使用联网对时服务。</p><p>　　接下来的问题是如何计算 HMAC。由于 ESP8266 没有硬件密码学加速，我们需要用软件实现。好在计算量很小，效率不成问题。</p><p>　　结果符合预期：</p><figure class="kg-card kg-video-card"><div class="kg-video-container"><video src="../content/media/2022/11/out.mp4" poster="https://img.spacergif.org/v1/1280x720/0a/spacer.png" width="1280" height="720" playsinline preload="metadata" style="background: transparent url('../content/images/2022/11/media-thumbnail-ember453.jpg') 50% 50% / cover no-repeat;" /></video><div class="kg-video-overlay"><button class="kg-video-large-play-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.14 10.608 2.253.164A1.559 1.559 0 0 0 0 1.557v20.887a1.558 1.558 0 0 0 2.253 1.392L23.14 13.393a1.557 1.557 0 0 0 0-2.785Z"/></svg></button></div><div class="kg-video-player-container"><div class="kg-video-player"><button class="kg-video-play-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.14 10.608 2.253.164A1.559 1.559 0 0 0 0 1.557v20.887a1.558 1.558 0 0 0 2.253 1.392L23.14 13.393a1.557 1.557 0 0 0 0-2.785Z"/></svg></button><button class="kg-video-pause-icon kg-video-hide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="1" width="7" height="22" rx="1.5" ry="1.5"/><rect x="14" y="1" width="7" height="22" rx="1.5" ry="1.5"/></svg></button><span class="kg-video-current-time">0:00</span><div class="kg-video-time">/<span class="kg-video-duration"></span></div><input type="range" class="kg-video-seek-slider" max="100" value="0"><button class="kg-video-playback-rate">1&#215;</button><button class="kg-video-unmute-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.189 2.021a9.728 9.728 0 0 0-7.924 4.85.249.249 0 0 1-.221.133H5.25a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3h1.794a.249.249 0 0 1 .221.133 9.73 9.73 0 0 0 7.924 4.85h.06a1 1 0 0 0 1-1V3.02a1 1 0 0 0-1.06-.998Z"/></svg></button><button class="kg-video-mute-icon kg-video-hide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.177 4.3a.248.248 0 0 0 .073-.176v-1.1a1 1 0 0 0-1.061-1 9.728 9.728 0 0 0-7.924 4.85.249.249 0 0 1-.221.133H5.25a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3h.114a.251.251 0 0 0 .177-.073ZM23.707 1.706A1 1 0 0 0 22.293.292l-22 22a1 1 0 0 0 0 1.414l.009.009a1 1 0 0 0 1.405-.009l6.63-6.631A.251.251 0 0 1 8.515 17a.245.245 0 0 1 .177.075 10.081 10.081 0 0 0 6.5 2.92 1 1 0 0 0 1.061-1V9.266a.247.247 0 0 1 .073-.176Z"/></svg></button><input type="range" class="kg-video-volume-slider" max="100" value="100"></div></div></div></figure><p>　　源码：</p><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+#include &lt;LedControl.h&gt;
+#include &lt;Crypto.h&gt;
+#include &lt;SHA1.h&gt;
+#include &lt;utility/EndianUtil.h&gt;
+#include &lt;Base32.h&gt;
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;WiFiUdp.h&gt;
+#include &lt;NTPClient.h&gt;
+
+const char *ssid     = "******";
+const char *password = "******";
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "ntp.aliyun.com");
+
+LedControl lc=LedControl(D6, D0, D5, 1);
+
+String originSecret = "ONSWG4TFOQYTEMZTGIYQ";
+byte* secret;
+size_t secretLength;
+
+void printHex(byte *a, size_t len) {
+  for(size_t i=0; i&lt;len; i++)
+    Serial.printf("%02x ", a[i]);
+  Serial.print("\n");
+}
+
+void calcByteSecret() {
+  byte tmp[30];
+  size_t originLength = originSecret.length();
+  for(size_t i=0; i&lt;originLength; i++)
+    tmp[i] = originSecret[i];
+  
+  Base32 base32;
+  secret = (byte *)malloc(30);
+
+  secretLength = base32.fromBase32(tmp, originLength, secret);
+  Serial.printf("Byte Secret: ");
+  printHex(secret, secretLength);
+}
+
+uint64_t currentCode;
+
+void calcHotp(uint64_t count) {
+  byte hashCode[20];
+  SHA1 hasher;
+  hasher.resetHMAC(secret, secretLength);
+
+  byte counterData[8];
+  for(int i=0; i&lt;8; i++)
+    counterData[7-i] = ((count &gt;&gt; (i*8)) &amp; 0xFF);
+
+  Serial.printf("Counter data: ");
+  printHex(counterData, 8);
+
+  hasher.update(counterData, 8);
+  hasher.finalizeHMAC(secret, secretLength, hashCode, 20);
+
+  Serial.printf("Result: ");
+  printHex(hashCode, 20);
+
+  int offset = hashCode[19] &amp; 0xF;
+  uint64_t digitalCode = (
+      (hashCode[offset] &amp; 0x7F) &lt;&lt; 24
+      | (hashCode[offset + 1] &amp; 0xFF) &lt;&lt; 16
+      | (hashCode[offset + 2] &amp; 0xFF) &lt;&lt; 8
+      | (hashCode[offset + 3] &amp; 0xFF)
+  );
+  currentCode = digitalCode % 1000000;
+
+  Serial.printf("Code: %llu -&gt; %llu\n", digitalCode, currentCode);
+}
+
+void flushLed() {
+  uint64_t now = currentCode;
+
+  for(int i=0; i&lt;6; i++) {
+    lc.setChar(0, i, now % 10, 0);
+    now /= 10;
+  }
+}
+
+void setup() {
+  Serial.begin(9600);
+  Serial.print("\n\n\n\n\n[Starting]\n");
+
+  lc.shutdown(0,false);
+  lc.setIntensity(0,1);
+  lc.clearDisplay(0);
+
+  calcByteSecret();
+
+
+  WiFi.begin(ssid, password);
+
+  Serial.print("Connect to WiFi");
+
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+    Serial.print ( "." );
+  }
+
+  Serial.print("\nIP: ");
+  Serial.println(WiFi.localIP());
+
+  timeClient.begin();
+  Serial.print("\n\n\n\n\n[Start OK]\n");
+}
+
+void loop() {
+  timeClient.update();
+  uint64_t timestamp = timeClient.getEpochTime();
+  Serial.printf("timestamp: %llu, counter=%llu\n", timestamp, timestamp / 30);
+
+  calcHotp(timestamp / 30);
+
+  flushLed();
+  delay(200);
+}</code></pre><p></p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/embedded/index.html">embedded</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../stm8-ws2812b/index.html">用 STM8 控制 WS2812B LED</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-24">24 Nov 2022</time> –
+                                        9 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../lilac-pcb/index.html">Lilac 战队纪念：PCB 尺</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-12-30">30 Dec 2021</time> –
+                                        3 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../control-leds-by-74ls595/index.html">用74LS595控制8个LED</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-05-26">26 May 2021</time> –
+                                        10 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/embedded/index.html">See all 3 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-embedded ">
+
+    <a class="post-card-image-link" href="../stm8-ws2812b/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/11/output-1.jpg 300w,
+                    ../content/images/size/w600/2022/11/output-1.jpg 600w,
+                    ../content/images/size/w1000/2022/11/output-1.jpg 1000w,
+                    ../content/images/size/w2000/2022/11/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/11/output-1.jpg"
+            alt="用 STM8 控制 WS2812B LED"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../stm8-ws2812b/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">embedded</div>
+                <h2 class="post-card-title">用 STM8 控制 WS2812B LED</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-24">24 Nov 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="../fuzzing101-wp-5/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/11/output.jpg 300w,
+                    ../content/images/size/w600/2022/11/output.jpg 600w,
+                    ../content/images/size/w1000/2022/11/output.jpg 1000w,
+                    ../content/images/size/w2000/2022/11/output.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/11/output.jpg"
+            alt="Fuzzing101-5：LibXML2"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../fuzzing101-wp-5/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-5：LibXML2</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>LibXML2 栈溢出漏洞 CVE-2017-9048 的挖掘和复现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-02">2 Nov 2022</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

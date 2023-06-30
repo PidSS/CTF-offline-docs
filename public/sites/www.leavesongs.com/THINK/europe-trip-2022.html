@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>2022年欧洲游记 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;text=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;title=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;is_video=false&amp;description=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0&amp;body=Check out this article: https%3A//www.leavesongs.com/THINK/europe-trip-2022.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;title=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;title=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;title=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;title=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/THINK/europe-trip-2022.html&amp;name=2022%E5%B9%B4%E6%AC%A7%E6%B4%B2%E6%B8%B8%E8%AE%B0&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">2022年欧洲游记</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2022年11月2日 00:28" itemprop="datePublished">
+                  2022 十一月 02 00:28
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：23309
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/THINK.html">心得与体会</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/%E6%B8%B8%E8%AE%B0.html">游记</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>这篇文章记录了我和三个小伙伴在法国、瑞士旅行的经历。</p>
+<p>我大概是在今年7月做了去欧洲旅行的计划，说是“计划”也不太贴切，只是几个朋友搜了一下比较合适的机票以后，就决定要来了。类似的“计划”之前也发生过，有时候甚至是买好机票才喊人，不得不说我的很多决定是草率的，但这就是我。</p>
+<h2 id="_1"><a class="toclink" href="#_1">准备</a></h2>
+<p><strong>签证</strong></p>
+<p>由于这次旅行是放在新加坡公共假期“屠妖节”的那一个礼拜（10月底），所以我就在8月份去申请了签证。</p>
+<p>我们的第一目的地是法国，申请申根签证使用了网上介绍比较多的途径——<a href="https://visa.vfsglobal.com/sgp/en/fra" target="_blank">VFS</a>，这是一个签证代理机构，很多大使馆把签证业务放到这家，法国也不例外。我不清楚是否可以直接去大使馆申请，但在VFS申请的成本非常高，整个流程下来我花了200新币左右。</p>
+<p>申请签证的过程中需要购买保险，如果使用新加坡本地的保险费用会比较贵，更好的选择是在<a href="https://www.insubuy.com/" target="_blank">insubuy</a>平台上挑选保险。这是一个美国的保险聚合平台，可以进行比价，美国保险公司也比较便宜，8天只花了8美刀。</p>
+<p>值得注意的是，如果我们要申请法国签证，需要从法国入境并且将其作为核心旅行地。由于我们旅程里瑞士比法国多一天，所以我不得不在提交申请材料的当天按照工作人员的要求多定了一天法国酒店（tip：请找可以全款退订的酒店）。</p>
+<p>VFS的工作人员会仔细检查我们提交的材料后才交给法国大使馆工作人员，所以按照他们的要求来做多半不会有太大问题，大概一个礼拜就左右申根签证就办好寄到家里来了，十分顺利。</p>
+<p><strong>衣服</strong></p>
+<p>众所周知新加坡是一个赤道国家，一年四季都穿短袖，所以去欧洲我们是需要准备长裤长袖的。</p>
+<p>好在我还有一些北京冬天时穿的衣服，所以没买新衣服。实际上如果不上阿尔卑斯山的话，10月的欧洲温度都在十几度，春装长袖就可以了；如果要上雪山，就得带一件冲锋衣或羽绒服，山顶温度在0度左右。</p>
+<p>这个季节法德的温度还比较舒适，但我一到地方就犯咽炎和鼻炎，回新加坡又好了，属实是有点水土不服了。</p>
+<p><strong>sim卡</strong></p>
+<p>这次行程里稍显仓促的是sim卡，我直到出发前一个礼拜才想起来要买欧洲的电话卡。因为我的手机是国行iPhone，所以只能使用实体sim卡，我在Shopee上花20新币买了一张10G流量的月卡。</p>
+<p>好在快递速度很快，三天左右就寄到家里来了。</p>
+<p>此时我十分羡慕我那三个土豪朋友，他们都换了新加坡的iPhone，支持esim卡，只需要在网上花5分钟购买并激活就可以直接使用了，非常方便。🍋</p>
+<h2 id="_2"><a class="toclink" href="#_2">出发</a></h2>
+<p><strong>机场</strong></p>
+<p>周五下班我们出发去机场，本来以为已经拥有了申根签就可以非常快速的通过海关，没想到在打印登机牌的时候被审查了将近半个小时。</p>
+<p>不知道是我们拿着中国护照还是什么原因，机场工作人员捧着我们的材料反反复复查看，仔细盘问我们出行的目的以及行程安排，就差拿显微镜挨个分子检查了。好在我们的材料没有任何问题，目的也很单纯，最后顺利打好登机牌。</p>
+<p><strong>长途飞机</strong></p>
+<p>我们的飞机是法航经济舱，新加坡直达巴黎，需要大约13个小时的路程。这也是我第一次坐长途飞机，做好了充足的思想准备，多花了几十欧元选了前排的座位，充电宝靠枕毛毯一应俱全。</p>
+<p>实际上整趟行程比我想象中要轻松一点，中途睡了大概6个小时。</p>
+<p>飞机上有免费的wifi，但体验下来连聊天都有点费劲。如果不差钱，可以买18欧或30欧的高级别套餐，据称速度可以刷twitter或者tiktok，但我也没测试过，如果有体验过的读者可以告诉我这个价格是否值得。</p>
+<p>我是推荐没带娱乐设施的朋友尝试一下高速wifi，毕竟30欧相比于1000多的机票来说也只是九牛一毛了。</p>
+<p>我是带了之前办信用卡送的switch，宝可梦阿尔宙斯陪我度过了一段美妙的时光。不过，如果你的游戏是下载版，那么打开游戏的时候会需要联网验证，务必在有网络的地方开启游戏，否则你的switch就白带了。</p>
+<p>最后，不得不称赞一下法航的飞机餐，实实在在的大块炖牛肉，甜点和黄油也非常好吃：</p>
+<p><a href="../media/attachment/2022/11/02/d88011dd-ed2e-4ba5-9e46-d07aade15918.png"><img alt="image-20221101023150913.png" src="../media/attachment/2022/11/02/d88011dd-ed2e-4ba5-9e46-d07aade15918.28d50db3d32f.png" /></a></p>
+<p>如果做评比的话，法航这顿饭应该是这两年最满意的一次飞机餐；而回程的荷兰航空飞机餐是这两年最差的一顿，形成了鲜明对比。</p>
+<p><strong>时差</strong></p>
+<p>法国和新加坡时差是-6个小时，对于生命中暂时借来的这6个小时，我全部释放到第一天的行程里了。</p>
+<p>下飞机时才是当地时间早上7点不到，我们打了车来到酒店办理了入住。幸运的是当时正好有空房，我的房间在一个小院子里，人们在里面吃着早餐聊着天，有些嘈杂但也充满烟火气息。</p>
+<p><a href="../media/attachment/2022/11/02/e6777542-9a86-4adf-9e28-250acd583e1a.png"><img alt="image-20221101024135565.png" src="../media/attachment/2022/11/02/e6777542-9a86-4adf-9e28-250acd583e1a.6bda85db5736.png" /></a></p>
+<p>由于在飞机上刚睡醒没多久，当天我格外精神，放好行李我们就出门逛市区了，我们计划的第一站是埃菲尔铁塔。</p>
+<h2 id="_3"><a class="toclink" href="#_3">法国</a></h2>
+<p><strong>巴黎地铁</strong></p>
+<p>很快，我们就在地铁站体验到了第一个“法国特色”😂。</p>
+<p>下到地铁站正在买票的时候，就见一个黑人小哥从我们身边飘过，直接冲向闸机，动作敏捷地双手一撑飞跃而去，这速度刘翔看了都要自愧不如，而闸机旁边就是人工窗口，工作人员对此充耳不闻。</p>
+<p>扶起下巴，我们几个还是乖乖买了地铁票，巴黎地铁和我2014年第一次去北京时有点像，买完单程票可以随便坐，票价是1.9欧元。</p>
+<p>在巴黎的三天，我们坐的地铁大部分是没有电梯的，站台和列车也比较陈旧，有点像二战时期的防空洞。</p>
+<p><a href="../media/attachment/2022/11/02/54ef15ec-7daf-4f5f-a5d0-2273204aa909.png"><img alt="image-20221101025811293.png" src="../media/attachment/2022/11/02/54ef15ec-7daf-4f5f-a5d0-2273204aa909.435ad360df5b.png" /></a></p>
+<p>不同肤色的人，坐在狭窄的列车车厢里，有人戴着耳机听歌，有人翻着巴掌大的小书，有人斜倚在窗前，静静地看着窗外。列车摇晃着前行，有点像电影里的一些画面，穿梭时间来到我眼前。</p>
+<p><strong>埃菲尔铁塔</strong></p>
+<p>出地铁走了一小段路，就隐约看见不远处的塔尖，这座一百多年历史的法国最高建筑慢慢地除去了她的面纱。</p>
+<p>很难想象，一个国家的最高建筑是在上上个世纪落成的。当时的欧洲仍是世界科技中心，第二次工业革命正如火如荼地进行，无数的发明创造在世博会上展出，富有创造力的科学家们像物种大爆炸一样诞生在这片大陆。人们自以为已经掌握了这个世界上所有的物理规律，那正是一个熠熠生辉的时代。</p>
+<p><a href="../media/attachment/2022/11/02/1777f3d5-7c21-4683-aa08-e580491471cd.png"><img alt="image-20221101032701877.png" src="../media/attachment/2022/11/02/1777f3d5-7c21-4683-aa08-e580491471cd.1df835acea24.png" /></a></p>
+<p>有时候感觉，我生活里的历史，不是沉寂5000年的金字塔，不是横亘2200年的万里长城，也不是飘零异教600年的圣索菲亚大教堂。这段历史可能只有短短100多年，却是照亮芝加哥世博会的灯光，是意外飘落在培养皿里的青霉孢子，是走进千家万户的冯洛伊曼架构。</p>
+<p>埃菲尔铁搭广场前有很多拿着笔让你签名的人，多半是在酝酿着什么阴谋，我们匆匆走过，没有搭理。伟大和卑鄙的交织，才会更加让人唏嘘。</p>
+<p><strong>塞纳河</strong></p>
+<p>走过了埃菲尔铁搭，前面就是塞纳河。</p>
+<p>我们在塞纳河畔找了一家咖啡馆，吃了我们在巴黎的第一餐，牛排有点柴，不是我的菜。那几天我们在巴黎探访了好多家街边的咖啡馆，总体来说味道还不错，当地人好像都喜欢面朝街并排而坐，享用一顿美食或一杯咖啡，度过一个悠闲的下午。</p>
+<p>如果沿着塞纳河步行或坐船，我们可以看到巴黎许多人文景观。巴黎不是我理解的那种古城，但就是可以在随便地一瞥时发现一块独特的风景，很多少年时期耳熟能详的地名也能在我们散步的下一刻出现在眼前。</p>
+<p><a href="../media/attachment/2022/11/02/850f9611-a6f5-4dcf-8e69-f81a645d47a7.png"><img alt="image-20221101233350352.png" src="../media/attachment/2022/11/02/850f9611-a6f5-4dcf-8e69-f81a645d47a7.6b7256b736fe.png" /></a></p>
+<p>（图为在塞纳河游船上观看正在修缮的巴黎圣母院）</p>
+<p><strong>蒙帕纳斯公墓</strong></p>
+<p>由于埃菲尔铁塔人太多，我们也没有上去凑热闹，倒是跑到不远处的蒙帕纳斯大楼上鸟瞰整座巴黎的风景。</p>
+<p><a href="../media/attachment/2022/11/02/1d66641e-6820-4e82-ab6b-fa0300382dfc.png"><img alt="image-20221101234138188.png" src="../media/attachment/2022/11/02/1d66641e-6820-4e82-ab6b-fa0300382dfc.4ff0ce4fd195.png" /></a></p>
+<p>蒙帕纳斯大楼是巴黎唯一的摩天大楼，但本地人都嫌其建的丑，以至于在大楼完工后两年就通过了禁止在巴黎市中心兴建摩天大楼的法律。也得益于此，我们登顶后就可以享受全巴黎最美的视野（因为看不到自己），也是十分有趣了。</p>
+<p>大楼不远处有一片闹中取静的地方，蒙帕纳斯公墓。</p>
+<p>公墓初建在1825年，漫步在其中，可以看到很多19世纪的墓碑，有些字迹已经模糊不清了，但他们就静静地躺在那里，接受着无数游客的驻足与拜谒。</p>
+<p>欧洲人的生死观和我们好像有些不同，他们会把墓地建立在繁华的市区，建立在每天路过的教堂旁，好像人的死亡只是一件再普通不过的小事。对于普通人是这样，对于无数名人也不例外，这里安葬着莫泊桑、庞加来、杜拉斯，对我来说是一些熟悉又陌生的名字。</p>
+<p>高中时只因为一本书的第一句话而喜欢上杜拉斯的《情人》：</p>
+<blockquote>
+<p>我已经老了，有一天，在一处公共场所的大厅里，有一个男人向我走来。他主动介绍自己，他对我说：“我认识你，永远记得你。那时候你还很年轻，人人都说你美。现在，我是特为来告诉你，对我来说，我觉得现在你比年轻的时候更美，那时你是年轻女人，与你那时的面貌相比，我更爱你现在备受摧残的面容。“</p>
+</blockquote>
+<p>其实那个时候我是看不懂《情人》的，我知道我直到现在也看不懂。也许70岁的杜拉斯仍然会因为15岁的爱情而文思泉涌，但我的少年时代可能只是因为一次简单的悸动就深陷其中无法自拔。</p>
+<p>相比起来，莫泊桑的小说我并没有读过，但印象很深的是贺炜在2016年欧洲杯上说的那段经典评论：</p>
+<blockquote>
+<p>对法国人来讲，也许他们会明白莫泊桑的一句话，“生活可能不像你想象的那么好，但是也不会像你想象的那么糟”。人的脆弱和坚强都超乎了自己的想象，有时候可能脆弱的一句话就泪流满面，有时候你发现自己咬着牙，已经走过了很长的路。</p>
+</blockquote>
+<p><a href="../media/attachment/2022/11/02/dcc8e457-8f5a-4a3b-80d5-f0141a6dc225.png"><img alt="image-20221101035500574.png" src="../media/attachment/2022/11/02/dcc8e457-8f5a-4a3b-80d5-f0141a6dc225.7a59c49d930a.png" /></a></p>
+<p>静静坐在夕阳下的墓园里，阳光打在《莫泊桑短篇小说集》的扉页上时，你会感受到这专属于法国人的浪漫。</p>
+<p><strong>凯旋门</strong></p>
+<p>第一天时间过得格外漫长，夕阳西落以后我们离开蒙帕纳斯，据说巴黎的治安不是特别好，所以我们晚上就回到酒店，早早休息。</p>
+<p>第二天是漫无目的的逛吃时间，下午来到香榭丽舍大街和凯旋门。</p>
+<p>拿破仑是少有的通过战功登上皇帝位的欧洲人之一，当时的凯旋门是法兰西第一帝国战功赫赫的标志。而200年后，凯旋门早已不属于这位皇帝，法国人的荣耀与自豪停留在了第一次世界大战后，现在的凯旋门下仍然只燃烧着一战的纪念焰火。</p>
+<p><a href="../media/attachment/2022/11/02/07d967ee-044e-46ce-a119-188d020ba7cd.png"><img alt="image-20221102004705508.png" src="../media/attachment/2022/11/02/07d967ee-044e-46ce-a119-188d020ba7cd.37121e201710.png" /></a></p>
+<p><strong>卢浮宫</strong></p>
+<p>第三天主要的活动就是卢浮宫，我们提前一个星期定了卢浮宫的门票，当天早上兴冲冲地来到了这座巨大无比的博物馆。</p>
+<p>我们去的那天上午下了一点小雨，博物馆入口的透明金字塔前排满了人，于是我们跑到旁边的一处写着“团体票入口”的地方，给工作人员看了我们的票，也顺利进去了，比较幸运。</p>
+<p>在北京时，我去过好几次故宫，故宫的大，在于其大殿、广场与中式的楼阁亭宇；而卢浮宫的大，就是这座建筑本身实在太过庞大。沿着既定的路线穿梭在每个馆间，全部走完一遍脚也基本上要废了。</p>
+<p>我比较游客的打卡了一些著名的艺术品和宫殿，其中印象比较深刻的是两个场景。一个老爷爷，坐在小板凳上认真地临摹前方的浮雕：</p>
+<p><a href="../media/attachment/2022/11/02/38f7f8f1-1067-4780-92ec-d07bd0786392.png"><img alt="image-20221102012422978.png" src="../media/attachment/2022/11/02/38f7f8f1-1067-4780-92ec-d07bd0786392.ec7b0b4c5314.png" /></a></p>
+<p>一群学生，盘腿围在老师周围作画：</p>
+<p><a href="../media/attachment/2022/11/02/2eee5789-8afe-4b51-a36c-97384e78fb09.jpg"><img alt="" src="../media/attachment/2022/11/02/2eee5789-8afe-4b51-a36c-97384e78fb09.f1f7022f9c75.jpg" /></a></p>
+<p>可能这就是艺术的传承。</p>
+<h2 id="_4"><a class="toclink" href="#_4">瑞士</a></h2>
+<p><strong>苏黎世</strong></p>
+<p>如果说法国的文化气息像一个物种繁多的热带雨林，那么瑞士就像一片贫瘠的沙漠，一望无际的沙漠。但瑞士也有自己无法超越的魅力，那就是大自然风光。</p>
+<p>第四天我们就离开了巴黎，坐一小段飞机去苏黎世。在飞机上可以看到远处的阿尔卑斯山，近处的草场、村镇、森林与峡谷，那是我第一次见这样的风景。</p>
+<p><a href="../media/attachment/2022/11/02/1a0eea45-4af9-4094-adc9-6738ffb966d7.png"><img alt="image-20221102013939086.png" src="../media/attachment/2022/11/02/1a0eea45-4af9-4094-adc9-6738ffb966d7.b864dd0e7f02.png" /></a></p>
+<p>也许是高昂的物价，我总觉得相比于巴黎，苏黎世才是真正的资本主义都市，上到名表珠宝，下到酒店餐馆，这边的消费都刺激着我来自社会主义的钱包。据我的分析，巴黎虽然有雍容华贵的香榭丽舍大街，但也有大量接纳平民的小巷、超市和咖啡厅；而苏黎世属于贵的平均，无论去到哪都是贵，这也侧面反应了瑞士联邦的贫富差距。</p>
+<p>我们在瑞士租了一辆车，穿梭于草原与山间。在新加坡这种高度现代化的城市生活久了，已经快忘记乡村是什么样的，但是乡村很容易给人一种千篇一律的感觉，这个问题不管是在中国还是瑞士都是一样。</p>
+<p><a href="../media/attachment/2022/11/02/affd3c3d-889b-4208-8bfb-27b8201cb0c7.png"><img alt="image-20221102020804173.png" src="../media/attachment/2022/11/02/affd3c3d-889b-4208-8bfb-27b8201cb0c7.2f7b011b8d1c.png" /></a></p>
+<p>来到市区，去了爱因斯坦的母校苏黎世联邦理工。校园位于一个小山上，站在主楼的广场前可以俯瞰大半个苏黎世城，这是一座不大的城市。</p>
+<p><a href="../media/attachment/2022/11/02/5cbcde64-78a5-4c06-ba55-bdf97ef5604c.png"><img alt="image-20221102021440136.png" src="../media/attachment/2022/11/02/5cbcde64-78a5-4c06-ba55-bdf97ef5604c.44ed5e3889f2.png" /></a></p>
+<p>苏黎世是德语区，食物也偏德国菜系。经过我们几个的多次尝试，我愿意称瑞士是美食的荒漠，基本上在瑞士的4天里没有吃到特别满意的食物，相比于法国菜确实有不少差距。</p>
+<p><strong>阿尔卑斯</strong></p>
+<p>在苏黎世呆了两天后，我们就驱车来到瑞士的首都伯恩，这里毗邻阿尔卑斯山，虽然是首都，但比苏黎世还小得多。我们此行的目的地就是阿尔卑斯山，也算是圆了儿时的一个小梦想。</p>
+<p>还记得小时候特别喜欢的一本书叫《海蒂》，那是我第一次了解到阿尔卑斯山，书里描写的自然风光就像个放映机，不停地将定格的文字拼凑成动画——海蒂坐着雪橇滑翔在阿尔卑斯山脉间。</p>
+<p>成长可能就是一个不断实现梦想的过程，而代价就是金钱。</p>
+<p>为了上到少女峰顶，我们要为缆车和小火车付192瑞士法郎，差不多是1400人民币。一个tip就是，如果在淘宝等国内的平台购买，可能会便宜一点，可以事先做好攻略。</p>
+<p><a href="../media/attachment/2022/11/02/de6707a0-048d-403e-a72b-3ff046c508ac.png"><img alt="image-20221102024125191.png" src="../media/attachment/2022/11/02/de6707a0-048d-403e-a72b-3ff046c508ac.8881edf371a1.png" /></a></p>
+<p>在缆车翻过一个山头以后，就来到了雪山脚下，再坐火车来到少女峰山顶，第一次体验欧洲屋脊的感觉。</p>
+<p>海拔虽然只有3000多米，但已经有点呼吸不畅。站在山顶观景台上，一侧是一望无际的绵延山脉，一侧是皑皑白雪，几只孤独的黄嘴山鸦盘旋在山顶，偶尔落在身边，被我抓拍了下来。</p>
+<p><a href="../media/attachment/2022/11/02/3aa0889f-21fd-40b0-95fa-b102ebe792d8.png"><img alt="image-20221102024601798.png" src="../media/attachment/2022/11/02/3aa0889f-21fd-40b0-95fa-b102ebe792d8.9fb145dc27e1.png" /></a></p>
+<p>在山顶会发现有不少华人游客，即使在现在中国大陆有严格的新冠隔离政策的情况下也是如此，这可能就是中国人与生俱来山水情节。这种情节来自于李白的“且放白鹿青崖间”，来自于杜甫的“窗含西岭千秋雪”，来自于柳宗元的“千山鸟飞绝”，它们不会因人在异国而改变。</p>
+<p><a href="../media/attachment/2022/11/02/fd24e584-ca55-4d6b-8eb0-8556a1e316b6.png"><img alt="image-20221102025137320.png" src="../media/attachment/2022/11/02/fd24e584-ca55-4d6b-8eb0-8556a1e316b6.3ffdb1a8be9c.png" /></a></p>
+<h2 id="_5"><a class="toclink" href="#_5">返程</a></h2>
+<p>下了山，发现我们的车被一个破拖拉机堵住了，车窗上用涂改液写的“No Parking”。原来是旁边的修车铺，一个大黄胡子老哥声称这片地是他们的，最后他直接伸手要钱，给了20瑞士法郎才把拖拉机开走。</p>
+<p>与之相比，后来在德国火车站，我们因为看不懂德语在站台耽搁了很久，一对德国夫妻主动上前问我们是否需要帮助，并且一路带我们来到了目的地，也算是旅途中的一段对比吧。</p>
+<p>沿着海蒂走过的路线，我们最后一天坐火车来到法兰克福，我们需要在法兰克福坐飞机中转阿姆斯特丹最后返回新加坡。</p>
+<p>法兰克福足球俱乐部今年拿到欧联冠军，记忆犹新的一个画面是对巴萨的那场比赛，法兰克福球迷将诺坎普变成了白色的海洋。</p>
+<p>这次来法兰克福也是现场体会到球迷的疯狂，本来我们预留了充裕的时间，想要早点去机场休息室吃点饭。结果4个人堵在地铁站一个小时，硬是没搭上去机场的火车——原因是去法兰克福球场也是坐同一班车。</p>
+<p>最后实在等不及，我们打了出租车才去了机场，虽然有点焦虑，总算还是顺利。</p>
+<p>返程的那天，我们匆匆经过了4个国家，瑞士、德国、荷兰和新加坡。世界上还有太多没有去过的国家，没有见过的风景，希望在未来几年里，能够慢慢填上这张地图：</p>
+<p><a href="../media/attachment/2022/11/02/54400707-24c4-49ee-b65e-214843e6c05b.png"><img alt="[神奇海螺][全球制霸]3hthf.png" src="../media/attachment/2022/11/02/54400707-24c4-49ee-b65e-214843e6c05b.d9e1e11d9caa.png" /></a></p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-4523">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">木木</a>
+                    <time datetime="2023年6月26日 15:02" itemprop="datePublished">
+                      2023 六月 26 15:02
+                    </time>
+                    <a href="javascript:reply_to('4523', '%E6%9C%A8%E6%9C%A8')">回复</a>
+                  </p>
+                  <p class="comment-meta">虽然物价对比不出什么，但是还是觉得很高昂</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-4033">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">k</a>
+                    <time datetime="2022年12月5日 21:35" itemprop="datePublished">
+                      2022 十二月 05 21:35
+                    </time>
+                    <a href="javascript:reply_to('4033', 'k')">回复</a>
+                  </p>
+                  <p class="comment-meta">看得思绪万千</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3984">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/fcc2980227906d85159ad581a4286e81.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Natsuki</a>
+                    <time datetime="2022年11月9日 21:44" itemprop="datePublished">
+                      2022 十一月 09 21:44
+                    </time>
+                    <a href="javascript:reply_to('3984', 'Natsuki')">回复</a>
+                  </p>
+                  <p class="comment-meta">有生之年也想这样玩一次</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3983">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">dedecms</a>
+                    <time datetime="2022年11月8日 18:30" itemprop="datePublished">
+                      2022 十一月 08 18:30
+                    </time>
+                    <a href="javascript:reply_to('3983', 'dedecms')">回复</a>
+                  </p>
+                  <p class="comment-meta">真漂亮啊</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3981">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">debade</a>
+                    <time datetime="2022年11月3日 15:18" itemprop="datePublished">
+                      2022 十一月 03 15:18
+                    </time>
+                    <a href="javascript:reply_to('3981', 'debade')">回复</a>
+                  </p>
+                  <p class="comment-meta">第一<br>重点总结：埃菲尔铁塔-&gt;公墓-&gt;凯旋门-&gt;卢浮宫-&gt;苏黎世联邦理工-&gt;阿尔卑斯</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-4029">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">userxss</a>
+                    <time datetime="2022年11月26日 12:26" itemprop="datePublished">
+                      2022 十一月 26 12:26
+                    </time>
+                    <a href="javascript:reply_to('4029', 'userxss')">回复</a>
+                  </p>
+                  <p class="comment-meta">@debade 你是课代表</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="12633e220977fb48e8726ac2278d483262266954" />
+</div><div class="col-6">
+<img src="../captcha/image/12633e220977fb48e8726ac2278d483262266954/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="488" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="RdERC0CGwJmThiaDAdjE8lfTspUmYHPTDL2Ia5dpU5ACPQY1Cegp5OiYNMbxxj1b">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

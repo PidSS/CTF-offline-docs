@@ -1,0 +1,78 @@
+<!DOCTYPE html><html><head>
+<title>XPath 3.1 / XQuery 3.1 / CSS 3 Selector / JSONiq Online Tester</title>
+<meta name="description" content="Here you can run an XPath/XQuery 3.1 query against some HTML/XML/JSON data. It supports standard queries and extensions like JSONiq or pattern matching.">
+<link rel="stylesheet" href="https://videlibri.sourceforge.net/codemirror/codemirror.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="https://www.videlibri.de//cgi.css" />
+<link rel="canonical" href="https://www.videlibri.de/cgi-bin/xidelcgi" />
+<meta charset="utf-8" /> 
+<script src="https://www.videlibri.de//cgi.js"></script>
+</head><body onload="init()">
+<h1>Pattern matching / XPath 3.1 / XQuery 3.1 / CSS 3 Selector Online Tester</h1>
+(You can find the documentation below)<br><br>
+<form method="POST" action="xidelcgi.html">
+<div id="html"><div class="pretextoptions">HTML/XML/JSON-Input file: <select name="input-format"/><option value="auto" selected>auto</option><!-- auto --><option value="html">html</option><!-- auto --><option value="xml">xml</option><!-- auto --><option value="xml-strict">xml-strict</option><!-- auto --><option value="json">json</option><!-- auto --></select> </div><textarea name="data" rows="18" cols="80"  >&lt;html&gt;&lt;body&gt;&#xD;
+&lt;table id=&quot;t1&quot;&gt;&lt;tbody&gt;&#xD;
+&lt;tr&gt;&lt;td&gt;Hello&lt;/td&gt;&lt;/tr&gt;&#xD;
+&lt;/tbody&gt;&lt;/table&gt;&#xD;
+&lt;table id=&quot;t2&quot;&gt;&lt;tbody&gt;&#xD;
+&lt;tr&gt;&lt;td&gt;123&lt;/td&gt;&lt;td&gt;other&lt;/td&gt;&lt;/tr&gt;&#xD;
+&lt;tr&gt;&lt;td&gt;foo&lt;/td&gt;&lt;td&gt;columns&lt;/td&gt;&lt;/tr&gt;&#xD;
+&lt;tr&gt;&lt;td&gt;bar&lt;/td&gt;&lt;td&gt;are&lt;/td&gt;&lt;/tr&gt;&#xD;
+&lt;tr&gt;&lt;td&gt;xyz&lt;/td&gt;&lt;td&gt;ignored&lt;/td&gt;&lt;/tr&gt;&#xD;
+&lt;/tbody&gt;&lt;/table&gt;&#xD;
+&lt;/body&gt;&lt;/html&gt;</textarea></div>
+<div id="template"><div class="pretextoptions" style="position:relative"><div style="position: absolute; bottom: 5px"><input type="radio" name="extract-kind" value="template" onclick="changeexample('template', '&lt;!--\n   example for pattern matching\n   (finding one table with all its rows)\n--&gt;\n&lt;table id=&quot;t2&quot;&gt;\n&lt;tr&gt;&lt;td&gt;{$col:=.}&lt;/td&gt;&lt;/tr&gt;+\n&lt;/table&gt;'); update();"/> Pattern matching<input type="radio" name="extract-kind" value="xpath3.1" onclick="changeexample('xpath3.1', 'id(&quot;t2&quot;) / tbody / tr / td[1]'); update();"/> XPath 3.1<input type="radio" name="extract-kind" value="xquery3.1" onclick="changeexample('xquery3.1', 'xquery version &quot;3.1&quot;;\ndeclare function local:test($table as element()){\n  $table / tbody / tr / td[1]\n};\nlocal:test(id(&quot;t2&quot;))'); update();"/> XQuery 3.1<input type="radio" name="extract-kind" value="css" onclick="changeexample('css', '#t2 tr td:first-child'); update();"/> CSS 3.0 selectors<input type="radio" name="extract-kind" value="auto" checked onclick="changeexample('auto', '&lt;!--\n   example for pattern matching\n   (finding one table with all its rows)\n--&gt;\n&lt;table id=&quot;t2&quot;&gt;\n&lt;tr&gt;&lt;td&gt;{$col:=.}&lt;/td&gt;&lt;/tr&gt;+\n&lt;/table&gt;'); update();"/> Autodetect</div></div>
+<textarea name="extract" rows=18 cols=80 >
+<!--
+   example for pattern matching
+   (finding one table with all its rows)
+-->
+<table id="t2">
+<tr><td>{$col:=.}</td></tr>+
+</table>
+</textarea></div>
+<br><br><input type="submit"> <input type="checkbox" name="no-auto-update" value="true"/> disable auto refresh <span ><input type="checkbox" name="no-highlighting" value="true"/> disable syntax highlighting</span>
+<br><span class="options"><b>Output Options</b>: 
+Node format:: <select name="printed-node-format"/><option value="text">text</option><!--  --><option value="xml">xml</option><!--  --><option value="html">html</option><!--  --></select> Output format:: <select name="output-format"/><option value="adhoc" selected>adhoc</option><!-- adhoc --><option value="html">html</option><!-- adhoc --><option value="xml">xml</option><!-- adhoc --><option value="xml-wrapped">xml-wrapped</option><!-- adhoc --><option value="json-wrapped">json-wrapped</option><!-- adhoc --><option value="bash">bash</option><!-- adhoc --><option value="cmd">cmd</option><!-- adhoc --></select> 
+<input type="checkbox" name="print-type-annotations" value="true"/> Show types<input type="checkbox" name="hide-variable-names" value="true"/> Hide variable names
+<br><b>Compatibility</b>: <select name="compatibility"/><option value="Standard XQuery">Standard XQuery</option><!-- Enable all extensions --><option value="Standard XQuery+JSONiq">Standard XQuery+JSONiq</option><!-- Enable all extensions --><option value="Enable all extensions" selected>Enable all extensions</option><!-- Enable all extensions --><option value="Custom">Custom</option><!-- Enable all extensions --></select> <span id="compatibilityOptions"><input type="checkbox" name="no-extended-strings" value="true"/> Disable extended strings (e.g. x"{$varname}") <input type="checkbox" name="no-json" value="true"/> Disable JSONiq (e.g. {"a": 1}("a"))<input type="checkbox" name="no-json-literals" value="true"/> Disable JSONiq literals (true,false,null)<input type="checkbox" name="only-json-objects" value="true"/> Only JSON types in objects (e.g. {"a": null} != {"a": ()})&nbsp;&nbsp;&nbsp; Allow dot notation (e.g. {"a": 1}.a): : <select name="dot-notation"/><option value="off">off</option><!-- unambiguous --><option value="unambiguous" selected>unambiguous</option><!-- unambiguous --><option value="on">on</option><!-- unambiguous --></select> <input type="checkbox" name="strict-type-checking" value="true"/> Strict type checking<input type="checkbox" name="strict-namespaces" value="true"/> Strict namespaces<input type="checkbox" name="case-sensitive" value="true"/> case sensitive
+</span>
+</span>
+<br>Old languages: <input type="radio" name="extract-kind" value="xpath2" onclick="changeexample('xpath2', 'id(&quot;t2&quot;) / tbody / tr / td[1]'); update();"/> XPath 2.0<input type="radio" name="extract-kind" value="xpath3.0" onclick="changeexample('xpath3.0', 'id(&quot;t2&quot;) / tbody / tr / td[1]'); update();"/> XPath 3.0<input type="radio" name="extract-kind" value="xquery1" onclick="changeexample('xquery1', 'xquery version &quot;1.0&quot;;\ndeclare function local:test($table as element()){\n  $table / tbody / tr / td[1]\n};\nlocal:test(id(&quot;t2&quot;))'); update();"/> XQuery 1.0<input type="radio" name="extract-kind" value="xquery3.0" onclick="changeexample('xquery3.0', 'xquery version &quot;3.0&quot;;\ndeclare function local:test($table as element()){\n  $table / tbody / tr / td[1]\n};\nlocal:test(id(&quot;t2&quot;))'); update();"/> XQuery 3.0<br>
+<br>New languages: <input type="radio" name="extract-kind" value="xpath4.0" onclick="changeexample('xpath4.0', 'id(&quot;t2&quot;) / tbody / tr / td[1]'); update();"/> XPath 4.0<input type="radio" name="extract-kind" value="xquery4.0" onclick="changeexample('xquery4.0', 'xquery version &quot;3.1&quot;;\ndeclare function local:test($table as element()){\n  $table / tbody / tr / td[1]\n};\nlocal:test(id(&quot;t2&quot;))'); update();"/> XQuery 4.0<br>
+</form>
+<script src="https://videlibri.sourceforge.net/codemirror/codemirror-compressed-js-html-xml-css.js"></script>
+<script src="https://videlibri.sourceforge.net/codemirror/xquery/xquery.js"></script>
+<script src="https://videlibri.sourceforge.net/codemirror/jquery-1.9.1.js"></script>
+<script src="https://videlibri.sourceforge.net/codemirror/jquery-ui-1.10.2.custom.min.js"></script>
+<hr>
+Result of the above expression applied to the above input file:<br>
+<textarea id="result" rows="30" cols="100">
+col: 123
+col: foo
+col: bar
+col: xyz
+</textarea><br>
+<a id="permalink" href="https://www.videlibri.de/cgi-bin/xidelcgi?">permalink</a>, 
+<a id="rawpermalink" href="https://www.videlibri.de/cgi-bin/xidelcgi?raw=true&amp;">result-only</a>
+<br><br><br><hr>
+<h2>What is this about?</h2>
+Here you can test pattern matching, CSS 3 selectors, standard XPath/XQuery 3.1, and JSONiq expressions.<br>
+XPath, XQuery, and CSS Selectors are W3C standardized query languages. The new XPath versions, from XPath 2.0 on, should not be confused with the old XPath 1.0. While old XPath can only process sets of XML nodes, XPath 2 can process any kind of data sequence. Modern XPath is a Turing-complete functional programming language.<br>JSONiq was a proposed extension to XQuery to query JSON, but with XPath 3.1 supporting JSON, it is rarely needed.<br>Pattern matching (also called templates) is my own extension: every node in the pattern is searched in the input. The {} text nodes in the pattern contain XPath expressions that are evaluated with the result being assigned to variables.<br>
+It is a nearly standalone implementation of the standards into the Pascal Internet Tools library written for the VideLibri app.<br>
+<br>You can find more details in the corresponding Pascal unit documentation:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://benibela.de/documentation/internettools/xquery.TXQueryEngine.html">Documentation of the XQuery / XPath / CSS 3 selector implementation</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://benibela.de/documentation/internettools/extendedhtmlparser.THtmlTemplateParser.html">Documentation of the pattern syntax</a>.<br>
+<br>Other related links:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.videlibri.de/xidel.html">Xidel</a>, the command line version of this XQuery processor for web page downloading/scraping and any kind of XML/HTML/JSON processing.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.benibela.de/documentation/internettools/xqts.html">XQuery Test Suite Results</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.benibela.de/sources_en.html#internettools">Internet Tools library</a>, the Pascal library page.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://sourceforge.net/p/videlibri/code/ci/tip/tree/" rel="nofollow">Source repository</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/benibela/xidel" rel="nofollow">Github mirror (Xidel excluding library)</a>.<br>
+<script>lastQueryEditMode=""; 
+compatibilityOn = ["no-extended-strings;no-json;no-json-literals;only-json-objects;strict-type-checking;strict-namespaces;case-sensitive", "no-extended-strings;only-json-objects;strict-type-checking;strict-namespaces;case-sensitive", ""];
+compatibilityOff = ["", "no-json;no-json-literals", "no-extended-strings;no-json;no-json-literals;only-json-objects;strict-type-checking;strict-namespaces;case-sensitive"];
+compatibilityChange = ["dot-notation=off", "dot-notation=off", "dot-notation=unambiguous"];
+activateCodeMirrors(); </script>
+<div id="sf-logo"><a href="https://sourceforge.net/projects/videlibri"><img src="https://sflogo.sourceforge.net/sflogo

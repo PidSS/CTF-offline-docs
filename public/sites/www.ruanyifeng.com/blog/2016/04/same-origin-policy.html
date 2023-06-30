@@ -1,0 +1,3234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="Movable Type  5.2.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--link rel="stylesheet" href="http://www.ruanyifeng.com/blog/styles.css" type="text/css" /-->
+<link rel="start" href="http://www.ruanyifeng.com/blog/" title="Home" />
+<link rel="alternate" type="application/atom+xml" title="Recent Entries" href="http://feeds.feedburner.com/ruanyifeng" />
+<script type="text/javascript" src="http://www.ruanyifeng.com/blog/mt.js"></script>
+<script type="text/javascript" src="http://www.ruanyifeng.com/blog/advertisements.js"></script>
+<!--
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="http://www.ruanyifeng.com/blog/2008/04/who_will_feed_china.html">
+<dc:title>谁来养活中国？</dc:title>
+<dc:description> 1. 最近，世界粮价暴涨，达到了历史最高价，联合国秘书长说全球粮食危机已经爆发。...</dc:description>
+<dc:creator>阮一峰</dc:creator>
+<dc:date>2008-04-19T01:55:53+08:00</dc:date>
+<license rdf:resource="http://creativecommons.org/licenses/by-nc-nd/3.0/" />
+</Work>
+<License rdf:about="http://creativecommons.org/licenses/by-nc-nd/3.0/">
+</License>
+</rdf:RDF>
+-->
+
+<style>body {
+  background-color: #f5f5d5;
+}
+
+#container::before {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.1);
+  text-align: center;
+  content: "本站显示不正常，可能因为您使用了广告拦截器。";
+}
+
+</style>
+<script>
+function loadjscssfile(filename, filetype){
+    if (filetype=="js"){ //if filename is a external JavaScript file
+        var fileref=document.createElement('script')
+        fileref.setAttribute("type","text/javascript")
+        fileref.setAttribute("src", filename)
+    }
+    else if (filetype=="css"){ //if filename is an external CSS file
+        var fileref=document.createElement("link")
+        fileref.setAttribute("rel", "stylesheet")
+        fileref.setAttribute("type", "text/css")
+        fileref.setAttribute("href", filename)
+    }
+    if (typeof fileref!="undefined")
+        document.getElementsByTagName("head")[0].appendChild(fileref)
+}
+//loadjscssfile("http://www.ruanyifeng.com/blog/styles.css", "css");
+loadjscssfile('/static/themes/theme_scrapbook/theme_scrapbook.min.css', "css");
+
+
+function checker() {
+  if (/mobile|android/i.test(navigator.userAgent)) return; 
+  window.comments && window.comments.setAttribute("style", "!important");
+  // var img = document.querySelector('img[src^="http://www.ruanyifeng.com/blog/images"]');
+  var img = document.querySelector('a > img[src*="wangbase.com/blogimg/asset/"]');
+  var isAdblocker = (typeof adblock === 'undefined');
+  if (
+    /*isAdblocker || */
+    (img && window.getComputedStyle(img).display === 'none') ||
+    (img && window.getComputedStyle(img.parentElement).display === 'none')
+  ){
+    var sponsor = document.querySelector('#main-content');
+    var prompt = document.createElement('div');
+    prompt.style = 'border: 1px solid #c6c6c6;border-radius: 4px;background-color: #f5f2f0;padding: 15px; font-size: 14px;';
+    prompt.innerHTML = '<p>您使用了广告拦截器，导致本站内容无法显示。</p><p>请将 www.ruanyifeng.com 加入白名单，解除广告屏蔽后，刷新页面。谢谢。</p>';
+    sponsor.parentNode.replaceChild(prompt, sponsor);
+    // document.querySelector('#main-content').innerHTML = '';
+  }
+}
+
+setTimeout(checker, 1000);
+</script>
+
+
+    
+    <link rel="prev" href="http://www.ruanyifeng.com/blog/2016/03/performance-management.html" title="谷歌的绩效管理" />
+    <link rel="next" href="http://www.ruanyifeng.com/blog/2016/04/cors.html" title="跨域资源共享 CORS 详解" />
+    
+    <title>浏览器同源政策及其规避方法 - 阮一峰的网络日志</title>
+</head>
+<body id="scrapbook" class="mt-entry-archive one-column">
+<script>
+if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) document.body.classList.add('mobile');
+
+/*
+window.addEventListener('load', function(event) {
+  setTimeout(function () {
+    hab('#sup-post-2');
+    hab('#cre-inner');
+  }, 1000);
+});
+*/
+</script>
+    <div id="container">
+        <div id="container-inner">
+
+            <div id="header">
+    <div id="header-inner">
+        <div id="header-content">
+
+
+            <div id="header-name">阮一峰的网络日志 <span id="site_location"> » <a href="http://www.ruanyifeng.com/blog/" accesskey="1">首页</a></span><span id="site_archive"> » <a href="http://www.ruanyifeng.com/blog/archives.html">档案</a></span>
+</div>
+
+<div id="google_search">
+<!-- SiteSearch Google -->
+<form action="https://www.baidu.com/s" target="_blank" method="get" id="cse-search-box">
+  <div>
+  <input type="text" size="20" name="origin" class="searchbox" id="sbi" value="" />
+  <input type="hidden" name="wd" value="" />
+  <!--input type="image" src="/static/themes/theme_scrapbook/images/top_search_submit.gif" class="searchbox_submit" value="" alt="搜索" name="sa" onclick="this.form.wd.value = this.form.origin.value + ' inurl:www.ruanyifeng.com/blog'" /-->
+  <input type="image" src="http://www.ruanyifeng.com/static/themes/theme_scrapbook/images/top_search_submit.gif" class="searchbox_submit" value="" alt="搜索" name="sa" onclick="this.form.wd.value = this.form.origin.value + ' 阮一峰'" />
+</div>
+</form>
+
+<!-- SiteSearch Google -->
+</div>
+<div id="feed_icon">
+<a href="http://www.ruanyifeng.com/feed.html?utm_source=" title="订阅Feed">
+<!--img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAUzSURBVHjavFdbbFRVFF3nPjoz7dTWTittaW0jUDRAUqaNojyqREnEQKgfUj9MqqAmhqRt/OCD4CuY+Kckoh+aiGKC+gMJbdHoRysJ8dkhhmJLNdDKtJU+6GMK87j3Hs85d2Z6HzNtMYWb3Dn3NWftvfba+5xNYDl+e6Fkj6yqb/oDRbWq14vlPBLRKCITkxf0ROLt+hNjp1PPSRK4kA3vF1dXNRcWlyA2OQU9eos9opAkAiKxD+XkKO6t15aRWO7J/MgmAZU8MEgexgZHMX518Dh72sYMmVKShnxWuWHdHtxKIDIYTgMuDzgfmSOIQkYMpdUF8OY92Hytt4/jvkg47czzU16iQovM3QFwmNck+Yyduu7D6NA0Z6JR4THntFs9V4tWQg6Ui3s6MwKDncsFTnXKLJhDSeUK3AgPtyhccDzmVs999buRt/1Vm4i0od+hX7+MRG87jPGB/w1u8FPj9xEw7McVrnYuOCvtpjTth3J/nTg99c8LRhKhr6D3dTB5R24bXFwbMXBsyZzeoXaycEpJ95TB09AGX/NpqLVNtw8urnVzLvHjFNxiFqRy2OOHuqUVnue+ACkoWzo4O6lGzTmuHq6nPvY2m9rVqjrIK2rMEKxqyG5NPAKt+wjo0LklgfNxJkZMA3KJvqRUk3z5UFY3QH14P0h+WUY79HPvgv7VuSg4ZRGY1YgZgqXmORccF17sy2ehnf9AeO085K2HQFbtXBScj0LcpgF2cN+WV+DZ/LJQu6gD4R7oV7pBJwbSgtMvfiPoVp56DySwxm7EtkMs1WdAB7qzggsDJKQYsHucSkOudrkiCPWR/fA2nYCn8SNIK4NptSMyAu3sAdDRkIsJdfth0LzSrODUoPNZ4KI9SxJI5UHk7D4GdQfz2us31c7CoHMjRkKuDPHseCMrONVhNcDJwMJpKFVvg9L4OaTiNWm1x789KCqkrXhVBiEz0WYCT2nAzQAD1/vaETv1GrRfP4Vx5cfMNcDPwvP0h0DhanPym7OIf/+O67vcJ1/PCJ4KgdzaUP6Wz+dU+5yIL6fV+PsHGAOdwlPpvvUOyeeAVGyCdqkDNB6DPjsBSrnndfOGevOh3RhGItxvA+fX1CtbGFhgYUFkFMZPR6F1HnClHq8HyubWtJexX06CRmdt33hrd7nA7SFY4qoGpnYuOKcRykPPgDCBcsHx9Iv+fNL2PueBehCWUfYQIIMGLOCcOmXDXsh1+yCt35tUPfvzGFuSvzvoinXOxqa02qOhM6733nVP2MAdaej2XN11DPKjLZCD+yBvahGCo7JfTKAN9UD7s8Oe9zUNIhz8fWI8DG2k38WCFdxugANcXrvTVd1IEbuv3Jour7Hzn7jLMBNfKs7R3i67gRVrbeCOEDhinmWhAatsqdquM2XzHZINhK2cqTjHr/XZdVJUbgN3MWAVXKbSyg9jesRW2xP9di+lwrL5ojM3m2H/kG9hwcIA37c71W6wJdW2J2S5nrjYbq/t1AHAhJsKQeyfPvf6IMJgghPJhFZ4x0KlfLFvt22du45Au/A1SOlGc0P672XXwhLtOcM0kTTEMMd0qkVmMNXxMd/tsedUjInr4SQDgOfeXMSiN0FCL5WHah4L1qqYXPJOJlttd+a5M+YpcG5poLYKQ5f+6JJ4r8bbJYP47hq4r7QAs9PjYNhHJd4o8l5taiwuOpa7AS4XKqI/5NjJbTnaWK92nLdLuhQAJayRNMiygXPBeQN+Qbvu0zDc3y+aUzhbkGR73sI7ljvUnndx2q3t+X8CDAD66FtrIL864AAAAABJRU5ErkJggg==" alt="" style="border: 0pt none;" /-->
+<img src="https://wangbase.com/blogimg/asset/202107/bg2021072117.png" alt="" style="border: 0pt none;" />
+</a></div>
+
+        </div>
+    </div>
+</div>
+
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <div id="entry-1884" class="entry-asset asset hentry">
+                                <div class="asset-header">
+<div class="asset-nav entry-nav">
+
+<div class="entry-location">
+<ul>
+<li>上一篇：<a href="http://www.ruanyifeng.com/blog/2016/03/performance-management.html" title="谷歌的绩效管理">谷歌的绩效管理&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+<li>下一篇：<a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" title="跨域资源共享 CORS 详解">跨域资源共享&nbsp;CORS</a></li>
+</ul>
+</div>
+
+
+    
+                                    <div class="entry-categories">
+                                        <p>分类<span class="delimiter">：</span></p>
+                                        <ul>
+                                            <li><a href="http://www.ruanyifeng.com/blog/javascript/" rel="tag">JavaScript</a></li>
+                                        </ul>
+                                    </div>
+    
+
+
+                                            
+<div class="entry-location-mobile" style="float: right;">
+<ul>
+<li><a href="http://www.ruanyifeng.com/blog/2016/03/performance-management.html" title="谷歌的绩效管理">⇐&nbsp;</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" title="跨域资源共享 CORS 详解">&nbsp;⇒</a></li>
+</ul>
+</div>
+
+</div>
+</div>
+
+                          
+<article class="hentry">
+                                    <h1 id="page-title" class="asset-name entry-title">浏览器同源政策及其规避方法</h1>
+
+
+
+<div class="asset-meta">
+                                        
+
+                                            <p class="vcard author">作者： <a class="fn url" href="http://www.ruanyifeng.com">阮一峰</a></p>
+                                    <p>日期： <a href="http://www.ruanyifeng.com/blog/2016/04/"><abbr class="published" title="2016-04-08T22:02:48+08:00">2016年4月 8日</abbr></a></p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+                                
+                                <div class="asset-content entry-content" id="main-content">
+
+                                    <!-- div class="asset-body" -->
+                                        <p>浏览器安全的基石是"同源政策"（<a href="https://en.wikipedia.org/wiki/Same-origin_policy">same-origin policy</a>）。很多开发者都知道这一点，但了解得不全面。</p>
+
+                                    <!-- /div -->
+
+
+                                    <!-- div id="more" class="asset-more" -->
+                                        <p>本文详细介绍"同源政策"的各个方面，以及如何规避它。</p>
+
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016040801.jpg" alt="" title="" /></p>
+
+<h2>一、概述</h2>
+
+<h3>1.1 含义</h3>
+
+<p>1995年，同源政策由 Netscape 公司引入浏览器。目前，所有浏览器都实行这个政策。</p>
+
+<p>最初，它的含义是指，A网页设置的 Cookie，B网页不能打开，除非这两个网页"同源"。所谓"同源"指的是"三个相同"。</p>
+
+<blockquote>
+  <ul>
+<li>协议相同</li>
+<li>域名相同</li>
+<li>端口相同</li>
+</ul>
+</blockquote>
+
+<p>举例来说，<code>http://www.example.com/dir/page.html</code>这个网址，协议是<code>http://</code>，域名是<code>www.example.com</code>，端口是<code>80</code>（默认端口可以省略）。它的同源情况如下。</p>
+
+<blockquote>
+  <ul>
+<li><code>http://www.example.com/dir2/other.html</code>：同源</li>
+<li><code>http://example.com/dir/other.html</code>：不同源（域名不同）</li>
+<li><code>http://v2.www.example.com/dir/other.html</code>：不同源（域名不同）</li>
+<li><code>http://www.example.com:81/dir/other.html</code>：不同源（端口不同）</li>
+</ul>
+</blockquote>
+
+<h3>1.2 目的</h3>
+
+<p>同源政策的目的，是为了保证用户信息的安全，防止恶意的网站窃取数据。</p>
+
+<p>设想这样一种情况：A网站是一家银行，用户登录以后，又去浏览其他网站。如果其他网站可以读取A网站的 Cookie，会发生什么？</p>
+
+<p>很显然，如果 Cookie 包含隐私（比如存款总额），这些信息就会泄漏。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。</p>
+
+<p>由此可见，"同源政策"是必需的，否则 Cookie 可以共享，互联网就毫无安全可言了。</p>
+
+<h3>1.3 限制范围</h3>
+
+<p>随着互联网的发展，"同源政策"越来越严格。目前，如果非同源，共有三种行为受到限制。</p>
+
+<blockquote>
+  <p>（1） Cookie、LocalStorage 和 IndexDB 无法读取。</p>
+
+<p>（2） DOM 无法获得。</p>
+
+<p>（3） AJAX 请求不能发送。</p>
+</blockquote>
+
+<p>虽然这些限制是必要的，但是有时很不方便，合理的用途也受到影响。下面，我将详细介绍，如何规避上面三种限制。</p>
+
+<h2>二、Cookie</h2>
+
+<p>Cookie 是服务器写入浏览器的一小段信息，只有同源的网页才能共享。但是，两个网页一级域名相同，只是二级域名不同，浏览器允许通过设置<code>document.domain</code>共享 Cookie。</p>
+
+<p>举例来说，A网页是<code>http://w1.example.com/a.html</code>，B网页是<code>http://w2.example.com/b.html</code>，那么只要设置相同的<code>document.domain</code>，两个网页就可以共享Cookie。</p>
+
+<blockquote><pre><code class="language-javascript">
+document.domain = 'example.com';
+</code></pre></blockquote>
+
+<p>现在，A网页通过脚本设置一个 Cookie。</p>
+
+<blockquote><pre><code class="language-javascript">
+document.cookie = "test1=hello";
+</code></pre></blockquote>
+
+<p>B网页就可以读到这个 Cookie。</p>
+
+<blockquote><pre><code class="language-javascript">
+var allCookie = document.cookie;
+</code></pre></blockquote>
+
+<p>注意，这种方法只适用于 Cookie 和 iframe 窗口，LocalStorage 和 IndexDB 无法通过这种方法，规避同源政策，而要使用下文介绍的PostMessage API。</p>
+
+<p>另外，服务器也可以在设置Cookie的时候，指定Cookie的所属域名为一级域名，比如<code>.example.com</code>。</p>
+
+<blockquote><pre><code class="language-http">
+Set-Cookie: key=value; domain=.example.com; path=/
+</code></pre></blockquote>
+
+<p>这样的话，二级域名和三级域名不用做任何设置，都可以读取这个Cookie。</p>
+
+<h2>三、iframe</h2>
+
+<p>如果两个网页不同源，就无法拿到对方的DOM。典型的例子是<code>iframe</code>窗口和<code>window.open</code>方法打开的窗口，它们与父窗口无法通信。</p>
+
+<p>比如，父窗口运行下面的命令，如果<code>iframe</code>窗口不是同源，就会报错。</p>
+
+<blockquote><pre><code class="language-javascript">
+document.getElementById("myIFrame").contentWindow.document
+// Uncaught DOMException: Blocked a frame from accessing a cross-origin frame.
+</code></pre></blockquote>
+
+<p>上面命令中，父窗口想获取子窗口的DOM，因为跨源导致报错。</p>
+
+<p>反之亦然，子窗口获取主窗口的DOM也会报错。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.parent.document.body
+// 报错
+</code></pre></blockquote>
+
+<p>如果两个窗口一级域名相同，只是二级域名不同，那么设置上一节介绍的<code>document.domain</code>属性，就可以规避同源政策，拿到DOM。</p>
+
+<p>对于完全不同源的网站，目前有三种方法，可以解决跨域窗口的通信问题。</p>
+
+<blockquote>
+  <ul>
+<li>片段识别符（fragment identifier）</li>
+<li>window.name</li>
+<li>跨文档通信API（Cross-document messaging）</li>
+</ul>
+</blockquote>
+
+<h3>3.1 片段识别符</h3>
+
+<p>片段标识符（fragment identifier）指的是，URL的<code>#</code>号后面的部分，比如<code>http://example.com/x.html#fragment</code>的<code>#fragment</code>。如果只是改变片段标识符，页面不会重新刷新。</p>
+
+<p>父窗口可以把信息，写入子窗口的片段标识符。</p>
+
+<blockquote><pre><code class="language-javascript">
+var src = originURL + '#' + data;
+document.getElementById('myIFrame').src = src;
+</code></pre></blockquote>
+
+<p>子窗口通过监听<code>hashchange</code>事件得到通知。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.onhashchange = checkMessage;
+
+function checkMessage() {
+  var message = window.location.hash;
+  // ...
+}
+</code></pre></blockquote>
+
+<p>同样的，子窗口也可以改变父窗口的片段标识符。</p>
+
+<blockquote><pre><code class="language-javascript">
+parent.location.href= target + "#" + hash;
+</code></pre></blockquote>
+
+<h3>3.2 window.name</h3>
+
+<p>浏览器窗口有<code>window.name</code>属性。这个属性的最大特点是，无论是否同源，只要在同一个窗口里，前一个网页设置了这个属性，后一个网页可以读取它。</p>
+
+<p>父窗口先打开一个子窗口，载入一个不同源的网页，该网页将信息写入<code>window.name</code>属性。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.name = data;
+</code></pre></blockquote>
+
+<p>接着，子窗口跳回一个与主窗口同域的网址。</p>
+
+<blockquote><pre><code class="language-javascript">
+location = 'http://parent.url.com/xxx.html';
+</code></pre></blockquote>
+
+<p>然后，主窗口就可以读取子窗口的<code>window.name</code>了。</p>
+
+<blockquote><pre><code class="language-javascript">
+var data = document.getElementById('myFrame').contentWindow.name;
+</code></pre></blockquote>
+
+<p>这种方法的优点是，<code>window.name</code>容量很大，可以放置非常长的字符串；缺点是必须监听子窗口<code>window.name</code>属性的变化，影响网页性能。</p>
+
+<h3>3.3 window.postMessage</h3>
+
+<p>上面两种方法都属于破解，HTML5为了解决这个问题，引入了一个全新的API：跨文档通信 API（Cross-document messaging）。</p>
+
+<p>这个API为<code>window</code>对象新增了一个<code>window.postMessage</code>方法，允许跨窗口通信，不论这两个窗口是否同源。</p>
+
+<p>举例来说，父窗口<code>http://aaa.com</code>向子窗口<code>http://bbb.com</code>发消息，调用<code>postMessage</code>方法就可以了。</p>
+
+<blockquote><pre><code class="language-javascript">
+var popup = window.open('http://bbb.com', 'title');
+popup.postMessage('Hello World!', 'http://bbb.com');
+</code></pre></blockquote>
+
+<p><code>postMessage</code>方法的第一个参数是具体的信息内容，第二个参数是接收消息的窗口的源（origin），即"协议 + 域名 + 端口"。也可以设为<code>*</code>，表示不限制域名，向所有窗口发送。</p>
+
+<p>子窗口向父窗口发送消息的写法类似。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.opener.postMessage('Nice to see you', 'http://aaa.com');
+</code></pre></blockquote>
+
+<p>父窗口和子窗口都可以通过<code>message</code>事件，监听对方的消息。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.addEventListener('message', function(e) {
+  console.log(e.data);
+},false);
+</code></pre></blockquote>
+
+<p><code>message</code>事件的事件对象<code>event</code>，提供以下三个属性。</p>
+
+<blockquote>
+  <ul>
+<li><code>event.source</code>：发送消息的窗口</li>
+<li><code>event.origin</code>: 消息发向的网址</li>
+<li><code>event.data</code>: 消息内容</li>
+</ul>
+</blockquote>
+
+<p>下面的例子是，子窗口通过<code>event.source</code>属性引用父窗口，然后发送消息。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.addEventListener('message', receiveMessage);
+function receiveMessage(event) {
+  event.source.postMessage('Nice to see you!', '*');
+}
+</code></pre></blockquote>
+
+<p><code>event.origin</code>属性可以过滤不是发给本窗口的消息。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.addEventListener('message', receiveMessage);
+function receiveMessage(event) {
+  if (event.origin !== 'http://aaa.com') return;
+  if (event.data === 'Hello World') {
+      event.source.postMessage('Hello', event.origin);
+  } else {
+    console.log(event.data);
+  }
+}
+</code></pre></blockquote>
+
+<h3>3.4 LocalStorage</h3>
+
+<p>通过<code>window.postMessage</code>，读写其他窗口的 LocalStorage 也成为了可能。</p>
+
+<p>下面是一个例子，主窗口写入iframe子窗口的<code>localStorage</code>。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.onmessage = function(e) {
+  if (e.origin !== 'http://bbb.com') {
+    return;
+  }
+  var payload = JSON.parse(e.data);
+  localStorage.setItem(payload.key, JSON.stringify(payload.data));
+};
+</code></pre></blockquote>
+
+<p>上面代码中，子窗口将父窗口发来的消息，写入自己的LocalStorage。</p>
+
+<p>父窗口发送消息的代码如下。</p>
+
+<blockquote><pre><code class="language-javascript">
+var win = document.getElementsByTagName('iframe')[0].contentWindow;
+var obj = { name: 'Jack' };
+win.postMessage(JSON.stringify({key: 'storage', data: obj}), 'http://bbb.com');
+</code></pre></blockquote>
+
+<p>加强版的子窗口接收消息的代码如下。</p>
+
+<blockquote><pre><code class="language-javascript">
+window.onmessage = function(e) {
+  if (e.origin !== 'http://bbb.com') return;
+  var payload = JSON.parse(e.data);
+  switch (payload.method) {
+    case 'set':
+      localStorage.setItem(payload.key, JSON.stringify(payload.data));
+      break;
+    case 'get':
+      var parent = window.parent;
+      var data = localStorage.getItem(payload.key);
+      parent.postMessage(data, 'http://aaa.com');
+      break;
+    case 'remove':
+      localStorage.removeItem(payload.key);
+      break;
+  }
+};
+</code></pre></blockquote>
+
+<p>加强版的父窗口发送消息代码如下。</p>
+
+<blockquote><pre><code class="language-javascript">
+var win = document.getElementsByTagName('iframe')[0].contentWindow;
+var obj = { name: 'Jack' };
+// 存入对象
+win.postMessage(JSON.stringify({key: 'storage', method: 'set', data: obj}), 'http://bbb.com');
+// 读取对象
+win.postMessage(JSON.stringify({key: 'storage', method: "get"}), "*");
+window.onmessage = function(e) {
+  if (e.origin != 'http://aaa.com') return;
+  // "Jack"
+  console.log(JSON.parse(e.data).name);
+};
+</code></pre></blockquote>
+
+<h2>四、AJAX</h2>
+
+<p>同源政策规定，AJAX请求只能发给同源的网址，否则就报错。</p>
+
+<p>除了架设服务器代理（浏览器请求同源服务器，再由后者请求外部服务），有三种方法规避这个限制。</p>
+
+<blockquote>
+  <ul>
+<li>JSONP</li>
+<li>WebSocket</li>
+<li>CORS</li>
+</ul>
+</blockquote>
+
+<h3>4.1 JSONP</h3>
+
+<p>JSONP是服务器与客户端跨源通信的常用方法。最大特点就是简单适用，老式浏览器全部支持，服务器改造非常小。</p>
+
+<p>它的基本思想是，网页通过添加一个<code>&lt;script&gt;</code>元素，向服务器请求JSON数据，这种做法不受同源政策限制；服务器收到请求后，将数据放在一个指定名字的回调函数里传回来。</p>
+
+<p>首先，网页动态插入<code>&lt;script&gt;</code>元素，由它向跨源网址发出请求。</p>
+
+<blockquote><pre><code class="language-javascript">
+function addScriptTag(src) {
+  var script = document.createElement('script');
+  script.setAttribute("type","text/javascript");
+  script.src = src;
+  document.body.appendChild(script);
+}
+
+window.onload = function () {
+  addScriptTag('http://example.com/ip?callback=foo');
+}
+
+function foo(data) {
+  console.log('Your public IP address is: ' + data.ip);
+};
+</code></pre></blockquote>
+
+<p>上面代码通过动态添加<code>&lt;script&gt;</code>元素，向服务器<code>example.com</code>发出请求。注意，该请求的查询字符串有一个<code>callback</code>参数，用来指定回调函数的名字，这对于JSONP是必需的。</p>
+
+<p>服务器收到这个请求以后，会将数据放在回调函数的参数位置返回。</p>
+
+<blockquote><pre><code class="language-javascript">
+foo({
+  "ip": "8.8.8.8"
+});
+</code></pre></blockquote>
+
+<p>由于<code>&lt;script&gt;</code>元素请求的脚本，直接作为代码运行。这时，只要浏览器定义了<code>foo</code>函数，该函数就会立即调用。作为参数的JSON数据被视为JavaScript对象，而不是字符串，因此避免了使用<code>JSON.parse</code>的步骤。</p>
+
+<h3>4.2 WebSocket</h3>
+
+<p>WebSocket是一种通信协议，使用<code>ws://</code>（非加密）和<code>wss://</code>（加密）作为协议前缀。该协议不实行同源政策，只要服务器支持，就可以通过它进行跨源通信。</p>
+
+<p>下面是一个例子，浏览器发出的WebSocket请求的头信息（摘自<a href="https://en.wikipedia.org/wiki/WebSocket">维基百科</a>）。</p>
+
+<blockquote><pre><code class="language-http">
+GET /chat HTTP/1.1
+Host: server.example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+Origin: http://example.com
+</code></pre></blockquote>
+
+<p>上面代码中，有一个字段是<code>Origin</code>，表示该请求的请求源（origin），即发自哪个域名。</p>
+
+<p>正是因为有了<code>Origin</code>这个字段，所以WebSocket才没有实行同源政策。因为服务器可以根据这个字段，判断是否许可本次通信。如果该域名在白名单内，服务器就会做出如下回应。</p>
+
+<blockquote><pre><code class="language-http">
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+Sec-WebSocket-Protocol: chat
+</code></pre></blockquote>
+
+<h3>4.3 CORS</h3>
+
+<p>CORS是跨源资源分享（Cross-Origin Resource Sharing）的缩写。它是W3C标准，是跨源AJAX请求的根本解决方法。相比JSONP只能发<code>GET</code>请求，CORS允许任何类型的请求。</p>
+
+<p>下一篇文章，我会详细介绍，如何通过<a href="http://www.ruanyifeng.com/blog/2016/04/cors.html">CORS</a>完成跨源AJAX请求。</p>
+
+<p>（完）</p>
+
+                                    <!-- /div -->
+
+                                </div>
+    <script type="text/javascript" src="http://www.ruanyifeng.com/newwindow.js"></script>
+                                <div class="asset-footer">
+
+<h3>文档信息</h3>
+<ul>
+<li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">创意共享3.0许可证</a>）</li>
+<li>发表日期： <abbr class="published" title="2016-04-08T22:02:48+08:00">2016年4月 8日</abbr></li>
+
+</ul>
+                                </div>
+</article>
+                            </div>
+
+
+  
+  <div style="display: inline-block ! important;width: 100%;">
+  </div>
+
+
+
+<div id="related_entries">
+<h2>相关文章</h2>
+<ul>
+
+<li><strong>2022.10.25: <a href="http://www.ruanyifeng.com/blog/2022/10/sheep-n-sheep.html">羊了个羊，如何自己实现（暨"码上掘金"编程挑战赛介绍）</a></strong>
+
+                           <div class="entry-body">
+                              
+  [海报] 稀土掘金正在面向全国举办"首届编程挑战赛"，这是展示自己作品的好机会，详情见文后。
+
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2022.05.05: <a href="http://www.ruanyifeng.com/blog/2022/05/rollup.html">打包工具 rollup.js 入门教程</a></strong>
+
+                           <div class="entry-body">
+                              rollup.js 是一个 JavaScript 打包工具。本文介绍它的基本用法。
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2021.09.29: <a href="http://www.ruanyifeng.com/blog/2021/09/detecting-mobile-browser.html">JavaScript 侦测手机浏览器的五种方法</a></strong>
+
+                           <div class="entry-body">
+                              有时候，前端网页需要知道，用户使用的是手机浏览器还是桌面浏览器。
+
+                           </div>
+
+</li>
+
+ 
+<li><strong>2021.01.20: <a href="http://www.ruanyifeng.com/blog/2021/01/clipboard-api.html">剪贴板操作 Clipboard API 教程</a></strong>
+
+                           <div class="entry-body">
+                              一、简介
+
+浏览器允许 JavaScript 脚本读写剪贴板，自动复制或粘贴内容。
+
+                           </div>
+
+</li>
+
+ 
+</ul>
+</div>
+
+
+<div id="cre" style="display: block;">
+<h2>广告<a href="http://www.ruanyifeng.com/support.html">（购买广告位）</a></h2>
+<div id="cre-inner">
+
+<div id="cre-left">
+<p style="font-size:16px;text-align:center;"><a title="亮数据" href="https://www.bright.cn/proxy-types/?utm_source=brand&amp;utm_campaign=brnd-mkt_CN_pw_ruanyifeng" target="_blank">亮数据</a></p>
+<a title="亮数据" href="https://www.bright.cn/proxy-types/?utm_source=brand&amp;utm_campaign=brnd-mkt_CN_pw_ruanyifeng" target="_blank">
+  <image alt=="亮数据" src="https://cdn.beekka.com/blogimg/asset/202306/bg2023062208.webp" style="border:none;" />
+</a>
+</div>
+
+<div id="cre-right">
+</div>
+
+</div>
+</div>
+
+
+
+
+
+
+
+                    
+
+                    <div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">留言（66条）</h2>
+
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-355499" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">魏守峰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355499">
+            <p>鞭辟入里；买了一本《如何变得有思想》准备拜读</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  8, 2016 10:55 PM">2016年4月 8日 22:55</abbr>
+ | <a href="#comment-355499">#</a>
+ | <a href="#comment-text" title="引用魏守峰的这条留言" onclick="return CommentQuote('comment-quote-355499','魏守峰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355500" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">User杨涛</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355500">
+            <p>很好的文章，关键点很全，通俗易懂，学习了。<br />
+感谢！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  8, 2016 11:00 PM">2016年4月 8日 23:00</abbr>
+ | <a href="#comment-355500">#</a>
+ | <a href="#comment-text" title="引用User杨涛的这条留言" onclick="return CommentQuote('comment-quote-355500','User杨涛');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355502" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">ybq</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355502">
+            <p>postMessage那个, 试了一下, 似乎不好使啊, 代码如下:</p>
+
+<p>源window是: <a href="https://www.google.com.hk" rel="nofollow">https://www.google.com.hk</a></p>
+
+<p>window.addEventListener('message', function(event) {<br />
+    console.info(event);<br />
+}, false);<br />
+var popup = window.open('http://baidu.com', 'title');<br />
+popup.postMessage('Hello World!', 'https://www.google.com.hk');</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  8, 2016 11:32 PM">2016年4月 8日 23:32</abbr>
+ | <a href="#comment-355502">#</a>
+ | <a href="#comment-text" title="引用ybq的这条留言" onclick="return CommentQuote('comment-quote-355502','ybq');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355503" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">我的滑板鞋</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355503">
+            <p>太棒了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2016 12:25 AM">2016年4月 9日 00:25</abbr>
+ | <a href="#comment-355503">#</a>
+ | <a href="#comment-text" title="引用我的滑板鞋的这条留言" onclick="return CommentQuote('comment-quote-355503','我的滑板鞋');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355504" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">shukebeta</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355504">
+            <p>关于cookie那段并不完全正确。设置cookie时是可以指定域名的。在 a.testdomain.com/testpage.html 页面中设置域名为 testdomain.com （一级域名）的cookie，该域名的所有二级三级etc域名下的页面都能读取到该cookie，不需要做任何设置。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2016  6:27 AM">2016年4月 9日 06:27</abbr>
+ | <a href="#comment-355504">#</a>
+ | <a href="#comment-text" title="引用shukebeta的这条留言" onclick="return CommentQuote('comment-quote-355504','shukebeta');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355505" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮一峰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355505">
+            <p>@shukebeta：谢谢指出，已经加进文章了。</p>
+
+<p>@ybq：没错。postMessage的域名必须是目标窗口的域名。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2016  7:18 AM">2016年4月 9日 07:18</abbr>
+ | <a href="#comment-355505">#</a>
+ | <a href="#comment-text" title="引用阮一峰的这条留言" onclick="return CommentQuote('comment-quote-355505','阮一峰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355507" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Loyalsoldier</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355507">
+            <p>好赞！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2016 10:08 AM">2016年4月 9日 10:08</abbr>
+ | <a href="#comment-355507">#</a>
+ | <a href="#comment-text" title="引用Loyalsoldier的这条留言" onclick="return CommentQuote('comment-quote-355507','Loyalsoldier');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355516" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">jiangjinmvp</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355516">
+            <p>老师的blog质量确实高！能学到不少东西！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April  9, 2016  6:01 PM">2016年4月 9日 18:01</abbr>
+ | <a href="#comment-355516">#</a>
+ | <a href="#comment-text" title="引用jiangjinmvp的这条留言" onclick="return CommentQuote('comment-quote-355516','jiangjinmvp');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355520" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">fyunli</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355520">
+            <p>jsonp服务器不用做任何改造说法有些不妥。服务端必须要调整以返回callback(...)</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 10, 2016  8:25 AM">2016年4月10日 08:25</abbr>
+ | <a href="#comment-355520">#</a>
+ | <a href="#comment-text" title="引用fyunli的这条留言" onclick="return CommentQuote('comment-quote-355520','fyunli');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355521" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">理工小强</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355521">
+            <blockquote>
+<pre>引用fyunli的发言：</pre>
+
+<p>jsonp服务器不用做任何改造说法有些不妥。服务端必须要调整以返回callback(...)</p>
+
+</blockquote>
+
+<p>恩 是的 所以既然都希望客户端调用了 那还是用CORS吧 真正意义上的不需要修改 只需要多输出个HTTP头</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 10, 2016  9:33 AM">2016年4月10日 09:33</abbr>
+ | <a href="#comment-355521">#</a>
+ | <a href="#comment-text" title="引用理工小强的这条留言" onclick="return CommentQuote('comment-quote-355521','理工小强');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355522" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮一峰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355522">
+            <blockquote>
+<pre>引用fyunli的发言：</pre>
+
+<p>jsonp服务器不用做任何改造说法有些不妥。服务端必须要调整以返回callback(...)</p>
+
+</blockquote>
+
+<p>谢谢指出，改了一下。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 10, 2016 10:42 AM">2016年4月10日 10:42</abbr>
+ | <a href="#comment-355522">#</a>
+ | <a href="#comment-text" title="引用阮一峰的这条留言" onclick="return CommentQuote('comment-quote-355522','阮一峰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355529" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">钉子</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355529">
+            <p>一点也不详细，唉</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 10, 2016 11:12 PM">2016年4月10日 23:12</abbr>
+ | <a href="#comment-355529">#</a>
+ | <a href="#comment-text" title="引用钉子的这条留言" onclick="return CommentQuote('comment-quote-355529','钉子');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355537" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">xx</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355537">
+            <p>P3P 的介绍呢</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 11, 2016 11:37 AM">2016年4月11日 11:37</abbr>
+ | <a href="#comment-355537">#</a>
+ | <a href="#comment-text" title="引用xx的这条留言" onclick="return CommentQuote('comment-quote-355537','xx');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355546" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">网扑蜘</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355546">
+            <p>你好，咨询个问题：<br />
+wp的函数：get_the_date(‘Y-m-d g:i:s +08:00’);<br />
+怎样输出2015-12-16 T 17:47:53+08:00 这种格式，中间有个“T”符合ISO8601规范的UTC格式</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 11, 2016 12:19 PM">2016年4月11日 12:19</abbr>
+ | <a href="#comment-355546">#</a>
+ | <a href="#comment-text" title="引用网扑蜘的这条留言" onclick="return CommentQuote('comment-quote-355546','网扑蜘');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355558" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">jackmasa</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355558">
+            <p>写的很好，对于教学来说已经足够。但，浏览器的同源策略，是黑客攻击的重要点，任何一个实现上的偏差都可能导致被突破，说一些你没提到的吧。</p>
+
+<p>1. cookie 的不区分协议与端口<br />
+2. Edge 的 SOP 实现不区分端口（截至回复日期）</p>
+
+<p>给你留个问题：<br />
+在具体业务使用 event.origin 如何安全的匹配来自其他业务子域名的 origin？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 12, 2016  2:36 AM">2016年4月12日 02:36</abbr>
+ | <a href="#comment-355558">#</a>
+ | <a href="#comment-text" title="引用jackmasa的这条留言" onclick="return CommentQuote('comment-quote-355558','jackmasa');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355559" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Muqi Li</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355559">
+            <p>window.postMessage 那块：<br />
+var popup = window.open('http://aaa.com', 'title');<br />
+popup.postMessage('Hello World!', 'http://aaa.com');</p>
+
+<p>所有的"http://aaa.com" 不应该是“http://bbb.com”？ 这才是targetOrigin。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 12, 2016  5:39 AM">2016年4月12日 05:39</abbr>
+ | <a href="#comment-355559">#</a>
+ | <a href="#comment-text" title="引用Muqi Li的这条留言" onclick="return CommentQuote('comment-quote-355559','Muqi Li');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355560" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮一峰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355560">
+            <p>@Muqi Li:</p>
+
+<p>这里有一个例子，你可以试试看。<br />
+<a href="https://davidwalsh.name/window-postmessage" rel="nofollow">https://davidwalsh.name/window-postmessage</a></p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 12, 2016  6:40 AM">2016年4月12日 06:40</abbr>
+ | <a href="#comment-355560">#</a>
+ | <a href="#comment-text" title="引用阮一峰的这条留言" onclick="return CommentQuote('comment-quote-355560','阮一峰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355584" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Izual_Yang</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355584">
+            <p>这年头连tampermonkey扩展都弹跨域请求提示了，然而那提示做得逼死选择障碍症。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 12, 2016  2:29 PM">2016年4月12日 14:29</abbr>
+ | <a href="#comment-355584">#</a>
+ | <a href="#comment-text" title="引用Izual_Yang的这条留言" onclick="return CommentQuote('comment-quote-355584','Izual_Yang');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355601" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Muqi</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355601">
+            <blockquote>
+<pre>引用阮一峰的发言：</pre>
+
+<p>@Muqi Li:</p>
+
+<p>这里有一个例子，你可以试试看。<br />
+<a href="https://davidwalsh.name/window-postmessage" rel="nofollow">https://davidwalsh.name/window-postmessage</a></p>
+
+</blockquote>
+
+<p>谢谢，但是既然是aaa向bbb发消息，难道不应该?<br />
+var popup = window.open('http://bbb.com', 'title');<br />
+popup.postMessage('Hello World!', 'http://bbb.com');</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2016  3:47 AM">2016年4月13日 03:47</abbr>
+ | <a href="#comment-355601">#</a>
+ | <a href="#comment-text" title="引用Muqi的这条留言" onclick="return CommentQuote('comment-quote-355601','Muqi');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355602" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮一峰</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355602">
+            <p>@Muqi：</p>
+
+<p>是我搞错了，把 aaa 和 bbb 颠倒了，已经改好了。 </p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2016  6:02 AM">2016年4月13日 06:02</abbr>
+ | <a href="#comment-355602">#</a>
+ | <a href="#comment-text" title="引用阮一峰的这条留言" onclick="return CommentQuote('comment-quote-355602','阮一峰');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355630" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">陈俊</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355630">
+            <p>没有同源策略的风险我觉得说得不够准确。不全是为了防止一个站访问另一个站的cookie，而是在没有同源策略的情况下。当用户在同一个浏览器内，银行和一个恶意网站，在没登出时，恶意网站可以通过脚本请求至银行网站，浏览器自动把银行的登陆cookie带上，从而获取到用户的敏感信息，这个过程恶意站根本不需要直接获取银行站的cookie。由于浏览器的无作为，恶意站的这种操作跟用户自己点击是一样的。维基百科说的较为清晰：</p>
+
+<p>A user visiting that malicious site would expect that the site he is visiting has no access to the banking session cookie. While this is true, the JavaScript has no direct access to the banking session cookie, but it could still send and receive requests to the banking site with the banking site's session cookie, essentially acting as a normal user of the banking site</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 13, 2016  6:14 PM">2016年4月13日 18:14</abbr>
+ | <a href="#comment-355630">#</a>
+ | <a href="#comment-text" title="引用陈俊的这条留言" onclick="return CommentQuote('comment-quote-355630','陈俊');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355687" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">darr</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355687">
+            <p>parent.location.href= target + "#" + hash;<br />
+这个不能设置成功吧，跨域的话。子窗口 拿不到父窗口的location.href</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 15, 2016  3:04 PM">2016年4月15日 15:04</abbr>
+ | <a href="#comment-355687">#</a>
+ | <a href="#comment-text" title="引用darr的这条留言" onclick="return CommentQuote('comment-quote-355687','darr');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-355688" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">darr</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-355688">
+            <p>你们试过嘛？postMessage明显不生效啊</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 15, 2016  5:04 PM">2016年4月15日 17:04</abbr>
+ | <a href="#comment-355688">#</a>
+ | <a href="#comment-text" title="引用darr的这条留言" onclick="return CommentQuote('comment-quote-355688','darr');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-356661" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">大力东</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-356661">
+            <p>阮老师，我在chrome下测试，跨域ajax不是不可以发，只是不允许读取请求的响应。<br />
+No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://xxxxx:xx' is therefore not allowed access.<br />
+但是server确实收到响应，并且response是Status Code:200 OK</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 26, 2016  6:08 PM">2016年5月26日 18:08</abbr>
+ | <a href="#comment-356661">#</a>
+ | <a href="#comment-text" title="引用大力东的这条留言" onclick="return CommentQuote('comment-quote-356661','大力东');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-356686" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">EthanYuan</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-356686">
+            <p>3.3节中写到：“postMessage方法的第一个参数是具体的信息内容，第二个参数是接收消息的窗口的源（origin），即"协议 + 域名 + 端口"。也可以设为*，表示不限制域名，向所有窗口发送。”</p>
+
+<p>如果第二个参数targetOrigin设为*的话，其含义是不检查目标窗口的origin，与该参数是否匹配。而不是发向所有窗口。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 27, 2016 10:49 AM">2016年5月27日 10:49</abbr>
+ | <a href="#comment-356686">#</a>
+ | <a href="#comment-text" title="引用EthanYuan的这条留言" onclick="return CommentQuote('comment-quote-356686','EthanYuan');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-356884" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">izayl</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-356884">
+            <blockquote>
+<pre>引用大力东的发言：</pre>
+
+<p>阮老师，我在chrome下测试，跨域ajax不是不可以发，只是不允许读取请求的响应。<br />
+No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://xxxxx:xx' is therefore not allowed access.<br />
+但是server确实收到响应，并且response是Status Code:200 OK</p>
+
+</blockquote>
+
+<p>我也测试了，确实是这样<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 31, 2016 11:08 AM">2016年5月31日 11:08</abbr>
+ | <a href="#comment-356884">#</a>
+ | <a href="#comment-text" title="引用izayl的这条留言" onclick="return CommentQuote('comment-quote-356884','izayl');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-359924" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">laoluo</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-359924">
+            <p>之前一直这些概念一直迷迷糊糊，现在看完之后醍醐灌顶！阮老师，感谢您指明了我的很多web的疑惑。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 30, 2016 10:42 AM">2016年6月30日 10:42</abbr>
+ | <a href="#comment-359924">#</a>
+ | <a href="#comment-text" title="引用laoluo的这条留言" onclick="return CommentQuote('comment-quote-359924','laoluo');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-361367" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">源稚竹</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-361367">
+            <p>"浏览器窗口有window.name属性。这个属性的最大特点是，无论是否同源，只要在同一个窗口里，前一个网页设置了这个属性，后一个网页可以读取它。"<br />
+阮老师，我刚刚做了一下实验，这句话似乎有点问题...<br />
+必须父窗口和子窗口同源，父窗口才能读取到子窗口的name吧？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 29, 2016  4:22 PM">2016年7月29日 16:22</abbr>
+ | <a href="#comment-361367">#</a>
+ | <a href="#comment-text" title="引用源稚竹的这条留言" onclick="return CommentQuote('comment-quote-361367','源稚竹');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-361999" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">xgqfrms</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-361999">
+            <p>A网页设置的 Cookie，B网页不能打开，除非这两个网页"同源"。</p>
+
+<p>这段话描述不准确！</p>
+
+<p>应该是：<br />
+A网站网页中设置的 Cookie，在B网站网页不能打开，除非这两个网页"同源"。<br />
+即：A与B的 协议，域名，端口号都相同(但路径可以不同)，才能互相访问对方的cookies 。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  9, 2016  7:20 AM">2016年8月 9日 07:20</abbr>
+ | <a href="#comment-361999">#</a>
+ | <a href="#comment-text" title="引用xgqfrms的这条留言" onclick="return CommentQuote('comment-quote-361999','xgqfrms');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-363440" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hongbin</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-363440">
+            <p>参考维基百科 请给出链接：   <a href="https://en.wikipedia.org/wiki/Same-origin_policy" rel="nofollow">https://en.wikipedia.org/wiki/Same-origin_policy</a></p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August 30, 2016  8:11 PM">2016年8月30日 20:11</abbr>
+ | <a href="#comment-363440">#</a>
+ | <a href="#comment-text" title="引用hongbin的这条留言" onclick="return CommentQuote('comment-quote-363440','hongbin');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-363798" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">hilojack</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-363798">
+            <p>阮老师, 有处错误: postMessage 中的e.origin 不是*消息发向的网址*, 而是*发送者的源*.</p>
+
+<blockquote>
+event.origin属性可以过滤不是发给本窗口的消息。
+</blockquote>
+
+<p>应该是:<br />
+event.origin属性可以判断非法的发送者(或者说不受信的发送者)</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  4, 2016  5:50 PM">2016年9月 4日 17:50</abbr>
+ | <a href="#comment-363798">#</a>
+ | <a href="#comment-text" title="引用hilojack的这条留言" onclick="return CommentQuote('comment-quote-363798','hilojack');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-366133" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">oslivan</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-366133">
+            <p>Cookie 是服务器写入浏览器的一小段信息，只有“同源”的网页才能共享。</p>
+
+<p>这里有个问题，如果同源的概念是你前面讲的协议、域名、端口都相同那就不对了，我做了两个域名相同的站（协议、端口都不同）,如下：</p>
+
+<p>A站：https://www.example.com:3443/</p>
+
+<p>B站：http://www.example.com:3445/</p>
+
+<p>当我登录A站后，生成了A站的cookie,这时B站依然可以通过js获取A站的cookie，与通过 document.domain 设置的原理一样，A站生成cookie时，默认domain是 www.example.com ,所以Cookie共享跟协议、端口无关。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 11, 2016  2:58 PM">2016年10月11日 14:58</abbr>
+ | <a href="#comment-366133">#</a>
+ | <a href="#comment-text" title="引用oslivan的这条留言" onclick="return CommentQuote('comment-quote-366133','oslivan');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-366439" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">李超</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-366439">
+            <p>请教一下，在“4.2 WebSocket”中，您谈到</p>
+
+<p>> 正是因为有了Origin这个字段，所以WebSocket才没有实行同源政策。</p>
+
+<p>根据[List of HTTP header fields](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#General_format)，HTTP协议Request中也有`Origin`字段，<br />
+既然HTTP和WebSocket都有`Origin`字段，为什么HTTP协议不能通过它来解决跨域访问的问题呢？<br />
+谢谢！</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="October 16, 2016 10:16 AM">2016年10月16日 10:16</abbr>
+ | <a href="#comment-366439">#</a>
+ | <a href="#comment-text" title="引用李超的这条留言" onclick="return CommentQuote('comment-quote-366439','李超');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-369087" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">桃小蛋</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-369087">
+            <blockquote>
+<pre>引用hilojack的发言：</pre>
+
+<p>阮老师, 有处错误: postMessage 中的e.origin 不是*消息发向的网址*, 而是*发送者的源*.</p>
+
+<p></p>
+
+<p>应该是:<br />
+event.origin属性可以判断非法的发送者(或者说不受信的发送者)</p>
+
+</blockquote>
+
+<p>我也觉得应该是*发送者的源*</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="November 24, 2016  2:16 PM">2016年11月24日 14:16</abbr>
+ | <a href="#comment-369087">#</a>
+ | <a href="#comment-text" title="引用桃小蛋的这条留言" onclick="return CommentQuote('comment-quote-369087','桃小蛋');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-371121" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">niceguy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-371121">
+            <p>因为浏览器同时还规定，提交表单不受同源政策的限制。 这个对吗?</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 26, 2016  9:11 PM">2016年12月26日 21:11</abbr>
+ | <a href="#comment-371121">#</a>
+ | <a href="#comment-text" title="引用niceguy的这条留言" onclick="return CommentQuote('comment-quote-371121','niceguy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-372571" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">杨铭铭</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-372571">
+            <blockquote>
+<pre>引用李超的发言：</pre>
+
+<p>请教一下，在“4.2 WebSocket”中，您谈到</p>
+
+<p>&gt; 正是因为有了Origin这个字段，所以WebSocket才没有实行同源政策。</p>
+
+<p>根据[List of HTTP header fields](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#General_format)，HTTP协议Request中也有`Origin`字段，<br />
+既然HTTP和WebSocket都有`Origin`字段，为什么HTTP协议不能通过它来解决跨域访问的问题呢？<br />
+谢谢！</p>
+
+</blockquote>
+
+<p>阮老师你好，我也同样有这个疑惑，经过实测确实不设置CORS， WebSockst也可以跨源通信，但是http协议请求头在跨域访问的时候一样会带上Origin字段，所以说因为有Origin字段不实行同源策略的观点应该不成立吧？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="February  8, 2017  3:03 PM">2017年2月 8日 15:03</abbr>
+ | <a href="#comment-372571">#</a>
+ | <a href="#comment-text" title="引用杨铭铭的这条留言" onclick="return CommentQuote('comment-quote-372571','杨铭铭');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-374056" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Mello</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-374056">
+            <p>阮老师你好，关于postMessage中的消息监听的回掉函数参数，e.origin 消息发向的网址，这个我感觉有点会让人误解，解释为：消息来源的网址(是一个网址的字符串)，可能更好一点。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  6, 2017  3:45 PM">2017年3月 6日 15:45</abbr>
+ | <a href="#comment-374056">#</a>
+ | <a href="#comment-text" title="引用Mello的这条留言" onclick="return CommentQuote('comment-quote-374056','Mello');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-374901" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">glassysky</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-374901">
+            <p>阮老师您好，在文中「1.3 限制范围」里的第一条——「Cookie、LocalStorage 和 IndexDB 无法读取」中，您想表达的是 IndexedDB 吧？这个位置是否有笔误？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 16, 2017  1:33 PM">2017年3月16日 13:33</abbr>
+ | <a href="#comment-374901">#</a>
+ | <a href="#comment-text" title="引用glassysky的这条留言" onclick="return CommentQuote('comment-quote-374901','glassysky');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-377575" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Rumble</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-377575">
+            <p>阮老师，不应该是indexedDB吗？还是indexDB和indexedDB是相同的呢？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 31, 2017  2:50 PM">2017年5月31日 14:50</abbr>
+ | <a href="#comment-377575">#</a>
+ | <a href="#comment-text" title="引用Rumble的这条留言" onclick="return CommentQuote('comment-quote-377575','Rumble');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-377954" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">gipplelake</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-377954">
+            <p>这一段，浏览器允许通过设置document.domain共享 Cookie。<br />
+按照阮前辈的方式cookie在B站读不到，俩页面确实设置了同样的domain，不知前辈是否实践过？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 14, 2017  4:54 PM">2017年6月14日 16:54</abbr>
+ | <a href="#comment-377954">#</a>
+ | <a href="#comment-text" title="引用gipplelake的这条留言" onclick="return CommentQuote('comment-quote-377954','gipplelake');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-378081" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">siren</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-378081">
+            <p>您好，请问window.postMessage部分，父窗口向子窗口发消息是否应该是：</p>
+
+<p>window.opener.postMessage('Nice to see you', 'http://bbb.com');</p>
+
+<p>而子窗口向父窗口发消息则应该是：</p>
+
+<p>var popup = window.open('http://bbb.com', 'title');<br />
+popup.postMessage('Hello World!', 'http://aaa.com');</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 20, 2017  9:04 PM">2017年6月20日 21:04</abbr>
+ | <a href="#comment-378081">#</a>
+ | <a href="#comment-text" title="引用siren的这条留言" onclick="return CommentQuote('comment-quote-378081','siren');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-378536" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">甯爷爷</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-378536">
+            <blockquote>
+<pre>引用siren的发言：</pre>
+
+<p>您好，请问window.postMessage部分，父窗口向子窗口发消息是否应该是：</p>
+
+<p>window.opener.postMessage('Nice to see you', 'http://bbb.com');</p>
+
+<p>而子窗口向父窗口发消息则应该是：</p>
+
+<p>var popup = window.open('http://bbb.com', 'title');<br />
+popup.postMessage('Hello World!', 'http://aaa.com');</p>
+
+</blockquote>
+
+<p>你正好理解反了</p>
+
+<p>这是子向父发送：window.opener.postMessage('Nice to see you', '父域');</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July  7, 2017  1:11 AM">2017年7月 7日 01:11</abbr>
+ | <a href="#comment-378536">#</a>
+ | <a href="#comment-text" title="引用甯爷爷的这条留言" onclick="return CommentQuote('comment-quote-378536','甯爷爷');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-378537" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">甯爷爷</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-378537">
+            <blockquote>
+<pre>引用源稚竹的发言：</pre>
+
+<p>"浏览器窗口有window.name属性。这个属性的最大特点是，无论是否同源，只要在同一个窗口里，前一个网页设置了这个属性，后一个网页可以读取它。"<br />
+阮老师，我刚刚做了一下实验，这句话似乎有点问题...<br />
+必须父窗口和子窗口同源，父窗口才能读取到子窗口的name吧？</p>
+
+</blockquote>
+
+<p>是同一窗口，不存在父子关系，当前窗口域名为A时设置widow.name=a,那么不管这个窗口打开什么域名，它的名字都还是a，除非被后来打开的网页更改了</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July  7, 2017  1:16 AM">2017年7月 7日 01:16</abbr>
+ | <a href="#comment-378537">#</a>
+ | <a href="#comment-text" title="引用甯爷爷的这条留言" onclick="return CommentQuote('comment-quote-378537','甯爷爷');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-378558" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">远航</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-378558">
+            <p>@源稚竹：</p>
+
+<p>之前看到ifram跨域中，利用在不同源子窗口中再嵌入一个同源的子子窗口做代理，以供父窗口读取window.name属性。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July  7, 2017  2:18 PM">2017年7月 7日 14:18</abbr>
+ | <a href="#comment-378558">#</a>
+ | <a href="#comment-text" title="引用远航的这条留言" onclick="return CommentQuote('comment-quote-378558','远航');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-380968" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">柯基</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-380968">
+            <p>js跳转后的页面可以展现初始数据，但不能进行查询操作，报错：Uncaught DOMException:Blocked a frame</p>
+
+<p>是这样，在js里跳转的话，可以跳转页面，也可以看见初始查询出来的数据（估计是页面的$(function(){})这个<br />
+里面加载出来的数据），但是做进一步的操作，如通过id查询内容则无反应，报错：Uncaught DOMException :</p>
+
+<p> blocked a frame with origin（“这里是跳转的地址，地址对应的是另一个公司开发的项目，肯定是不同域</p>
+
+<p>的”）... 但是我这边还是想通过js解决这个问题，有没有什么好办法。<br />
+ <br />
+我这边不想通过后台跳转解决，想通过前端的js解决问题，因为这样可以不用重启项目，更不用编译什么的，要不然我还得重新搭载环境，我这边也不能要求所跳转的项目有什么更改，是另一个公司做的。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 28, 2017 10:53 AM">2017年9月28日 10:53</abbr>
+ | <a href="#comment-380968">#</a>
+ | <a href="#comment-text" title="引用柯基的这条留言" onclick="return CommentQuote('comment-quote-380968','柯基');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-384943" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">chg</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-384943">
+            <p>在 CORS 之前，跨域的 ajax，是请求被拦截，还是响应被拦截？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January 24, 2018  3:07 PM">2018年1月24日 15:07</abbr>
+ | <a href="#comment-384943">#</a>
+ | <a href="#comment-text" title="引用chg的这条留言" onclick="return CommentQuote('comment-quote-384943','chg');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-386268" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wudiandy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-386268">
+            <p>各位网友，我也遇到了一个需要跨域通信的问题，并且尝试使用postMessage解决。我参考这篇文章和网上其他一些文章做了尝试，但是没有成功。父窗口一直报错。找不出问题出在什么地方。下面贴出代码。麻烦大家帮忙给看看。</p>
+
+<p>父窗口(http://localhost:8081/)代码：<br />
+&lt;iframe id="myFrame" class="w-full h-full" src="http://localhost:8080/q.html?s=9ee">&lt;/iframe><br />
+&lt;script><br />
+  var value = 20;<br />
+  var domain = "http://localhost:8080/q.html?s=9ee";<br />
+  document.getElementById("myFrame").contentWindow.postMessage(value, domain);<br />
+// 这里报错：Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://localhost:8080') does not match the recipient window's origin ('http://localhost:8081').<br />
+&lt;/script></p>
+
+<p>子窗口（http://localhost:8080/）代码：<br />
+window.addEventListener("message", function(event){<br />
+  this.console.log(event.origin);<br />
+  this.console.log(event.data);<br />
+}, false);</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  2, 2018  5:51 PM">2018年3月 2日 17:51</abbr>
+ | <a href="#comment-386268">#</a>
+ | <a href="#comment-text" title="引用wudiandy的这条留言" onclick="return CommentQuote('comment-quote-386268','wudiandy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-386291" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">wudiandy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-386291">
+            <p>更新最新进度。问题已经完全解决了。错误出现的原因还是在页面没有加载完。最新的代码如下。</p>
+
+<p>var value = 20;<br />
+var domain = "http://localhost:8080/q.html?s=9ee";<br />
+var iWindow = document.getElementById("myFrame").contentWindow;</p>
+
+<p>window.onload = function() {<br />
+iWindow.postMessage(value, domain);<br />
+}</p>
+
+<p>即iWindow.onload改成window.onload就可以了。<br />
+从这测就该可以推测出如下结论：<br />
+父窗口的window.onload调用时机是父窗口本身和子窗口都加载完成。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  3, 2018 10:32 AM">2018年3月 3日 10:32</abbr>
+ | <a href="#comment-386291">#</a>
+ | <a href="#comment-text" title="引用wudiandy的这条留言" onclick="return CommentQuote('comment-quote-386291','wudiandy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-389243" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Lasy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-389243">
+            <p>在介绍Cookie的document.domain的方法时，有这么一句话<br />
+<blockquote>注意，这种方法只适用于 Cookie 和 iframe 窗口，LocalStorage 和 IndexDB 无法通过这种方法，规避同源政策，而要使用下文介绍的PostMessage API。</blockquote><br />
+我想问的是，这里的iframe指的是iframe与主窗口之间的Cookie读取，还是DOM操作？<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 30, 2018  7:42 PM">2018年5月30日 19:42</abbr>
+ | <a href="#comment-389243">#</a>
+ | <a href="#comment-text" title="引用Lasy的这条留言" onclick="return CommentQuote('comment-quote-389243','Lasy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-389245" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Lasy</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-389245">
+            <p>感谢，内容对我有很大帮助，但是我个人觉得条理还是不够清晰，还可以再改进以下，就更好理解了。<br />
+文章中，首先提到了同源政策导致的三个限制：<br />
+<blockquote><br />
+（1） Cookie、LocalStorage 和 IndexDB 无法读取。<br />
+（2） DOM 无法获得。<br />
+（3） AJAX 请求不能发送。<br />
+</blockquote><br />
+之后，由如何规避三种限制展开讨论。但是我个人认为第三章的fragment identifier, window.name, window.postMessage这三种窗口通信的方法，并不属于规避同源政策的方法，应该单独提取为一章，甚至可以删除掉，另出一篇文章。<br />
+而整体的结构可以修改为：一、概述；二、Cookie, LocalStorage；三、DOM；四、AJAX。<br />
+这样的结果更易于理解，我个人也是看了您的文章后，重新整理之后才理解的，之前的结构确实有些不太容易理解。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May 30, 2018  8:04 PM">2018年5月30日 20:04</abbr>
+ | <a href="#comment-389245">#</a>
+ | <a href="#comment-text" title="引用Lasy的这条留言" onclick="return CommentQuote('comment-quote-389245','Lasy');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-389655" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">阮老师的小迷弟</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-389655">
+            <p>看了很多老师的文章，感觉很不错，每次搜索东西的时候，都是先打上要搜索的内容，然后加个空格，再加上阮一峰，如果有搜索到，就感觉很开心，如果没找到。就有点小失落，哈哈，也许是太信任阮老师了吧。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 12, 2018  5:23 PM">2018年6月12日 17:23</abbr>
+ | <a href="#comment-389655">#</a>
+ | <a href="#comment-text" title="引用阮老师的小迷弟的这条留言" onclick="return CommentQuote('comment-quote-389655','阮老师的小迷弟');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-391092" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Lily</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-391092">
+            <p>老师请教个问题，在实践片段标识符部分时，子窗口可以设置父窗口的片段标识，但是在执行parent.location.href获取父窗口URL时，报错提示跨域了，是什么原因呢</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 18, 2018  4:48 PM">2018年7月18日 16:48</abbr>
+ | <a href="#comment-391092">#</a>
+ | <a href="#comment-text" title="引用Lily的这条留言" onclick="return CommentQuote('comment-quote-391092','Lily');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-392821" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">刀刀</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-392821">
+            <p>那现实项目中用哪种跨域方式比较多呢？感觉jsonp局限还是很大，它的get。。。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September  4, 2018  2:44 PM">2018年9月 4日 14:44</abbr>
+ | <a href="#comment-392821">#</a>
+ | <a href="#comment-text" title="引用刀刀的这条留言" onclick="return CommentQuote('comment-quote-392821','刀刀');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-393442" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">西撒</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-393442">
+            <p>@wudiandy：</p>
+
+<p>我也遇到这样的问题，dom也已经加载完毕了<br />
+我的主页面域名是   www.a.com<br />
+子页面iframe的域名是  www.b.com<br />
+主页面向子页面发送message的时候就报上面的错<br />
+</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 26, 2018  2:54 PM">2018年9月26日 14:54</abbr>
+ | <a href="#comment-393442">#</a>
+ | <a href="#comment-text" title="引用西撒的这条留言" onclick="return CommentQuote('comment-quote-393442','西撒');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-400580" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">goku</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-400580">
+            <blockquote>
+<pre>引用大力东的发言：</pre>
+
+<p>阮老师，我在chrome下测试，跨域ajax不是不可以发，只是不允许读取请求的响应。<br />
+No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://xxxxx:xx' is therefore not allowed access.<br />
+但是server确实收到响应，并且response是Status Code:200 OK</p>
+
+</blockquote>
+
+<p>你说得对，请求是可以发送的，只是浏览器阻止了js获取响应内容</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  4, 2019  4:28 PM">2019年1月 4日 16:28</abbr>
+ | <a href="#comment-400580">#</a>
+ | <a href="#comment-text" title="引用goku的这条留言" onclick="return CommentQuote('comment-quote-400580','goku');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-409645" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">陌夏</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-409645">
+            <p>666666，今天遇到动态生成的iframe跨域问题，刚好看到这个和另一篇通过中间页面解决跨域问题的博客，正好结合解决了。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March  1, 2019  3:32 PM">2019年3月 1日 15:32</abbr>
+ | <a href="#comment-409645">#</a>
+ | <a href="#comment-text" title="引用陌夏的这条留言" onclick="return CommentQuote('comment-quote-409645','陌夏');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410479" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">Null</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410479">
+            <p>老师，我有个疑问？<br />
+我查了一下关于域名等级的：</p>
+
+<p>(顶级)一级域名: .com 系列<br />
+二级域名: xxx.com 系列<br />
+三级域名 : xxx.xxx.com</p>
+
+<p>在Cookie文章开头中，应该是三级域名吧？不是二级。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 11, 2019 10:29 AM">2019年4月11日 10:29</abbr>
+ | <a href="#comment-410479">#</a>
+ | <a href="#comment-text" title="引用Null的这条留言" onclick="return CommentQuote('comment-quote-410479','Null');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-410493" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">GJ</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-410493">
+            <blockquote>
+<pre>引用Null的发言：</pre>
+
+<p>老师，我有个疑问？<br />
+我查了一下关于域名等级的：</p>
+
+<p>(顶级)一级域名: .com 系列<br />
+二级域名: xxx.com 系列<br />
+三级域名 : xxx.xxx.com</p>
+
+<p>在Cookie文章开头中，应该是三级域名吧？不是二级。</p>
+
+</blockquote>
+
+<p>如果com算顶级域名 那么最靠近的那个左边域名一般也叫一级域名 <br />
+有两种定义 所以文章说是二级域名也可以</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="April 12, 2019  8:46 AM">2019年4月12日 08:46</abbr>
+ | <a href="#comment-410493">#</a>
+ | <a href="#comment-text" title="引用GJ的这条留言" onclick="return CommentQuote('comment-quote-410493','GJ');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-411036" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">halion</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-411036">
+            <p>不同域hashchange方式交互的问题。在chrome中如果不同域，iframe里子窗口无法修改父窗口的hash，这个又解决办法吗？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="May  7, 2019 11:14 AM">2019年5月 7日 11:14</abbr>
+ | <a href="#comment-411036">#</a>
+ | <a href="#comment-text" title="引用halion的这条留言" onclick="return CommentQuote('comment-quote-411036','halion');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-412529" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">学无止境</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-412529">
+            <p>世界上只有一种二级域名吧？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="August  2, 2019 11:34 AM">2019年8月 2日 11:34</abbr>
+ | <a href="#comment-412529">#</a>
+ | <a href="#comment-text" title="引用学无止境的这条留言" onclick="return CommentQuote('comment-quote-412529','学无止境');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-413777" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">石头</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-413777">
+            <p>3.4章节有点歧义，或者说没有存在的必要。<br />
+3.4章节其实是 window.postMessage 的一个具体的应用，但是给我的第一印象是，什么策略可以实现 localStorage 的共享。<br />
+ </p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="September 29, 2019 10:49 AM">2019年9月29日 10:49</abbr>
+ | <a href="#comment-413777">#</a>
+ | <a href="#comment-text" title="引用石头的这条留言" onclick="return CommentQuote('comment-quote-413777','石头');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-415025" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">dsl</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-415025">
+            <p>我想在iframe里面的窗口获取document怎么实现呢，似乎不可以，我的需求是想把ant-design的弹窗从iframe内部挂载到父级窗口，怎么实现呢？</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="December 11, 2019  9:49 AM">2019年12月11日 09:49</abbr>
+ | <a href="#comment-415025">#</a>
+ | <a href="#comment-text" title="引用dsl的这条留言" onclick="return CommentQuote('comment-quote-415025','dsl');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-425869" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">范成大</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-425869">
+            阮老师写的很好，很受教。
+
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="March 11, 2021 11:50 AM">2021年3月11日 11:50</abbr>
+ | <a href="#comment-425869">#</a>
+ | <a href="#comment-text" title="引用范成大的这条留言" onclick="return CommentQuote('comment-quote-425869','范成大');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-427532" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">rainbow</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-427532">
+            <p>同源的定义没说清楚, 建议看这篇文章<br />
+<a href="https://cifer76.github.io/posts/same-origin-policy/" rel="nofollow">https://cifer76.github.io/posts/same-origin-policy/</a></p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="June 24, 2021  5:09 PM">2021年6月24日 17:09</abbr>
+ | <a href="#comment-427532">#</a>
+ | <a href="#comment-text" title="引用rainbow的这条留言" onclick="return CommentQuote('comment-quote-427532','rainbow');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-428411" class="comment">
+    <div  class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">kqing</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-428411">
+            <p>event.origin: 是指”调用postMessage时消息发送方窗口的origin“，而不是”消息发向的网址“</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="July 28, 2021  3:36 PM">2021年7月28日 15:36</abbr>
+ | <a href="#comment-428411">#</a>
+ | <a href="#comment-text" title="引用kqing的这条留言" onclick="return CommentQuote('comment-quote-428411','kqing');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-431677" class="comment">
+    <div id="comment-last" class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+<p>
+                <span class="byline">
+                    
+
+                    <span class="vcard author">从水之道</span>
+
+ 说：
+                </span>
+</p>
+            </div>
+        </div>
+        <div class="comment-content" id="comment-quote-431677">
+            <p>如果在油猴子脚本中使用jsonp跨域和服务器通信，会不会带来安全问题？油猴子脚本是别人用的。</p>
+        </div>
+<div class="comment-footer">
+<div class="comment-footer-inner">
+<p>
+                   <abbr class="published" title="January  7, 2022  5:44 PM">2022年1月 7日 17:44</abbr>
+ | <a href="#comment-431677">#</a>
+ | <a href="#comment-text" title="引用从水之道的这条留言" onclick="return CommentQuote('comment-quote-431677','从水之道');">引用</a>
+</p>
+</div>
+</div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">我要发表看法</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="http://www.ruanyifeng.com/cgi-bin/mtos/mt-comments.cgi" name="comments_form" id="comments-form" onsubmit="return pleaseWait();">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="1884" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+            <div id="comments-open-text">
+                    <p><label for="comment-text">您的留言
+                    （HTML标签部分可用）</label></p>
+                    <p><textarea id="comment-text" name="text" rows="10" cols="50"></textarea></p>
+                </div>
+                    <div id="comment-form-name">
+                        <p><label for="comment-author">您的大名：</label></p>
+                        <p><input id="comment-author" name="author" size="30" value="" />  <span class="hint"> &laquo;-必填</span></p>
+                    </div>
+                    <div id="comment-form-email">
+                        <p><label for="comment-email">电子邮件：</label></p>
+                        <p><input id="comment-email" name="email" size="30" value="" />  <span class="hint"> &laquo;-必填，不公开</span></p>
+                    </div>
+                    <div id="comment-form-url">
+                        <p><label for="comment-url">个人网址：</label></p>
+                        <p><input id="comment-url" name="url" size="30" value="" />  <span class="hint"> &laquo;-我信任你，不会填写广告链接</span></p>
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <p>
+                        <label for="comment-bake-cookie">记住个人信息？</label><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="!this.checked?forgetMe(document.comments_form):rememberMe(document.comments_form)" value="1" accesskey="r" /></p>
+                    </div>
+                </div>
+                    <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+<div id="wait" style="display:none;">
+<p><strong>正在发表您的评论，请稍候</strong></p>
+<p>
+<input type="text" name="percent" size="3" style="font-family:Arial; color:black;text-align:center; border-width:medium; border-style:none;">           
+<input type="text" name="chart" size="46" style="font-family:Arial;font-weight:bolder; color:black; padding:0px; border-style:none;">
+</p>
+</div>
+
+                    <p><input type="submit" accesskey="s" name="post" id="comment-submit" value="发表" />  <span class="hint"> &laquo;- 点击按钮</span></p>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+
+    
+
+
+</div>
+
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        <script type="text/javascript" src="http://www.ruanyifeng.com/blog/js/prism.js"></script>
+        <script type="text/javascript" src="http://www.ruanyifeng.com/blog/checker.js"></script> 
+            <div id="footer">
+<div id="footer-inner">
+  <div id="footer-content">
+
+      
+<!--
+      <section> 
+     </section>
+  <p><a title="Instagram" target="_blank" href="http://instagram.com/ruanyf">Instagram</a></p>
+       <p><a title="订阅" href="https://app.feedblitz.com/f/f.fbz?Sub=348868" target="_blank">邮件订阅</a></p>
+  
+       <h2>Feed</h2>
+       <p><a title="FeedBurner" href="http://feeds.feedburner.com/ruanyifeng" target="_blank">FeedBurner</a></p>
+       <p><a title="atom.xml" href="http://www.ruanyifeng.com/blog/atom.xml" target="_blank">atom.xml</a></p>
+     
+      <p>支付宝：<a title="支付宝" href="alipays://platformapi/startapp?appId=20000067&url=http%3A%2F%2Fwww.ruanyifeng.com%2Fblog" target="_blank">yifeng.ruan@gmail.com</a></p>
+-->
+
+     <section>
+<!--
+       <h2>授权方式</h2>
+       <p><a title="许可证" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">自由转载-非商用-非衍生-保持署名</a></p>
+       <h2>微信公号</h2>
+       <h2>社交帐号</h2>
+       <h2>联系方式</h2>
+     -->
+       <p><img src="https://www.wangbase.com/blogimg/asset/202001/bg2020013101.jpg" alt="微信扫描"></p>
+       <p>
+         <a title="微博" href="http://weibo.com/ruanyf" target="_blank">Weibo</a> | 
+         <a title="Twitter" target="_blank" href="https://twitter.com/ruanyf">Twitter</a> |
+         <a title="GitHub" target="_blank" href="https://github.com/ruanyf">GitHub</a>
+       </p>
+     
+     <p>Email: <a title="电子邮件" href="http://www.ruanyifeng.com/cdn-cgi/l/email-protection#92ebfbf4f7fcf5bce0e7f3fcd2f5fff3fbfebcf1fdff" target="_blank"><span class="__cf_email__" data-cfemail="ee9787888b8089c09c9b8f80ae89838f8782c08d8183">[email&#160;protected]</span></a></p>
+     </section>
+  
+  
+
+
+  </div>
+</div>
+</div>
+<script data-cfasync="false" src="http://www.ruanyifeng.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function insertLine(e,t){for(var n=0;n<t;n++)e.parentNode.insertBefore(document.createElement("p"),e)}function getImg(){if(!window["main-content"])return!1;for(var e,t=Array.prototype.slice.call(window["main-content"].getElementsByTagName("img")),n=0;n<t.length;n++){if("display: none !important;"===(e=t[n]).getAttribute("style"))return e;if(n===t.length-1)return!1}}function toObjectUrl(e,t){return fetch(e).then(e=>e.blob()).then(e=>{t(URL.createObjectURL(e))})}function toDataURL(e,t){var n=new XMLHttpRequest;n.open("get",e),n.responseType="blob",n.onload=function(){var e=new FileReader;e.onload=function(){t(this.result)},e.readAsDataURL(n.response)},n.send()}setTimeout(function(){var e=getImg();e&&(insertLine(e.parentNode,2),toObjectUrl(e.src,function(t){var n=document.createElement("p"),r=document.createElement("img");r.src=t,n.appendChild(r),e.parentNode.parentNode.insertBefore(n,e.parentNode)}))},3e3);
+</script>                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46829782-1', 'ruanyifeng.com');
+  ga('send', 'pageview');
+
+</script>
+
+<script type="text/javascript" src="http://www.ruanyifeng.com/blog/stats.js"></script>
+<script>
+var supportImg = document.querySelector('#support-img');
+
+if (supportImg && _hmt) {
+  _hmt.push(['_trackEvent', 'banner', 'load']);
+  supportImg.addEventListener('click', function () {
+    _hmt.push(['_trackEvent', 'banner', 'click']);
+  }, false);
+}
+
+var homepageImg = document.querySelector('#homepage_sponsor');
+if (homepageImg && _hmt) {
+  _hmt.push(['_trackEvent', 'homepage-banner', 'load']);
+  homepageImg.addEventListener('click', function () {
+    _hmt.push(['_trackEvent', 'homepage-banner', 'click']);
+  }, false);
+}
+</script>
+
+
+
+        </div>
+    </div>
+<script>(function(){var js = "window['__CF$cv$params']={r:'7df438817d500aae',m:'X1wMPbwubnuMLZkdge_AHb3Pzba1ClEPjJRnQbhbI.E-1688105160-0-ATW9ZaFccTBEHNUqPemk1jeyS9jfaZs57EpZigIdtDS6'};_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/scripts/invisible.js',document.getElementsByTagName('head')[0].appendChild(_cpo);";var _0xh = document.createElement('iframe');_0xh.height = 1;_0xh.width = 1;_0xh.style.position = 'absolute';_0xh.style.top = 0;_0xh.style.left = 0;_0xh.style.border = 'none';_0xh.style.visibility = 'hidden';document.body.appendChild(_0xh);function handler() {var _0xi = _0xh.contentDocument || _0xh.contentWindow.document;if (_0xi) {var _0xj = _0xi.createElement('script');_0xj.nonce = '';_0xj.innerHTML = js;_0xi.getElementsByTagName('head')[0].appendChild(_0xj);}}if (document.readyState !== 'loading') {handler();} else if (window.addEventListener) {document.addEventListener('DOMContentLoaded', handler);} else {var prev = document.onreadystatechange || function () {};document.onreadystatechange = function (e) {prev(e);if (document.readyState !== 'loading') {document.onreadystatechange = prev;handler();}};}})();</script></body>
+</html>

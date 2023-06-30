@@ -1,0 +1,784 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>出中国记（下） | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                心得与体会 &raquo; <a href="from-China-to-Singapore-2.html">出中国记（下）</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">出中国记（下）</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/THINK.html">心得与体会</a></span>
+  
+  <span class="date">时间: 2022-1-9 22:47</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="from-China-to-Singapore-2.html#reply-list">32条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="from-China-to-Singapore-2.html">53641人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E6%96%B0%E5%8A%A0%E5%9D%A1.html">新加坡</a>
+    
+        <a href="../tag/shopee.html">shopee</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <blockquote>
+<p>这篇文章是<a href="from-China-to-Singapore-1.html" target="_blank">出中国记</a>的下半部分。</p>
+<p>继续插播广告：我们团队（Shopee Security Team）正在大力招聘，相关介绍和岗位JD见这里：https://www.leavesongs.com/PENETRATION/singapore-shopee-security-team-recruitment.html</p>
+</blockquote>
+<p>离我抵达新加坡已经接近两个月了，想一想两个月前的今天我仍然在北京的家里，这一段时间仿佛被拉长了，恍如隔世。</p>
+<h2 id="_1"><a class="toclink" href="#_1">启程</a></h2>
+<p>启程的当天，我很早就来到了机场，开始排长队办理行李托运，中间遇到一个小插曲，从北京健康宝下载的疫苗注射证明，由于名字那一栏没有英文导致无法使用，后来在“<em>防疫健康码国际版</em>”这个小程序里导出了一份新的才顺利通过。</p>
+<p>办理完托运后就开始过海关，过安检，排了大几十分钟队后终于进了国际航班的候机大厅。因为疫情的原因，这个区域几乎所有的商店都关门了，只剩零星的货币兑换这类窗口还开着。</p>
+<p>说起货币兑换，我在临行前几天才想起这茬子事儿，然而新币属于小众货币，大部分的银行没法直接取现，我干脆没有换钱，只带了一些人民币和我在一年多前取的一千美元（这又是另一个故事了）。</p>
+<p>看到货币兑换的窗口，我就问了一下这里的汇率，好像是5.0，我嫌贵也就没有换。如果大家有和我类似的情况，还是推荐在这边兑换少量货币，否则等到樟宜机场你就会后悔了。</p>
+<p>在候机的时候认识了一个去澳洲上学的小伙子，和我一个航班，因为直飞澳洲的机票特别贵，所以选择了从新加坡转机。这一刻我第一次感觉在新加坡工作和上学的人是幸运的，相比于离家更远的游子。</p>
+<p>登机的过程很顺利，唯一不爽的是做了很长时间的摆渡车，但这种不爽的感觉转瞬即逝，被我另一种激动的心理替代了。这个激动的心理来源于一个完全陌生的世界，仿佛在我跨国海关的那一刻就开始了。</p>
+<p><a href="../media/attachment/2022/01/09/709860b6-4235-4907-95f1-5b90bc3496e1.png"><img alt="image.png" src="../media/attachment/2022/01/09/709860b6-4235-4907-95f1-5b90bc3496e1.eeaa3c74c059.png" /></a></p>
+<p>最后评价一下新航。</p>
+<ul>
+<li>空乘小姐姐都很专业，但并不是所有人都会中文，这是我第一次遇到交流上的问题</li>
+<li>晚餐很豪华，我选择的鸡排意面，从味道上来讲差强人意，如果有中餐就更好了</li>
+<li>新航有提供免费wifi，离开国境线后就可以使用了，第一次在一万米的高空聊微信，一种新的体验</li>
+</ul>
+<h2 id="_2"><a class="toclink" href="#_2">落地</a></h2>
+<p>飞行了三个多小时以后我第一次踏上异国他乡的土地，落地第一件事是换上我在国内买好的可用三天的流量卡，打开我在国内做好的攻略，上面有一些计划的checklist：</p>
+<ul>
+<li>兑换新币</li>
+<li>购买Prepaid SIM卡</li>
+<li>购买交通卡</li>
+<li>做落地的核酸检测</li>
+<li>联系公司帮忙预约的出租车司机，他送我去我在网上已经定好的酒店</li>
+</ul>
+<p>但是计划赶不上变化，我在办第一件事的时候就遇到了麻烦。还没出海关就看到了一个货币兑换点和一个出售SIM卡的推车，作为一个国内旅游老司机，我感觉这种横在机场走道中间的商贩并不太靠谱，至少价格不太美丽。</p>
+<p>但是我又有点担心这条道后面没再有其他银行，出了机场就更找不到了，于是还是上去问了问汇率——5.3。我当时就后悔不已，我觉得国内机场的汇率就已经很坑了，没想到资本主义世界这么快就对一个没出过国的社会主义接班人露出了自己的本来面目。</p>
+<p>更坑的是旁边的SIM卡，一张要卖80新币。</p>
+<p>当然，我们社会主义青年也不是傻白甜，因为我发现美元的汇率更接近市场价（果然美元是硬通货），于是我换了200美元的新币，先顶过这两天再说。SIM卡和交通卡我决定都不在机场买了，准备到市区找一家便利店解决，从网上了解到大概也就二三十块。</p>
+<p>在海关录了指纹和护照等信息，我就直奔核酸检测点去了，过程大概比国内普通医院要严格一点，但速度也很快。</p>
+<p>由于新加坡的防疫规定，我这会不能乘坐公共交通，必须打车前往酒店隔离，直到核酸检测阴性结果出来才能自由活动。公司帮忙约了一辆出租车，需要我自己联系司机，我用国内的手机卡打通了这个电话。</p>
+<p>接线的是个印度口音，给我直接整崩溃了。</p>
+<p>在经历了无数次沉默与蹩脚的交流过后，我总算听明白了他的位置，在麦当劳旁边。庆幸的是，印度小哥只是接线员，真正的司机是一个华人，会说一口流离的华语。直到两个月后的今天回想起来，他仍然是我见过华语说的比较好的新加坡本地人之一。</p>
+<p>在车上跟他闲扯，发现他对中国十分的了解，包括经济发展和科技进步等等，兴许全世界的出租车司机都是侃大山的能手，也都是针砭时弊的特约评论员，我默默地想。</p>
+<p>后来听他一口一个“国内”地描述他对中国发展的看法，我好奇地问，你说的“国内”是指中国还是新加坡，他回答当然是中国，我又问你是本地人吗，他说是的。也不知道他是真的习惯称呼中国为“国内”，还是只是和我聊天的时候这么说。</p>
+<p>最后，车钱花了48新币，虽然这个价格是公司在邮件里就已经通知过的，但这也是我在新加坡的第一次肉疼。</p>
+<p>到了酒店，又是一个看起来至少有一半印度血统的老哥做前台，我当时心里就打鼓了，新加坡真的像别人说的那样是华人为主的国家吗？后来呆久了也就摸清楚了，大部分服务行业从业者都不是华人，虽然华人说的英语其实也很难听懂。</p>
+<p>磕磕绊绊把入住办理完后，我住进了这家便宜的快捷酒店——一晚上合计400多人民币，整个房间估计也就不到10平米。</p>
+<h2 id="_3"><a class="toclink" href="#_3">自由</a></h2>
+<p>第一晚上总体的心情还是激动的，虽然这半天的经历充满了陌生感，但我从来不是一个害怕陌生的人，我喜欢尝试新的事物，迫不及待地想出门溜达。</p>
+<p>半夜我收到了核酸结果是阴性的邮件，这说明我自由了，第二天中午我开始探索地图。</p>
+<h3 id="_4"><a class="toclink" href="#_4">吃饭</a></h3>
+<p>首先要解决的是吃饭问题，新加坡吃饭的地方通常分为两类：</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Hawker_centre" target="_blank">小贩中心</a>，贵一点的叫<a href="https://en.wikipedia.org/wiki/Food_court" target="_blank">食阁</a>（后文统一称之为食阁）</li>
+<li>餐馆</li>
+</ul>
+<p>前者是很多本地人解决一日三餐的地方，后者和国内一样，是作为日常饮食的补充，也是朋友聚会的场所。</p>
+<p>食阁和大学食堂类似，在一个地方有很多窗口，每个窗口售卖不同的食物，一般5块以内就能吃饱，8块就能吃的比较好了。</p>
+<p><a href="../media/attachment/2022/01/09/77a7d1de-a877-42b2-93c2-40f9fdfbc609.jpg"><img alt="maxwell-food-center-is-the-maxwell-road.jpg" src="../media/attachment/2022/01/09/77a7d1de-a877-42b2-93c2-40f9fdfbc609.82138c730eb4.jpg" /></a></p>
+<p>新加坡每个居民聚居点都会有至少一个食阁，这也是我觉得相比于国内很方便的设计之一。作为一个不太做饭的社畜，在国内我能解决食物的常见方式也就是公司的外卖和自己的外卖😂。但在这边，探索每一个地区的食阁里的美食，就成了我寥寥吃饭时光里比较愉快的一件事。</p>
+<p>在国内我就特别喜欢类似于“美食街”这样的地方，总能在一顿饭里体验好多种食物，但国内的美食街很多是面向游客的，商业化比较重，价格也比较贵。</p>
+<p>而这里的小贩文化已经是市井生活的一部分，不同年纪不同肤色的人都会聚集在这方不算大的市场里，一个人坐在桌前，买一份4块钱的杂菜饭，配上1.5一杯的冰冻酸柑水，在赤道12月的“夏天”里就可以度过一段短暂而美好的时光。</p>
+<p>2020年，新加坡的小贩文化正式被列入<a href="https://ich.unesco.org/en/RL/hawker-culture-in-singapore-community-dining-and-culinary-practices-in-a-multicultural-urban-context-01568" target="_blank">联合国非物质文化遗产名录</a>，希望能够一直保存下去。</p>
+<p>相比于食阁，在餐馆吃饭比国内会更贵一些，通常两个人会吃至少50块钱以上，再加上10%的服务费，7%的消费税，最后多数会花到上百刀新币。</p>
+<p>新加坡服务员不会收小费，但如果你在餐馆吃饭，通常会收固定的10%作为服务费，这个钱和消费税一样都会直接加到账单上。据说2022年消费税还会提高到9%，相比于国内就贵更多了。</p>
+<p>我好几次去餐馆都是吃中餐，总体来说体验都不错，也算物有所值了。</p>
+<h3 id="_5"><a class="toclink" href="#_5">环境与交通</a></h3>
+<p>来到酒店的第二天中午，我开始出门探索我住的那一片区域。我的酒店在Telok Blangah附近，那是闹中取静的一片地方，南边是西海岸高速路，马达与喇叭的声音此起彼伏，北边则是大片大片的绿荫，环境特别好。</p>
+<p>让我印象比较深刻的是，我经常在马路边上看到有各种小动物，松鼠、野鸡，各种鸟，特别是食阁里通常会有很多鸟跑来跑去捡地上掉落的食物来吃，人和自然相处的十分和谐。</p>
+<p>我在国内就了解过这边的饮食文化，所以准备在附近找找有没有食阁解决午餐，但是我发现在这边谷歌地图并不能帮上太大忙，特别是对于寻找食阁这件事，变成了更像游戏里跑图的一件趣事，穿越在鳞次栉比的组屋区中，你永远猜不到在下一栋楼后面是不是藏着一个食阁。</p>
+<p>组屋是新加坡政府给市民提供的廉价房，本地人大部分都居住于组屋，这个我后面也会说到。在组屋区之中行走，不用担心风吹日晒，因为总会有不露天的走廊会带你通往任何你想去的地方，包括食阁。</p>
+<p>我很快找到了一片比较热闹的区域，附近有两个食阁、超市、杂货店、便利店等，在食阁吃了午饭，就跑到便利店里买公交卡，准备到处逛逛。</p>
+<p>这张公交卡叫EZ-Link，可以用来乘坐公交与地铁，不过这一点显然就没有刷手机的国内方便了。EZ-Link 10块钱一张，其中包含5块余额，后续可以直接在地铁站充值。而坐地铁或者公交通常需要1块钱以上的费用，根据距离不同略有差别。</p>
+<p>拿着EZ-Link乘坐了一段公交，这边的交通给我总体的印象和北京深圳完全不同，其中有五点让我印象深刻。</p>
+<ul>
+<li>一是<strong>不堵</strong>，真的不堵，也许得益于政府对于拥车证的控制和高昂的价格，路上的车不算多。</li>
+<li>二是<strong>不挤</strong>，大部分情况下我能在公交和地铁上找到座位，包括市中心的几个地铁站，少数时候没有座位，但也没有感觉到拥挤。中间可能有疫情的原因，但我其实觉得新加坡的人口密度并没有我想的那么大。</li>
+<li>三是<strong>右舵</strong>，新加坡是右舵车，靠左行驶。即使我不开车，刚开始也还蛮不习惯的，有时候往一个方向坐车，我需要思考很久我需要在马路哪一边等车；坐轿车的时候也经常想去开司机那一侧的门。</li>
+<li>四是<strong>文明</strong>，也许这个文明是靠罚单罚出来的。每次过马路的时候，车都会停下来礼让行人，不管是左转右转还是直行。很多时候我还没走到马路边上，一排车就停下来等我了，弄得我挺不好意思，有种不快点走都对不起他们的感觉。</li>
+<li>五是<strong>人行道按钮</strong>，这边大部分的人行道红绿灯需要按按钮才会变绿，否则他就一直是红的。第一次过马路不知道这一点，我左等右等灯还不变色，直到有其他人按了按钮😓。</li>
+</ul>
+<p>我坐了半个小时地铁就来到市中心附近的Chinatown，这边居住的大部分是华人，而且有很多中国餐馆与超市，比较繁华。相比于Telok Blangah，这边更像繁华都市，但从食阁、地铁站、公共厕所来看都相对破旧一些，有点国内城市的“老区”的感觉，不过这也只是我对一两个我去过的场所的感受，并不是全面调查后的结论。</p>
+<p>我在这边把身上所有的美元都换了新币，这边的汇率和网上的国际挂牌价差不多，拿到新币的那一刻感觉整个人都好了，钱果然可以给人以力量。</p>
+<p><a href="../media/attachment/2022/01/09/268f539b-9d2e-4943-9369-26c8f832fafe.png"><img alt="image-20220108225841429-1653922.png" src="../media/attachment/2022/01/09/268f539b-9d2e-4943-9369-26c8f832fafe.19adb0926558.png" /></a></p>
+<h3 id="_6"><a class="toclink" href="#_6">天气</a></h3>
+<p>在不了解新加坡之前，对这边的印象无非是赤道国家，四季如夏，热，这是第一层；在查了相关资料后，新的印象就是，经常下雨，随身带伞，室内冷气很冷，这是第二层；等真正来了这边，才能真正感受到气候的不同，到了第三层。</p>
+<p>虽说是赤道国家，但新加坡是热带雨林气候，所以并没有想象中那么热，年平均温度在23~31度之间，白天出大太阳的时候可能有30度以上，但晚上出来散步的时候体感是很舒适的，大概也就25、6度。总体来说更像北京的夏末秋初，仍然留有夏天的余威，但又不失秋季的凉爽。</p>
+<p>作为一个湖北人，我是真正感受过什么叫“热”，那种热是无论你在屋里屋外，白天夜里，只要不开空调都热得不行的那种热，那是来自大自然馈赠的桑拿。虽然大学和工作到北方生活以后就很少再次感受，但在这种环境下锻炼出的我，对于新加坡这点热度还是能够坦然接受的。</p>
+<p>对这边天气的另一个注解就是雨，我很喜欢这边的雨，一下雨就特别凉快，而且由于这边很多地方都有走道，虽然雨来得急，但也不缺少躲雨的地方就是了，很多时候雨也能在十多分钟内结束。如果要出门比较久，建议还是随身带把伞，因为雨确实来的很突然。</p>
+<p>之前录了一段下雨天去食阁吃饭的视频，有兴趣的朋友可以看看：<a href="https://www.bilibili.com/video/BV1oM4y1c7tk/" target="_blank">https://www.bilibili.com/video/BV1oM4y1c7tk/</a>。</p>
+<p>来之前听网上说这边室内会比较冷，因为大家把空调都开的比较低，我甚至为此还带了几件春装（但是一次都没穿过）。实际体验下来，如果不是长期呆在商场、办公室的话，仅仅是地铁、公交的冷气倒也不至于必须多带一件外套。</p>
+<p>现在我每天的衣着完全是国内夏天的装备，短袖短裤配拖鞋，十分方便。</p>
+<h3 id="_7"><a class="toclink" href="#_7">住宿</a></h3>
+<p>在酒店住了两天，和之前的租房中介约好了时间取新房的钥匙，那天一早上中介就开着自己的车子来接我。我们一路聊着天到了目的地，然后房东的中介来迎接我们，我第一次见到了自己即将居住一年的住所。</p>
+<p>这是一栋不太大的公寓楼，总高就5层，住户也只有40多户，坐落在荷兰村（Holland Village）。我想起来当时为什么要租这间公寓，原因是我在谷歌地图上找呀找，发现荷兰村周围还挺繁华，于是就定了这个位置。</p>
+<p>但其实后来我才发现，不小心住进富人区了。</p>
+<p>这就不得不说到新加坡这边的几种住宅类型：</p>
+<ul>
+<li>组屋（HDB）</li>
+<li>公寓（Condo、Studio）</li>
+<li>别墅</li>
+</ul>
+<p>大部分普通人需要关注的就是前两者。</p>
+<p>组屋是政府建造出售的福利性住房，不以盈利为目的，价格受政府控制，非常便宜，2、3房在40万新币左右，4、5房可能到50万以上。也就是说，换算成人民币，你大概花200~300万即可在媲美北上广深的亚洲大型城市里买到房。</p>
+<p>因为便宜的价格，组屋就成为新加坡居民最多居住的地方，大概有80%以上的人居住在组屋中。除了价格，组屋还有很多别的优点：</p>
+<ul>
+<li>组屋的地理位置都很好，周围500米内一定有地铁站、公交站</li>
+<li>每个组屋区都有食阁、便利店等各种便民商店，组屋区的人不用离开组屋就能解决生活常见问题</li>
+<li>组屋区基础设施很完善，绿化也做的不错，也没有围墙这种概念，出行都很方便</li>
+</ul>
+<p>当然，组屋这些优点的代价就是，只有公民和永久居民才能购买组屋，而且一个家庭只能购买一套，还伴随着对单身🐶的限制等等，主要的目的还是防止组屋被滥用，尽可能保证每位居民都可以拥有自己的住房。</p>
+<p>相比起来，公寓就是私人开发商建的盈利性住宅。公寓的优点是，相对更加豪华，比如所有公寓都会配备自己的泳池和健身房，另外公寓会有围墙，私密性更好一点。</p>
+<p>但是公寓的缺点就更明显了：</p>
+<ul>
+<li>公寓价格是完全跟随市场波动，基本都在100~200万新币一套</li>
+<li>公寓地理位置不能保证，如果周围没有便民商圈和地铁站，我们自己又没买车，那生活就非常不方便</li>
+</ul>
+<p>我住进公寓来就开始后悔了，因为这几天经常在Telok Blangah的组屋区间穿梭，非常羡慕。现在一下搬到人烟稀少的公寓来，周围是富人的别墅区，每天出门吃饭都要走十分钟路，每次从超市拧回大包小包的东西满头大汗时，就是我最像搬到组屋去的时刻。</p>
+<p>想想也是自己惯性思维导致的，我当时觉得我应该住在一个比较繁华一点的区域，但是实际到荷兰村后才发现，这边的繁华主要是因为有大量酒吧和餐馆，但这些低频场所其实对我来说并没有那么需要。</p>
+<p>荷兰村作为新加坡的富人区之一，还有一个问题就是物价比较高，这一点不仅反映在租房的成本上，还反映在超市与食阁的物价上，这一点我后面再做介绍。</p>
+<p>但无论如何我已经付了定金和第一个月的房租，所以我就在这间不大的屋子里安顿下来了。</p>
+<h3 id="_8"><a class="toclink" href="#_8">通讯</a></h3>
+<p>抵达新加坡的checklist上还有一件很重要的事情就是办手机卡，新加坡的手机卡分为pre-pard和post-paid。pre-paid就是预付费卡，我们可以在街边的小店拿护照买到，这种卡会有一定期限，余额花完了需要充值才能继续使用。</p>
+<p>post-paid卡是类似国内的手机卡，但办理post-paid卡必须有本地的居住证，我刚到新加坡还没有办好工作签证，所以只能购买预付费卡。</p>
+<p>我在Telok Blangah的时候就去组屋区找了一家电信相关的小店，老板是一位华人老大妈，我估计应该有60岁，我跟她说明了我的需求，他就慢悠悠地开始帮我推荐套餐。</p>
+<p>最后我选择了Starhub的25块一个月的套餐，大妈告诉我等激活过后会送80个G的流量，我当时觉得这真够我用到我能办到后付费的卡了。但我低估了我自己的流量焦虑，当我后面发现我一天可以用到上10个G时我是真的焦虑了。</p>
+<p>办卡激活的过程完全是大妈在线上完成，她在收银台后面不紧不慢地操作自己的iPad，一遍吐槽这些系统做的非常烂，中间还遇到了各种Bug，索性在等待了差不多半个小时后，我总算拿到了自己新的Sim卡。</p>
+<p>看到一个华人面孔的60多岁大妈在全英文的iPad上操作APP，旁边的收音机里又传来中文的新闻节目，这是一种很违和的场景，我恍惚间想到自己在40年以后的模样，十分赛博朋克。</p>
+<p>办好Sim卡的那一刻我也不会想到，往后的半个多月里我都需要用这80个G与外界通信，包括安装我的电脑。</p>
+<p>是的，我搬进公寓来以后是没有互联网的，电脑想上网也只能连接手机的热点，我也开始精打细算自己的流量。我发现在国内我不需要流量的时候，流量总是异常的多，每个月都能把整个月的流量结余下来，因为我用的永远是上个月结余下来的流量。</p>
+<p>但是现在到了非常缺流量的时候，我的流量却用的飞快。</p>
+<p>最能印证墨菲定律的是，在收到公司寄给我的Mac电脑后，我没细看说明就按照常规的步骤初始化了个人设置，下载了常用软件，花了一个下午完善了自己吃饭的家伙。结果睡前偶然看到随电脑一块寄来的说明文档……我初始化的时候没有配置域相关信息，导致我没法连接VPN和内网。这还不算，我咨询了IT同事以后，得知要重新安装系统，但重装系统需要重新下载系统镜像，也就是说我不光白下载安装了一堆常用软件，现在还需要重新下载整个MacOS的镜像，再次重新安装所有的软件。</p>
+<p>这件事严重地加深了我的流量焦虑，我甚至有一天下午跑到食阁对面的咖啡馆门口用了他们1个小时的WiFi来下载资料（但没有点一杯咖啡😂）。这让我想起了大一那年，同样没有宽带的自己站在学校综合楼里蹭移动CMCC Wifi的岁月。</p>
+<p>后来上班以后我才从同事那里知道，办理宽带是不需要等待工作签证办好的，只需要拿租房合同和IPA即可。于是我联系了办理宽带的中介，选择了其中比较便宜的Whizcomms作为运营商，1G带宽40新币一个月。</p>
+<p>Whizcomms是本地最大的运营商Singtel下的子品牌，但其从官网和各种系统上来看都烂的不行，我有点害怕和国内的长城类似。但实际装好以后体验下来，网速还不错，也很稳定。</p>
+<p>除了价格便宜，Whizcomms的另一个优点是允许只办一年套餐，对于我这种居无定所的外国人来说十分友好。但相对的，我需要自己准备路由器，或者买他们的。所以，如果在国内有自己的路由器，尽量带着来这边，因为新加坡本地的电子产品都会比较贵。</p>
+<p>最后，我花了$70多初装费+$70多买路由器后，成功地装上了1G带宽的互联网，惊喜的是这边上下行带宽是相等的：</p>
+<p><a href="../media/attachment/2022/01/09/8f20ed93-ade0-441d-aa35-e69282ddc090.png"><img alt="image-20220109055704268.png" src="../media/attachment/2022/01/09/8f20ed93-ade0-441d-aa35-e69282ddc090.941ddee6ca15.png" /></a></p>
+<h3 id="_9"><a class="toclink" href="#_9">签证</a></h3>
+<p>这一段时间下来我深刻地感受到，没有办好签证在新加坡真是寸步难行，十分影响正常生活。</p>
+<p>但签证这个事儿的速度并不以我的意志而转移，HR帮我约了劳工部最近可以约的日期——去公司报道第一周的周四，这一天离我抵达新加坡已经过去将近半个月了。</p>
+<p>没办法，这段日子只能苟着——没有银行卡全靠现金，工资只能拖到下个月底发，手机流量先省着用。</p>
+<p>其实这边给我的一个印象就是，大家做任何事情都不紧不慢，按计划来，说好听点是有条不紊，但说难听点就是效率较低。在国内我也换过身份证，办过护照通行证，基本上都是随时去就可以办，但这边的很多事情都是需要先预约的，也不知道是不是疫情的原因。</p>
+<p>办理材料我还遇到一个麻烦事儿，就是我需要一些文件的纸质版，“hard-copy”。但我在这边很少见到有打印店，也许是临街的店铺通常比较珍贵，好在本地的一个朋友带我去找了一家打印店，藏在一幢商场办公楼里，1张纸0.5新币。对于这种寻找店铺的方法，我现在还没太摸清，谷歌地图实在是没有美团和大众点评好用。</p>
+<p>预约当天我就带着材料去了，办证过程还挺顺利，只不过我还得再等上一两个礼拜才能拿到我的卡。</p>
+<p>这天还遇到一个小插曲，在劳工部楼下有一个死变态不知道想干什么，凑到我身边叽里咕噜说了一堆话我也没听懂，还想对我上下其手，后面被我瞪了一眼他就跑了。</p>
+<p>后面的时间还是静静等待，直到某一天邮差给我打电话，我才终于拿到了自己的EP卡：</p>
+<p><a href="../media/attachment/2022/01/09/22628724-4979-4aed-a085-86adae105382.png"><img alt="image-20220109165002916.png" src="../media/attachment/2022/01/09/22628724-4979-4aed-a085-86adae105382.34c7b968bf9c.png" /></a></p>
+<p>原来这张卡是会先寄到公司，再由公司寄给我。</p>
+<p>拿到EP卡后，我迅速开始申请银行卡和后付费Sim卡。这边的Sim卡没有那么多各种套路，而且也支持携号转网，因为我的预付费卡是Starhub的，所以我直接办了Starhub的后付费卡，这样号码可以直接迁移过来，不用更换。</p>
+<p>在迁移的过程中其实也遇到了一些问题，于是我直接在Facebook上找了Starhub的客服，尽量通过文字的形式解决我的问题，避免再遇到沟通问题。后面也比较顺利，最终成功帮我把号码迁移过来了。在这边生活经常遇到需要找客服的情况，能找到即时通讯级别的客户已经属于幸运了，大部分客服是邮件联系，而且基本上有去无回。</p>
+<p>本地人效率不高的做事方式还有一个印证就是，这边很多材料是通过物理邮件的形式寄给我，比如我的银行卡、银行卡密码、Singpass密码等。</p>
+<p>办理好了银行卡以后，我等待了很久才收到一封信，我心情激动地打开信封，发现里面是一张纸，上面写了我应该如何激活我的账户……是的，只是一张说明书。后面陆续又收到了两封信，一封包含我的银行卡，一封包含银行卡密码。</p>
+<p>我能想到银行可能是为了防止银行卡被人截胡导致密码泄露的问题所以才分了三封信寄给我，有种鸡蛋不要放在一个篮子里的意思，但仔细想想其实应该有更好的方式带替代这种奇怪的做法。</p>
+<h3 id="_10"><a class="toclink" href="#_10">物价</a></h3>
+<p>根据中国日报2021年底的<a href="http://ex.chinadaily.com.cn/exchange/partners/82/rss/channel/language/columns/v0m20b/stories/WS61a8783da310cdd39bc78f67.html" target="_blank">报告</a>，新加坡是世界上生活成本最高的城市之一，仅次于以色列的特拉维夫。好巧不巧，这两个国家就是我护照上唯二办过签证的国家。</p>
+<p>实际体验下来，让我肉疼的地方确实有很多，但根据记账的结果来看，生活成本也并不是完全不可接受。</p>
+<p>简单地罗列了一下我或和我相似的人，每个月大概的固定花销（全部单位都是新币）：</p>
+<ul>
+<li>租房（整租公寓）：$2000~$3000</li>
+<li>水电费：$50~$100</li>
+<li>吃饭（食阁）：$300~$600</li>
+<li>水果：$100</li>
+<li>宽带：$40</li>
+<li>手机：$20</li>
+<li>交通：$50~$100</li>
+<li>住院保险（按年算$1000左右）：$85</li>
+<li>线上各种服务（包括回国的代理）：$20</li>
+<li>零食娱乐等其他：$100~$200</li>
+</ul>
+<p>再加上额外的一些花销，算下地可能不到$4000一个月。这还是因为我租到富人区导致的，如果与其他人合租组屋的话，一个主卧租金大概只在$1000~$1500，这样可以把每个月的花销控制在$2000~$2500，相比于本地的平均工资$5500新币来说其实绰绰有余。</p>
+<p>如果按照物价水平和平均工资的比例来算的话，国内并不比新加坡便宜太多，只是因为互联网行业在国内确实属于“高薪”人群，导致来到这边感觉生活成本略有上涨。</p>
+<p>另外新加坡还有一个重要的优势是房价，如果我们能顺利拿到永久居民，就可以购买二手组屋，即使不能购买组屋，公寓的价格也不是完全不能接受。再加上这边租售比确实高的惊人（从房租的价格就能看出），而首付（20%~30%）和年化利率（1%~2%）又比国内少，对于社畜来说，能尽快买房一定比租房划算得多，通常的结果只是把房租替换为月供而已。</p>
+<p>生活用品上面，超市的物价也比国内要高一些，原因是这边所有商品都依赖进口，品类也不多，居民只能购买品牌货。如果仅从同一个品牌的同一种商品的价格上对比，其实新加坡并不比国内高多少，但国内的一个很大的优势就是品类众多，用户可以选择的范围也很广，而且随着拼多多和淘特的崛起，很多白牌商品的质量其实不比品牌货要差，但价格可以便宜很多，这也是国内的一大优势。</p>
+<p><a href="../media/attachment/2022/01/09/bb77eb45-f1ec-4e95-add1-26813d3a6b7c.png"><img alt="image-20220109211331091.png" src="../media/attachment/2022/01/09/bb77eb45-f1ec-4e95-add1-26813d3a6b7c.fc3f24360aab.png" /></a></p>
+<p>单从物价上来看，新加坡确实比国内贵一些，但这一部分钱可以从个税上找补回来不少。我曾经换算过，如果年薪合算 100 万 RMB 的话，到手会比国内多 18w （不交公积金的情况下）。</p>
+<h3 id="_11"><a class="toclink" href="#_11">网购</a></h3>
+<p>当然网购和外卖也是日常购物必不可少的部分。我在新加坡体验过三甲网上购物平台：</p>
+<ul>
+<li><a href="https://shopee.sg/" target="_blank">Shopee</a></li>
+<li><a href="https://www.lazada.sg/" target="_blank">Lazada</a></li>
+<li><a href="https://www.courts.com.sg/" target="_blank">Counts</a></li>
+</ul>
+<p>作为Shopee的员工，我后面的话可能很多人觉得我是偏袒自己或者打击竞争对手，但我也仅是一个普通员工，没必要专门为了这个说假话——我是真的能感受到为什么Shopee成立这么几年就可以把竞争对手按在地上摩擦。</p>
+<p>我在Shopee买过好几次东西，但基本都是日常用品，总金额加起来不高，总体来说虽然物流速度、价格什么的比不上国内的平台，但暂时没遇到糟心事儿，收到的商品我也都比较满意。</p>
+<p>Lazada反而是我购物花钱最多的平台，因为我在上面买过一个airpods3，当时是因为对比了价格，发现Lazada是最便宜的。</p>
+<p>这一单倒是没出什么问题，我在Lazada上还买过一个电脑支架，说是买也不太准确，因为这是我用新人购物券兑换的，总共就6新币，等于这单我没花钱（Shopee的新人礼物是一个大块的鼠标垫）。</p>
+<p>当时这个支架是在airpods后面送到的，我打开一看，恼火，连接轴处一块塑料断了，导致支架断成了两截。我当时就很后悔，我不如直接把这张优惠券用在airpods上。</p>
+<p>我心想坏就坏了吧，就联系了退货，看能不能把优惠券退回来。</p>
+<p>等了好几天，退货的流程总算走完了，但我发现优惠券没有退，于是我就联系客服，填了一张申请退优惠券的表格。到这里吧，我也只是想碰碰运气，毕竟新人优惠券，如果不能退倒也说得过去。</p>
+<p>最雷的事情来了，就在我填完表格的第二天，我收到了Lazada的回复：</p>
+<blockquote>
+<p>We have detected anomalies/ irregular activities in your account. As a result, you will not be able to collect any vouchers or coins on Lazada. This is done to ensure that our platform remains safe and secure for everyone. We apologise for the inconvenience caused.</p>
+</blockquote>
+<p><a href="../media/attachment/2022/01/09/19daca70-84b9-467b-b550-5383de7b9e09.png"><img alt="image.png" src="../media/attachment/2022/01/09/19daca70-84b9-467b-b550-5383de7b9e09.0338a3adace0.png" /></a></p>
+<p>哈，“由于你的账户有非正常的活动，非但优惠券不给退了，今后你再也用不了任何优惠券了”。我成黑户了。</p>
+<p>这个操作真的把我气坏了，后面找客服申述，客服说请去邮件回复，回复了邮件，至今没有任何答复。行吧，因为6块钱的优惠券我成黑户了，估计也就告别Lazada了。</p>
+<p>在外卖上我也遇到过很恼火的事情，而且同样是本地被人打趴下的平台。</p>
+<p>我在新加坡用过两个外卖APP，分别是<a href="https://www.grab.com/sg/" target="_blank">Grab</a>和<a href="https://www.foodpanda.sg/" target="_blank">FoodPanda</a>。在本地生活这一块，Grab虽然是后起之秀，但也类似于Shopee一样，把先来者打的满地找牙。</p>
+<p>我不相信这两家公司的老板和员工们看不出原因，毕竟我来新加坡才不到两个月，已经深深感受到了Lazada和FoodPanda的烂。</p>
+<p>在新加坡点前三次外卖都是用的FoodPanda，用第三次的时候遇到了问题，配送员说送到了，放门口了，但我没收到任何东西。跟配送员联系，确认了他没走错地方，他说他拍照并上传到系统里了，但不能直接给我看，需要我联系客服。</p>
+<p>好吧，兴许被别人拿错了，我就联系客服，客服很客气，一顿说，说要下去调查，有结果再跟我联系。</p>
+<p>于是等了差不多一个礼拜，收到一封邮件：</p>
+<p><a href="../media/attachment/2022/01/09/a9c24b9d-a928-4df3-be23-f5cdb102e873.png"><img alt="image.png" src="../media/attachment/2022/01/09/a9c24b9d-a928-4df3-be23-f5cdb102e873.7512fdb67e4a.png" /></a></p>
+<p>哈，就机械性地给我打发了，我要的证据（照片）没有，反正我不满足退款的条件，至于为什么不满足我也说，问就是违反条款，联系邮件也没人回复，网上一查不少人也遇到过类似的问题。</p>
+<p>其实在中国生活过的同学都知道，不管是网购还是外卖，国内是不可能遇到这种问题的，这一块确实是资本主义的缺点，消费者是弱势群体，被欺负了没有任何办法，什么12345什么12315什么工信部邮政局，有一个算一个这边一律都没有（可能是我不知道？）。</p>
+<p>在国内我也曾多次发微博吐槽过美团饿了么淘宝滴滴，但我的诉求总归能快速跟进，即使最后的处理不满意，但解决的路径是有的。而且斗争经验丰富的我们，知道国内遇到什么问题可以找哪些主管单位投诉，现在在这边也只能是忍气吞声了。</p>
+<p>后面我就全面转向Grab了，也没再遇到过问题（这是flag吗）。Grab有一点让我非常喜欢，它支持通过文字的方式和配送员联系，并且还会对信息进行翻译。这一点小细节对印度口音的人来说真的是一味良药。</p>
+<h3 id="_12"><a class="toclink" href="#_12">海运</a></h3>
+<p>经历了这些糟心事儿以后，我开始怀念国内的淘宝。</p>
+<p>后面我了解到，其实我是可以在淘宝上买东西的，当我们在淘宝APP上设置了地址为新加坡后，将会开启一个全新的世界。淘宝上的商品分为下面几种类型：</p>
+<ul>
+<li>不支持送到新加坡的商品，会直接显示无货</li>
+<li>支持配送到新加坡的商品</li>
+<li>支持满300人民币免邮配送到新加坡的商品</li>
+</ul>
+<p>所以，其实很多商品都是支持配送到新加坡的，无非是我需要多付一点运费。</p>
+<p>其实淘宝的运费真的不算贵，我之前因为Foodpanda的事，一怒之下买了一个可视门铃，价格330人民币，运费35块，下单6天就送到了新加坡的家里，非常方便。</p>
+<p>说到可视门铃，我原以为以后会经常遇到需要扯皮的情况，我可能需要提供证据，但实际上我真的想多了，对方根本没有给我扯皮的机会，连邮件都不回复的。</p>
+<p>淘宝上还有一个分区是“满299SG包邮”分区，里面的商品满了299人民币就可以直接包邮送到新加坡家里，包括海运时的税费。</p>
+<p>在这个列表里面购物其实是一件很纠结的事，因为这里面的商品品类虽说还算齐全，但大部分性价比都不是很高，要不就是牌子没听说过，要不就是一些非官方的专卖店，便宜的东西凑不够300块，贵的东西又不放心在里面买。</p>
+<p>但有总比没有强，我最近凑了一单已经开始配送了，走的是海运，不知道要多久才会送到。</p>
+<p>除了淘宝官方的配送渠道，网上还有很多第三方集运的公司，这些公司的运作方式就是，我们有什么要在国内寄到海外的物品，就直接先寄送到他们在国内的仓库里，他们再帮忙转运到海外。</p>
+<p>对于我们自己要寄的物品和淘宝上不发海外的物品，我们就可以通过这些第三方集运公司来配送。这些集运商价格会比淘宝邮费贵一些，大概都需要50块起步，小件按照斤来计费，大件按照立方米来计费。</p>
+<p>我之前把我在国内的台式电脑、书籍、升降桌等一大包东西都给使用这个渠道寄过来了，国内外的邮费加在一起大概花了一千多，至今还未到，不知吉凶。</p>
+<h3 id="_13"><a class="toclink" href="#_13">治安</a></h3>
+<p>前面虽说遇到了很多糟心事儿，但大部分事情和治安无关，顶多也就是资本家欺负欺负老百姓。新加坡本地的治安是非常好的，这一点和国内比较类似，我们无论几点都可以出门散步。</p>
+<p>这边治安好除了表现在刑事案件少以外，我平时在外会防范的事情也少了很多，举一些例子：</p>
+<ul>
+<li>虽然食阁的人很杂，但我在食阁吃饭时，可以随便掏出身上的任何东西占座位</li>
+<li>雨伞、鞋子等各种杂物都可以直接放在家门口，头盔护具也都可以直接放自行车上</li>
+<li>找中介办事不太需要担心被人坑，价格也都公开透明（比如我租的房子，办的宽带）</li>
+<li>有好几次出门吃饭忘了锁门（包括今天），但其实我并不担心东西被偷</li>
+</ul>
+<p>这些事情其实国内也不是经常发生，但在国内生活的时候总是会多一个心眼，特别是对于不在自己家门内的财产，一些老年人拿了也不会认为是“偷”，只说是你不要了。在北京我曾经给小区的流浪猫准备了一个木头的猫窝，里面放上猫粮和水，但可能是这个盒子太结实了，不出一个礼拜就消失掉了。</p>
+<p>新加坡我只生活了两个月，很多社会的阴暗面我还没体验到，暂时对这边人与人的信任还比较满意。</p>
+<h3 id="_14"><a class="toclink" href="#_14">疫情</a></h3>
+<p>来到新加坡后，不少人问过我这边疫情的情况。疫情这个词语确实在这两年成为了大部分中国人心中的关键词，我们国家一直在抗疫的最前线，为了动态清零的目标付出了巨大的代价。</p>
+<p>前些天我也在关注西安的疫情和相关的处理措施，有时候很生气，有时候又很无奈。我们不能简单地评价“动态清理”政策是正确还是错误，只能说这是高层的一个选择，为了不牺牲任何性命而选择牺牲了很多别的东西。</p>
+<p>新加坡政府走的是另一条不同的路线，从最早和中国执行一样的清零政策，到去年下半年开始逐渐开放，与病毒共存，这其实也是另一种决策。我常在国内的互联网上看到嘲讽国外抗疫结果的评论，包括新加坡，但任何事情都不是非黑即白那样简单，作为一个重度依赖进出口的港口国家，新加坡必须找到一个疫情与经济的平衡点，本地政府其实也正在做这件事。</p>
+<p>我刚来这边的那段时间，因为开放边境导致确诊的数量飞速上升，几乎都是每天2、3000的确诊、个位数的死亡。</p>
+<p>但就我个人感觉，疫情并没有太影响我们的日常生活，我想主要原因有这样几条：</p>
+<ul>
+<li>这边的医疗资源确实比较充足，氧气设备和ICU并没有在这样的确诊人数中被击穿，医疗系统仍然保持有条不紊的运行</li>
+<li>疫苗接种人数已经超过85%，能打针的人几乎都打过了</li>
+<li>日常生活与疫苗挂钩，不打疫苗很多地方都不让进</li>
+</ul>
+<p>我认为这三点就是政府敢于逐步开放的原因。</p>
+<p>另外，后面的一些政策也在慢慢随着情况的改变而调整，决策者们总是能以科学的态度对待问题，而不似欧美那种党派斗争。再加上新加坡地方小，船小好掉头，客观原因也能让政策更加灵活，到今天每日的确诊人数已经降到几百人了。</p>
+<p>对于我自己而言，平时除了出门戴口罩（新加坡人民对口罩的要求非常严格，大街上几乎看不到不戴口罩的人），居家办公，进公共场所扫码以外，没有遇到太多和新冠病毒相关的事情。</p>
+<p>虽然但是，不管使用何种政策，我还是希望国内外的人民都能战胜病毒，做到最后的胜利。</p>
+<h3 id="_15"><a class="toclink" href="#_15">医疗</a></h3>
+<p>新加坡的医院分为三类，执行的是社区医院+专科医院两级的模式：</p>
+<ul>
+<li>社区医院</li>
+<li>公立专科医院</li>
+<li>私立专科医院</li>
+</ul>
+<p>社区医院是小诊所，可能只有一两个全科医生，普通民众生病是需要先去社区医院看大夫，如果是普通的感冒发烧肚子疼，可能医生给开点药就回家了。</p>
+<p>如果社区医院的医生觉得这个病他看不了，就会开一封推荐信让你去找某个专科医院的医生。专科医院就类似于国内的大医院，里面有各种不同的科室。</p>
+<p>通过这两级模式，大部分日常的小病都在社区医院解决了，也可以避免占用专科医院的资料资源。</p>
+<p>我因为是国内打的新冠疫苗，所以在抵达新加坡30天内需要去做一次抗体检测，如果抗体是阳性我才能够继续保留我的疫苗绿码，否则我就需要重新打两针疫苗。</p>
+<p>其实在本地打两针mRNA疫苗并不是一件坏事，根据<a href="https://weibo.com/1728715190/L1A8pDbGx" target="_blank">研究</a>表明，混合施打疫苗可以提高疫苗的效果。如果实在信不过辉瑞或Modena，新加坡这边也支持打科兴这样的灭活疫苗，有选择总比没有好。</p>
+<p>我在疫苗码失效的前一天去了荷兰村附近的社区医院，虽说是社区医院，但里面的华人医生30多岁，中文说的特别好，给人感觉素质很高，不过价格也很高，最后挂号、抽血加检测一共花了109刀新币。</p>
+<p><a href="../media/attachment/2022/01/09/09987a0e-3e63-4f9d-87df-1cf7e379e2b6.png"><img alt="image.png" src="../media/attachment/2022/01/09/09987a0e-3e63-4f9d-87df-1cf7e379e2b6.9e1762921281.png" /></a></p>
+<p>好在这个费用公司可以报销。</p>
+<p>可能这个世界上除了中国，其他国家的医疗费用都是很高的，所以我还是花了大价钱配置了各种保险，希望用不上吧。</p>
+<blockquote>
+<p>为什么不直接使用公司的保险？</p>
+<p>因为公司的集体保险是随着工作变化的，如果以后换工作、失业或者想提前退休，因为年纪大导致个人保险就不一定能买了。另外个人住院险可以覆盖新加坡所有的私立医院，医疗条件更好。</p>
+</blockquote>
+<h3 id="_16"><a class="toclink" href="#_16">工作</a></h3>
+<p>这段时间一直在远程工作，明天正式开始AB班。</p>
+<p>虽说面试的时候使用中文，但真正工作中还是会经常遇到需要讲英文的场景，作为一个从小英语就不太好的同学，日常的工作还是会受到一些影响。</p>
+<p>不过最近公司安排的英语课就快要开始了，由于我英语水平太次，头一个月每周需要上三天课，每天从早上10点上到下午4点；后续还有半年的小班，每周两个小时。我觉得这也算公司给我们的另一种福利，希望课程结束后我的英文能爬上一个层次。</p>
+<p>平时的工作内容主要是甲方安全的那些事情，和国内也没有太大差别，作为英文和甲方安全的双料小白，还是很感谢团队师傅们能够包容我。有人问我冲出舒适区有没有后悔，我当然没有后悔，人生的背景就是不断变化的世界，只有在这艘船上站稳脚跟，才能迎接未来的变化与风浪。</p>
+<p>这篇文章我写了两天，希望能覆盖整个我这两个月的经历，也能全面地介绍我个人了解到的新加坡。如果有同学仍然对新加坡与Shopee感兴趣，可以考虑给我投个简历，包括其他非安全团队我也可以帮忙内推：<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#112;&#104;&#105;&#116;&#104;&#48;&#110;&#46;&#112;&#104;&#50;&#102;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#112;&#104;&#105;&#116;&#104;&#48;&#110;&#46;&#112;&#104;&#50;&#102;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E6%96%B0%E5%8A%A0%E5%9D%A1.html">新加坡</a>
+                
+                    <a href="../tag/shopee.html">shopee</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 32 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3773">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/94e71bd0079ebbd4f1b4b11cf22eafa5.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">W4ter</a></div>
+                    <p>我好奇新加坡的宽带是分配IPV4公网IP的吗？回大陆是直连吗？</p>
+                    <span class="comment-time">时间: 2022-01-10 10:39</span>
+                    <span class="comment-reply"><a href="#comment-3773" onclick="reply_to('3773','W4ter')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3788">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Dan</a></div>
+                    <p>@W4ter 有IPV4 我用PI搭了一个代理 回国时当vpn用😊<br>而且我家里的宽带的ip地址连续使用了一年都没变 🤷🏻‍♂️</p>
+                    <span class="comment-time">时间: 2022-01-13 07:29</span>
+                    <span class="comment-reply"><a href="#comment-3788" onclick="reply_to('3788','Dan')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3771">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Kholin</a></div>
+                    <p>这消费真的高，相当于我在北京生活时消费的三倍</p>
+                    <span class="comment-time">时间: 2022-01-10 09:22</span>
+                    <span class="comment-reply"><a href="#comment-3771" onclick="reply_to('3771','Kholin')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3770">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">xxx</a></div>
+                    <p>上下1G是真的爽，也不算贵。。。xmsl</p>
+                    <span class="comment-time">时间: 2022-01-10 00:38</span>
+                    <span class="comment-reply"><a href="#comment-3770" onclick="reply_to('3770','xxx')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+<div class="type-post" id="pagination"><ol class="page-navigator">
+    
+</ol></div>
+
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="36d8895285a2f1ab130875eaf04918d9a654236a" />
+</div><div class="col-6">
+<img src="../captcha/image/36d8895285a2f1ab130875eaf04918d9a654236a/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="476" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="uE2Hgjf8u927ADQmo6Vu6GFcOkUzl8lcgcqyOoQRSvgQ8bEKq7Sf39Ih9HbKUKxu">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

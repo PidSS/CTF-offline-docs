@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>2022秋见到的一些Crypto题</title>
+
+    <meta name="description" content="对 2022 夏、秋季见过的一些 Crypto 题目的讨论。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="2022秋见到的一些Crypto题" />
+    <meta property="og:description" content="对 2022 夏、秋季见过的一些 Crypto 题目的讨论。" />
+    <meta property="og:url" content="https://www.ruanx.net/2022-fall-crypto-problems/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/09/output.jpg" />
+    <meta property="article:published_time" content="2022-09-15T10:58:28.000Z" />
+    <meta property="article:modified_time" content="2022-09-25T05:17:22.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="2022秋见到的一些Crypto题" />
+    <meta name="twitter:description" content="对 2022 夏、秋季见过的一些 Crypto 题目的讨论。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/2022-fall-crypto-problems/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/09/output.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "2022秋见到的一些Crypto题",
+    "url": "https://www.ruanx.net/2022-fall-crypto-problems/",
+    "datePublished": "2022-09-15T10:58:28.000Z",
+    "dateModified": "2022-09-25T05:17:22.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/09/output.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "Crypto",
+    "description": "对 2022 夏、秋季见过的一些 Crypto 题目的讨论。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">2022秋见到的一些Crypto题</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2022-09-15">15 Sep 2022</time>
+                </section>
+            </header>
+            <figure class="post-image">
+                <amp-img src="https://www.ruanx.net/content/images/2022/09/output.jpg" width="600" height="340" layout="responsive" 
+                alt="2022秋见到的一些Crypto题"
+                ></amp-img>
+            </figure>
+            <section class="post-content">
+
+                <h2 id="0x00-%E5%89%8D%E8%A8%80">0x00 前言</h2><p>　　开篇博客写一点 Crypto 题解。这些题目有些是亲身参赛做过的，有些是从网上看到，觉得比较有价值。与读者诸君共同学习。附件可以从文章中下载。</p><p></p><h2 id="0x01-%E7%BD%91%E9%BC%8E%E6%9D%AF2022%E5%88%9D%E8%B5%9B">0x01 网鼎杯2022初赛</h2><p>　　网鼎杯作为简中赛博安全「奥运会」，第一、二届的初赛密码题风格都比较一致：<strong>不知所谓</strong>。做过「simple@2020」「boom@2020」「not_only_base@2018」的读者当明白笔者在说什么。</p><p>　　2022 年的第三届网鼎杯初赛，笔者参加了青龙组，又从互联网搜集到其他组的几道题目。今年网鼎杯的命题水平比往年有所进步，考察范围也从往年的几乎全部是模板题，变得更加需要一些思维能力。是一个好的现象。</p><h4 id="t1-grasshopper">T1 grasshopper</h4><p>　　题目附件：</p>
+        <div class="kg-card kg-file-card kg-file-card-medium">
+            <a class="kg-file-card-container" href="../../content/files/2022/09/attachment-1.zip" title="Download" download>
+                <div class="kg-file-card-contents">
+                    <div class="kg-file-card-title">Attachment</div>
+                    
+                    <div class="kg-file-card-metadata">
+                        <div class="kg-file-card-filename">attachment.zip</div>
+                        <div class="kg-file-card-filesize">913 Bytes</div>
+                    </div>
+                </div>
+                <div class="kg-file-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><defs></defs><title>download-circle</title><polyline class="a" points="8.25 14.25 12 18 15.75 14.25"></polyline><line class="a" x1="12" y1="6.75" x2="12" y2="18"></line><circle class="a" cx="12" cy="12" r="11.25"></circle></svg>
+                </div>
+            </a>
+        </div>
+        <pre><code class="language-python">from Crypto.Util.number import *
+from random import randrange
+from grassfield import flag
+
+p = getPrime(16)
+
+k = [randrange(1,p) for i in range(5)]
+
+for i in range(len(flag)):
+    grasshopper = flag[i]
+    for j in range(5):
+        k[j] = grasshopper = grasshopper * k[j] % p
+    print('Grasshopper#'+str(i).zfill(2)+':'+hex(grasshopper)[2:].zfill(4))
+</code></pre><p>　　简单来说，维护一个长度为 $5$ 的状态向量，初始为随机值。总共进行了 <code>len(flag)</code> 即 $42$ 轮变换，每次变换是：</p><ol><li>$g \leftarrow flag _ i$</li><li>对 $k = 1 \to 5$ 执行 $g \leftarrow g \cdot k _ j; ~~ k _ j \leftarrow g$</li></ol><p>　　我们记初始状态的 $k$ 向量为 $(x _ 0, x_ 1, x _ 2, x_ 3, x_4)$，那么在草稿纸上推演一下：</p><ol><li>第一轮变换后，状态向量为：$$(f_0,\quad f_ 0 x _ 0, \quad f _ 0 x _ 0 x _ 1 ,\quad f _ 0 x _ 0 x _ 1 x _ 2 ,\quad f _ 0 x _ 0 x _ 1 x_ 2 x _ 3 ,\quad f _ 0 x _ 0 x _ 1 x _ 2 x_ 3 x _ 4 )$$</li><li>第二轮变换后，状态向量为：$$(f _ 0 f _ 1 x _ 0, \quad f _ 0 ^ 2 f _ 1 x _ 0 ^ 2 x _ 1,\quad  f _ 0 ^ 3 f _ 1 x _ 0 ^ 3 x _ 1 ^ 2 x _ 2,\quad  f _ 0 ^ 4 f _ 1 x _ 0 ^ 4 x _ 1 ^ 3 x _ 2  ^ 2 x _ 3, \quad f _ 0 ^ 5 f _ 1 x _ 0 ^ 5 x _ 1 ^ 4 x _ 2  ^ 3 x _ 3 ^ 2 x _ 4)$$</li></ol><p>　　再往下很难再人工计算了。不过我们观察到一个性质：<strong>状态向量的每一个分量，始终是 $f _i$ 和 $x _ i$ 的幂相乘得到。</strong>想要表述状态向量中的一个分量，只需提供一个 $42 + 5 = 47$ 维数组，表示各个元素（$f_0 \sim f_{41}, x_0 \sim x_4$）的幂次。因此本题可以透过符号计算，直接求得每轮的状态向量（以 $f_i, x_i$ 之幂积来表示）。用 SageMath 做一个简单的演示：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-7.png" class="kg-image" alt width="2253" height="1255" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-7.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-7.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-7.png 1600w, https://www.ruanx.net/content/images/2022/09/image-7.png 2253w" layout="responsive"></amp-img></figure><p>　　如上图，我们手上有了 42 组方程，每个方程形如：$$f _ 0 ^ {\lambda _ 0} \cdot f _ 1 ^ {\lambda _ 1} \cdots f _ {41} ^ {\lambda _ {41}} \cdot x _ 0 ^ {\lambda _ {42}} \cdots x _ 4 ^ {\lambda _ {46}} \equiv out_{k} \pmod p$$</p><p>　　这显然可以通过高斯消元解决，但有一个很重要的问题：方程组不满秩。一共有 $47$ 个未知量，但只有 $42$ 组方程。这时候我们注意到，flag 的前缀一定是 <code>flag{</code> ，于是 $f _ 0 \sim f_ 4$ 我们已知了。所以恰好可以补充到 $47$ 个方程，于是可以得到唯一解。</p><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2022/09/equation--1-.svg" class="kg-image" alt width="2693.576" height="1096.016" layout="responsive"></amp-img><figcaption>▲ 增广矩阵。SVG 格式，可以放大查看</figcaption></figure><p>　　我们面临的最后一个问题：题目中的模数 $p$ 未知。但由于它只有 $16$ 位，而 $[2 ^ {15}, 2 ^ {16}]$ 范围内的质数仅有 $3030$ 个，故可以直接枚举 $p$，查看输出结果是否为可见字符。</p><p>　　代码细节有点多。首先生成增广矩阵：</p><pre><code class="language-python">class Symbol():
+    def __init__(self, s=None):
+        self.r = zero_vector(47)
+        
+        if s:
+            if s[0] == 'f':
+                self.r[int(s[1:])] = 1
+            elif s[0] == 'x':
+                self.r[42 + int(s[1:])] = 1
+    
+    def __str__(self):
+        return '  '.join([f'u{i}^{self.r[i]}' for i in range(47)])
+    
+    def __mul__(self, a):
+        res = Symbol()
+        res.r = self.r + a.r
+        
+        return res
+
+k = [Symbol(f'x{i}') for i in range(5)]
+flag = [Symbol(f'f{i}') for i in range(42)]
+
+out = [0x2066,0xa222,0xcbb1,0xdbb4,0xdeb4,0xb1c5,0x33a4,0xc051,0x3b79,0x6bf8,0x2131,0x2c40,0x91ba,0x7b44,0x5f25,0x0208,0x7edb,0x62b5,0xcec5,0x5ab3,0x3c46,0xc272,0x714b,0x9e0b,0x48ee,0x44cc,0x05a0,0x3da3,0x11b1,0x259f,0x899d,0xa130,0xe58f,0x23f3,0x5829,0x6beb,0x3681,0x0054,0xa189,0x2765,0xc63d,0xbc68]
+
+A = zero_matrix(47, 48)
+
+for i in range(42):
+    grasshopper = flag[i]
+    for j in range(5):
+        k[j] = grasshopper = grasshopper * k[j]
+
+    A[i, :-1] = grasshopper.r
+    A[i, -1] = out[i]
+
+for i in range(5):
+    A[42+i, i] = 1
+    A[42+i, -1] = list(b'flag{')[i]
+    
+print(A)
+'''
+[     1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      1      1      1      1      1   8294]
+[     5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      5      4      3      2      1  41506]
+[    15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0     15     10      6      3      1  52145]
+[    35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0     35     20     10      4      1  56244]
+[    70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0     70     35     15      5      1  57012]
+[   126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    126     56     21      6      1  45509]
+[   210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    210     84     28      7      1  13220]
+[   330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    330    120     36      8      1  49233]
+[   495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    495    165     45      9      1  15225]
+[   715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    715    220     55     10      1  27640]
+[  1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   1001    286     66     11      1   8497]
+[  1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   1365    364     78     12      1  11328]
+[  1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   1820    455     91     13      1  37306]
+[  2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   2380    560    105     14      1  31556]
+[  3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   3060    680    120     15      1  24357]
+[  3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   3876    816    136     16      1    520]
+[  4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   4845    969    153     17      1  32475]
+[  5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   5985   1140    171     18      1  25269]
+[  7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   7315   1330    190     19      1  52933]
+[  8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0   8855   1540    210     20      1  23219]
+[ 10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  10626   1771    231     21      1  15430]
+[ 12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  12650   2024    253     22      1  49778]
+[ 14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  14950   2300    276     23      1  29003]
+[ 17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  17550   2600    300     24      1  40459]
+[ 20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  20475   2925    325     25      1  18670]
+[ 23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  23751   3276    351     26      1  17612]
+[ 27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  27405   3654    378     27      1   1440]
+[ 31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0  31465   4060    406     28      1  15779]
+[ 35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0      0  35960   4495    435     29      1   4529]
+[ 40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0      0  40920   4960    465     30      1   9631]
+[ 46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0      0  46376   5456    496     31      1  35229]
+[ 52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0      0  52360   5984    528     32      1  41264]
+[ 58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0      0  58905   6545    561     33      1  58767]
+[ 66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0      0  66045   7140    595     34      1   9203]
+[ 73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0      0  73815   7770    630     35      1  22569]
+[ 82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0      0  82251   8436    666     36      1  27627]
+[ 91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0      0  91390   9139    703     37      1  13953]
+[101270  91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0      0 101270   9880    741     38      1     84]
+[111930 101270  91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0      0 111930  10660    780     39      1  41353]
+[123410 111930 101270  91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0      0 123410  11480    820     40      1  10085]
+[135751 123410 111930 101270  91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1      0 135751  12341    861     41      1  50749]
+[148995 135751 123410 111930 101270  91390  82251  73815  66045  58905  52360  46376  40920  35960  31465  27405  23751  20475  17550  14950  12650  10626   8855   7315   5985   4845   3876   3060   2380   1820   1365   1001    715    495    330    210    126     70     35     15      5      1 148995  13244    903     42      1  48232]
+[     1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    102]
+[     0      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    108]
+[     0      0      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0     97]
+[     0      0      0      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    103]
+[     0      0      0      0      1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0    123]
+'''</code></pre><p>　　高斯消元：</p><pre><code class="language-python">def solve_eq(p):
+    M = copy(A)
+    R = Zmod(p-1)
+    
+    def play(a, b):
+        t = M[b, a]
+        M[b, :-1] -= t * M[a, :-1]
+        M[b, :-1] %= p-1
+        M[b, -1] *= power_mod(inverse_mod(M[a, -1], p), t, p)
+        M[b, -1] %= p
+    
+    # 消元，形成上三角矩阵
+    for row in range(47):
+        d = inverse_mod(M[row, row], p-1)
+        M[row, :-1] = (M[row, :-1] * d) % (p-1)
+        M[row, -1] = (M[row, -1] ^ d) % p
+        
+        for i in range(row+1, 47):
+            play(row, i)
+    
+    # 回代
+    for row in range(46, 0, -1):
+        for i in range(row):
+            play(row, i)
+    
+    res = vector(M[:, -1])
+    
+    # 验证
+    for row in range(47):
+        assert A[row, -1] % p == reduce(lambda x, y: x*y%p, [power_mod(x, y, p) for x, y in zip(res, vector(A[row, :-1]))])
+    return res
+
+solve_eq(22871)   # 随便选个质数测试一下高斯消元过程
+# (102, 108, 97, 103, 123, 15812, 6992, 7285, 10703, 286, 353, 1668, 6109, 14564, 1453, 18301, 14418, 13530, 3397, 11163, 10174, 8128, 22656, 658, 13232, 283, 2277, 7796, 6539, 5678, 18232, 5379, 22125, 17033, 9398, 19269, 19111, 22450, 13810, 20332, 1186, 20849, 8913, 6083, 19122, 7661, 12782)</code></pre><p>　　枚举可行 $p$：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-8.png" class="kg-image" alt width="2269" height="868" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-8.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-8.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-8.png 1600w, https://www.ruanx.net/content/images/2022/09/image-8.png 2269w" layout="responsive"></amp-img></figure><p>　　至此完成本题。</p><h4 id="t2-davidhomework">T2 david_homework</h4><p>　　题目脚本：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">from secret import flag
+from hashlib import md5,sha256
+from Crypto.Cipher import AES
+cof_t = [[353, -1162, 32767], [206, -8021, 42110], [262, -7088, 31882], [388, -6394, 21225], [295, -9469, 44468], [749, -3501, 40559], [528, -2690, 10210], [354, -5383, 18437], [491, -8467, 26892], [932, -6984, 20447], [731, -6281, 11340], [420, -5392, 44071], [685, -6555, 40938], [408, -8070, 47959], [182, -9857, 49477], [593, -3584, 49243], [929, -7410, 31929], [970, -4549, 17160], [141, -2435, 36408], [344, -3814, 18949], [291, -7457, 40587], [765, -7011, 32097], [700, -8534, 18013], [267, -2541, 33488], [249, -8934, 12321], [589, -9617, 41998], [840, -1166, 22814], [947, -5660, 41003], [206, -7195, 46261], [784, -9270, 28410], [338, -3690, 19608], [559, -2078, 44397], [534, -3438, 47830], [515, -2139, 39546], [603, -6460, 49953], [234, -6824, 12579], [805, -8793, 36465], [245, -5886, 21077], [190, -7658, 20396], [392, -7053, 19739], [609, -5399, 39959], [479, -8172, 45734], [321, -7102, 41224], [720, -4487, 11055], [208, -1897, 15237], [890, -4427, 35168], [513, -5106, 45849], [666, -1137, 23725], [755, -6732, 39995], [589, -6421, 43716], [866, -3265, 30017], [416, -6540, 34979], [840, -1305, 18242], [731, -6844, 13781], [561, -2728, 10298], [863, -5953, 23132], [204, -4208, 27492], [158, -8701, 12720], [802, -4740, 16628], [491, -6874, 29057], [531, -4829, 29205], [363, -4775, 41711], [319, -9206, 46164], [317, -9270, 18290], [680, -5136, 12009], [880, -2940, 34900], [162, -2587, 49881], [997, -5265, 20890], [485, -9395, 23048], [867, -1652, 18926], [691, -7844, 11180], [355, -5990, 13172], [923, -2018, 23110], [214, -4719, 23005], [921, -9528, 29351], [349, -7957, 20161], [470, -1889, 46170], [244, -6106, 23879], [419, -5440, 43576], [930, -1123, 29859], [151, -5759, 23405], [843, -6770, 36558], [574, -6171, 33778], [772, -1073, 44718], [932, -4037, 40088], [848, -5813, 27304], [194, -6016, 39770], [966, -6789, 14217], [219, -6849, 40922], [352, -6046, 18558], [794, -8254, 29748], [618, -5887, 15535], [202, -9288, 26590], [611, -4341, 46682], [155, -7909, 16654], [935, -5739, 39342], [998, -6538, 24363], [125, -5679, 36725], [507, -7074, 15475], [699, -5836, 47549]]
+
+
+
+def cal(i,cof):
+    if i &lt;3:
+        return i+1
+    else:
+        return  cof[2]*cal(i-3,cof)+cof[1]*cal(i-2,cof)+cof[0]*cal(i-1,cof)
+
+
+s = 0
+for i in range(100):
+    s+= cal(200000,cof_t[i])
+
+
+s=str(s)[-2000:-1000]
+key = md5(s).hexdigest().decode('hex')
+check = sha256(key).hexdigest()
+verify = '2cf44ec396e3bb9ed0f2f3bdbe4fab6325ae9d9ec3107881308156069452a6d5'
+assert(check == verify)
+aes = AES.new(key,AES.MODE_ECB)
+data = flag + (16-len(flag)%16)*"\x00"
+print (aes.encrypt(data).encode('hex'))
+#4f12b3a3eadc4146386f4732266f02bd03114a404ba4cb2dabae213ecec451c9d52c70dc3d25154b5af8a304afafed87</code></pre><figcaption>▲ 使用 Python2 的出题人是人间之屑</figcaption></figure><p>　　我们显然必须恢复 key。key 是 s 的后 2000 到 1000 位，故我们全程只需要在模 $10 ^ {2000}$ 意义下进行运算。题目中的 <code>cal()</code> 函数是指数级复杂度，改成线性写法即可。</p><pre><code class="language-python">def cal(i,cof):
+    if i &lt;3:
+        return i+1
+    else:
+        return  cof[2]*cal(i-3,cof)+cof[1]*cal(i-2,cof)+cof[0]*cal(i-1,cof)
+
+def fastcal(n, cof):
+    a, b, c = 1, 2, 3
+    
+    for x in range(n):
+        a, b, c = b, c, (cof[2]*a+cof[1]*b+cof[0]*c) % 10**2000
+    return a
+
+assert cal(10, cof_t[0]) == fastcal(10, cof_t[0])</code></pre><p>　　恢复 key，解密：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-9.png" class="kg-image" alt width="2261" height="1325" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-9.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-9.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-9.png 1600w, https://www.ruanx.net/content/images/2022/09/image-9.png 2261w" layout="responsive"></amp-img></figure><p>　　一些额外讨论。以 <code>gmpy2</code> 取代原生的大整数运算，可以获得很大的速度提升：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-10.png" class="kg-image" alt width="2022" height="512" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-10.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-10.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-10.png 1600w, https://www.ruanx.net/content/images/2022/09/image-10.png 2022w" layout="responsive"></amp-img></figure><p>　　Golang 原生的 <code>math/big</code> 库需要 41.8s。</p><pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"math/big"
+)
+
+func fastcal(n int, cof []int64) *big.Int {
+	a, b, c := big.NewInt(1), big.NewInt(2), big.NewInt(3)
+	cof0, cof1, cof2 := big.NewInt(cof[0]), big.NewInt(cof[1]), big.NewInt(cof[2])
+
+	mod := big.NewInt(0)
+	mod.Exp(big.NewInt(10), big.NewInt(2000), nil)
+
+	for i := 0; i &lt; n; i++ {
+		sum := big.NewInt(0)
+		tmp := big.NewInt(0)
+
+		tmp.Mul(cof2, a)
+		sum.Add(sum, tmp)
+
+		tmp.Mul(cof1, b)
+		sum.Add(sum, tmp)
+
+		tmp.Mul(cof0, c)
+		sum.Add(sum, tmp)
+
+		sum.Mod(sum, mod)
+
+		a, b, c = b, c, sum
+	}
+
+	return a
+}
+
+var cof_t [][]int64
+
+func init() {
+	cof_t = [][]int64{{353, -1162, 32767}, {206, -8021, 42110}, {262, -7088, 31882}, {388, -6394, 21225}, {295, -9469, 44468}, {749, -3501, 40559}, {528, -2690, 10210}, {354, -5383, 18437}, {491, -8467, 26892}, {932, -6984, 20447}, {731, -6281, 11340}, {420, -5392, 44071}, {685, -6555, 40938}, {408, -8070, 47959}, {182, -9857, 49477}, {593, -3584, 49243}, {929, -7410, 31929}, {970, -4549, 17160}, {141, -2435, 36408}, {344, -3814, 18949}, {291, -7457, 40587}, {765, -7011, 32097}, {700, -8534, 18013}, {267, -2541, 33488}, {249, -8934, 12321}, {589, -9617, 41998}, {840, -1166, 22814}, {947, -5660, 41003}, {206, -7195, 46261}, {784, -9270, 28410}, {338, -3690, 19608}, {559, -2078, 44397}, {534, -3438, 47830}, {515, -2139, 39546}, {603, -6460, 49953}, {234, -6824, 12579}, {805, -8793, 36465}, {245, -5886, 21077}, {190, -7658, 20396}, {392, -7053, 19739}, {609, -5399, 39959}, {479, -8172, 45734}, {321, -7102, 41224}, {720, -4487, 11055}, {208, -1897, 15237}, {890, -4427, 35168}, {513, -5106, 45849}, {666, -1137, 23725}, {755, -6732, 39995}, {589, -6421, 43716}, {866, -3265, 30017}, {416, -6540, 34979}, {840, -1305, 18242}, {731, -6844, 13781}, {561, -2728, 10298}, {863, -5953, 23132}, {204, -4208, 27492}, {158, -8701, 12720}, {802, -4740, 16628}, {491, -6874, 29057}, {531, -4829, 29205}, {363, -4775, 41711}, {319, -9206, 46164}, {317, -9270, 18290}, {680, -5136, 12009}, {880, -2940, 34900}, {162, -2587, 49881}, {997, -5265, 20890}, {485, -9395, 23048}, {867, -1652, 18926}, {691, -7844, 11180}, {355, -5990, 13172}, {923, -2018, 23110}, {214, -4719, 23005}, {921, -9528, 29351}, {349, -7957, 20161}, {470, -1889, 46170}, {244, -6106, 23879}, {419, -5440, 43576}, {930, -1123, 29859}, {151, -5759, 23405}, {843, -6770, 36558}, {574, -6171, 33778}, {772, -1073, 44718}, {932, -4037, 40088}, {848, -5813, 27304}, {194, -6016, 39770}, {966, -6789, 14217}, {219, -6849, 40922}, {352, -6046, 18558}, {794, -8254, 29748}, {618, -5887, 15535}, {202, -9288, 26590}, {611, -4341, 46682}, {155, -7909, 16654}, {935, -5739, 39342}, {998, -6538, 24363}, {125, -5679, 36725}, {507, -7074, 15475}, {699, -5836, 47549}}
+}
+
+func calc() {
+	s := big.NewInt(0)
+	mod := big.NewInt(0)
+	mod.Exp(big.NewInt(10), big.NewInt(2000), nil)
+
+	for i := 0; i &lt; 100; i++ {
+		s.Add(s, fastcal(200000, cof_t[i]))
+		s.Mod(s, mod)
+	}
+
+	fmt.Println(s.String())
+}
+
+func main() {
+	calc()
+}
+
+/*
+(base) PS C:\Users\Mio\Desktop\work\gotest&gt; Measure-Command -Expression {.\app.exe}
+
+
+Days              : 0
+Hours             : 0
+Minutes           : 0
+Milliseconds      : 837
+Ticks             : 418378605
+TotalDays         : 0.000484234496527778
+TotalHours        : 0.0116216279166667
+TotalMinutes      : 0.697297675
+TotalSeconds      : 41.8378605
+TotalMilliseconds : 41837.8605
+*/</code></pre><p>　　可以考虑采用 GMP 代替原生 <code>math/big</code>。</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://github.com/ncw/gmp"><div class="kg-bookmark-content"><div class="kg-bookmark-title">GitHub - ncw/gmp: Go language interface to GMP - GNU Multiprecision Library (golang)</div><div class="kg-bookmark-description">Go language interface to GMP - GNU Multiprecision Library (golang) - GitHub - ncw/gmp: Go language interface to GMP - GNU Multiprecision Library (golang)</div><div class="kg-bookmark-metadata"><span class="kg-bookmark-author">GitHub</span><span class="kg-bookmark-publisher">ncw</span></div></div><div class="kg-bookmark-thumbnail"><amp-img src="https://opengraph.githubassets.com/4560e1094124b7eddd59d5ad49b9339c503146f42ab5bda30f733d964d89b026/ncw/gmp" alt width="1200" height="600" layout="responsive"></amp-img></div></a></figure><p></p><p></p><h4 id="t3-easydlp">T3 easy_dlp</h4><p>　　题目脚本：</p><pre><code class="language-python">from Crypto.Util.number import getPrime
+import random
+import flag
+
+x = getPrime(64)
+n = getPrime(1024)
+m = getPrime(120)
+c = pow(m,x,n)
+
+print(m,c,n)
+
+'''
+m = 696376465415968446607383675953857997
+c = 75351884040606337127662457946455960228423443937677603718170904462378938882502061014476822055783421908392386804380503123596242003758891619926133807099465797120624009076182390781918339985157326114840926784410018674639537246981505937318380179042568501449024366208980139650052067021073343322300422190243015076307
+n = 135413548968824157679549005083702144352234347621794899960854103942091470496598900341162814164511690126111049767046340801124977369460415208157716471020260549912068072662740722359869775486486528791641600354017790255320219623493658736576842207668208174964413000049133934516641398518703502709055912644416582457721
+'''
+
+p = getPrime(512)
+g = getPrime(512)
+y = pow(g,x,p)
+k = random.randint(0,p)
+
+c1 = flag * pow(y,k,p)
+c2 = pow(g,k,p)
+
+print(c1,c2)
+
+'''
+c1 = 209941170134628207830310059622280988835086910150451946264595015050300510031560522999562095124692878755896950865676914790595999182721583547184333760954091880805688518459046880395477235753285839380764579025127254060855545
+c2 = 4803339369764546990337396010353372745379378328671778873584350940089623041410194355125962064067657967062926344955874581199853582279928946579389671271191196
+p = 6809372619970287379746941806942051353536181082328454067824596651780784704823185066486367854653297514943018290212240504418345108411269306758069486928594027
+g = 12575636661436726898107254102531343862656456137827822292892883099464907172061178954026138165159168595086335202285503403441736394399853074532771428483593753
+k = 4521228602593215445063533369342315270631623025219518143209270060218625289087470505221974748605346084266802332207199304586313352026660695691783656769488472
+'''</code></pre><p>　　脚本分成两个部分：</p><ol><li>$x, n, m$ 都是随机质数，给出 $m, n$ 以及 $c = m ^ x \bmod n$.</li><li>$p, g$ 都是随机质数，$y = g ^x \bmod p$，$k$ 是随机数。给出 $p, g, k$ 以及$$c_1 = flag \cdot (y ^k \bmod p), \quad c_2 = g ^ k \bmod p $$</li></ol><p>　　显然步骤 2 是一个类似于 Elgamal 体系的加密算法（本站 2020 年有<a href="../../diffie-hellman/index.html">一篇博客介绍 Elgamal 加密体系</a>）。即使不知道 Elgamal，也可以马上看出：$$\begin{aligned}c _ 1 &amp; \equiv flag \cdot y ^ k \pmod p \\ &amp; \equiv flag \cdot g ^ {xk}  \\ &amp; \equiv flag \cdot c_2 ^ x\end{aligned}$$于是有 $$flag \equiv c _ 1 \cdot c_2 ^ {-x} \pmod p$$所以，只要我们能获得 $x$，我们立即就能拿到 flag。</p><p>　　现在来考虑如何获取 $x$。这是一个离散对数问题（DLP）：$x \equiv \log _ m c \pmod n $，对 DLP 不太了解的读者可以先看本站的文章：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="../../pohlig-hellman/index.html"><div class="kg-bookmark-content"><div class="kg-bookmark-title">Pohlig-Hellman 算法</div><div class="kg-bookmark-description">Pohlig-Hellman 算法是一种求离散对数的算法。其应用条件是底数的阶可以分解成若干个小质数之积。</div><div class="kg-bookmark-metadata"><amp-img class="kg-bookmark-icon" src="https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png" alt width="150" height="150" layout="fixed"></amp-img><span class="kg-bookmark-author">Pion1eer</span><span class="kg-bookmark-publisher">Ruan Xingzhi</span></div></div><div class="kg-bookmark-thumbnail"><amp-img src="https://www.ruanx.net/content/images/2022/01/--.jpg" alt width="2000" height="1250" layout="responsive"></amp-img></div></a></figure><p>　　大步小步算法可以在 $\sqrt n$ 复杂度内求解离散对数问题。但是本题中 n 有 1024 bit，显然不可接受。但我们详细考察大步小步算法，可以立刻发现：由于本题必定有 $x&lt; 2 ^ {64}$（由题面脚本，$x$ 是一个 64 bit 的质数），故我们只需要在 $[0, 2 ^ {64}]$ 范围内寻找答案。这一下就把计算复杂度降低到了 $2^ {32}$ 级别。</p><p>　　然而，$2 ^ {32}$ 级别的复杂度，也难以在赛场上几个小时内求解。我们应当再做一些小优化。Pohlig-Hellman 算法中，是把 $n-1$ 拆成若干质数的幂，在模这些质数幂的意义下分别求解，最终用中国剩余定理（CRT）合并答案。<strong>本题的解决方法与 Pohlig-Hellman 算法几乎一模一样。</strong></p><p>　　可以直接从 factor DB 查询到 $n-1$ 的几个质因数：$28142457071, 395710839697$. 它们的乘积有 74 bit，所以 CRT 之后足够恢复 64 bit 的 $x$ 了。</p><p>　　来看对于 $q \mid n-1$，应该如何求出 $x \pmod q$。我们设 $x = kq + r$，其中 $r &lt; q$。那么，由于 $c   \equiv m ^ x \pmod n $，有$$\begin{aligned}  c ^ {\frac{n-1}{q}} &amp; \equiv (m ^ x) ^ {\frac{n-1}{q}} \pmod n \\ &amp; \equiv m ^ {(kq+r) \cdot \frac{n-1}{q}} \\ &amp; \equiv m ^ {k(n-1)} \cdot (m ^ {\frac{n-1}{q}}) ^  {r} \\ &amp; \equiv  (m ^ {\frac{n-1}{q}}) ^  {r}\end{aligned}$$</p><p>　　等式左边可以直接计算，右边的 $m ^{\frac{n-1}{q}} $也可求。所以这个等式可以写作 $A \equiv B ^r \pmod n$，其中 $$A = c ^ \frac{n-1}{q} \bmod n, B = m ^ \frac{n-1}{q} \bmod n$$</p><p>　　一旦求出 $r \equiv \log _ B A \pmod n$ 就能求出原问题的解 $x$。虽然这仍然是一个 DLP 问题，但有一个很好的性质：底数 $B$ 的阶仅仅是 $q$，这是因为 $B^ q \equiv m ^ {n-1} \equiv 1 \pmod n$. 所以这个离散对数的求解复杂度仅仅是 $\sqrt q$. 获取到 $r$ 之后，可以拿到 $x \bmod q = r$.</p><p>　　至此，解题方法已经明了：求出 $x$ 模 $28142457071, 395710839697$ 的结果，再用 CRT 合并。</p><pre><code class="language-python">m = 696376465415968446607383675953857997
+c = 75351884040606337127662457946455960228423443937677603718170904462378938882502061014476822055783421908392386804380503123596242003758891619926133807099465797120624009076182390781918339985157326114840926784410018674639537246981505937318380179042568501449024366208980139650052067021073343322300422190243015076307
+n = 135413548968824157679549005083702144352234347621794899960854103942091470496598900341162814164511690126111049767046340801124977369460415208157716471020260549912068072662740722359869775486486528791641600354017790255320219623493658736576842207668208174964413000049133934516641398518703502709055912644416582457721
+
+def solve_part(q):
+    assert (n-1) % q == 0
+    A = mod(c, n) ^ ((n-1) / q)
+    B = mod(m, n) ^ ((n-1) / q)
+    return discrete_log(A, B, ord=q)
+
+q1, q2 = 28142457071, 395710839697
+
+solve_part(q1), solve_part(q2)
+# (14542911801, 262629324154)
+
+x = crt([14542911801, 262629324154], [q1, q2])
+assert len(x.bits()) == 64
+
+x
+# 17271504622210389511</code></pre><p>　　获取 $x$ 之后，立即可以解密：</p><pre><code class="language-python">R = Zmod(6809372619970287379746941806942051353536181082328454067824596651780784704823185066486367854653297514943018290212240504418345108411269306758069486928594027)
+
+c1 = R(209941170134628207830310059622280988835086910150451946264595015050300510031560522999562095124692878755896950865676914790595999182721583547184333760954091880805688518459046880395477235753285839380764579025127254060855545)
+c2 = R(4803339369764546990337396010353372745379378328671778873584350940089623041410194355125962064067657967062926344955874581199853582279928946579389671271191196)
+
+long_to_bytes(int(c1 * c2^(-x)))
+# b'flag{th1s_1s_so_3a2y_rlgh4}'</code></pre><h3 id="t4-easywork">T4 easywork</h3><p>　　题目脚本：</p><pre><code class="language-python">from Crypto.Util.number import *
+from random import *
+import hashlib
+from pwn import *
+p = getPrime(128)
+seed = randint(2, p - 1)
+c = 114514
+e = int(2e8)
+class prng:
+    n = p
+    a,b = [randint(2, p - 1) for _ in range(2)]
+    def __init__(self,seed):
+        self.state = seed
+    def next(self):
+        self.state = (self.state * self.a + self.b) % self.n
+        return self.state
+def test():
+    gen = prng(seed)
+    print(seed)
+    print(gen.next())
+    print(gen.next())
+    print(gen.next())
+    print(gen.next())
+    print(gen.next())
+    print(gen.next())
+def m_func(i):
+    if i == 0: return 1
+    return a*c**i+b*m_func(i-1)+n
+def encrypt_flag(sol):
+    sol = sol % (10**10000)
+    sol = str(sol)
+    sol_md5 = hashlib.md5(sol.encode()).hexdigest()
+    return  xor(sol_md5.encode(),flag)
+
+if __name__ == "__main__":
+    test()
+    sol = m_func(e)
+    print(encrypt_flag(sol))
+
+
+'''
+150532854791355748039117763516755705063
+335246949167877025932432065299887980427
+186623163520020374273300614035532913241
+215621842477244010690624570814660992556
+220694532805562822940506614120520015819
+17868778653481346517880312348382129728
+160572327041397126918110376968541265339
+b'UUV\x04H\x01T\x01P\x03\t\x04\t\x1fW\x00T\x02LRSPT\x1d\x02\x02^\x01N[\\R\x02\tSV\x07\x06P\x01QK'
+'''</code></pre><p>　　由于 $flag = \text{md5}(\text{m_func}(e)) \oplus enc$，我们必须恢复 $a, b, n$ 才能计算 $\text{m_func}$. 来考虑如何恢复 $a, b, n$。</p><p>　　题目给了一个模线性同余生成器（LCG）。生成方法是：$$s_{i+1}\equiv a \cdot s _i + b \pmod n$$先展开前几项：$$\begin{aligned} s _ 0 &amp;\equiv s _ 0 \\ s _ 1 &amp;\equiv a s _ 0 + b \\  s _ 2 &amp; \equiv a ^ 2 s _ 0  + a b + b \\ s _ 3 &amp; \equiv a ^ 3 s_0 + a ^2 b + ab +b\end{aligned}$$从题目中给出的 $6$ 个连续状态产出，我们可以完全恢复这个 LCG 的参数（$a, b, n$）。显然，一但知道 $n$，恢复 $a,b$ 的过程很简单（与仿射密码的已知明文攻击一样）。现在来考虑如何恢复 $n$.</p><p>　　这种「模数未知」的方程组，有一个很常用的处理手段：构造 $A\equiv 0 \pmod n, B\equiv 0 \pmod n$ 且 $A\neq B$，然后求 $\gcd(A, B)$ 获得 $n$. 现在我们尝试寻找一组这样的「桥梁」。</p><p>　　考虑 $t _ i = s _ i - s _ {i-1}$，那么我们立即有 $$\begin{aligned}t_i &amp; \equiv a s_ {i-1} + b - s _ {i-1}  \\ &amp; \equiv a s _ {i-1} + b - (a s _ {i-2} +b) \\ &amp; \equiv a (s _ {i-1} - s _ {i-2}) \\ &amp; \equiv a \cdot t _ {i-1}\end{aligned} $$利用这个特性，我们发现 $$t _ {i+2} t _ {i} \equiv a ^ 2 t _ i \equiv t _ {i+1} ^ 2$$于是$$t _ {i+2} t _ i - t _{i+1} ^ 2 \equiv 0$$从而我们找到了多个 $n$ 的倍数，这个桥梁建立起来了。想要获得 $n$，只需求 $$\gcd(t _ 1 t _ 3 - t_ 2 ^ 2, t _ 2 t _ 4 - t _3 ^2)$$</p><pre><code class="language-python">s = [150532854791355748039117763516755705063, 335246949167877025932432065299887980427, 186623163520020374273300614035532913241, 215621842477244010690624570814660992556, 220694532805562822940506614120520015819, 17868778653481346517880312348382129728, 160572327041397126918110376968541265339]
+t = [s[x] - s[x-1] for x in range(1, len(s))]
+n = gcd(t[1]*t[3] - t[2]*t[2], t[2]*t[4] - t[3]*t[3])
+assert is_prime(n)
+n
+# 339088189917874808463944743121467561531</code></pre><p>　　接下来求 $a, b$. 显然 $$s _ 2 - s _ 1 \equiv a (s _ 1 - s _ 0)$$于是$$a \equiv \frac{s_ 2- s _ 1}{s _1 - s _0}$$</p><pre><code class="language-python">R = Zmod(n)
+a = R(s[2] - s[1]) / (s[1] - s[0])
+
+b = R(s[1] - a * s[0])
+
+a, b
+# (259086495324961642923203668736965982268, 121870392737324465817476070178603827899)</code></pre><p>　　今 $a,b,n$ 都已知。只需要计算出 <code>m_func(2e8)</code> 的后 10000 位，即可拿到 flag。来看这个 <code>m_func</code> 的定义：</p><pre><code class="language-python">def m_func(i):
+    if i == 0: return 1
+    return a*c**i+b*m_func(i-1)+n</code></pre><p>　　数学形式：$$f_i = a\cdot c^i + b \cdot f_ {i-1} + n$$这很明显可以矩阵快速幂加速递推。改写成矩阵递推形式：$$\begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; c &amp; 0 \\ n &amp; a &amp; b\end{bmatrix}\cdot \begin{bmatrix} 1 \\ c ^ i \\ f _ {i-1}\end{bmatrix}   = \begin{bmatrix} 1 \\ c ^ {i + 1} \\ n + a \cdot c ^ i + b \cdot f _{i-1}\end{bmatrix} =  \begin{bmatrix} 1 \\ c ^ {i + 1} \\ f _ {i}\end{bmatrix} $$于是有$$\begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; c &amp; 0 \\ n &amp; a &amp; b\end{bmatrix} ^ {\textcolor{red}{x}} \cdot  \begin{bmatrix} 1 \\ c \\ f _ 0 \end{bmatrix} = \begin{bmatrix} 1 \\ c ^ {x + 1}\\ f _ {x}\end{bmatrix}$$</p><pre><code class="language-python">a, b = int(a), int(b)
+c = 114514
+
+def m_func(i):
+    if i == 0: return 1
+    return a*c**i+b*m_func(i-1)+n
+
+def fast_f(x):
+    mat = matrix(Zmod(10^10000), [[1, 0, 0], [0, c, 0], [n, a, b]])
+    res = mat^x * vector([1, c, 1])
+    return res[2]
+
+assert m_func(100) == fast_f(100)
+
+sol = fast_f(2*10^8)
+
+from hashlib import md5
+key = md5(str(sol).encode()).hexdigest()
+key
+# '397c37a1569112a1d4af2ad0c08bc9ec'
+
+from Crypto.Util.strxor import strxor
+strxor((key+key)[:42].encode(), b'UUV\x04H\x01T\x01P\x03\t\x04\t\x1fW\x00T\x02LRSPT\x1d\x02\x02^\x01N[\\R\x02\tSV\x07\x06P\x01QK')
+# b'flag{650e5058-6106-4a10-a2fc-b9110d54110d}'</code></pre><p>　　矩阵快速幂加速递推，是算法竞赛知识，极少在 CTF 中考察。本题算是比较新颖。</p><h2 id="0x02-%E7%BE%8A%E5%9F%8E%E6%9D%AF2022">0x02 羊城杯2022</h2><p>先鸽着。</p><h2 id="0x03-%E6%9F%8F%E9%B9%AD%E6%9D%AF2022">0x03 柏鹭杯2022</h2><p>　　这场比赛的密码学挺简单，上午上完英语课回来一小时 AK。考察点：编码类古典密码学；简单数学；抽象代数。赛后才知道 T2 Anti-Fermat 是洋比赛原题，连名字都没改就放上来。出题人有点太不上心了。</p><h4 id="t1-%E6%B7%B7%E5%90%88%E7%BC%96%E7%A0%81">T1 混合编码</h4><p>　　先解 hex 和 base64，获得一个奇形怪状的串。一般 CTF 里面，如果一个串与 flag 长度一致，可以猜测此串与 flag 之间存在逐字符的算术对应关系。所以把这个串与真正 flag 的前缀（例如，在柏鹭杯是 <code>flag{ISEC-</code> ），逐字节相加、相减、相异或，往往可以找到规律。</p><p>　　本题的规律是：r 串与 flag 之间相差 $\pm 47$。在可见字符中筛一下即可。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/09/Untitled.png" class="kg-image" alt width="1695" height="899" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/Untitled.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/Untitled.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/Untitled.png 1600w, https://www.ruanx.net/content/images/2022/09/Untitled.png 1695w" layout="responsive"></amp-img></figure><h4 id="t2-anti-fermat">T2 Anti-Fermat</h4><p>　　一道 RSA 题目。题目附件：</p>
+        <div class="kg-card kg-file-card kg-file-card-medium">
+            <a class="kg-file-card-container" href="../../content/files/2022/09/C2_RSA.py" title="Download" download>
+                <div class="kg-file-card-contents">
+                    <div class="kg-file-card-title">C2 RSA</div>
+                    
+                    <div class="kg-file-card-metadata">
+                        <div class="kg-file-card-filename">C2_RSA.py</div>
+                        <div class="kg-file-card-filesize">1 KB</div>
+                    </div>
+                </div>
+                <div class="kg-file-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><defs></defs><title>download-circle</title><polyline class="a" points="8.25 14.25 12 18 15.75 14.25"></polyline><line class="a" x1="12" y1="6.75" x2="12" y2="18"></line><circle class="a" cx="12" cy="12" r="11.25"></circle></svg>
+                </div>
+            </a>
+        </div>
+        <pre><code class="language-python">from Crypto.Util.number import isPrime, getStrongPrime
+from gmpy2 import next_prime
+from secret import flag2
+
+p = getStrongPrime(1024)
+q = next_prime(p ^ ((1&lt;&lt;1024)-1))
+n = p * q
+e = 65537
+ 
+# Encryption
+m = int(flag2.encode('hex'),16)
+assert m &lt; n
+c = pow(m, e, n)
+ 
+print('n = {}'.format(hex(n)))
+#n = 0x31e22a7a2c5ec946692357dc51014a80530afeb46f419831fcbd896aa1d5cee2d0c69123b3017067afdb3d82b2be3535aebdf11da0fa2b4873233bae6af8a1c2a9344b6f64ade1c6c48a2828130c352053e1729b850774589e8947c8c0a472a8dc90caa542da5cec7f5fa7581747dcb558300437c30b016f769d4a85af8584f311dfb2f9e87fa7d16eaccb0303ecba491619ec7dda72e4037d96c607e666eced582d6eb2c232689fce1c08a54b80cf6d39ef1f2b467d970998c6d54d1779979c89a3b301cd1435bde8787d1141c912cf32b56610fba9205c6e86fefc490c8b2e06f5ed9f775f5b0fe945fa9fca3fc217b4c9dcd4b26676f576d0273b79417b81
+
+print('c = {}'.format(hex(c)))
+#c = 0x118dd8ab5df8685c5db5b1242896df41e8e9016f5f16276b6d311b29f0e5f9315530574b51c6e7c82d0c88ab92787d639443b921a452c850db580256ccfd55ee52ea9732821525da1d21351acb230a799ecaa1802c6f24487176c9cae537c3188e083552a84a2aebdd55c4014b41846768d7608970c1e52d9a68e550ef8bb6016adb6f8e0672e1c8198a5442799a5b8142e8d0fadb6e6146a062ef906bd58c46f31bf65263b6142b1976773289dee408ae233b6c0c534dd5092bd7f331c3457971278d335923edc044ba88852680ee39d1cc84a66dc81b70039e2435892b11f310b490c872448f7a8dc718759b2052b0911f758102a59c54dea061a8a3ff6879
+</code></pre><p>　　我们注意到 $p+q \approx 2^{1024}$。记 $q = 2 ^ {1024} - p + r$，则依据质数分布定理，$r = \mathcal{O}(\ln 2^{1024}) $，数值上 $\ln 2 ^{1024} \approx 710$，所以我们可以枚举 $r$。那么立即有：$$\begin{aligned}n &amp; = pq \\ &amp; = p(2 ^ {1024} - p + r)  \end{aligned}$$整理一下，得到关于 $p$ 的一元二次方程：$$p^ 2  - ( 2 ^ {1024} + r )  p +  n = 0$$</p><p>　　根据 $\Delta = \sqrt{ (2^ {1024} + r) ^ 2 - 4n }$ 能否开尽，来判断目前枚举的 $r$ 是否正确。</p><pre><code class="language-python">import gmpy2
+
+n = 0x31e22a7a2c5ec946692357dc51014a80530afeb46f419831fcbd896aa1d5cee2d0c69123b3017067afdb3d82b2be3535aebdf11da0fa2b4873233bae6af8a1c2a9344b6f64ade1c6c48a2828130c352053e1729b850774589e8947c8c0a472a8dc90caa542da5cec7f5fa7581747dcb558300437c30b016f769d4a85af8584f311dfb2f9e87fa7d16eaccb0303ecba491619ec7dda72e4037d96c607e666eced582d6eb2c232689fce1c08a54b80cf6d39ef1f2b467d970998c6d54d1779979c89a3b301cd1435bde8787d1141c912cf32b56610fba9205c6e86fefc490c8b2e06f5ed9f775f5b0fe945fa9fca3fc217b4c9dcd4b26676f576d0273b79417b81
+
+for r in range(2000):
+    res, sig = gmpy2.iroot((2**1024 + r)**2 - 4*n, 2)
+    if sig:
+        p = (2**1024 + r + res) // 2
+        assert n % p == 0
+        break
+
+p
+# mpz(132098967105531742873047504870639055197609951019173177101671798230777865821433888917823038778161777368298104713268965870357657760711727391719230943186702876337077201988497196346565418382245386473264935668867873004662959808864928113250273132697978392727824134298261799367370517153525019431759593486155031995139)</code></pre><p>　　获得 $p$ 之后解密即可。</p><pre><code class="language-python">c = 0x118dd8ab5df8685c5db5b1242896df41e8e9016f5f16276b6d311b29f0e5f9315530574b51c6e7c82d0c88ab92787d639443b921a452c850db580256ccfd55ee52ea9732821525da1d21351acb230a799ecaa1802c6f24487176c9cae537c3188e083552a84a2aebdd55c4014b41846768d7608970c1e52d9a68e550ef8bb6016adb6f8e0672e1c8198a5442799a5b8142e8d0fadb6e6146a062ef906bd58c46f31bf65263b6142b1976773289dee408ae233b6c0c534dd5092bd7f331c3457971278d335923edc044ba88852680ee39d1cc84a66dc81b70039e2435892b11f310b490c872448f7a8dc718759b2052b0911f758102a59c54dea061a8a3ff6879
+
+q = n // p
+d = gmpy2.invert(0x10001, (p-1)*(q-1))
+m = pow(c, d, n)
+long_to_bytes(m)
+# b'flag{ISEC-OyGdWk_E3gTcPtWUn_OaqD@d76xHyse1}'</code></pre><h4 id="t3-%E5%BC%82%E6%88%96%E5%AF%86%E7%A0%81">T3 异或密码</h4><p>　　题的 idea 本身不错，但是出题人的工作态度堪忧。且不说出题人是用的 Python 2；事实上 flag 格式与出题人代码中声称的十六进制串并不一样。题目附件：</p>
+        <div class="kg-card kg-file-card kg-file-card-medium">
+            <a class="kg-file-card-container" href="../../content/files/2022/09/C3_Fence.py" title="Download" download>
+                <div class="kg-file-card-contents">
+                    <div class="kg-file-card-title">C3 Fence</div>
+                    
+                    <div class="kg-file-card-metadata">
+                        <div class="kg-file-card-filename">C3_Fence.py</div>
+                        <div class="kg-file-card-filesize">807 Bytes</div>
+                    </div>
+                </div>
+                <div class="kg-file-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><defs></defs><title>download-circle</title><polyline class="a" points="8.25 14.25 12 18 15.75 14.25"></polyline><line class="a" x1="12" y1="6.75" x2="12" y2="18"></line><circle class="a" cx="12" cy="12" r="11.25"></circle></svg>
+                </div>
+            </a>
+        </div>
+        <pre><code class="language-python">from Crypto.Random import random
+from Crypto.Util import number
+from secret import flag3 as flag
+
+def convert(msg):
+    msg = msg ^ msg &gt;&gt; x
+    msg = msg ^ msg &lt;&lt; 13 &amp; 296229569
+    msg = msg ^ msg &lt;&lt; 20 &amp; 2345273571
+    msg = msg ^ msg &gt;&gt; 14
+    return msg
+
+def transform(message):
+    assert len(message) % 4 == 0
+    new_message = ''
+    for i in range(len(message) / 4):
+        block = message[i * 4 : i * 4 +4]
+        block = number.bytes_to_long(block)
+        block = convert(block)
+        block = number.long_to_bytes(block, 4)
+        new_message += block
+    return new_message
+
+enFlag = transform(flag[5:-1].decode('hex')).encode('hex')
+print('transformed_flag:', enFlag)
+
+# transformed_flag: fb9cd6ab42f2be75ae2637794196159de16e49522ed55e83462b0802a0325e1a4e9cbad3
+</code></pre><p>　　这是 ECB 模式的块密码，加密过程是连续做了 4 次「x 位移 offset 位，再进行掩码运算，得到的结果异或上 x 输出」。这种「移位 - 掩码 - 异或」范式是 CTF 出题人经常使用的把戏，与很多 LFSR 题目一样，想要解决问题，只需要注意到一条性质：<strong>异或运算完全可以视为模 $2$ 意义下的加法</strong>；形式化地讲，群 $\left ( \{0, 1 \}, \oplus \right )$ 与群 $\mathbb{Z}/2\mathbb{Z}$ 是同构的。</p><p>　　既然异或运算可以视为加法，我们立刻就能拿起线性代数的武器来加以研究。举个例子，我们将演示如何针对一个 8-bit 的数 $x$，以矩阵变换的形式给出 $x \oplus (x &gt;&gt; 3)$。首先把 $x$ 写成列向量的形式 $(x_0, x_1, \cdots, x_7) ^ T$，那么：$\newcommand\gray{\textcolor{lightgray}}$</p><div>$$\left[ \begin{matrix} {} 1 &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\ \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\ \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} \\ \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} \\ \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; 1 \\ \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} \\ \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} \\ \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1   \end{matrix} \right ]  \cdot \left [ \begin{matrix}x_ 0 \\ x _ 1 \\ x _ 2 \\ x _ 3 \\ x _ 4 \\ x _ 5 \\ x _ 6 \\ x _ 7 \end{matrix} \right ] = \left [ \begin{matrix}x_ 0 + x_3 \\ x _ 1 + x_4 \\ x _ 2 + x_5 \\ x _ 3 + x_6 \\ x _ 4 + x_7 \\ x _ 5  \\ x _ 6 \\ x _ 7 \end{matrix} \right ] $$</div><p>　　我们通过一个矩阵乘法给出了 $x \oplus (x &gt;&gt; 3)$；更加令人惊喜的是，它的行列式为 1，意味着矩阵可逆。另一个例子是，我们可以用以下矩阵变换给出 $x \oplus ((x &lt;&lt; 2) \texttt{ &amp; 0b11001010})$：</p>$$\left[ \begin{matrix}
+1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; 1 &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; \gray{0} \\
+\gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; 1 &amp; \gray{0} \\
+\gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; \gray{0} &amp; 1 &amp; \gray{0} &amp; 1
+\end{matrix}\right ]   \cdot \left [ \begin{matrix}x_ 0 \\ x _ 1 \\ x _ 2 \\ x _ 3 \\ x _ 4 \\ x _ 5 \\ x _ 6 \\ x _ 7 \end{matrix} \right ] = \left [ \begin{matrix}x_ 0  \\ x _ 1  \\ x _ 2  \\ x _ 3 + x_1 \\ x _ 4  \\ x _ 5  \\ x _ 6 + x_4 \\ x _ 7 + x_5 \end{matrix} \right ]$$<p>　　不难看出这个矩阵的行列式也为 1，于是也可逆。<br />　　讲到这里，本题的解密方法已经呼之欲出：既然加密过程等同于给明文 $M$ 依次左乘四个矩阵 $E_1, E_2, E_3, E_4$ 得到 $C$，那么我们想要解密，只需要给 $C$ 依次左乘 $E_4 ^ {-1}, E_3 ^ {-1}, E_2 ^ {-1}, E_1 ^ {-1}$，即可恢复 $M$。</p><p>　　来一起看代码实现。首先，我们写一个函数用于生成变换矩阵。</p><pre><code class="language-python"># 变换矩阵：x ^ ((x &gt;&gt; offset) &amp; mask)
+# 若要实现左移 k 位，只需 offset 置为 -k
+def get_matrix(offset, mask):
+    m = identity_matrix(Zmod(2), 32)
+    
+    for x in range(32):
+        for y in range(32):
+            if y == x + offset and (mask &amp; (1 &lt;&lt; x)):
+                m[x, y] = 1
+    
+    return m
+
+# uint32 -&gt; 列向量
+def num2vector(x):
+    res = zero_vector(Zmod(2), 32)
+    for pos, k in enumerate(x.bits()):
+        res[pos] = k
+    return res
+
+# 列向量 -&gt; uint32
+def vector2num(x):
+    return reduce(lambda a, b: a*2 + b, x.change_ring(ZZ)[::-1])
+
+assert vector2num(num2vector(0xdeadbeaf)) == 0xdeadbeaf
+
+
+# 验证
+assert vector2num(get_matrix(3, 0xffffffff) * num2vector(0x114514)) == (0x114514 ^^ (0x114514 &gt;&gt; 3))
+assert vector2num(get_matrix(-4, 0xdeadbeaf) * num2vector(0x123456)) == (0x123456 ^^ (0x123456 &lt;&lt; 4 &amp; 0xdeadbeaf))</code></pre><p>　　可见我们的变换矩阵确实能完成加密任务。现在，我们来验证一下解密过程：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">123456789 ^^ (123456789 &lt;&lt; 2 &amp; 0xdeadbeaf)
+# 460781841
+
+E = get_matrix(-2, 0xdeadbeaf)
+vector2num(E.inverse() * num2vector(460781841))
+# 123456789</code></pre><figcaption>▲ 加密是 $C = E\cdot M$，解密是 $M = E^{-1} \cdot C$</figcaption></figure><p>　　于是我们也掌握了解密的技术。按理来讲题目到此应该迎刃而解了；不过出题人挖了个坑：第一次变换的代码是 <code>msg = msg ^ msg &gt;&gt; x</code> ，而这里的 <code>x</code> 没有被定义。我们需要枚举这个 <code>x</code> ，看哪一个候选 <code>x</code> 能给出合理的解密结果：</p><pre><code class="language-python">from Crypto.Util.number import *
+
+prob = bytes.fromhex('fb9cd6ab42f2be75ae2637794196159de16e49522ed55e83462b0802a0325e1a4e9cbad3')
+
+# c = m ^ (m &gt;&gt; offset &amp; mask)，恢复 m
+def inv_convert(c, offset, mask):
+    c = num2vector(Integer(c))
+    E = get_matrix(offset, mask)
+    return long_to_bytes(vector2num(E.inverse() * c))
+
+# 以指定的 x 作为第一轮 offset，解密密文块
+def decrypt(c, x):
+    c = inv_convert(bytes_to_long(c), 14, 0xffffffff)
+    c = inv_convert(bytes_to_long(c), -20, 2345273571)
+    c = inv_convert(bytes_to_long(c), -13, 296229569)
+    c = inv_convert(bytes_to_long(c), x, 0xffffffff)
+    
+    return c
+
+for x in range(1, 32):
+    print(x, decrypt(prob[:4], x))</code></pre><p>　　枚举一遍，发现只有取 $7$ 可以给出可见字符的明文：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-2.png" class="kg-image" alt width="1498" height="905" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-2.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-2.png 1000w, https://www.ruanx.net/content/images/2022/09/image-2.png 1498w" layout="responsive"></amp-img></figure><p>　　解密整个密文，获得 <code>s1ZcYawU5fCmI-ISzQn97SCRL2tB8HNETujq</code> ：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-4.png" class="kg-image" alt width="1710" height="291" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-4.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-4.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-4.png 1600w, https://www.ruanx.net/content/images/2022/09/image-4.png 1710w" layout="responsive"></amp-img></figure><p>　　出题人在这里埋了最后一手坑，也是整道题目最大的败笔，如同狗尾续貂：这个串需要经过 Rail Fence 解密为本场比赛的 flag 格式 <code>ISEC-***</code> ，才可提交。</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2022/09/image-5.png" class="kg-image" alt width="2201" height="1225" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/image-5.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/image-5.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/image-5.png 1600w, https://www.ruanx.net/content/images/2022/09/image-5.png 2201w" layout="responsive"></amp-img><figcaption>▲ <a href="https://gchq.github.io/CyberChef/#recipe=Rail_Fence_Cipher_Decode(5,2)&amp;input=czFaY1lhd1U1ZkNtSS1JU3pRbjk3U0NSTDJ0QjhITkVUdWpx">CyberChef</a> 随便试两下</figcaption></figure><p></p><h2 id="0x04-teamitaly-ctf-2022">0x04 TeamItaly CTF 2022</h2><p>　　意大利比赛，赛场上只做出前两题。考察范围：MT19937；耐心。</p><h4 id="t1-lazy-platform">T1 Lazy platform</h4><p>　　题目源码：</p><pre><code class="language-python">from Crypto.Util.Padding import pad
+from Crypto.Cipher import AES
+import random
+import signal
+import os
+
+TIMEOUT = 300
+FLAG = os.environ.get("FLAG", "flag{test}").encode()
+
+
+def getrandbytes(n: int) -&gt; bytes:
+    return random.getrandbits(n * 8).to_bytes(n, "little")
+
+
+def handle():
+    print("Welcome to Lazy platform! If you want to decrypt some messages, you can't do that here, you'll have to do it on your own")
+
+    while True:
+        print("Choose one of the following options")
+        print("[1] Encrypt")
+        print("[2] Decrypt")
+        print("[3] Get encrypted flag")
+        print("[4] Exit")
+        option = input("&gt; ")
+
+        if option == "1":
+            message = input("Enter a message to encrypt: ")
+            key = getrandbytes(32)
+            iv = getrandbytes(16)
+            ciphertext = AES.new(key, AES.MODE_CBC, iv).encrypt(
+                pad(message.encode(), AES.block_size))
+            print("Ciphertext:", ciphertext.hex())
+            print("Key:", key.hex())
+            print("IV:", iv.hex())
+        elif option == "2":
+            print("I can't do that at the moment, I'm cooking a pizza")
+        elif option == "3":
+            key = getrandbytes(32)
+            iv = getrandbytes(16)
+            ciphertext = AES.new(key, AES.MODE_CBC, iv).encrypt(
+                pad(FLAG, AES.block_size))
+            print("Ciphertext:", ciphertext.hex())
+        elif option == "4":
+            print("Bye bye!\n")
+            break
+        else:
+            print("Invalid option")
+        print()
+
+
+if __name__ == "__main__":
+    signal.alarm(TIMEOUT)
+    handle()</code></pre><p>　　明显是 MT19937，每次交互可以获得 32 + 16 个字节的状态，即相当于 12 个 uint32。只需做 $52$ 轮，即可获得 $52\times 12= 624$ 个 uint32。</p><p>　　梅森旋转状态恢复器：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://github.com/kmyk/mersenne-twister-predictor"><div class="kg-bookmark-content"><div class="kg-bookmark-title">GitHub - kmyk/mersenne-twister-predictor: Predict MT19937 PRNG, from preceding 624 generated numbers. There is a specialization for the “random” of Python standard library.</div><div class="kg-bookmark-description">Predict MT19937 PRNG, from preceding 624 generated numbers. There is a specialization for the &amp;quot;random&amp;quot; of Python standard library. - GitHub - kmyk/mersenne-twister-predictor: Predict MT19...</div><div class="kg-bookmark-metadata"><span class="kg-bookmark-author">GitHub</span><span class="kg-bookmark-publisher">kmyk</span></div></div><div class="kg-bookmark-thumbnail"><amp-img src="https://opengraph.githubassets.com/a4a2c30bc54fed774496dece95c0b7a5d98caa5e2cb23c801e70bdc676939eff/kmyk/mersenne-twister-predictor" alt width="1200" height="600" layout="responsive"></amp-img></div></a></figure><p>　　exp：</p><pre><code class="language-python">from Crypto.Util.Padding import pad
+from Crypto.Cipher import AES
+from pwn import *
+from mt19937predictor import MT19937Predictor
+
+io = remote('lazy-platform.challs.teamitaly.eu', 15004)
+p = MT19937Predictor()
+
+def get_rand_state():
+    io.recvuntil(b'&gt; ')
+    io.sendline(b'1')
+    io.recvuntil(b': ')
+    io.sendline(b'a')
+
+    _ = io.recvline().split()[-1]
+    key = io.recvline().split()[-1].decode()
+    iv = io.recvline().split()[-1].decode()
+
+    print(key, iv)
+
+
+    p.setrandbits(int.from_bytes(bytes.fromhex(key), 'little'), 256)
+    p.setrandbits(int.from_bytes(bytes.fromhex(iv), 'little'), 128)
+
+
+def getrandbytes(n: int) -&gt; bytes:
+    return p.getrandbits(n * 8).to_bytes(n, "little")
+
+if __name__ == '__main__':
+    for x in range(52):
+        get_rand_state()
+    
+    key = getrandbytes(32)
+    iv = getrandbytes(16)
+
+    print('+ ', key.hex(), iv.hex())
+
+    io.recvuntil(b'&gt; ')
+    io.sendline(b'3')
+    io.recvuntil(b'Ciphertext:')
+
+    cipher = io.recvline().decode()
+    print(cipher)
+
+    m = AES.new(key, AES.MODE_CBC, iv).decrypt(bytes.fromhex(cipher))
+    print(m)
+
+    # io.recvuntil(b'&gt; ')
+
+
+    # io.interactive()</code></pre><h4 id="t2-the-missing-half">T2 The Missing Half</h4><p>　　题目附件：</p>
+        <div class="kg-card kg-file-card kg-file-card-medium">
+            <a class="kg-file-card-container" href="../../content/files/2022/09/missing.zip" title="Download" download>
+                <div class="kg-file-card-contents">
+                    <div class="kg-file-card-title">Missing</div>
+                    
+                    <div class="kg-file-card-metadata">
+                        <div class="kg-file-card-filename">missing.zip</div>
+                        <div class="kg-file-card-filesize">2 KB</div>
+                    </div>
+                </div>
+                <div class="kg-file-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><defs></defs><title>download-circle</title><polyline class="a" points="8.25 14.25 12 18 15.75 14.25"></polyline><line class="a" x1="12" y1="6.75" x2="12" y2="18"></line><circle class="a" cx="12" cy="12" r="11.25"></circle></svg>
+                </div>
+            </a>
+        </div>
+        <p>　　给了一个 Python 脚本，给了一个 out 文件。<strong>题目提示：<em>If something seems impossible you should look at it from a different point of view, maybe a different base。</em></strong>来看题目脚本：</p><pre><code class="language-python">#!/usr/bin/env python3
+
+from Crypto.Util.number import *
+import os
+import random
+from hashlib import md5
+
+FLAG = os.environ.get("FLAG", "flag{test}")
+
+
+def a(x, y) -&gt; int:
+    return x ** y
+
+
+def b(f: int, x: int) -&gt; int:  # caller
+    func = [random.seed, getPrime, isPrime, md5]
+    if f == 3:
+        return bytes_to_long(func[f](long_to_bytes(x)).digest())
+    r = func[f](x)
+    return int(r) if r else 0
+
+
+def c(z: int, x: int, y: int) -&gt; int:  # random
+    if z:
+        return random.randint(x ** 11, x ** 11 + y)
+    x = long_to_bytes(x)
+    y = long_to_bytes(y)
+    while len(x) &lt; len(y):
+        x += x
+    x = x[:len(y)]
+    return bytes_to_long(xor(x, y))
+
+
+def d(x: int) -&gt; int:
+    if x == 1:
+        return 1
+    if x == 2:
+        return 2
+    if x == 3:
+        return 24
+    return (6 * d(x - 1) ** 2 * d(x - 3) - 8 * d(x - 1) * d(x - 2) ** 2) // (d(x - 2) * d(x - 3))
+
+
+def fastd(n):
+    n = n - 1
+    temp = 1
+    for i in range(1, n + 1):
+        temp *= (2 ** i) - 1
+    esp = 2 ** ((n ** 2 + n) // 2)
+    return temp * esp
+
+
+def e(msg: int) -&gt; int:  # rsa
+    n = 0x1702f4d2a98712defc05cb40b72a821479ccb9000a9bd698520082544b652bacfa721041f115da3a3cb8f4211a847706ae4dc9f048c7262a964e337bc47065de1059eccc87c19f662c21f9066805e5f75b3c62305395138d5eb71e9f9966297750ee17ccfcace1386abaf53434b264696744ae990bdebb17a4a56c4edc0cccfcf8da138fcf0c911f434d2d3e0b493b8fa9917f83f41273b4aaf7d631dabb66939f67fcb270e0a7156c7e66338027387e873c225991180fec96ea4fc0f9f88815010e5994d5f35ae21568d5641b00d44876762c392e9853045a5a92eb2354486f80946368f83469a7b37e621906f81f8005b126417fd716bcd79c84610dc093dd7575ebcf3af3d71a869830455d3ad6d68ad2254843320233e01f1cafdc73310f7ffb1deccb4df2fee6150a1a588867c5285c7049bf39e1a631badc81d61dda69e5d2e017235306ad46b0703e88a5c65807737a6a459231f5eb6bd6afd44fb46566c1
+    e = 0x10001
+    return pow(msg, e, n)
+
+
+def xor(x, y):
+    return bytes(a ^ b for a, b in zip(x, y))
+
+
+def f(x: int) -&gt; int:
+    return bytes_to_long(xor(long_to_bytes(x), FLAG.encode()))
+
+
+def Lukasiewicz(password: str) -&gt; int:
+    stack = []
+    func = {'a': (a, 2), 'b': (b, 2), 'c': (c, 3),
+            'd': (fastd, 1), 'e': (e, 1), 'f': (f, 1)}
+    for t in password:
+        if t.isdigit():
+            stack.append(int(t))
+        else:
+            args = []
+            for _ in range(func[t][1]):
+                args.append(stack.pop())
+            args.reverse()
+            tmp = func[t][0](*args)
+            stack.append(tmp)
+    return stack.pop()
+
+
+with open('missing-half.py.out', 'w') as file:
+    password = '08ae7eb31227acdb553aafec'
+    file.write('out:' + hex(Lukasiewicz(password)))
+</code></pre><p>　　这题目还是很新颖的，以前没有在 Crypto 中看到出题人用后缀表达式来描述加密过程。做此题需要一点时间用于分析加密过程，我们首先把后缀表达式转中缀：</p><pre><code class="language-python">c(b(e(a(0, 8)), e(7)), b(3, d(c(1, 2, a(2, 7)))), e(f(a(5, a(5, 3)))))
+
+= c(b(0, e(7)), b(3, d(c(1, 2, a(2, 7)))), e(f(a(5, a(5, 3)))))
+= c(0, md5_to_long(d(randint(2048, 2176))), e(f(2350988701644575015937473074444491355637331113544175043017503412556834518909454345703125)))
+= c(0, md5_to_long(d(2087)), e(f(2350988701644575015937473074444491355637331113544175043017503412556834518909454345703125)))
+= c(0, 160041365501716368448053427917678638214, e(f(2350988701644575015937473074444491355637331113544175043017503412556834518909454345703125)))
+= strxor(b'xf\xd8\x87f\\\xbc\xa8\xc0I\xac\xa4\xffR\xf4\x86', e(f(2350988701644575015937473074444491355637331113544175043017503412556834518909454345703125)))</code></pre><p>　　式子简化到这个程度之后，我们发现问题的核心在于这个 <code>e</code> 函数执行了一个 RSA 加密。如果能解密，则通过几次异或就能拿到 flag。因此考虑分解题目中给的这个 $n$，由于出题人提示「换一个进制看看」，我们尝试给 $n$ 变换一下进制：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/09/Untitled--1-.png" class="kg-image" alt width="3083" height="1523" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/Untitled--1-.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/Untitled--1-.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/09/Untitled--1-.png 1600w, https://www.ruanx.net/content/images/size/w2400/2022/09/Untitled--1-.png 2400w" layout="responsive"></amp-img></figure><p>　　可见在 17 进制下 $n$ 很有规律。用等比数列求和之类的手段，可以看出$$n = 17 ^ {692} - 2 * 17  ^ {460} + 4 - 2 * 17 ^ {232}$$至此已经可以人工用十字相乘分解了。不过也可以自动分解一下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/09/Untitled--2-.png" class="kg-image" alt width="1084" height="428" srcset="https://www.ruanx.net/content/images/size/w600/2022/09/Untitled--2-.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/09/Untitled--2-.png 1000w, https://www.ruanx.net/content/images/2022/09/Untitled--2-.png 1084w" layout="responsive"></amp-img></figure><p>　　于是 $n=(17 ^ {460} - 2) \cdot (17 ^ {232} - 2)$，剩余解题过程平凡。</p>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

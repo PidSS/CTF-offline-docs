@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>格密码笔记（一）</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="这是 Lattice Based Crypto 系列的第一篇文章。本文简要介绍了格密码学的特性，并分析了一个传统公钥密码学中的简单案例，以初步体会 lattice 的思想。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="格密码笔记（一）" />
+    <meta property="og:description" content="这是 Lattice Based Crypto 系列的第一篇文章。本文简要介绍了格密码学的特性，并分析了一个传统公钥密码学中的简单案例，以初步体会 lattice 的思想。" />
+    <meta property="og:url" content="https://www.ruanx.net/lattice-1/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2021-01-14T02:01:05.000Z" />
+    <meta property="article:modified_time" content="2021-01-15T01:31:10.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="lattice" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="格密码笔记（一）" />
+    <meta name="twitter:description" content="这是 Lattice Based Crypto 系列的第一篇文章。本文简要介绍了格密码学的特性，并分析了一个传统公钥密码学中的简单案例，以初步体会 lattice 的思想。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/lattice-1/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, lattice" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "格密码笔记（一）",
+    "url": "https://www.ruanx.net/lattice-1/",
+    "datePublished": "2021-01-14T02:01:05.000Z",
+    "dateModified": "2021-01-15T01:31:10.000Z",
+    "keywords": "Crypto, lattice",
+    "description": "这是 Lattice Based Crypto 系列的第一篇文章。本文简要介绍了格密码学的特性，并分析了一个传统公钥密码学中的简单案例，以初步体会 lattice 的思想。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto tag-lattice">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">格密码笔记（一）</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto tag-lattice no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">格密码笔记（一）</h1>
+
+                <p class="post-full-custom-excerpt">这是 Lattice Based Crypto 系列的第一篇文章。本文简要介绍了格密码学的特性，并分析了一个传统公钥密码学中的简单案例，以初步体会 lattice 的思想。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2021-01-14">14 Jan 2021</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 7 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <blockquote>Lattice based crypto 我从 2020 年春季就立志要学，一直摸了一年。<br>现在决定加急学习，不能再摸了，一定要出重拳！<br>2021.01.14</blockquote><h3 id="-">关于格密码</h3><p>　　众所周知，公钥密码学的安全性，往往建立在数学问题的困难性上。如 RSA 基于大数分解的困难性，DH 和 Elgamal 以及 ECC，是基于有限域上求离散对数的困难性。我们接下来要考虑一类新的难题，它们支撑了格（lattice）密码学。</p><p>　　对比起之前的公钥密码学体系，格密码提供了许多优势：首先，<strong>加密、解密速度可以更快</strong>（RSA 慢得难以忍受）；<strong>可以抵抗量子攻击</strong>。目前来看，暂且没有量子算法可以高效解决 lattice 难题。</p><p>　　lattice 除了可以开创新的公钥密码体系之外，还提供了一整套新的数学方法，可以用来解决许多传统密码学的问题。攻击 RSA 时经常采用的 Coppersmith 方法，就是基于 lattice 的。</p><p>　　所谓“格”，是一种与向量空间类似的数学空间。实数空间 $\mathbb{R}$ 上的向量空间 $V$，是一些向量的集合；其中两个向量可以相加、向量可以和一个实数相乘，运算保持封闭。也就是说，向量空间支持<strong>向量加法</strong>和<strong>标量乘法</strong>。而 lattice 与向量空间的区别，就是将标量乘法中的乘数，从实数改为<strong>整数</strong>。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2021/01/Equilateral_Triangle_Lattice.svg" width="220" height="220" loading="lazy" alt></div><div class="kg-gallery-image"><img src="../content/images/2021/01/SquareLattice.svg" width="300" height="220" loading="lazy" alt></div><div class="kg-gallery-image"><img src="../content/images/2021/01/Rhombic_Lattice-1.svg" width="300" height="220" loading="lazy" alt></div></div></div><figcaption>▲ 三个 lattice，不难看出每个格都可以由几个初始的向量生成</figcaption></figure><p>　　格可以视为向量的集合，也可以视为点的集合。直观地看，lattice 上的点排列非常整齐，与栅栏、铁丝网、化学中的晶格类似。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2021/01/fence-5832960_1920-1.jpg" width="1920" height="1280" loading="lazy" alt srcset="../content/images/size/w600/2021/01/fence-5832960_1920-1.jpg 600w, ../content/images/size/w1000/2021/01/fence-5832960_1920-1.jpg 1000w, ../content/images/size/w1600/2021/01/fence-5832960_1920-1.jpg 1600w, ../content/images/2021/01/fence-5832960_1920-1.jpg 1920w" sizes="(min-width: 720px) 720px"></div><div class="kg-gallery-image"><img src="../content/images/2021/01/NaCl-3-D-Structure-1.png" width="1100" height="697" loading="lazy" alt srcset="../content/images/size/w600/2021/01/NaCl-3-D-Structure-1.png 600w, ../content/images/size/w1000/2021/01/NaCl-3-D-Structure-1.png 1000w, ../content/images/2021/01/NaCl-3-D-Structure-1.png 1100w" sizes="(min-width: 720px) 720px"></div></div></div><figcaption>▲ 左图：冬天的铁丝网（来源 pixabay） 右图：NaCl 的晶体结构（来源网络）</figcaption></figure><p>　　由于 lattice 的理论本身比较晦涩，我们先看一个具体的例子。这个例子并不关 lattice 什么事，但是其隐含了 lattice 的一些理论。</p><h3 id="--1">一个公钥密码学方案</h3><p>　　现在来看这一个密码学方案。它是一个 toy model，并不安全。它是 lattice 可用于传统公钥密码分析的例证，另外也是 NTRU 公钥密码体系的一个低端版本。</p><p>　　首先，Alice 选择一个大整数 $q$ 作为公共参数。然后选择两个比较小的整数 $f,g$ 满足 $$f &lt; \sqrt{q/2}, \qquad \sqrt{q/4} &lt; g &lt; \sqrt{q/2}, \qquad \gcd(f, qg) = 1$$亦即 $f$ 的长度大约小于 $q/2$ 的一半；$g$ 的长度大约在 $q/4$ 的一半到 $q/2$ 的一半之间。从而 $f, g$ 远远小于 $q$，为 $\mathcal{O}(\sqrt q)$. 另外要求 $f$ 与 $q, g$ 都互质。接下来，Alice 计算 $$h \equiv f ^ {-1} g \pmod q$$注意到尽管 $f$ 很小，其逆元仍然会很大，于是 $h$ 是 $\mathcal{O}(q)$ 的级别。Alice 的公钥是 $h$，私钥是 $\langle f, g\rangle$.</p><p>　　现在来考虑 Bob 如何给 Alice 发送消息。首先，Bob 有一个小于 $\sqrt{q/4}$ 的明文 $m$，然后他随机选择整数 $r &lt; \sqrt{q/2}$. 计算 $$e \equiv rh + m \pmod q$$将 $e$ 作为密文发送给 Alice. 接下来 Alice 如此解密：先计算 $$a\equiv fe\pmod q$$然后计算 $$b\equiv f ^ {-1} a \pmod {{\color{blue} g}}$$其中 $f$ 的逆元也是在模 $g$ 群中的。<strong>我们断言这里求出来的 $b$，就等于 $m$.</strong></p><p>　　首先，有 $a$ 满足 $$a\equiv fe \equiv rg + fm \pmod q$$我们注意到 $rg+fm &lt; \sqrt{\frac q2}\sqrt{\frac q2} + \sqrt{\frac q2}\sqrt{\frac q4} &lt; q$，从而知道 $a$ 就是 $rg+fm$ 的<strong>真实值</strong>，即$$a = rg + fm$$</p><p>　　接下来的步骤就顺理成章了。将 $a$ 模掉 $g$，分离出 $fm \pmod g$；然后乘以 $f$ 的逆元得到 $m \pmod g$. 而 $m$ 是小于 $g$ 的，从而这个 $m$ 是真实值。</p><p>　　纵观整个加密体系，最大的跨越在于 “得到 $rg+fm$ 的真实值”。正因为有了 $rg+fm$ 的确切值，才可以模掉 $g$，从而解开 $rg$ 的混合，得到 $fm$.</p><figure class="kg-card kg-code-card"><pre><code class="language-python">import random
+from numpy import sqrt, gcd
+from gmpy2 import invert
+
+class SimpleScheme():
+    
+    def __init__(self):
+        while True:
+            self.q = random.randint(1&lt;&lt;128, (1&lt;&lt;129) - 1)
+            self.f = random.randint(1, sqrt(self.q / 2))
+            self.g = random.randint(sqrt(self.q / 4), sqrt(self.q / 2))
+
+            if gcd(self.f, self.q * self.g) == 1:
+                break
+        
+        self.h = invert(self.f, self.q) * self.g % self.q
+        
+        print(f'pk = (q, h) = ({self.q}, {self.h})')
+        print(f'sk = (f, g) = ({self.f}, {self.g})')
+    
+    def enc(self, m):
+        assert m &lt; sqrt(self.q/4)
+        
+        r = random.randint(1, sqrt(self.q / 2))
+        e = (r * self.h + m) % self.q
+        
+        print(f'rg+mf = {r*self.g + m*self.f}')
+        
+        print(f'e = {r * self.h % self.q} + {m} = {e}')
+        
+        return int(e)
+
+    def dec(self, e):
+        a = self.f * e % self.q
+        
+        print(f'a = {a}')
+        
+        b = invert(self.f, self.g) * a % self.g
+        
+        print(f'b = {b}')
+
+worker = SimpleScheme()
+c = worker.enc(114514)
+worker.dec(c)
+
+# pk = (q, h) = (514230918051282920692602780404498492433, 115647624614577988455515336107635422730)
+# sk = (f, g) = (2405709868378346209, 15028670797073718546)
+# rg+mf = 13054637933699032665165943687110631912
+# e = 259719708311083043320270690207664511027 + 114514 = 259719708311083043320270690207664625541
+# a = 13054637933699032665165943687110631912
+# b = 114514</code></pre><figcaption>▲&nbsp;加密、解密过程</figcaption></figure><p>　　现在，我们来考虑敌手 Eve 如何攻击这个密码体系。仅仅已知公钥 $(q, h)$，她并不能找到真正的 $(f, g)$；但她可以找到一组 $(F,G)$，如果 $(F,G)$ 在解密时表现与 $(f,g)$ 相同，那么 Eve 就可以完成解密工作。具体而言，她需要找到 $F,G$ 满足 $$Fh\equiv G \pmod q,\qquad F=\mathcal{O}(\sqrt q),\qquad G=\mathcal{O}(\sqrt q)$$显然真正的 $(f,g)$ 是合法的 $(F,G)$. 现在的问题是为什么这样的 $(F,G)$ 可以用于解密。我们有$$Fe \equiv F \cdot (r h+ m) \equiv rG + Fm \pmod q$$注意到这求出了 $rG+Fm$ 的真实值。继续按照原先的解密算法来操作，模掉 $G$ 获得 $Fm \pmod G$，乘以 $F$ 的逆元，即可恢复出 $m$.</p><p>　　也就是说，Eve 只需要找到合法的 $(F,G)$，就可以攻破这个密码体系。将 $Fh\equiv G \pmod R$ 改写为等价形式 $Fh = G + qR$，那么 Eve 的任务就是找到足够小的 $F,G$ 使得 $$F(1,h) - R(0, q) = (F,G)$$</p><p>　　这个式子等价于 $(1,h), (0,q)$ 这两个向量以 $F, R$ 为系数进行线性组合。如果我们能找到合适的 $F,R$，<strong>使得线性组合出来的向量足够短</strong>，那么我们就找到了合法的 $(F,G)$ 来攻击密码体系。</p><p>　　上面的问题可以概括为：<strong>有两个已知的向量，需要找出一套线性组合系数（必须是整数），来生成一个足够短的向量</strong>。Eve 的任务是：已知 $\newcommand\bv{{\boldsymbol{v}}} \bv_1 = (1,h)$ 和 $\bv_2 = (0,q)$，长度均为 $\newcommand\mo{{\mathcal{O}}} \mo(q)$，要寻找它们的线性组合 $\boldsymbol{w} = a_1 \bv_1 + a_2 \bv_2$，长度为 $\mo(\sqrt q)$. 要求系数 $a_1, a_2$ 均为整数。</p><p>　　从 lattice 的角度看，Eve 是在一个 lattice $L$ 中寻找一个很短的向量：$$L = \{a_1\bv_1 + a_2\bv_2 : a_1, a_2 \in \mathbb{Z} \}$$</p><p>　　在二维的 lattice 里面找最短向量，是有高效算法的（Gauss 的工作）。于是 Eve 攻破了这个密码体系。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-crypto tag-lattice no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../lattice-2/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">格密码笔记（二）</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>本文介绍了 CTF 中经常出现的背包密码（基于子集和问题），并简要概括了 lattice 在解决该问题上的应用，最后给出了攻击背包密码的代码。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2021-01-15">15 Jan 2021</time> <span class="bull">&bull;</span> 10 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-crypto no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../crypto-notes/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">密码学复习笔记</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>这是哈工大2020年密码学课程的笔记。课程以形式化的方法定义了密码学的安全性，与 CTF 偏向实践的密码学有区别。本文基于教材《现代密码学：原理与协议》。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-12-21">21 Dec 2020</time> <span class="bull">&bull;</span> 39 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

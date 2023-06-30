@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>CTFd平台的搭建及加速</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="本文总结了 Lilac 五一欢乐赛的 CTFd 平台的搭建和加速。记录了配置 nginx 缓存、cdn、全站加速主从切换、多网卡的过程。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="CTFd平台的搭建及加速" />
+    <meta property="og:description" content="本文总结了 Lilac 五一欢乐赛的 CTFd 平台的搭建和加速。记录了配置 nginx 缓存、cdn、全站加速主从切换、多网卡的过程。" />
+    <meta property="og:url" content="https://www.ruanx.net/ctfd/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-05-01T00:47:29.000Z" />
+    <meta property="article:modified_time" content="2020-05-03T01:06:25.000Z" />
+    <meta property="article:tag" content="Web" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CTFd平台的搭建及加速" />
+    <meta name="twitter:description" content="本文总结了 Lilac 五一欢乐赛的 CTFd 平台的搭建和加速。记录了配置 nginx 缓存、cdn、全站加速主从切换、多网卡的过程。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/ctfd/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Web" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "CTFd平台的搭建及加速",
+    "url": "https://www.ruanx.net/ctfd/",
+    "datePublished": "2020-05-01T00:47:29.000Z",
+    "dateModified": "2020-05-03T01:06:25.000Z",
+    "keywords": "Web",
+    "description": "本文总结了 Lilac 五一欢乐赛的 CTFd 平台的搭建和加速。记录了配置 nginx 缓存、cdn、全站加速主从切换、多网卡的过程。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-web">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">CTFd平台的搭建及加速</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-web no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/web/index.html">Web</a>
+                </section>
+
+                <h1 class="post-full-title">CTFd平台的搭建及加速</h1>
+
+                <p class="post-full-custom-excerpt">本文总结了 Lilac 五一欢乐赛的 CTFd 平台的搭建和加速。记录了配置 nginx 缓存、cdn、全站加速主从切换、多网卡的过程。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-05-01">1 May 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 9 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　笔者近期在忙 Lilac 五一欢乐赛的事。其中过程百般曲折，不过回顾这一段时间折腾 cdn、全站加速、nginx，感觉收获还是很大的，故写一篇博客记录下来。</p><p>　　竞赛平台采用了 CTFd（也没有其他选项，只有 CTFd 可以用）。最初以部署在华为云上，带宽只有 1Mbps，非常卡。于是迁移到了 Vultr 东京节点，虽然国际访问非常流畅，但国内访问又断断续续了。套 Cloudflare 加速之后，国内可用性比较高，至少不会 Timeout 了；但是速度还是上不来，与最初的华为云半斤八两。</p><p>　　最终决定迁移回华为云 VPS，同时采取各种加速手段。本文记载了如何在 VPS 只有 1Mbps 带宽的情况下，把网站加速到用户可以接受的水平。</p><hr><h3 id="0x00-ctfd">0x00 安装 CTFd</h3><p>　　这是最不用动脑子的部分。docker 即可安装：</p><pre><code class="language-bash">docker run --name ctfd -dit -p 8000:8000 ctfd/ctfd</code></pre><p>　　于是就起了一个 CTFd 服务，运行在<code>8000</code>端口上。如果想要修改源码，可以搞 <code>volume</code> 挂载网站的代码目录，这样直接在实体机上修改，docker 里面的文件就能更新。如果想让它自动启动，加上  <code>--restart=always</code> 就行。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-9.png" class="kg-image" alt loading="lazy"><figcaption>▲ 安装好之后的 CTFd, 改了一下界面</figcaption></figure><p>　　另外，由于 VPS 上有很多个容器（pwn 题的和 web 题的），还是需要一个 docker 管理工具。我以前一直用 DaoCloud 来做这件事，这一次采用  <code>portainer</code> ：</p><figure class="kg-card kg-code-card"><pre><code class="language-bash">docker volume create portainer_data
+docker run -d -p 10000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer</code></pre><figcaption>▲ 安装 portainer，Web UI 在 9000 端口</figcaption></figure><p>　　于是可以方便地管理容器、查看负载：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-10.png" class="kg-image" alt loading="lazy"><figcaption>▲ portainer 管理界面</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-11.png" class="kg-image" alt loading="lazy"><figcaption>▲ CTFd&nbsp;的实时资源监控</figcaption></figure><p>　　目前为止我们安装好了 CTFd. </p><h3 id="0x01-">0x01 基本配置</h3><p>　　首先我们得把主页给改掉。在 Pages 里面改 <code>index</code> 就行。我们放了一张 logo 在首页。代码如下：</p><pre><code class="language-html">&lt;center&gt;&lt;img src="/files/xxxx/lilac-white.png" width="750px"/&gt;&lt;/center&gt;</code></pre><p>　　另外，我们把主题色改成像饿了么那样的蓝色。直接去 element ui 抄配色就行了。注入 header 代码如下：</p><pre><code class="language-html">&lt;style id="theme-color"&gt;
+:root {--theme-color: #409EFF;}
+.navbar{background-color: var(--theme-color) !important;}
+.jumbotron{background-color: var(--theme-color) !important;}
+&lt;/style&gt;</code></pre><p>　　现在我们有了漂亮的首页和 Challenges 界面。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-12.png" class="kg-image" alt loading="lazy"><figcaption>▲ Challenges 界面。没做的题是黑色，成功的题是绿色。</figcaption></figure><p>　　为了不带端口用域名访问，我们采用 nginx 反代 CTFd. 在  <code>sites-enabled</code> 创建一个 <code>train</code> 文件（这不是个好习惯。正常的做法是在 <code>sites-avaliable</code> 创建配置文件，然后用符号链接放进 <code>sites-enabled</code>，不过我们敏捷开发，就不管那么多了），写进如下内容：</p><figure class="kg-card kg-code-card"><pre><code class="language-nginx">server {
+    listen 80;
+    server_name self.lilac, train.hitctf.cn, ctf.ruanx.net;
+ 
+    location /{
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8000;
+
+	}
+}</code></pre><figcaption>▲ nginx 配置。由 nginx 反代 8000 端口&nbsp;</figcaption></figure><p>　　配置好 A 记录之后，访问 <code>train.hitctf.cn</code> 可以访问到 CTFd. 我们基本配置已经完成，这是一个可以拿去用的服务器了。</p><p>　　本次比赛中，我们需要上传一个 5 MB 左右的文件，但是返回了 413 状态码。需要修改 nginx 配置，允许上传大文件：</p><figure class="kg-card kg-code-card"><pre><code class="language-nginx"># ...
+
+http {
+
+    # ...
+
+    client_max_body_size 1G;
+
+	
+    # ...
+}</code></pre><figcaption>▲ 修改 <code>/etc/nginx/nginx.conf</code> ，文件大小限制改成 1GB</figcaption></figure><p>　　于是可以顺利上传。来下载一下试试：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image.png" class="kg-image" alt loading="lazy"><figcaption>▲ 华为云说给你 1Mbps，绝对不会多给</figcaption></figure><p>　　所以，我们需要专注于加速了。加速！加速！</p><hr><h3 id="0x02-nginx-">0x02 nginx 缓存</h3><p>　　首先想到的是用 nginx 来缓存静态文件，分担 CTFd 的服务器负担（CTFd 是 flask 写的）。在 <code>nginx.conf</code> 里面写：</p><figure class="kg-card kg-code-card"><pre><code class="language-nginx">proxy_cache_path /var/cache/nginx/proxycache levels=1:2:2 keys_zone=proxycache:500m inactive=120s max_size=1g;</code></pre><figcaption>▲ <code>nginx.conf</code> 缓存配置</figcaption></figure><p>　　然后在 <code>sites-enabled</code> 把 <code>train</code> 改成：</p><figure class="kg-card kg-code-card"><pre><code class="language-nginx"># ...
+location /{
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8000;
+
+        proxy_cache proxycache;
+        proxy_cache_key $request_uri;
+        proxy_cache_valid 200 302 301 10m;
+        proxy_cache_valid any 1m;
+}</code></pre><figcaption>▲ nginx 配置全站缓存&nbsp;</figcaption></figure><p>　　做完了之后，出现了新的问题：在 admin 修改题目之后，迟迟不能更新。从而我们必须只缓存静态文件。规则改为：</p><figure class="kg-card kg-code-card"><pre><code class="language-nginx">location /{
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8000;
+}
+
+location /themes/core/static/ {
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        add_header Lilac-Proxy 'yes';
+        proxy_pass http://127.0.0.1:8000;
+
+        proxy_cache proxycache;
+        proxy_cache_key $request_uri;
+        proxy_cache_valid 200 302 301 10m;
+        proxy_cache_valid any 1m;
+    }</code></pre><figcaption>▲ nginx&nbsp;只缓存静态文件&nbsp;</figcaption></figure><p>　　再尝试访问，发现确实 <code>/themes/core/static</code> 里面的文件会加上 <code>Lilac-Proxy: yes</code> 这个头；其余的页面都没有这个头。我们完成了 nginx 层面的配置。</p><h3 id="0x03-cdn-">0x03 cdn 与全站加速</h3><p>　　CTFd 引用了 fontawesome 等一系列外部库。资源都在国外，访问起来很慢。我们可以利用 cdn 加速。</p><p>　　具体来讲，我是这样干的：在阿里云 OSS 上开一个桶，存下这些信息；建立一个 cdn，源站设为这个 OSS 桶。OSS 本身在国内访问已经很快了，建立 cdn 之后全球访问都很快。于是解决了外部资源问题。</p><p>　　至于内部资源，我们采用了阿里云的 “全站加速”。把 <code>ctf.ruanx.net</code> CNAME 到阿里云指定的地址，由阿里云申请 https 证书，这样我们的 CTFd 平台就支持了 https.</p><p>　　全站加速分为动态加速和静态加速两个部分。</p><ul><li>静态加速：对于指定的静态文件，由阿里云缓存到边缘网络。</li><li>动态加速：直接回源。阿里云会选择最快的路由。</li></ul><p>　　我们主要是利用静态加速功能。设置如下：</p><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><img src="../content/images/2020/05/image-2.png" class="kg-image" alt loading="lazy"><figcaption>▲&nbsp;设置静态文件路径&nbsp;</figcaption></figure><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><img src="../content/images/2020/05/image-3.png" class="kg-image" alt loading="lazy"><figcaption>▲ 设置 cache 规则，0s 表示不缓存</figcaption></figure><p>　　现在，静态加速已经做到极致了。直接访问 <code>ctf.ruanx.net</code>，页面可以在 2s 之内加载出来。</p><h3 id="0x04-">0x04 按量计费的带宽</h3><p>　　阿里云的 cdn 和全站加速，虽然帮我们把静态资源加速到飞快，但动态请求还是要回源的。如果阻塞得比较严重，会影响所有人的游戏体验。</p><p>　　我们在华为云弄一个弹性 IP，选择按量计费（0.64元 / GB），带宽放到 300 Mbps. 接下来把这个 IP 绑定到服务器的网卡上，然后配置路由。官方有教程，直接抄官方教程就行了：</p><figure class="kg-card kg-code-card"><pre><code class="language-bash">dhclient eth1
+
+ip route flush table net1
+ip route add default via 192.168.0.1 dev eth1 src 192.168.0.132 table net1
+ip route add 192.168.1.0/24 dev eth1 src 192.168.0.132 table net1
+ip rule add from 192.168.0.132 table net1 </code></pre><figcaption>▲ 给新加的网卡配置路由</figcaption></figure><p>　　现在用新网卡的 IP 地址可以访问到我们的平台。换句话讲，我们的平台有了两条路——一条是 1Mbps，流量免费的；另一条是 300Mbps，流量费很贵的。考虑到 CTFd 不是很耗流量的网站，按量计费是没问题的。</p><p>　　接下来，我们把动态请求交给 300Mbps 的路线。考虑到这条路线的流量费比全站加速更贵，我们仍然由阿里云的全站加速来缓存静态文件（这样也可以降低服务器压力）。</p><h3 id="0x05-">0x05 全站加速的主从切换</h3><p>　　把全站加速的源站信息改为：</p><figure class="kg-card kg-image-card"><img src="../content/images/2020/05/image-4.png" class="kg-image" alt loading="lazy"></figure><p>　　阿里云会每隔几秒发个包检测服务器状态。在主服务器正常工作的情况下，回源到主服务器；否则回源到备用服务器。这样配置之后，如果遭到 DDOS 攻击，我们卸掉 300Mbps 的网卡，全站加速就开始从 1Mbps 的线路回源，减少我们的损失。</p><p>　　现在 <code>ctf.ruanx.net</code> 高速度、高可用性、全球访问丝滑流畅了。Enjoy the game!</p><hr><p>Update 2020-05-01 10:00</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-5.png" class="kg-image" alt loading="lazy"><figcaption>▲ 比赛开始后一小时的流量</figcaption></figure><p>　　我们扛住了大量的访问，而且所有人都很流畅。</p><hr><p>Update 2020-05-03 09:00</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-6.png" class="kg-image" alt loading="lazy"><figcaption>▲ 开赛当天的 DDoS</figcaption></figure><p>　　开赛当晚 20:30 ~ 21:30，有神必壬打了两次 DDoS，有代理池，疯狂访问 <code>scoreboard</code> 和《打工是不可能打工的》附件 <code>che.gif</code> . 至于是谁打的我暂且蒙在鼓里。打出了一共 1.2GB 流量，峰值带宽大约 60Mbps，可惜全都打在 cdn 上了，对业务没有任何影响 :)</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-7.png" class="kg-image" alt loading="lazy"><figcaption>▲ 回源一共回了 26 MB 的流量</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/05/image-8.png" class="kg-image" alt loading="lazy"><figcaption>▲ 开赛日当天，全站加速 cdn&nbsp;的字节命中率</figcaption></figure>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/web/index.html">Web</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../php-unserialize-writeups/index.html">PHP 反序列化漏洞题解集</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-08-11">11 Aug 2021</time> –
+                                        7 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../selenium/index.html">自动实现每日疫情上报</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-07-07">7 Jul 2020</time> –
+                                        2 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../http-bin/index.html">自己造一个 HTTP Bin</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2020-06-19">19 Jun 2020</time> –
+                                        6 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/web/index.html">See all 5 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-compute no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../ecs-to-compute/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">compute</div>
+                <h2 class="post-card-title">租用云服务器进行计算</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>本文以一个密码学问题的爆破为例，记录了租用 x86 抢占式实例云服务器进行计算的过程。操作系统类似于 CentOS ，采用了多进程。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-05-03">3 May 2020</time> <span class="bull">&bull;</span> 3 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-writeup no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../tiny-lfsr-writeup/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">writeup</div>
+                <h2 class="post-card-title">Tiny LFSR writeup</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>BUUCTF上 Tiny LFSR 的题解。题目出自 AFCTF2018。本篇文章为英文。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-04-28">28 Apr 2020</time> <span class="bull">&bull;</span> 3 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>2020算法模拟题民间题解</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="这是 2020 年哈工大《算法设计与分析》的模拟题的题解。模拟试题是老师发的，题目有点难。个人题解，可能有误，仅供参考。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="2020算法模拟题民间题解" />
+    <meta property="og:description" content="这是 2020 年哈工大《算法设计与分析》的模拟题的题解。模拟试题是老师发的，题目有点难。个人题解，可能有误，仅供参考。" />
+    <meta property="og:url" content="https://www.ruanx.net/algorithm-2020/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-07-21T06:54:20.000Z" />
+    <meta property="article:modified_time" content="2020-07-25T02:30:40.000Z" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="2020算法模拟题民间题解" />
+    <meta name="twitter:description" content="这是 2020 年哈工大《算法设计与分析》的模拟题的题解。模拟试题是老师发的，题目有点难。个人题解，可能有误，仅供参考。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/algorithm-2020/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "2020算法模拟题民间题解",
+    "url": "https://www.ruanx.net/algorithm-2020/",
+    "datePublished": "2020-07-21T06:54:20.000Z",
+    "dateModified": "2020-07-25T02:30:40.000Z",
+    "keywords": "algorithm",
+    "description": "这是 2020 年哈工大《算法设计与分析》的模拟题的题解。模拟试题是老师发的，题目有点难。个人题解，可能有误，仅供参考。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-algorithm">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">2020算法模拟题民间题解</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-algorithm no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/algorithm/index.html">algorithm</a>
+                </section>
+
+                <h1 class="post-full-title">2020算法模拟题民间题解</h1>
+
+                <p class="post-full-custom-excerpt">这是 2020 年哈工大《算法设计与分析》的模拟题的题解。模拟试题是老师发的，题目有点难。个人题解，可能有误，仅供参考。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-07-21">21 Jul 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 7 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>期末考试要是考这么难的题，我悲痛欲绝，我只能爪巴。</p><p>本文形成期间，与 whk 同学讨论了许多题目的解法。在此致谢。</p><h3 id="t1-5pts-">T1 (5pts)</h3><blockquote>请叙述下述算法的功能并分析时间复杂度。<br><br>算法 <code>Compute</code><br>输入: 整数 $n$<br>输出: 整数<br><br>x=0<br>for i=1 to n do<br>    for j=1 to i do<br>        for k=1 to i+j do<br>            x=x+1<br>return x</blockquote><p>解：算法的目的是求出$$\begin{aligned}\sum_{i=1}^n \sum_{j=1} ^ i \sum_{k=1} ^ {i+1} 1 &amp;= \sum_{i=1}^n \sum_{j=1}^i (i+j) \\ &amp;= \sum_{i=1} ^ n (\sum _ {j=1} ^ i i + \sum_{j=1} ^ i j) \\ &amp;= \sum _{i=1} ^ n \left [ i ^ 2 + \frac{(i+1)i}{2} \right ] \\ &amp;= \frac12 \sum_{i=1} ^ n (3 i ^2 + i) \\ &amp;= \frac{n ^ 3 + 2 n^2 + n}{2}\end{aligned}$$ </p><p>复杂度，由于执行次数最多代码的是 <code>x=x+1</code> ，共执行了 $O(n^3)$ 次，故算法时间复杂度 $O(n ^3)$.</p><h3 id="t2-5pts-">T2 (5pts)</h3><blockquote>令 $f, g$ 和 $h$ 为定义在正整数上的正实数函数。<br>假设 $f(n)=O(g(n))$，$g(n)=O(h(n))$，证明 $f(n)=O(h(n))$.</blockquote><p>证：有常数 $N_1, c_1$ 使得 $\forall n &gt; N_1, f(n) \leq c_1\cdot g(n)$. 又有常数 $N_2, c_2$ 使得 $\forall n &gt; N_2, g(n) \leq c_2\cdot h(n)$.</p><p>于是，$\forall n &gt; \max\{N_1, N_2\}$ 我们有$$f(n) \leq c_1 \cdot g(n) \leq c_1 c_2 \cdot h(n)$$</p><p>故 $f(n) = O(h(n))$.</p><p></p><h3 id="t3-5pts-">T3 (5pts)</h3><blockquote>求解递归方程  $T(n)=2T(n/2)+n^4$ 其中 $k&gt;0$ 是一个常数。</blockquote><p>注意到 $n^4$ 多项式地大于 $n ^ {\log_2 2} = n$. 由 master 定理，$T(n) = O(n ^ 4)$.</p><p></p><h3 id="t4-15pts-">T4 (15pts)</h3><blockquote>设计分治算法求解下述问题：<br>输入：一个有  $n$ 个元素的数组 $A$ 和一个有  $k$ 个位置的集合 $$S = \{p_1, \dots, p_k\},\qquad 1\leq p_1 &lt; p_2 &lt;\dots &lt; p_k \leq n$$<br>输出：对于每个 $i\in \{1,\dots,k\}$，输出  $A$ 中第 $p_i$ 小的元组。<br>例如，如果 $k=1, S=\{i\}$ 对应元素中第  $i$ 小的元素，$k=2, S=\{1,n\}$ 对应找到数组中最小和最大的元素。<br>设计时间复杂度为 $O(n\log k)$ 的分治算法求解此问题，要求写出伪代码并证明算法的时间复杂度。</blockquote><p>这题其实有点难下手。主要在于，需要恰当地理解那个 $\log k$ 是怎么来的。</p><p>如果 $k=1$，那我们会毫不犹豫地采用线性第 $n$ 大算法。现在，思考如何把这个算法扩展到 $k=2$ 上面去。做法如下：</p><ul><li>取一个值 $m$，把整个序列分为 $&lt;m, \geq m$ 这两部分。</li><li>如果第 $S_1, S_2$ 大的数都在同一侧，则只递归那一侧；</li><li>如果在不同侧，则转化为两个区间第 $n$ 大问题。 </li></ul><p>不难注意到，上述算法的最坏情况是，在第一次递归时便产生分叉。此时的复杂度是：第一层最多有两个分叉；从第二层开始到最后一层，都是有两个子区间需要递归。于是总的复杂度：$$n + 2(n/2) + 2(n/4) + \cdots + 2 (n/n) = O(n)$$</p><p>现在把这个算法扩展到 $k$ 取任意值的情况。显然，最坏情况下，前 $\log k$ 层所有的子区间都需要递归；从第 $\log k$ 层开始，每层都只有 $\log k$ 个自区间需要递归。于是总复杂度是：$$n \cdot \log k +  \log k \cdot (1+2+4+\cdots + \frac{1}{2 ^ {\log k}} n) = O(n \log k)$$</p><p>伪代码如下。</p><pre><code class="language-python">def DIVIDE(A, S):
+    mid &lt;- DIVIDE(A, len(A)/2)
+    
+    le &lt;- A 中小于 mid 的数
+    kle &lt;- S 中小于 len(le) 的数
+    rt &lt;- A 中不小于 mid 的数
+    krt &lt;- S 中还剩下的数，每个都减去 len(le)
+    
+    return DIVIDE(le, kle) + DIVIDE(rt, krt)</code></pre><p></p><h3 id="t5-15pts-">T5 (15pts)</h3><blockquote>要为将即将到来的哈尔滨世界博览会设计和生产 $n$ 个不同的展品，每一个项目首先用 CAD 软件设计，然后送到外面加工厂加工，第 $i$ 个展品的设计时间为 $d_i$，加工时间为 $f_i$. 加工厂能力很强，可以同时加工 $n$ 个展品，所以对于每件展品，只要设计结束就可以立刻开始加工。但是，只有一位设计师，所以需要确定产品设计的顺序，以最快时间完成所有 $n$ 件展品的设计和加工。比如，完成了第一件展品的设计，可以将其交给加工厂，然后立刻开始第二件展品的加工。当完成第二件展品的设计时，可以将其交给加工厂而不需要考虑是否第一件展品已经加工完成。<br>设计多项式贪心算法求解此问题，分析时间复杂度，并证明其正确性。</blockquote><p>解：我们的策略是，按加工耗时排序，加工耗时越长的越早做。</p><p>证明如下： 由于加工是并行的，故每个任务的耗时仅仅取决于其开始设计的时间点。于是，我们交换相邻两个任务，对其余任务的完成时间无影响。接下来证明引理：对于相邻的两个任务，如果某任务的加工时间比另一任务长，那么我们应该把它放到前面做。</p><p>【引理】设有 $i,j$ 两任务，设计耗时分别为 $a_i, a_j$、加工耗时分别为 $b_i, b_j$，且 $b_i &gt; b_j$. 那么，先做 $i$ 再做 $j$，比先做 $j$ 再做 $i$ 的总用时更低。前者的用时是：$$\text{Cost}_{ij} = \max \{ a_i + b_i, a_i + a_j + b_j \}$$后者的用时是：$$\text{Cost}_{ji} = \max \{ a_j+b_j, a_i+a_j + b_i \}$$</p><p>注意到 $\text{Cost}_{ji} \geq a_i+a_j + b_i $，而显然 $a_i+a_j + b_i  \geq a_i + b_i$；又因为我们有假设 $b_i &gt; b_j$，故 $a_i+a_j + b_i  &gt; a_i + a_j + b_j$，于是 $\text{Cost}_{ji} \geq a_i+a_j + b_i \geq  \text{Cost}_{ij}$，于是我们应该先做 $i$，再做 $j$. 引理证毕。</p><p>有了上述引理，我们就可以按照冒泡排序的方式，不断交换相邻的任务，直到按加工耗时从大到小排列为止。我们断言：在某个最优解中，对于每一对相邻的任务，前者的加工耗时必定比后者长（或者相等）。这形成了一个全序，于是这个任务序列是按照加工耗时从大到小排列的。</p><p>时间复杂度是按加工耗时排序的复杂度，也就是 $O(n\log n)$.</p><p></p><h3 id="t6-15pts-">T6 (15pts)</h3><blockquote>我们考虑将数轴上的 n 个点聚成 k 类的问题。<br>输入：$n$ 个从小到大的不同实数 $x_1, x_2, \dots, x_n$ 表示 $n$ 个不同点，一个参数 $k\leq n$.<br>任务：将 $n$ 个点划分成 $k$ 个不相交的非空集合 $S_1, \dots, S_k$ 满足 $$\bigcup_{i=1}^k S_i = \{x_1, x_2, \dots, x_n\}$$ $S_i$ 中所有点在 $S_{i+1}$ 中所有点左边，$1\leq i &lt; k$，也就是说对于任意 $x\in S_i, z\in S_{i+1}$，有 $x&lt;z$.<br>目标：最小化$$\sum_{i=1}^k \text{cost}(S_i)$$其中 $\text{cost}(S_i)=(\max(S_i) - \min(S_i))^ 2$. $\max(S_i)$ 是  $S_i$ 中的最小元素，$\min(S _i)$ 是 $S_i$ 中的最大元素。<br><br>设计时间复杂度为 $O(n ^ 2k)$ 的动态规划算法，找到最优聚类。要求写出伪代码、递归方程并分析算法的时间复杂度。</blockquote><p>解：记 $f(p,t)$ 表示 $x_1 , \cdots, x_p$ 分为 $t$ 个类时的代价，其中保证 $t\leq p$. 这个状态必然是从 $f(~ * ~ , t-1)$ 转移过来的。我们只需要决策最后一个划分点放在哪里即可。于是 $$f(p, t) = \begin{cases} \text{cost} \{x_1, x_2, \dots, x_p\}, &amp; t=1 \\ \min_{1\leq a &lt; p}\{  f(a, t-1) + \text{cost}\{ x_{a+1}, \dots, x_p \}\} &amp; t\neq 1\end{cases}$$</p><p>计算 $f(p, t)$ 需要直接耗费 $O(p)$ 的代价。故总复杂度是 $O(n ^ 2 k)$.</p><pre><code class="language-python">def DP(p, t):
+    if k == 0: return cost(x)
+    
+    res = +inf
+    for a in [1, p]:
+        res = min(res, DP(a, t-1) + cost(X[a...p]))
+    return res</code></pre><p>这里有一个细节：区间 cost 需要预处理出来，否则复杂度压不到 $O(n ^2k)$ 以内。</p><p> </p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/algorithm/index.html">algorithm</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../word-game-painting/index.html">从《文字游戏》彩蛋谈字符画生成</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-01-30">30 Jan 2022</time> –
+                                        13 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../lenet/index.html">LeNet：第一个卷积神经网络</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-02-24">24 Feb 2021</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../cheat-neural-network/index.html">欺骗神经网络</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-02-06">6 Feb 2021</time> –
+                                        7 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/algorithm/index.html">See all 14 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-reproduce tag-observe no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../20200721/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reproduce</div>
+                <h2 class="post-card-title">转载: 悼刘和珍杨德群女士</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>1926 年，刘和珍、杨德群女士在三一八惨案中被军警杀害。林语堂先生著《悼刘和珍杨德群女士》，字字见血，令人扼腕。本博客全文转载。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        reproduce
+                    </div>
+            
+                    <a href="../author/reproduce/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/06/world-908894_640.png" alt="reproduce" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/reproduce/index.html">reproduce</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-07-21">21 Jul 2020</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-writeup no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../automata-2019/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">writeup</div>
+                <h2 class="post-card-title">形式语言2019期末题解</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>这里是哈工大 2019 年《形式语言与自动机》课程期末考试的试题和题解。试题来源于网上，题解是个人解答，仅供参考。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-07-16">16 Jul 2020</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

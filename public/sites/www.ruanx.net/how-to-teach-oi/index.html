@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>OI 教育漫谈（三）：如何教好基础算法</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="OI 教育漫谈（三）：如何教好基础算法" />
+    <meta property="og:description" content="「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。" />
+    <meta property="og:url" content="https://www.ruanx.net/how-to-teach-oi/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2023/02/output-6.jpg" />
+    <meta property="article:published_time" content="2023-02-02T03:31:45.000Z" />
+    <meta property="article:modified_time" content="2023-02-02T05:58:41.000Z" />
+    <meta property="article:tag" content="oi" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OI 教育漫谈（三）：如何教好基础算法" />
+    <meta name="twitter:description" content="「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/how-to-teach-oi/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2023/02/output-6.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="oi" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "OI 教育漫谈（三）：如何教好基础算法",
+    "url": "https://www.ruanx.net/how-to-teach-oi/",
+    "datePublished": "2023-02-02T03:31:45.000Z",
+    "dateModified": "2023-02-02T05:58:41.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2023/02/output-6.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "oi",
+    "description": "「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-oi">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">OI 教育漫谈（三）：如何教好基础算法</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-oi ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/oi/index.html">oi</a>
+                </section>
+
+                <h1 class="post-full-title">OI 教育漫谈（三）：如何教好基础算法</h1>
+
+                <p class="post-full-custom-excerpt">「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2023-02-02">2 Feb 2023</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 22 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2023/02/output-6.jpg 300w,
+                            ../content/images/size/w600/2023/02/output-6.jpg 600w,
+                            ../content/images/size/w1000/2023/02/output-6.jpg 1000w,
+                            ../content/images/size/w2000/2023/02/output-6.jpg 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2023/02/output-6.jpg"
+                    alt="OI 教育漫谈（三）：如何教好基础算法"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>《OI 教育漫谈》系列目录：<br><a href="../why-study-oi/index.html">OI 教育漫谈（一）：为什么学习信息学竞赛</a><br><a href="../how-to-study-oi/index.html">OI 教育漫谈（二）：信息学竞赛算法自学指南</a><br><a href="index.html">OI 教育漫谈（三）：如何教好基础算法</a></p><hr><h3 id="%E5%BA%8F%E8%A8%80%EF%BC%9A%E6%95%99%E5%A5%BD%E7%AE%97%E6%B3%95%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%B8%A6%E5%A5%BD%E7%AB%9E%E8%B5%9B">序言：教好算法不等于带好竞赛</h3><p>　　本文是《OI 教育漫谈》系列的第三篇，也是最后一篇。文中将会介绍笔者几年教学积累的经验，主要面向 OI 从业者（特别是直接给初学者教授算法的讲师）。OIer 也可以阅读本文，并比对文中的方法与自己接受到的培训之异同，并相应地调整自己的训练模式。</p><p>　　在最开头，笔者需要强调：<strong>如同<a href="../why-study-oi/index.html">第一篇文章</a>所述的「学习算法」与「学习 OI」之割裂，「教好算法」与「带好 OI 竞赛」亦是割裂的。</strong>一个优秀的算法教师未必能带好 OI。第一方面，OI 竞赛生的水平往往远超自己的教练，教练是「巧妇难为无米之炊」——即使他拥有优秀的教学能力，也没有什么东西可以教给自己学生的了，只能依靠他们自学。第二方面，OI 是（不太纯粹的）奥林匹克运动，教练想要带出竞赛成绩，场外功夫比教好算法更重要。我们举个最简单的例子——一个教练如果拥有慧眼识人的筛选能力，经过五分钟的面试，即能判定一个三年级小学生是否有潜力在高一时进入省队：那他带出成绩将会容易得多。归根结底，<strong>「算法讲师」的工作目标是让每个学生学好算法；「OI 教练」的工作目标是让自己所带的大量学生中有几个人拿奖。</strong>这两个身份的工作目标是不一致的。</p><p>　　本文只打算讨论「算法讲师」的工作——即如何给学生教好算法。编写本文之前，笔者查阅了这几年洛谷网校的学员问卷，统计到学员对笔者的赞赏主要针对以下几个方面：</p><ul><li>「讲解知识简明易懂，当场就能听明白」</li><li>「讲课节奏恰当」</li><li>「课件制作精美」</li><li>「当堂写代码、注重代码习惯」</li><li>「幽默感」</li></ul><p>　　接下来，笔者将会沿着这些特征，详细解释如何教好一堂 OI 课。</p><h3 id="%E5%BC%95%E5%AF%BC%E5%AD%A6%E7%94%9F%E8%87%AA%E5%B7%B1%E5%8F%91%E6%98%8E%E5%87%BA%E8%A6%81%E6%95%99%E7%9A%84%E7%AE%97%E6%B3%95">引导学生自己发明出要教的算法</h3><p>　　<strong>先提出一个问题，再引导学生一步步解决这个问题，最终让学生自己发明出要教的算法：以上是笔者之教学宗旨。</strong>这显然并非笔者原创，大量英文教科书都是这个路子；不过笔者贯彻这个方针十分坚决，故常常产出一些高质量的课程。这样做的好处是：学生对课堂参与度高；从一开始就知道主要任务，容易抓住本质；算法是学生自己发明出来的，学生在快要忘记的时候，只要略微回忆这个发明过程，立刻就能回想起各种细节。</p><p>　　许多教程完全没有参考这个方案，OI Wiki 这类「维基百科式」教材尤甚。学生在利用这类教材学习时，最容易出现的问题就是抓不到主线，容易忽略重点；且理论性介绍多的情况下，学生读了后面忘了前面。此外，<strong>读这样的「维基百科式」教材，学生常常以「死记硬背」的形式记忆算法，过几个月他就该忘记了。</strong></p><p><strong>　　普及组级别的算法，都可以想办法引导学生自己发明出来，无一例外。</strong>接下来笔者将结合几个实例，说说该如何在实践中应用这套方法。不过此前我们先看一个反例，这个反例是在教「模意义下的乘法逆元」时出现的。</p><blockquote>……现在我们来讲乘法逆元。考虑一个集合 $G$ 和一个运算 $\oplus$，称 $(G, \oplus)$ 为一个群，当且仅当它满足以下特质：<br>- 封闭性：如果 $a$ 和 $b$ 属于 $G$，则 $ a\oplus b $ 也属于 $G$ <br>- 结合律：对 $G$ 中的任意元素 $a,b,c$ ， $ a\oplus(b\oplus c) = (a\oplus b)\oplus c $ <br>- 存在单位元：$G$中存在一个元素 $ e $ ，使得对于 $ G $ 中的任意元素 $ a $ ，有 $ a\oplus e= e \oplus  a = a $ <br>- 存在逆元：对于 $ G $ 中的任意元素 $ a $ ， $ G $ 中一定存在一个元素 $ b $ ，使得 $ a\oplus b = b \oplus  a =  e $ <br><br>如果一个群还满足交换律 $a\oplus b = b\oplus a$，则称其为阿贝尔群。<br>【反复讲解群的这几条性质，并带领学生判断 $(\mathbb{Z}, +), (\mathbb{N}, *)$ 等是否为群】<br><br>$(\mathbb Z_p, \times)$ 是一个群，所以可以通过乘以逆元的方式来完成除法。接下来我们学习逆元的求法，先说费马小定理……</blockquote><p>　　这样的讲解方式，毫无征兆地引入「群」的概念，学生在课程的前十几分钟内都没有领悟到群对当天课题之帮助。此外，对于第一次接触群论的学生而言，<strong>这样空洞的定义是不容易立刻理解的，教师往往需要多次重复讲解。</strong>这是典型的「维基百科式」教程，虽说字数浓缩了，但教学效率低，最终效果反而差。</p><p>　　有趣的是，国内各个大学的自编数学教材，常常采用这种讲解方式。学生读这种教材，可以称为「啃书本」，即书本上的知识需要硬啃才能慢慢理解。这与《Introduction to Linear Algebra》等经典美式教材形成鲜明对比。</p><p>　　来看一个更好的教学方案。笔者 2018 年高中毕业的那个暑假，给初中生讲课，采用了以下说法：</p><blockquote>……以上，我们教完了模意义下加法、乘法的性质。为什么我迟迟不讲模意义下的除法呢？<br>模意义下的除法当然是存在的，例如在模 $10$ 意义下，$6 / 3 = 2$ 显然没问题。然而，$5 / 3$ 就出了麻烦——除不尽，但我们模 $10$ 意义下一共只有 $0\sim 9$ 这十个数，没有 $5/3$ 这个分数。<br><br>那么，我们要不要干脆宣布 $5/3$ 在模意义下不存在（或者说「没有意义」）呢？<br>大家来考虑 $(5/3)*12$，尽管最开始出现了分数（这是不被允许的），但是后来乘上 $12$，结果仍然是正整数，因此这个式子在模意义下应该是合法的。<br><br>这就出了一个问题：$5/3$ 不合法，但是这个结果乘上 $12$ 之后，又重新合法了。我们也许可以尝试找另一种方法去表示 $5/3$ 这个分数。<br><br>我们需要一种方法来「记账」。核心观点是：执行「除以 $x$」的时候，我们试着乘上另一个数（记账）；等到日后重新乘上 $x$ 的时候，我们就能把数变回来，得到正确结果。<br>在有理数下，这是行得通的，我们执行「除以 $x$」，完全可以用「乘以 $1/x$」来代替。也就是说，对于有理数而言，这“用于记账的数”显然是 $1/x$；在模意义下是多少？我们又如何找到这个数？<br><br>先来看一个例子。 <br>现在要计算 $5\div 3\times 12 \pmod{11}$，假如我们将「除以 $3$」视为「乘以 $4$」，于是答案是：$$5\times 4\times 12 \equiv 9 \pmod {11}$$另一方面，$5\div 3\times 12  =20$，$20 \bmod 11 = 9$。它们吻合了——把「除以 $3$」视为「乘以 $4$」可以给出正确的最终结果。<br><br>你可能怀疑这是一个偶然。让我来给出另一个例子。<br>现在计算 $3\div 7\times 56  \pmod{13}$，我们将「除以 $7$」视为「乘以 $2$」，于是答案是：$$3\times 2 \times 56 \equiv 11 \pmod {13}$$事实上，$3\div 7 \times 56 = 24$，$24\bmod 13 = 11$。它们又吻合了。<br><br>说到这里，你应该已经认同，模意义下跟有理数下一样，存在「记账的数」，乘以这个数就相当于做了除法。<br>对于一个模数 $p$ 和一个除数 $x$，往往能找到一个特殊的数。乘上这个特殊的数，就可以起到除以 $x$ 的效果。这个特殊的数，我们称为「模意义下的乘法逆元」。<br>上面两个例子中，$4$ 是 $3$ 在模 $11$ 意义下的逆元；$2$ 是 $7$ 在模 $13$ 意义下的逆元。<br><br>我们该如何寻找 $x$ 在模 $p$ 意义下的逆元？<br>类比有理数下的逆元。$x$ 的逆元就是 $1/x$，你发现一个数乘以它的逆元得到 $1$。那么你可以做些推测——<br>【等待学生找到性质】<br>模 $p$ 意义下 $x$ 的逆元 $\text{inv}(x, p)$，应该就是乘以 $x$ 之后得到 $1$ 的那个数。<br><br>我们的猜测是正确的。假设 $x$ 的逆元是 $v$，那么 $n \div x \times x$ 会被处理成 $n \times v \times x$，又因为 $v\times x \equiv 1$，于是 $n \times v \times x$ 正好等于 $n$。如果一个数乘以自己的逆元不等于 $1$ 的话，前面这条性质就没办法成立。<br><br>那么现在，请大家做个练习：寻找在模 $13$ 意义下 $5$ 的逆元。<br>【等待学生枚举出结果】<br><br>我们发现 $5\times 8 \bmod{13} = 1$，所以答案是 $8$。模 $13$ 意义下，「除以 $5$」就可以用「乘以 $8$」代替。<br>刚刚同学们通过枚举，找到了 $5$ 的逆元。不过，对于质数模数，我们有很快的方法去寻找 $x$ 的逆元。下面来学习费马小定理……</blockquote><p>　　选择不引入「群」的概念，是因为受众是初中生，他们目前是普及组水平，在较长一段时间内只会使用到模意义下的乘法逆元，无需接触其他群的逆元。另外，在课程中需要引导学生自己发现「一个数乘以其逆元应当等于 $1$」这条关键性质。</p><p>　　我们再举另一个例子，这次我们引导学生自己发明序列分块。例子取自 2022 年笔者办的夏令营的第一课，不少学生在此时没有任何算法/数据结构基础，笔者以序列分块为例，向学员解释「什么是数据结构」。</p><blockquote>大家来看这样一个问题：班上有 $100$ 位同学，学号为 $1\sim 100$。每位同学有语文考试成绩。<br>接下来要面临 $m$ 次询问，每次询问给出两个整数 $l,r$，问学号在 $[l, r]$ 区间的同学的分数之和。<br>如何解决这个问题？<br><br>来想一种最朴素的办法。每次询问，拿到查询区间 $l, r$，我们直接去数组里求和。<br>最坏情况下，每次询问都是问 $[1, 100]$ 同学的成绩 sum。那我们要执行大约 100 次加法。<br>有没有优化方法？提示：我们可以预先计算一些同学的成绩之和，记录在纸上。<br>【等学生说出「把连续的学生成绩之和记录下来」，例如记录 $1\sim 50$ 的同学成绩 sum】<br><br>现在我们来考虑这样一种记录方案——我们预先计算出以下 10 个值：<br>- $[1, 10]$ 同学的 sum<br>- $[11, 20]$ 同学的 sum<br>- ……<br>- $[91, 100]$ 同学的 sum<br><br>那么，当面临查询 $[37, 72]$ 时，我们如何利用以上信息来加速？<br>【等待学生说出最速求法】<br><br>想要计算 $[37, 72]$的sum，我们有 $$\begin{aligned}        sum = {}&amp; w[37] + w[38] + w[39] + w[40] \\\\ &amp;+ w[41\sim 50] + w[51\sim 60] + w[61\sim 70] \\\\ &amp;+ w[71] + w[72]    \end{aligned}$$ 只需要把 4 个零散数、3个整块、2个零散数加起来。这比之前的直接求和快得多。<br><br>那么，现在同学们想一个问题：最坏情况下，我们要把多少个数加起来？<br>【等待学生说出正确答案】<br><br>最坏情况下，查询 $[2, 99]$。有 9 + 9 个零散值、8个整块需要相加。这比起朴素方法是一个很大的改进。<br><br>接下来，做一个思考题：如果共有 $10000$ 个学生，我们应该如何安排分块大小？<br>【等待掌握了均值不等式的学生说出正确答案。如果迟迟没有正确解，那么分块大小 100 也是可以接受的】<br><br>最后，来看看该如何修改一个学生的成绩。不仅要在数组里面改成绩，草稿纸上的预计算结果似乎也要修改。<br>【学生说减去原来的值、加上新的值】<br><br>好的，到目前为止，我们发明了「序列分块」这个数据结构。大家已经看到，数据结构是「组织数据的方法」，常常可以起到加速的作用……</blockquote><p>　　来看最后一个简单的例子，我们引导学生自己发明快速排序。</p><blockquote>假设操场上一群人站在您面前，您需要把他们按照身高排序。<br>您可以这样做：<br>1. 随便选一个人，称为「哨兵」。<br>2. 比他矮的人站他左边去。<br>3. 比他高的人站他右边去。<br>4. 把他左边、右边的人分别排序。<br><br>显然，前三件事做完以后，这个人已经站在了正确的位置上。第 4 步是递归进行的。干完了之后，整个队伍也就有序了。这就是快速排序的核心思想。<br><br>举个例子。假设我们要排序 $[3,2,5,4,8,7,6,1]$：<br>1. 随便选个哨兵 $4$<br>2. 站队，序列变成 $[3,2,1] ~ 4 ~ [5,8,7,6]$<br>3. 分别排序，序列变成 $[1,2,3] ~ 4 ~ [5,6,7,8]$<br>因此，关键在于实现「站队」。只要能让比他矮的人站他左边去、比他高的站到右边去，就能实现快速排序。如何实现？提示：可以用一个辅助数组。<br>【等待学生提出实现】</blockquote><p>　　总而言之，笔者认为「引导式」的教学远优于「维基百科式」的教学。讲师应当控制好课程节奏，与学员多些互动。</p><p>　　更多「引导式」教学例子见：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://www.zhihu.com/question/23995189/answer/613096905"><div class="kg-bookmark-content"><div class="kg-bookmark-title">什么是动态规划（Dynamic Programming）？动态规划的意义是什么？ - 知乎</div><div class="kg-bookmark-description">0. intro 很有意思的问题。以往见过许多教材，对动态规划（DP）的引入属于“奉天承运，皇帝诏曰”式：…</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://static.zhihu.com/heifetz/assets/apple-touch-icon-152.81060cab.png" alt=""><span class="kg-bookmark-author">知乎</span></div></div><div class="kg-bookmark-thumbnail"><img src="https://picx.zhimg.com/v2-e8757b3b0044793fc1a9cb8755e3f849_l.jpg?source=1940ef5c" alt=""></div></a></figure><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="../kmp/index.html"><div class="kg-bookmark-content"><div class="kg-bookmark-title">KMP算法教程</div><div class="kg-bookmark-description">KMP算法是一种字符串匹配算法，可以在 O(n+m) 的时间复杂度内实现两个字符串的匹配。本文将引导您学习KMP算法。</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="../content/images/size/w256h256/2020/02/small-3.png" alt=""><span class="kg-bookmark-author">Pion1eer</span><span class="kg-bookmark-publisher">Ruan Xingzhi</span></div></div><div class="kg-bookmark-thumbnail"><img src="../content/images/2022/01/--.jpg" alt=""></div></a></figure><h3 id="%E5%86%85%E5%AE%B9%E7%BC%96%E6%8E%92">内容编排</h3><p>　　笔者一节课的内容可能包含知识点介绍、现场写代码环节、思考题这几个部分。其中，知识点介绍部分可以带领学员去学习新的算法和数据结构；思考题是知识点的补充，引导学员发现一些细节（例如，在讲完上文的序列分块之后，可以提示学生将整个序列分两块、分四块……进而推出线段树的基本结构；也可以提示前缀和，并要求学生指出前缀和处理单点修改的代价）。</p><p>　　现场直播写代码是必要的。这一内容留到后面专门论述。</p><p>　　有一部分 OI 教育者（常常是退役不久的 OIer）喜欢往初级培训中加入很多需要前置知识的高难度内容，最终造成选手听不明白课、却对教师十分崇拜的结果。这种倾向必须抑制。</p><p>　　笔者注意到，有些机构的课程安排，缺失了「什么是算法」「什么是数据结构」以及「如何计算复杂度」这几个专门板块。古人言「纲举而目张」，这些基础概念应当在第一节课就教给学员。</p><h3 id="%E6%95%99%E5%AD%A6%E8%8A%82%E5%A5%8F">教学节奏</h3><p>　　笔者的一贯风格是「等所有学生都学明白再推进内容」，若有人表示听不懂，则重新讲一遍知识。当然，依受众的不同，这个标准可以有变——例如，假设某教练对小学生进行培训，并在一学期后筛掉 70% 的人，那么完全可以在少部分学生听明白内容之后就推进进度。</p><p>　　不宜进行长篇累牍的知识点教学。这中间可以穿插思考题和直播写代码等环节。此外，学生也能会在课上提出备课时未曾想到的问题，如果认为详细回答该问题对学生有很大好处，可以考虑压缩后续时间，讨论学生提的问题并加以引申。</p><p>　　OI 授课经验较少的讲师容易在时间控制上出现问题。如果内容准备偏少，有一个简单的办法：准备过量的题目，并按授课时的进度，跳过一些题目，这样最终可以将时间控制在满意的范围。如果内容准备偏多，那确实没有太好的办法，可以考虑只讲基础性的内容，将拔高性的内容留作课后阅读。</p><h3 id="%E5%85%B3%E4%BA%8E%E7%9B%B4%E6%92%AD%E5%86%99%E4%BB%A3%E7%A0%81">关于直播写代码</h3><p>　　<strong>首先说一个观点：直播写代码不是炫耀技术。</strong>直播写代码是为了：</p><ul><li>解释算法中的细节，帮助选手更深刻地理解算法</li><li>帮助选手养成良好的代码习惯，例如缩进习惯</li><li>介绍一些较优实现，例如实现循环队列时保持 l, r 本身递增，只在获取数组下标时取模</li><li>在写代码的过程中介绍一些坑点，例如滥用 define 的后果</li></ul><p>　　笔者一般在讲课前一天晚上先写一遍课上准备打的所有代码，第二天讲课时，把代码放在副屏上展示，而在直播主屏幕上抄写。这并非假吹、假弹、假唱，原因在于直播写代码不是炫耀技术，而是教学的一部分。一方面，如果直播时写错了代码，会浪费课堂时间在 debug 上（还有可能长期 debug 不成功）；另一方面，学生通过观看教师写代码的过程，也能自己掌握这个算法的实现要点。<strong>如同演员不能因为自己演技好就不彩排，OI 讲师也不应该因为自己的代码水平高，就不提前准备代码。</strong></p><p>　　<strong>写代码应当按照逻辑顺序。</strong>笔者举一个例子：在写记忆化搜索的时候，笔者定义函数后，会先写边界情况、再写主体情况、最后加上记忆化，而非按照代码文本顺序从上到下写。这样有助于选手的理解。</p><p>　　<strong>代码里面注释要到位，在写到关键逻辑时应当提示学生。</strong>讲师应当维持一个稳定的代码风格。</p><p>　　<strong>讲师有责任帮选手选出一个鲁棒性佳的实现，来让所有选手都可以流畅且无 bug 地写出该算法的代码。</strong>例如，书写二分时，应当使用「l, r 差距大于 5 时二分，小于 5 时逐个判断」的写法。下面是一个「开根号向下取整」问题的二分实现例子：</p><pre><code class="language-cpp">void work() {
+    ll l=1, r=1000000000;
+    // 始终维持答案落在 [l, r] 范围内
+    
+    while(r - l &gt; 5) {
+        ll mid = (l + r) / 2;   // 二分
+
+        if(mid * mid &lt;= n)      // mid 猜小了
+            l = mid;
+        else                    // mid 猜大了
+            r = mid;
+    }
+
+    ll ans = l;
+
+    for(ll i=l; i&lt;=r; i++)      // 差距小于 5，逐个枚举
+        if(i * i &lt;= n) ans = i;
+    cout &lt;&lt; ans &lt;&lt; endl;
+}</code></pre><p>　　再举一例。教快速排序时，笔者抛弃了网络上流行的双指针 swap <a href="https://www.luogu.com.cn/blog/86005/solution-p1177">实现</a>：</p><figure class="kg-card kg-code-card"><pre><code class="language-cpp">void qsort(int l,int r)
+{
+    int mid=a[(l+r)/2];
+    int i=l,j=r;
+    do{
+        while(a[i]&lt;mid) i++;  //查找左半部分比中间数大的数
+        while(a[j]&gt;mid) j--;  //查找右半部分比中间数小的数
+        if(i&lt;=j)              //如果有一组不满足排序条件（左小右大）的数
+        {
+            swap(a[i],a[j]);  //交换
+            i++;
+            j--;
+        }
+    }while(i&lt;=j);             //这里注意要有=
+    if(l&lt;j) qsort(l,j);       //递归搜索左半部分
+    if(i&lt;r) qsort(i,r);       //递归搜索右半部分
+}</code></pre><figcaption>▲ 网络上流行的双指针 swap&nbsp;实现</figcaption></figure><p>　　<strong>之所以抛弃这个实现，是因为其鲁棒性极差，依赖于背诵。</strong>选手非常容易敲错一点点（例如把小于号敲成小于等于号，或反之），且难以 debug。</p><p>　　笔者选择教学生写以下依赖于 tmp 数组的实现：</p><figure class="kg-card kg-code-card"><pre><code class="language-cpp">// 左闭右开
+void quickSort(int l, int r) {
+    if(l &gt;= r - 1) return;              // 只有单个元素待排序，直接返回
+
+    int flag = a[rand() % (r-l) + l];   // 随机取哨兵
+    
+    int p = l, q = r;       
+    // tmp[l,p): 比 flag 小的；tmp[q, r): 比 flag 大的
+
+    for(int i=l; i&lt;r; i++) {
+        if(a[i] &lt; flag)
+            tmp[p++] = a[i]; // 比哨兵矮的放在左边
+        else if(a[i] &gt; flag)
+            tmp[--q] = a[i]; // 比哨兵高的放在右边
+    }
+
+    for(int i=p; i&lt;q; i++)   // 与哨兵一样高的
+        tmp[i] = flag;
+
+    for(int i=l; i&lt;r; i++)   // 覆盖回 a 数组
+        a[i] = tmp[i];
+    
+    quickSort(l, p);         // 递归
+    quickSort(q, r);
+}</code></pre><figcaption>▲&nbsp;笔者推荐的实现</figcaption></figure><p>　　这个实现好在：选手只需要知道快速排序的基本原理，就能自然地写出以上代码，完全无需背诵。</p><h3 id="%E5%AD%A6%E4%B9%A0%E6%95%88%E7%8E%87%E4%B8%8E%E8%87%AA%E5%AD%A6%E8%83%BD%E5%8A%9B%E7%9A%84%E6%9D%83%E8%A1%A1">学习效率与自学能力的权衡</h3><p>　　培训机构可能希望学生自学能力长期不提升，以便学生依赖该机构提供的培训。然而作为负责任的讲师，应当努力帮助选手提升自学能力，从而为其将来的发展提供更多动力。</p><p>　　如果教师在课上事无巨细进行讲解，学生可能也就懒于自学。但学生自学水平的提高是一个慢速的过程，应当进行有意识的训练。有些中学采取学生之间相互讲课的方法：教练指定下节课的教学内容，学生查资料之后分别上台讲述。在使用这个方法时，教练应当尽可能补充学生未讲到的细节。</p><p>　　在培训机构上课的选手，若想提升自己的自学能力，可以事先预习下一节课的内容。</p><h3 id="%E8%AF%BE%E4%BB%B6%E5%88%B6%E4%BD%9C">课件制作</h3><p>　　笔者 18、19 年使用 PowerPoint 制作课件，后来全面切换到 Latex Beamer。无论选择哪种软件，笔者都建议把公式写准确，并尽量避免整版文字。课件上的字应当是重点，技术性的细节可以靠口述。</p><p>　　应当避免花哨动画，如 PowerPoint 的「蜂巢」「涡流」等转场效果。因为奇特的动画可能将学生的注意力从课堂上转移到课件本身，对学习没有帮助。Beamer 的使用者应该无需关心这个问题。</p><p></p><h3 id="%E7%BB%93%E8%AF%AD">结语</h3><p>　　《OI 教育漫谈》系列文章至此更新完毕。希望对读者有帮助。</p><hr><p>　　欢迎读者来信交流，笔者邮箱是 ruanxingzhi@gmail.com 。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/oi/index.html">oi</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../how-to-study-oi/index.html">OI 教育漫谈（二）：信息学竞赛算法自学指南</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-01-30">30 Jan 2023</time> –
+                                        18 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../why-study-oi/index.html">OI 教育漫谈（一）：为什么学习信息学竞赛</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-01-29">29 Jan 2023</time> –
+                                        23 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/oi/index.html">See all 2 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-reverse ">
+
+    <a class="post-card-image-link" href="../js-deobfuscate/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2023/03/output-1.jpg 300w,
+                    ../content/images/size/w600/2023/03/output-1.jpg 600w,
+                    ../content/images/size/w1000/2023/03/output-1.jpg 1000w,
+                    ../content/images/size/w2000/2023/03/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2023/03/output-1.jpg"
+            alt="一场有趣的 js 反混淆"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../js-deobfuscate/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reverse</div>
+                <h2 class="post-card-title">一场有趣的 js 反混淆</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>对哈工大运动场馆预约系统 js 的分析过程。我们通过自动和人工分析，提取出了网络请求的相关逻辑，为编写爬虫提供基础。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-03-30">30 Mar 2023</time> <span class="bull">&bull;</span> 13 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="../how-to-study-oi/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2023/02/output-5.jpg 300w,
+                    ../content/images/size/w600/2023/02/output-5.jpg 600w,
+                    ../content/images/size/w1000/2023/02/output-5.jpg 1000w,
+                    ../content/images/size/w2000/2023/02/output-5.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2023/02/output-5.jpg"
+            alt="OI 教育漫谈（二）：信息学竞赛算法自学指南"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../how-to-study-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（二）：信息学竞赛算法自学指南</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-01-30">30 Jan 2023</time> <span class="bull">&bull;</span> 18 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,959 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>Bluebox 移植主题 免费发布 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                资源分享 &raquo; <a href="Emlog-Bluebox.html">Bluebox 移植主题 免费发布</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">Bluebox 移植主题 免费发布</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/SHARE.html">资源分享</a></span>
+  
+  <span class="date">时间: 2013-10-24 17:56</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">44条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="Emlog-Bluebox.html">20464人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E6%A8%A1%E6%9D%BF.html">模板</a>
+    
+        <a href="../tag/emlog.html">emlog</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>
+	前言===========================================
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;之前Typecho在停滞了两年之后发布了更新，改动很大，也让再一次关注typecho。就在这个过程中发现了这款主题，感觉很不错，可以拿到emlog来用。于是我下载了其源码开始移植，这就是你现在看到的1.0版本的bluebox。
+</p>
+<p>
+	&nbsp; &nbsp; 原作者链接：<a href="http://banri.me/" target="_blank">http://banri.me/</a> 
+</p>
+<p>
+	&nbsp; &nbsp; 首页：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201310/2de41382608613.jpg" id="ematt:229"><img src="../content/uploadfile/201310/thum-2de41382608613.jpg" title="点击查看原图" alt="04.jpg" border="0" width="420" height="447" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; typecho中没用微语，所以我额外写了一个微语页面。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201310/fe071382608613.png" id="ematt:223"><img src="../content/uploadfile/201310/thum-fe071382608613.png" title="点击查看原图" alt="01.png" border="0" width="420" height="174" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 原版中使用的多说评论，我删掉新写了一个原生的评论。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201310/d9b61382608613.png" id="ematt:225"><img src="../content/uploadfile/201310/thum-d9b61382608613.png" title="点击查看原图" alt="02.png" border="0" width="420" height="182" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp; 侧边栏省略了，但保留“链接”、“标签”、“随机日志”三个栏目，在底部。在后台更改链接即可显示在底部，但标签、随机日志不可隐藏。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201310/9a111382608613.png" id="ematt:227"><img src="../content/uploadfile/201310/thum-9a111382608613.png" title="点击查看原图" alt="03.png" border="0" width="420" height="135" /></a> 
+</p>
+<p>
+	&nbsp; &nbsp;&nbsp;<span style="color:#E53333;">当日志中有图片时显示图片，没有图片时显示日志摘要。</span> 
+</p>
+<p>
+	&nbsp; &nbsp; 我保留作者的版权并加上了我的版权。本来我不想免费发布出去，特别是在中国这种只为索取不为付出的网络环境中。后来想想，还是觉得还是加密一下源码发布出去。
+</p>
+<p>
+	&nbsp; &nbsp; 我希望使用这款模板的朋友保留作者和我的版权，同时保留emlog版权。
+</p>
+<p>
+	<strong>&nbsp; &nbsp; 如果因为SEO的原因欲优化网站，建议你可以给我的链接加上nofollow，或将本站加入友情链接。类似问题可咨询我的QQ，请尊重他人劳动成果。</strong> 
+</p>
+<p>
+	<br />
+</p>
+<p>
+	模板特点========================================
+</p>
+<p>
+	&nbsp; &nbsp; 1.文艺、小清新
+</p>
+<p>
+	&nbsp; &nbsp; 2.简洁、干净
+</p>
+<p>
+	&nbsp; &nbsp; 3.与移植前类似，兼容IE8及以上IE浏览器。
+</p>
+<p>
+	<br />
+</p>
+<p>
+	适用网站========================================
+</p>
+<p>
+	&nbsp; &nbsp; 1.文艺、小清新的个人博客
+</p>
+<p>
+	&nbsp; &nbsp; 2.图片、文章分享类网站
+</p>
+<p>
+	&nbsp; &nbsp; ...或任何你能想到的
+</p>
+<p>
+	<br />
+</p>
+<p>
+	使用说明========================================
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;1.在后台设置“每页显示12篇文章”（或3的倍数），否则前台文章输出不整齐。
+</p>
+<p>
+	&nbsp; &nbsp; 2.文章中图片过小，或你不想让其在首页显示时，可以更改其html代码，加入"not-show" 字段，例：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &lt;img src="http://exm.leavesongs.com/content/templates/bluebox/img/logo.png" not-show&gt;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 则显示文章列表时不显示此图片，而转而显示文章摘要。
+</p>
+<p>
+	<br />
+</p>
+<p>
+	后期支持========================================
+</p>
+<p>
+	&nbsp; &nbsp; 我不免费提供本模板的任何后期支持，但我会解决因为我的代码问题产生的BUG，请大家在此页面留言提出。
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;大家如果对本模板或任何模板有个人定制需要，我可以提供有偿技术支持。
+</p>
+<p>
+	&nbsp; &nbsp; 参考价格如下：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 1.模板定制：￥500 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 2.模板移植：￥50 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 3.模板功能扩展：￥10 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 4.emlog内核代码功能扩展：￥10 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 5.插件定制：￥50 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 6.网站问题解决（兼容性问题、安全问题、代码错误问题）：￥30 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 7.主机问题（VPS、虚拟主机）：￥100 +&nbsp;
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<a target="_blank" href="http://sighttp.qq.com/authd?IDKEY=b7509ad3c941329fd64e5e25b09d0e57c41c1b784bd45f05"><img border="0" src="http://wpa.qq.com/imgd?IDKEY=b7509ad3c941329fd64e5e25b09d0e57c41c1b784bd45f05&amp;pic=53" alt="只解决商业订单，模板问题请留言说明。" title="只解决商业订单，模板问题请留言说明。" /></a> 
+</p>
+<p>
+	<br />
+</p>
+<p>
+	下载===========================================
+</p>
+<p>
+	&nbsp; &nbsp;&nbsp;<span style="font-size:16px;">BlueBox 1.0&nbsp;</span><span class="attachment"><a target="_blank" href="http://exm.leavesongs.com/content/uploadfile/201310/ffe11382605107.zip"><span style="font-size:16px;">bluebox.zip</span></a><span style="font-size:16px;">&nbsp;</span></span> 
+</p>
+<p>
+	<span class="attachment"><span style="font-size:16px;">&nbsp; &nbsp;模板演示：<a href="http://exm.leavesongs.com/" target="_blank">http://exm.leavesongs.com/</a></span></span> 
+</p>
+<p>
+	<span class="attachment">&nbsp; <span style="font-size:14px;">&nbsp; 一个空的logo，大家自行制作成自己的LOGO：</span><br />
+</span> 
+</p>
+<p>
+	<span class="attachment">&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201310/1bb81382611805.png" id="ematt:231"><img src="../content/uploadfile/201310/1bb81382611805.png" title="点击查看原图" alt="logo.png" border="0" width="220" height="100" /></a><br />
+</span> 
+</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E6%A8%A1%E6%9D%BF.html">模板</a>
+                
+                    <a href="../tag/emlog.html">emlog</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 44 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2904">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/1d1c3e5b0d9657f6734788c22f1bd68c.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://ets2.pw/" target="_blank" rel="nofollow noopener">迷途网</a></div>
+                    <p>楼主您好，我做游戏资源分享的网站，找了众多主题只觉得您这款很合适，但是底部版权加密，我想修改，我尊重版权，会保留，只是想自己改的好看一点，其他都觉得合适。希望楼主能提供为加密版文件。<br>或者我将改好的代码发给您，您加密后再发文件给我，谢谢！预留邮箱正确，希望得到回复。</p>
+                    <span class="comment-time">时间: 2017-08-28 15:39</span>
+                    <span class="comment-reply"><a href="#comment-2904" onclick="reply_to('2904','迷途网')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2327">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/5644c6bea3a7c7bc17c1f702f5f64c11.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.dreamendy.com" target="_blank" rel="nofollow noopener">疯子</a></div>
+                    <p>请不要更改function.php ，否则会发生错误，请在www.leavesongs.com获取解决方案。<br><br>博主可否给一个未加密的版本提供下载,我会保留作者版权和emlog版权的</p>
+                    <span class="comment-time">时间: 2016-04-25 13:39</span>
+                    <span class="comment-reply"><a href="#comment-2327" onclick="reply_to('2327','疯子')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1909">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/19d05ef910186215a0178e984bdf5693.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">向先生</a></div>
+                    <p>请不要更改function.php，否则会发生错误。请在www.leavesongs.com获取解决方案。<br><br>你好，博主。请您发一份未加密版本的给我，万分感谢您！</p>
+                    <span class="comment-time">时间: 2015-01-03 10:04</span>
+                    <span class="comment-reply"><a href="#comment-1909" onclick="reply_to('1909','向先生')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1912">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@向先生：拒绝修改版权者。</p>
+                    <span class="comment-time">时间: 2015-01-04 15:49</span>
+                    <span class="comment-reply"><a href="#comment-1912" onclick="reply_to('1912','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1891">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/a1b86441a69139b0494843a6b51d5034.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Ysicing</a></div>
+                    <p>博客，请问这个主题还开源么，貌似不可以下载了～</p>
+                    <span class="comment-time">时间: 2014-12-14 13:42</span>
+                    <span class="comment-reply"><a href="#comment-1891" onclick="reply_to('1891','Ysicing')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1893">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@Ysicing：请在官方下载：<br>http://www.emlog.net/template/362</p>
+                    <span class="comment-time">时间: 2014-12-15 14:54</span>
+                    <span class="comment-reply"><a href="#comment-1893" onclick="reply_to('1893','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1869">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/42dd79e3b4e745fe27aaf68d53092fd4.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://youba.pw" target="_blank" rel="nofollow noopener">x</a></div>
+                    <p>博主，我用了您这个板子。由于我采用的https。由于您其中有一个加密的请求导致我的https变成红色。在保留版权的前提下，能否提供一个不加密的版本？</p>
+                    <span class="comment-time">时间: 2014-11-27 14:40</span>
+                    <span class="comment-reply"><a href="#comment-1869" onclick="reply_to('1869','x')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1870">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@x：OK，联系我邮箱</p>
+                    <span class="comment-time">时间: 2014-11-27 15:54</span>
+                    <span class="comment-reply"><a href="#comment-1870" onclick="reply_to('1870','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1825">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/beaf0525b6bd7ef286e55ea5b15975fe.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.zly666666.com/" target="_blank" rel="nofollow noopener">wuxi</a></div>
+                    <p>现在这个模板还提供下载吗</p>
+                    <span class="comment-time">时间: 2014-10-29 13:18</span>
+                    <span class="comment-reply"><a href="#comment-1825" onclick="reply_to('1825','wuxi')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1718">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/54f54a3bc1b85dc1a6dd0b096b20fc4d.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Ching</a></div>
+                    <p>博主你好,我想修改版权信息,当然亦不会删除emlog和博主的版权,能否给个未加密的文件</p>
+                    <span class="comment-time">时间: 2014-07-12 10:06</span>
+                    <span class="comment-reply"><a href="#comment-1718" onclick="reply_to('1718','Ching')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1719">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@Ching：好的，一会发到你邮箱吧</p>
+                    <span class="comment-time">时间: 2014-07-12 10:07</span>
+                    <span class="comment-reply"><a href="#comment-1719" onclick="reply_to('1719','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1720">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/54f54a3bc1b85dc1a6dd0b096b20fc4d.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Ching</a></div>
+                    <p>@phithon：非常感谢,另外这个主题个人很喜欢</p>
+                    <span class="comment-time">时间: 2014-07-12 10:10</span>
+                    <span class="comment-reply"><a href="#comment-1720" onclick="reply_to('1720','Ching')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1615">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/5467f16ccaa4b91b41af57c96b21facc.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.pshh.cn/" target="_blank" rel="nofollow noopener">龙行天下</a></div>
+                    <p>请不要更改function.php ，否则会发生错误，请在www.leavesongs.com获取解决方案。</p>
+                    <span class="comment-time">时间: 2014-04-24 02:07</span>
+                    <span class="comment-reply"><a href="#comment-1615" onclick="reply_to('1615','龙行天下')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1616">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@龙行天下：我给你一个未加密版本吧，发你邮箱</p>
+                    <span class="comment-time">时间: 2014-04-25 18:57</span>
+                    <span class="comment-reply"><a href="#comment-1616" onclick="reply_to('1616','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1595">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/76b78d486d86765db34b72de8bf08c8c.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.mi7te.com" target="_blank" rel="nofollow noopener">米7特</a></div>
+                    <p>手机打开会发生跳转。。就是修改了logo，其它文件都没动过呢</p>
+                    <span class="comment-time">时间: 2014-04-05 08:19</span>
+                    <span class="comment-reply"><a href="#comment-1595" onclick="reply_to('1595','米7特')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1543">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://dazhentan.cn" target="_blank" rel="nofollow noopener">大侦探</a></div>
+                    <p>{smile:17}一直很喜欢这个主题，谢谢你。 大家可以看下。</p>
+                    <span class="comment-time">时间: 2014-02-03 14:01</span>
+                    <span class="comment-reply"><a href="#comment-1543" onclick="reply_to('1543','大侦探')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1535">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/2fa95236fa2de78e24ea5826590e8970.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://qikeshu.me/blog" target="_blank" rel="nofollow noopener">小任</a></div>
+                    <p>@phithon：{smile:9}<br>你好安装别的模板没问题的，真心喜欢这个模板，能否给修改下，谢了！</p>
+                    <span class="comment-time">时间: 2014-01-03 17:15</span>
+                    <span class="comment-reply"><a href="#comment-1535" onclick="reply_to('1535','小任')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1534">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/2fa95236fa2de78e24ea5826590e8970.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://qikeshu.me/blog/?page=3" target="_blank" rel="nofollow noopener">小任</a></div>
+                    <p>{smile:14} 你好左边导航怎么会是乱码，帮忙看看把 ，非常感谢！</p>
+                    <span class="comment-time">时间: 2013-12-31 17:55</span>
+                    <span class="comment-reply"><a href="#comment-1534" onclick="reply_to('1534','小任')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1533">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/2fa95236fa2de78e24ea5826590e8970.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://qikeshu.me/blog/?page=3" target="_blank" rel="nofollow noopener">小任</a></div>
+                    <p>您好我的模板安装上怎么左侧导航是乱的，能帮我看看怎么回事吗  ，谢谢！</p>
+                    <span class="comment-time">时间: 2013-12-31 17:47</span>
+                    <span class="comment-reply"><a href="#comment-1533" onclick="reply_to('1533','小任')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1500">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/9e426cea337ed7969a3c53171cd387c2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://330121077.com" target="_blank" rel="nofollow noopener">汶将军</a></div>
+                    <p>您好，我很喜欢这个模板，但是用这个模板的话，在文章中添加视频，显示出来的视频高度是固定高度了，无法修改。请问怎么解决</p>
+                    <span class="comment-time">时间: 2013-11-18 19:49</span>
+                    <span class="comment-reply"><a href="#comment-1500" onclick="reply_to('1500','汶将军')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1501">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@汶将军：你添加的什么格式的视频</p>
+                    <span class="comment-time">时间: 2013-11-18 20:57</span>
+                    <span class="comment-reply"><a href="#comment-1501" onclick="reply_to('1501','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1503">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/9e426cea337ed7969a3c53171cd387c2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">汶将军</a></div>
+                    <p>@phithon：麻烦您看一下这个页面，您就明白了，我轮调把宽度和高度调到任何大小，它总显示这个固定尺寸。http://330121077.com/post/5.html</p>
+                    <span class="comment-time">时间: 2013-11-18 21:04</span>
+                    <span class="comment-reply"><a href="#comment-1503" onclick="reply_to('1503','汶将军')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1504">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@phithon：这是你自己添加视频的问题，在我的网站不能复现。<br>http://exm.leavesongs.com/?post=18</p>
+                    <span class="comment-time">时间: 2013-11-18 21:13</span>
+                    <span class="comment-reply"><a href="#comment-1504" onclick="reply_to('1504','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1499">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/2a93fb897529f2347b49fa6237cdf12f.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://raoyoujun.cn" target="_blank" rel="nofollow noopener">rao</a></div>
+                    <p>你这主题模板在1024显示的时候左侧边栏会遮盖正文</p>
+                    <span class="comment-time">时间: 2013-11-18 03:53</span>
+                    <span class="comment-reply"><a href="#comment-1499" onclick="reply_to('1499','rao')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1502">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.leavesongs.com/" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@rao：这是移植前的模板就存在的问题，原本就不是响应式布局。你可以根据自己的情况进行修改。</p>
+                    <span class="comment-time">时间: 2013-11-18 21:04</span>
+                    <span class="comment-reply"><a href="#comment-1502" onclick="reply_to('1502','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+<div class="type-post" id="pagination"><ol class="page-navigator">
+    
+</ol></div>
+
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="352bba4bc97219b13c47885b4086ab95bbdee678" />
+</div><div class="col-6">
+<img src="../captcha/image/352bba4bc97219b13c47885b4086ab95bbdee678/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="285" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="w55vmCneGLzz1Co9ra2KnpoRlqzieREUiDtmUHYX47NizacxtbZvkSrWGNQtNtQc">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

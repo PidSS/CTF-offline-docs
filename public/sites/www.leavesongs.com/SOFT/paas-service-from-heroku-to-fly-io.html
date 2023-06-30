@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>PaaS服务从Heroku迁移到fly.io小计 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;text=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;title=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;is_video=false&amp;description=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1&amp;body=Check out this article: https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;title=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;title=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;title=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;title=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/SOFT/paas-service-from-heroku-to-fly-io.html&amp;name=PaaS%E6%9C%8D%E5%8A%A1%E4%BB%8EHeroku%E8%BF%81%E7%A7%BB%E5%88%B0fly.io%E5%B0%8F%E8%AE%A1&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">PaaS服务从Heroku迁移到fly.io小计</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2022年10月16日 00:25" itemprop="datePublished">
+                  2022 十月 16 00:25
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：25714
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/SOFT.html">软件</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/heroku.html">heroku</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/fly.io.html">fly.io</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/PaaS.html">PaaS</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>今年8月得知了Heroku将要在今年11月<a href="https://blog.heroku.com/next-chapter" target="_blank">彻底下线免费服务</a>，我只有少量服务放在Heroku上，所以没有太在意，直到10月感觉到不得不开始做迁移相关的工作了，于是开始着手准备，并有了这篇文章。</p>
+<p>这篇文章纯属是事后记录的一些流水账，可能缺少截图和代码片段，全当是作为一个故事看，可能不具备参考性。</p>
+<h2 id="paas"><a class="toclink" href="#paas">为什么选择PaaS服务</a></h2>
+<p>从很久以前开始接触“虚拟主机”这个行业开始，我经历了虚拟主机、VPS、云主机、PaaS、容器等时代——从最早我不需要有任何运维成本的虚拟主机，需要完全自己运维的VPS主机，又回归到不太需要自己运维的PaaS服务，就像兜了一个圈。</p>
+<p>PaaS全名平台即服务（Platform as a Service），意思是云平台提供了一套部署“框架”，可以将你编写的代码通过它的方式一键部署在云上，并且给你提供网络、存储、日志等常用的服务，解决了开发人员的运维问题，我们只需要写好代码提交，后期所有的自动化部署、发布、运维、扩展、备份等逻辑都可以让云平台帮我完成。</p>
+<p>其实容器与k8s的思想也是脱胎于此，现在看来，容器就是将这样的需求标准化成为了一套规范。相对来说，容器的可定制化程度更高，也算是PaaS服务在2015年以后的逐步进化。</p>
+<p>其实我一直认为，早期的虚拟主机发展到后面就是PaaS，PaaS继续发展就是现在的容器即服务（CaaS）。所以，本文所谓的PaaS的概念，并不局限在一两个名词之中，而是泛指这一类基于某种特定的框架来自动化部署的平台。</p>
+<p>早期著名的PaaS平台有谷歌的GAE、新浪的SAE、Heroku等，PaaS这个概念能很快打入开发群体之中的关键原因之一是免费。在2015年左右，正是GAE、SAE等平台最火的时候， 我记得曾经有不少教程教大家如何部署应用到GAE，甚至有的翻墙工具也直接部署在GAE上。</p>
+<p>发展到今天，新浪的SAE早已半入土，谷歌Cloud SAE因为高昂的学习成本与产品设计，也被我抛弃了。</p>
+<p>我记得之前部署过服务在GAE上，但因为用错了环境导致没有满足Free Tier资格仍然被扣费。其后台管理与付费逻辑十分难懂，在账单出来前你很难知道自己在用的服务价格，我开始抵触这类收费标准不明确的后付费产品，就怕哪天早上起床突然发现房子被人收走了。</p>
+<p><a href="../media/attachment/2022/10/16/dc94b25c-5c36-49d0-9298-86bd7418577d.png"><img alt="image.png" src="../media/attachment/2022/10/16/dc94b25c-5c36-49d0-9298-86bd7418577d.c9531a4807c2.png" /></a></p>
+<p>对于个人开发者来说，相对比较友好的平台是Heroku，它提供了每个月550到1000小时的免费运行时间，同时还有免费的PostgreSQL和Redis服务，搭配我常用的Django环境是绝配。</p>
+<p>对于一个全时间段运行的应用来说，一个月需要跑24 x 30 = 720个小时，免费额度完全没有问题。但免费套餐最大的缺点就是在不活跃30分钟后会被自动停止，等下次有人请求的时候会再重启启动，这会导致这个请求消耗更多时间。</p>
+<p>免费套餐非常适合部署一些演示站点、不活跃的站点等，我在2018年做<a href="https://code-breaking.com/" target="_blank">Code-Breaking</a>的时候将官网部署在了Heroku：</p>
+<p><a href="../media/attachment/2022/10/16/8ed69e46-c529-458e-bd31-85d034e5485c.png"><img alt="image-20221016013617076.png" src="../media/attachment/2022/10/16/8ed69e46-c529-458e-bd31-85d034e5485c.6dff2c014a02.png" /></a></p>
+<p>这一部署就是4年，直到2022年10月我将其迁移到<a href="https://fly.io/" target="_blank">fly.io</a>，它都静静地运行在那里，无需我任何的管理，也没有任何错误。这确实满足了我当时选择Heroku的所有需求——对于一个短期内使用的临时性站点，我要做的就是尽可能减少后期的管理成本，只要能一直运行就行。</p>
+<p>想一下，这可能是存活时间最久的CTF站点之一了。</p>
+<p>当然，我前文也说了，Heroku在8月宣布要下线免费套餐。这可能是PaaS服务最大的风险，来自于平台政策的变化，而Heroku最便宜的套餐也是一小时0.01美刀，合计7刀一个月，还不算PostgreSQL和Redis数据库的费用。</p>
+<h2 id="flyio"><a class="toclink" href="#flyio">为什么选择fly.io</a></h2>
+<p>巧的是前段时间看到一个<a href="https://twitter.com/novoreorx/status/1580567772786225152" target="_blank">推特博文</a>介绍了一个平台叫fly.io：</p>
+<p><a href="../media/attachment/2022/10/16/558dd9ab-69c3-4b9b-a734-4e327e916820.png"><img alt="image.png" src="../media/attachment/2022/10/16/558dd9ab-69c3-4b9b-a734-4e327e916820.c1a646891212.png" /></a></p>
+<p>我了解了一下fly，这是一家来自美国的初创公司。其提供的免费服务如下：</p>
+<ul>
+<li>3个1核256MB内存的环境，用于运行应用</li>
+<li>3G的Volume，可以用于部署数据库等</li>
+<li>160GB每月的流量</li>
+</ul>
+<p>其实即使不考虑免费套餐，其定价也比较亲民，不用担心免费额度用超了以后的价格问题：</p>
+<p><a href="../media/attachment/2022/10/16/414f987b-b759-42f3-94b2-01a9b34ce48b.png"><img alt="image.png" src="../media/attachment/2022/10/16/414f987b-b759-42f3-94b2-01a9b34ce48b.82c298b23367.png" /></a></p>
+<p>于是我就决定将code-breaking迁移到fly.io上，作为Heroku的替代。</p>
+<h2 id="flyio_1"><a class="toclink" href="#flyio_1">迁移代码到fly.io</a></h2>
+<p>fly.io由于诞生在容器时代，所以本身就是基于容器的，有额外学习成本。</p>
+<p>先安装其客户端flyctl并进行认证，然后来到code-breaking项目根目录，执行<code>flyctl launch</code>。此时，flyctl会根据当前项目的结构识别出待部署应用类型，比如我的是Django：</p>
+<p><a href="../media/attachment/2022/10/16/3672d309-f24b-420c-9a4b-45b420bcbe61.png"><img alt="image.png" src="../media/attachment/2022/10/16/3672d309-f24b-420c-9a4b-45b420bcbe61.84b6ffdc426a.png" /></a></p>
+<p>按照指引完成配置，此时会创建Web应用和一个数据库应用（PostgreSQL），并生成两个文件：</p>
+<ul>
+<li>Dockerfile</li>
+<li>fly.toml</li>
+</ul>
+<p>其中Dockerfile就是将会运行这个应用的镜像模板，里面已经简单帮我实现了大部分部署Django的代码，在基础上稍稍改动就可以直接使用。</p>
+<p>fly.toml是fly.io的配置文件，没有特殊的需求的情况下不用修改。</p>
+<p>然后我执行<code>flyctl deploy</code>部署。默认情况下，flyctl会将当前项目发送到云端，在云端的一个虚拟机里进行镜像编译部署。不过，在成功编译几次后我就无法使用远程编译了，执行<code>flyctl deploy</code>无法连接上虚拟机，会出现“Failed to start remote builder heartbeat”的错误，使用<code>flyctl deploy --local-only</code>改成本地编译可以解决这个问题。</p>
+<p>部署结束后，fly.io会提供一个二级域名，通过<a href="https://code-breaking.fly.dev/" target="_blank">code-breaking.fly.dev</a>即可访问刚才部署的应用。</p>
+<p>当然，这只是第一步工作，后面我还需要解决域名和持久化数据的问题：</p>
+<ul>
+<li>静态资源的部署</li>
+<li>数据库的迁移</li>
+<li>域名与证书绑定</li>
+</ul>
+<p><strong>静态资源的部署</strong></p>
+<p>初始化时生成的fly.toml文件中有关于volume的配置：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[[statics]]</span><span class="w"></span>
+<span class="w">  </span><span class="n">guest_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/app/public&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="n">url_prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/static/&quot;</span><span class="w"></span>
+</code></pre></div>
+
+<p>意思就是<code>/app/public</code>这个目录下的文件将会作为静态资源，在Web中的URL前缀是<code>/static/</code>。所以，我只需修改Django配置即可：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">STATIC_URL</span> <span class="o">=</span> <span class="s1">&#39;/static/&#39;</span>
+<span class="n">STATIC_ROOT</span> <span class="o">=</span> <span class="s1">&#39;/app/public&#39;</span>
+</code></pre></div>
+
+<p><strong>数据库的迁移</strong></p>
+<p>数据库需要从Heroku迁移到fly.io，我选择使用Navicat手工来做这件事，首先就是连接Heroku和fly.io的PostgreSQL数据库。</p>
+<p>Heroku的数据库是对公网开放的，我们只需要拿到它的地址与账号密码，执行如下命令：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">heroku</span><span class="w"> </span><span class="nl">pg</span><span class="p">:</span><span class="n">credentials</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">[</span><span class="n">appname</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+<p>此时会输出一个数据库连接URL，其中会包含地址、端口和账号密码。</p>
+<p>而fly.io的数据库是一个内网地址，我需要使用flyctl自带的proxy功能将其转发到本地再进行连接。在创建数据库的时候flyctl会打印其内网地址和账号密码，然后通过proxy命令来将端口转发出来：</p>
+<div class="codehilite"><pre><span></span><code>flyctl proxy 5432:5432 code-breaking-db.internal -a code-breaking-db
+</code></pre></div>
+
+<p>再使用Navicat直接连接本地的5432端口即可，后续数据迁移操作，直接在Navicat里进行。</p>
+<p><strong>域名与证书绑定</strong></p>
+<p>默认情况下，部署完成的应用将会分配一个二级域名，但我明显需要绑定自己的域名。方法是来到官网后台Certificates页面，点击“Add certificate”，此时它会要求你添加三个解析：</p>
+<p><a href="../media/attachment/2022/10/16/f18304a0-ef1c-4d2b-b11b-48aacb7ba3fb.png"><img alt="image.png" src="../media/attachment/2022/10/16/f18304a0-ef1c-4d2b-b11b-48aacb7ba3fb.da46bd39eda6.png" /></a></p>
+<p>其实这个地方的逻辑非常不清晰，明明是绑定域名，但这个功能却叫“Certificates”，以至于让我在这一块浪费了很多时间。</p>
+<p>fly.io给我们的IP实际上是一个共享IP，是通过HTTPS证书中的hostname或HTTP头里的Host来确认访问者要访问的主机，我猜这也是为什么这个功能叫“Certificates”的原因，在不添加证书的情况下我们无法正确通过自己的域名访问到应用。</p>
+<p>所以，来到Cloudflare中，添加好这几个解析记录，其中<code>_acme-challenge</code>最好是DNS Only：</p>
+<p><a href="../media/attachment/2022/10/16/3df0fee0-fc5b-4a2b-8f11-282b7cb7a727.png"><img alt="image.png" src="../media/attachment/2022/10/16/3df0fee0-fc5b-4a2b-8f11-282b7cb7a727.748e745d08e5.png" /></a></p>
+<p>然后回到“Certificates”页面点击check again，验证成功后即绑定好了域名。</p>
+<p>此时我们再通过<a href="https://code-breaking.com/" target="_blank">Code-Breaking</a>就正常访问到了Code-Breaking的官网，全部的部署完成。</p>
+<h2 id="_1"><a class="toclink" href="#_1">体验与感受</a></h2>
+<p>完整部署下来，可以明显感觉到fly.io的成熟程度远远落后于heroku，其flyctl客户端仍然存在一些Bug，文档也不齐全。虽说我轻描淡写地描述了我整个部署的过程，但实际上其中踩坑无数，甚至远程编译的Bug在触发后就再也没解决过，官方社区也多是问题鲜有靠谱答案。</p>
+<p>就功能上来看，fly.io也比较少，只能说刚好满足我现在的需要。</p>
+<p>其优点就是具有免费的额度，价格也便宜，对于个人开发者来说也很友好。而且相比于heroku来说，fly.io仅是一个初创公司，仍具有很大的想象力，相信现有的这些不足也会慢慢解决与完善。</p>
+<p>最后，在写文的时候看到fly.io的招聘页面，这家公司Base在芝加哥但大部分员工属于远程办公。我在招聘列表里也看到了安全工程师的岗位：<a href="https://fly.io/jobs/security-engineer/" target="_blank">https://fly.io/jobs/security-engineer/</a>，$120k to $200k USD 年薪对于远程工作来讲还是很有吸引力的，有兴趣的同学可以关注一下。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3976">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">joaovitorc</a>
+                    <time datetime="2022年10月18日 07:17" itemprop="datePublished">
+                      2022 十月 18 07:17
+                    </time>
+                    <a href="javascript:reply_to('3976', 'joaovitorc')">回复</a>
+                  </p>
+                  <p class="comment-meta">恭喜非常好的内容我真的很喜欢阅读它们</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3979">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Pseudoknot</a>
+                    <time datetime="2022年10月24日 09:21" itemprop="datePublished">
+                      2022 十月 24 09:21
+                    </time>
+                    <a href="javascript:reply_to('3979', 'Pseudoknot')">回复</a>
+                  </p>
+                  <p class="comment-meta">@joaovitorc <br>英文机翻中文吗</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3975">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">m1key</a>
+                    <time datetime="2022年10月17日 11:12" itemprop="datePublished">
+                      2022 十月 17 11:12
+                    </time>
+                    <a href="javascript:reply_to('3975', 'm1key')">回复</a>
+                  </p>
+                  <p class="comment-meta">心有余而力不足</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="ac46f4ef6af286cad546aaacdcaedbf02da6fe9d" />
+</div><div class="col-6">
+<img src="../captcha/image/ac46f4ef6af286cad546aaacdcaedbf02da6fe9d/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="487" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="tZunFjD01EpJdGINeWPqe1imMsWEBcbJfxSedoeJp0DsLewbgXMbbulr7PdPaOn1">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

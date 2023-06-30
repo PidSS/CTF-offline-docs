@@ -1,0 +1,5 @@
+User-agent: *
+Sitemap: http://www.ruanx.net/sitemap.xml
+Disallow: /ghost/
+Disallow: /p/
+Disallow: /email/

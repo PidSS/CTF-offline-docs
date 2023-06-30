@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>一道密码学趣题</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="一道密码学趣题" />
+    <meta property="og:description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <meta property="og:url" content="https://www.ruanx.net/a-crypto-problem/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2021-03-09T10:46:47.000Z" />
+    <meta property="article:modified_time" content="2021-03-11T08:22:20.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="一道密码学趣题" />
+    <meta name="twitter:description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/a-crypto-problem/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "一道密码学趣题",
+    "url": "https://www.ruanx.net/a-crypto-problem/",
+    "datePublished": "2021-03-09T10:46:47.000Z",
+    "dateModified": "2021-03-11T08:22:20.000Z",
+    "keywords": "Crypto",
+    "description": "我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">一道密码学趣题</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">一道密码学趣题</h1>
+
+                <p class="post-full-custom-excerpt">我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2021-03-09">9 Mar 2021</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 9 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　今天上网安课的时候，HIT-SZ 的同学发我一道 CISCN2020 华南赛区的一道密码学题目，叫做「easyRSA」。这几年名为「easy」的往往不是很 easy，不过本题难度还是很适合国赛选手的。需要一点点思维能力。</p><p>　　题目是交互的，源码如下：</p><pre><code class="language-python">#!/usr/bin/python3 -u
+
+import random
+from Crypto.Util.number import *
+from gmpy2 import *
+
+a = 0x497a81edc78549df
+block_len = 64
+
+def gen_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return p
+
+n = None
+e = 0x10001
+flag = open("flag.txt", "rb").read()
+
+with open("challenge.py") as f:
+    print(f.read())
+    
+print("Welcome to my Prime Obsession. Tell me what do you want.\n")
+while True:
+    print("[1] Generate key")
+    print("[2] Get Encrypted flag")
+    print("[3] Exit")
+    opt = int(input("&gt;&gt;&gt; "))
+    if opt == 1:
+        p = gen_prime(1024)
+        q = gen_prime(1024)
+        n1 = p * q
+        print('pq =',hex(n1))
+        c = getRandomInteger(100)
+        p = next_prime(p+c)
+        q = next_prime(q+c)
+        n = p * q
+        print('n =',hex(n)) 
+    if opt == 2:
+        if not n:
+            print("No key generated :(")
+        else:
+            print('cipher =',hex(pow(bytes_to_long(flag), e, n)))
+    if opt == 3:
+        print("Good bye! Good luck in this game :)")
+        break
+    print("\n")
+</code></pre><p>　　首先我们需要注意到两件事：</p><ol><li>质数生成是自己实现的。这里可能有漏洞点。</li><li>每次交互，一共只提供了 $p\times q$ 以及 $p ^ \prime \times q ^ \prime$ 的值。</li></ol><p>　　先考虑第二件事。交互题目可能是从多次交互中获取信息，把这些信息综合起来解题；也可能是做题的成功率并非 100%，需要爆破。前者的典型例子是「爆破梅森旋转」的题目，需要用连续的随机数生成结果来恢复 MT19937 的状态；后者的典型例子是各种有特殊条件要求的数论题目。确定题目到底属于哪一种，可以节省大量的做题时间。</p><p>　　本题源码，每次 $p, q$ 是随机生成的，而源码里面密码学不安全的 PRNG，只有用于生成 <code>s</code> 的 <code>random.getrandbits()</code> 。由于后文 <code>if is_prime(p)</code> 的条件极为苛刻，几乎不可能一次就成功，故我们无法拿到当初的 <code>s</code> 。所以本题不是 MT19937 爆破，而是概率性解题。</p><p></p><p>　　现在来考虑本题的质数生成算法。</p><pre><code class="language-python">def gen_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return p</code></pre><p>　　不难分析出，算法会尝试以下步骤：</p><ol><li>$s$ 是一个 64 位数。</li><li>把 $s$ 作为一个块，接在目前的结果后面。</li><li>$s$ 置为 $a \cdot s$，保留低 64 位。 </li><li>重复步骤 2、3，直到生成一个 1024 位的数。<br>如果上述算法成功地生成了一个质数，则返回；否则重复上述算法，直到产出质数为止。</li></ol><p>　　我们只关注 <code>s |= 0xe000000000000003</code> 之后的 $s$，称为其所产生的质数的<strong>种子</strong>。随便模拟一下上面的算法，可以发现：$$p = s \| s\cdot a \| s\cdot a ^ 2 \| \cdots \| s \cdot a ^ {15}$$其中每个块都要模 $2 ^ {64}$。来用代码验证一下：</p><pre><code class="language-python">def test_get_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        
+        origin_s = s
+        
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return origin_s, p
+        
+test_get_prime(1024)
+
+# p = 0xe402458e1aa2fbbf171cf392f0fdc2616d735e74acdefb7f7b1d85d98def4aa1c61b9a5dcc5eeb3fa919b57d487ee2e1a59c89641b1ecaff2cf2adce17308b217fd4620efa1a9abfa8cbd04d5188436164d10992494e5a7fce77d1f5f00a0ba1047f6ffe27b60a3f59926694cc39e3e1bb7d3c5eb34da9ffdef8fe30e09bcc21
+# s = 0xe402458e1aa2fbbf
+# s * a % 2^64 = 0x171cf392f0fdc261
+# ...
+# s * a^15 % 2^64 = 0xdef8fe30e09bcc21</code></pre><p>　　从而，$p$ 的最初 64 位就是它的种子 $s$；$p$ 的末尾 64 位除以 $a ^ {15}$，也可以得到 $s$（运算需要在模 $2 ^ {64}$ 下进行）。如果我们能知道种子，我们就可以直接调用上面的生成算法来产出对应的质数 $p$。于是，<strong>种子和质数是一一对应的</strong>。</p><p>　　但我们现在只知道 $p\times q$，不知道 $p, q$ 各自的种子 $s_1, s_2$. 这里我们注意到两点性质：</p><ol><li>$p\times q$ 的低 64 位除以 $a  ^ {30}$，一定等于 $s_1 \times s_2$ 的低 64 位。这很容易证明。</li><li>$p\times q$ 的高 64 位，可能等于 $s_1 \times s_2$ 的高 64 位，也可能等于这个值加上 1。</li></ol><p>　　来验证一下：</p><pre><code class="language-python">s1, p = test_get_prime(1024)
+s2, q = test_get_prime(1024)
+
+s1, s2, p, q
+'''
+(16243107326219462111,
+ 17432706745670175347,
+ 158294181414880499770651112900548083954434772914472730549340087434970226774360616234703762340566481057536952421125964808455071783034621762005413503653274430171642354361906447116811174866340950519316076420777049700943049933805894766346310426693961910435971922759361714776387154457211555746264926998149652735489,
+ 169887201305206840068646556183834380043094239543227647711110290353531119335337866448387930053370040451159123818495584829213442749847091386275830475868414884168339924826011599148098370699032169016502100581570327973098847038588859614367540256927662605166485372884790453289507254371825313084721972174725171008493)
+'''
+
+R = Zmod(2 ^ 64)
+(p * q) / R(a) ^ 30, R(s1 * s2)
+# (8570911218002475309, 8570911218002475309)
+
+((p * q) &gt;&gt; (2048 - 64)), (s1 * s2) &gt;&gt; 64
+# (15350206276238985089, 15350206276238985088)</code></pre><p>　　于是，我们只要手上有 $p \times q$，我们就可以得到 $s_1 \times s_2$ 的高 64 位和低 64 位（其中高位有两种可能性）。而 $s_1 \times s_2$ 一共才 128 位，我们可以完全恢复出 $s_1 \times s_2$，然后质因数分解之，得到 $s_1, s_2$ 的确切值，从而求出 $p, q$！</p><p>　　这里有一个细节：质因数分解 $s_1 \times s_2$ 可能会得到多个质因子，需要找出合适的 $s_1, s_2$. 做法是枚举分解结果的子集，求个乘积，我们已经知道 $s$ 必然落在 $[\text{0xe000000000000003}, 2^{64})$ 内，故很容易判断合法性。</p><pre><code class="language-python">import random
+from Crypto.Util.number import *
+from gmpy2 import *
+import itertools
+import functools
+
+a = 0x497a81edc78549df
+
+# 从种子生成质数
+def build_p(s):
+    assert s &gt;= 0xe000000000000003
+
+    p = 0
+    for _ in range(1024 // 64):
+        p = (p &lt;&lt; 64) + s
+        s = a * s % 2**64
+    assert is_prime(p)
+    return p
+
+assert build_p(17361778395699355931) == 169195982262430730898037798646562657888768606161540984197124026057984801045528687609713183918888150519974429332633850456287413410292677840077409039763029168042539147308080880278827892817507057470081212780508473831501271300644154803233797207298692699435252423812271233139678356819016235706919593528823372354117
+
+
+# 给定 s1*s2，找出合法的 s1, s2.
+def test_s1s2(m):
+    r = list(factor(m))
+    lis = []
+    
+    for x, cnt in r:
+        for _ in range(cnt):
+            lis.append(x)
+    
+    print(f'factor: {lis}')
+    
+    ans = []
+    
+    for num in range(len(lis)):
+        for f in itertools.combinations(lis, num):
+            if f:
+                maybe_s = functools.reduce(lambda x,y: x*y, f)
+                
+                if 0xe000000000000003 &lt;= maybe_s &lt;= 2**64:
+                    ans.append(maybe_s)
+    
+    return ans
+    
+test_s1s2(309177609417944057766013526324891519733)
+'''
+factor: [3, 2539, 8750453, 824716561, 5624563537715845553]
+[16873690613147536659, 18323057860089065687]
+'''</code></pre><p>　　从 $p\times q$ 中恢复 $s_1, s_2$，进而获取 $p, q$ 的代码如下：</p><pre><code class="language-python"># 给定 p*q，恢复出 p, q
+def attack_pq(n):
+    R = Zmod(2^64)
+    
+    last = R(n) / R(a^30)
+    first = n &gt;&gt; (2048 - 64)
+    
+    s = test_s1s2(int(int(first-1) &lt;&lt; 64) + int(last))
+    
+    if len(s) != 2 or build_p(s[0]) * build_p(s[1]) != n:
+        s = test_s1s2(int(int(first) &lt;&lt; 64) + int(last))
+    
+    print(f's: {s}')
+    
+    assert s
+    p, q = build_p(s[0]), build_p(s[1])
+    assert p * q == n
+    
+    
+    print(f'✅ p = {p}')
+    print(f'✅ q = {q}')
+    
+    return p, q
+
+attack_pq(25625978037564023374054812252766044742673016474380449671434417557988683145342557433392338411568097592174126890010367975804729035315018122328818953482824183616532541483357942995500254875116460438812227079806451323262767112848392097604212800284648459461746966222062286184693080278059901247068922366712016948770993253748320480569966269448769253837874539131187463351933833504083780041515646366807785588792568168133501958654184904533902107193125303230406615614009544017592608298466267250350122225533985589679020422790330076477130447738445165355516162779670614159780415964621699239667668730434728470462911970718793385464741)
+'''
+factor: [7, 73, 263, 1795877, 215313151, 1049925013, 4945460059]
+s: [16502574388980455299, 16350727310827583863]
+✅ p = 160822769417102009618567552156182921546741447360725683118172696897367965121337165186908622589209139632843608852568696104089644870013508160510721639945162275182824416298942113379063991609668151500017228073190018871134644149081490901642408360701118595923659997953670380025262649577673799718463762187171438880989
+✅ q = 159342971958788680920230866791247521236447945260297678924204288359901348836858194337996522293090932934733371676245041069970267950853712578389627531630378737762022350847049839429987844064870186209635909347054818141164832660432576265456168359085362019835152391005771348487649822270428353946391414002824201438569
+'''</code></pre><p>　　现在我们已经搞到 $p, q$ 了！下一个问题是：RSA 采用的质数是 $p ^ \prime, q ^ \prime$，如何从 $p, q$ 找到它们呢？</p><p>　　来分析题目源码，生成 $p^\prime, q ^\prime$ 的算法如下：</p><pre><code class="language-python">p = gen_prime(1024)
+q = gen_prime(1024)
+n1 = p * q
+print('pq =',hex(n1))
+c = getRandomInteger(100)
+p = next_prime(p+c)
+q = next_prime(q+c)
+n = p * q
+print('n =',hex(n)) </code></pre><p>　　可见，程序先生成了一对 $p, q$（我们可以求出它们），然后随机生成了一个 100 位的整数 $c$，求出 $p+c, q+c$ 的下一个质数，作为 $p ^ \prime$ 和 $q ^ \prime$.</p><p>　　由于「下一个质数」这个函数性质极其烂，相当难以研究，我们直接绕过它，记 $\newcommand\pp{p ^ \prime} \newcommand\qq{q ^ \prime} c_1 := \pp - p, c_2 := \qq - q$，于是可以重新表示 $\pp, \qq$：$$\pp = p + c_1, \qquad \qq = q + c_2$$于是$$\pp \times \qq = (p + c_1)(q + c_2) = pq + c_1 q + c_2 p + c_1 c_2$$上面的式子中，$p\times q$ 和 $\pp\times \qq$ 是我们已知的，于是可以求出 $$\pp\times\qq - p\times q = c_1 q + c_2 p + c_1 c_2$$我们把这个值记为 $\Delta$，它是已知量。接下来要干的事情是解出这个不定方程，拿到 $c_1, c_2$，然后求出 $\pp, \qq$.</p><p>　　事实上，上面的话说起来容易，做起来难。$c$ 有 100 位，$c_1, c_2$ 比 $c$ 还大一点点，所以是不可枚举的；这个方程有俩未知数，还是二次的，解起来相当困难。</p><p>　　开点脑洞：如果 $c_1 = c_2$，会是什么情形？整个方程变成了一元二次方程，可以快速求解了：$$\Delta = x^2 + px + qx$$</p><p>　　那么，$c_1 = c_2$ 的概率是多少呢？我们考虑 $c_1$ 与 $c$ 的距离，它等于 $p+c$ 的下一个质数与 $p+c$ 的距离。而由质数分布定理，数量级为 $n$ 的俩质数之间的距离，是 $\ln n$ 量级的。所以 $c_1$ 与 $c$ 的距离，平均来看不会超过 $\ln 2 ^ {1024} \approx 710$ 这个级别；$c_2$ 同理。这样的话，我们预期 $c_1, c_2$ 都在 $[c, c+710]$ 以内取值，它们恰好相等的概率是 $1/710$.</p><p>　　由于质数定理的 bound 在 $n$ 很小的时候极其粗糙，故上面的概率计算误差非常大；但至少数量级是没有问题的。所以解题的总体思路就形成了：</p><ol><li>疯狂交互，获取海量的 $p\times q, \pp\times\qq$ 组。</li><li>假设 $c_1 = c_2$，求出 $\pp$ 和 $\qq$。这大概有 $1/710$ 级别的概率成功。</li></ol><p>　　我们交互几千次，事情基本上必定成功了。代码如下：</p><pre><code class="language-python"># 从 p*q, p'*q' 拿到 p', q' 和私钥 d
+def work(pq, n):
+    try:
+        p, q = attack_pq(pq)
+        dt = n - pq
+#         dt = x(p+q)+x^2
+
+        print(f'dt: {dt}')
+
+        x = var('x')
+        ans = solve(x*(p+q) + x^2 == dt, x)
+        x1, x2 = ans[0].right(), ans[1].right()
+        
+        c = x1
+        
+        if not c.is_integer():
+            c = x2
+        elif not c.is_positive():
+            c = x2
+        
+        assert c.is_integer()
+        assert c.is_positive()
+        
+        print(f'✅ c = {c}')
+        
+        
+        pp = p + c
+        qq = q + c
+        
+        print(f'✅ p\' = {pp}')
+        print(f'✅ q\' = {qq}')
+
+        
+        
+        assert pp * qq == n
+        
+        print(f'✅ d = {inverse_mod(0x10001, (pp-1) * (qq-1))}')
+        
+    except Exception:
+        print(f'这组不太行，换一个吧')
+
+work(25625978037564023374054812252766044742673016474380449671434417557988683145342557433392338411568097592174126890010367975804729035315018122328818953482824183616532541483357942995500254875116460438812227079806451323262767112848392097604212800284648459461746966222062286184693080278059901247068922366712016948770993253748320480569966269448769253837874539131187463351933833504083780041515646366807785588792568168133501958654184904533902107193125303230406615614009544017592608298466267250350122225533985589679020422790330076477130447738445165355516162779670614159780415964621699239667668730434728470462911970718793385464741, 28021904302129336729440775301567915332437216258089567111767564794016674457018155360039100520951355548380576284595610697291190503936385180226538571965741142420627721060581430072608205374836150303308140153045011513224970372092841229476265755575324796173767510268509134100146537708142088453311940311115215141352187534401616817279239626963929615354185356780526239992752179350385945092938270110754347951812524816974827773746044388551113627524532864731322649347204697974569586931351733171516384937029102764549501466259800373343884249624949732899362023883491675849231649767788103527947639812648454167039111814437985284546309)
+
+'''
+factor: [7, 73, 263, 1795877, 215313151, 1049925013, 4945460059]
+s: [16502574388980455299, 16350727310827583863]
+✅ p = 160822769417102009618567552156182921546741447360725683118172696897367965121337165186908622589209139632843608852568696104089644870013508160510721639945162275182824416298942113379063991609668151500017228073190018871134644149081490901642408360701118595923659997953670380025262649577673799718463762187171438880989
+✅ q = 159342971958788680920230866791247521236447945260297678924204288359901348836858194337996522293090932934733371676245041069970267950853712578389627531630378737762022350847049839429987844064870186209635909347054818141164832660432576265456168359085362019835152391005771348487649822270428353946391414002824201438569
+dt: 2395926264565313355385963048801870589764199783709117440333147236027991311675597926646762109383257956206449394585242721486461468621367057897719618482916958804095179577223487077107950499719689864495913073238560189962203259244449131872052955290676336712020544046446847915453457430082187206243017944403198192581194280653296336709273357515160361516310817649338776640818345846302165051422623743946562363019956648841325815091859484017211520331407561500916033733195153956976978632885465921166262711495117174870481043469470296866753801886504567543845861103821061689451233803166404288279971082213725696576199843719191899081568
+这组不太行，换一个吧
+'''</code></pre><p>　　我们来演示一下最终成功的情形：</p><pre><code class="language-python">work(26069239126763544144313564816903584919225468351493641473440054692950282153197487195135311414223645356673159563866063143967003230219599632002379909718878017334229566083385213429707426557827637628431984902602452592854163064832279957432054115424063715513512846471585266280161741825703159883696402247451433556277788724769658068000934928422898992126447860516665865835501335448925851168676214586852842707909375735783055136350498143128185177506086227282670017144764020593609782382354586453914439607583463700059239194111980984987953393701453010426104042888563904056559044144190741477237154627975857816010726687018495994122029, 26069239126763544144313564816903584919225468351493641473440054692950282153197487195135311414223645356673159563866063143967003230219599632002379909718878017334229566083385213429707426557827637628431984902602452592854163064832279957432054115424063715513512846471585266280161741825988418992958523507177816456088510986107884156402419647457685387283014663915814410392002684523734647052244297209296553241947696498795250861154920248758349455971520660721702370823864378454485566700875895894094536122947448903755745971852539042819192334317553458436695944239919353727836898891349048982180198805160517418889084394272238730812629)
+
+'''
+factor: [5, 11, 331, 33132481, 9291179069, 48980273938841381]
+s: [16212470673756497111, 16931189768418210395]
+✅ p = 157995617616370774660638102567731907466273813434698819562579909149220302616489678170556176334851823929143192096314898180613977031807508943016229435352121365585415987271997059622520528656905503238568143547394575088942893875103855187924344429830281996743274207759666120554509518173226980108459374040551600080393
+✅ q = 164999760879838291412777527823360433620664042304532719501056970192987047135901399271919480366966970340411907976436953044179019339177047206138418296577749301575525466287977153837203774422689670859379538394344219536816095808445638679593826944251873998482593615255116197397498058399989519359456583919883121928453
+dt: 285259109262121259726382899810722261338226088401484719034786395156566803399148544556501349074808795883568082622443710534038320763012195724804422105630164278465434433439032353679100357860875784318521309440180096515363985203696506777740558057831238940616100448010591901351355449671277854747158307504943044177184659602878357707253742736690600
+✅ c = 883167773453047379752624032350
+✅ p' = 157995617616370774660638102567731907466273813434698819562579909149220302616489678170556176334851823929143192096314898180613977031807508943016229435352121365585415987271997059622520528656905503238568143547394575088942893875103855187924344429830281996743274207759666120554509518174110147881912421420304224112743
+✅ q' = 164999760879838291412777527823360433620664042304532719501056970192987047135901399271919480366966970340411907976436953044179019339177047206138418296577749301575525466287977153837203774422689670859379538394344219536816095808445638679593826944251873998482593615255116197397498058400872687132909631299635745960803
+✅ d = 18929902510086673211830542076561708694646090199112423578734741638811831139486324032673060025504509801771808146311580923115884412208684054615885034768324548986353522748099835541851880959770197706630601485114486724160958940633586689873415372978863362033241723770332350229742239219936263049207366452280163988720581935255212216393630786066330594961493485442924114415254227968155268214930303811721679329298962022684488694541088421353196184688495242084669325636237107146970285348650646151940584092889379909679798630064926270828345811339970011899882524877738169322630366930298295867738153903553061710361967599556469562610621
+'''</code></pre><p>　　至此问题解决。本题目一共两个大的难点：一是找到质数生成算法的漏洞；二是从 $p,q$ 出发拿到 $\pp, \qq$. 确实是很有价值的题目，值得密码学选手做一做。</p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-reproduce no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../zhuan-zai-qing-qing-de-hu-xi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reproduce</div>
+                <h2 class="post-card-title">转载：轻轻的呼吸</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>俄国文学家蒲宁的作品。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        reproduce
+                    </div>
+            
+                    <a href="../author/reproduce/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/06/world-908894_640.png" alt="reproduce" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/reproduce/index.html">reproduce</a></span>
+                <span class="post-card-byline-date"><time datetime="2021-03-29">29 Mar 2021</time> <span class="bull">&bull;</span> 13 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-machine-learning no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../training-gan/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">machine learning</div>
+                <h2 class="post-card-title">训练一个 GAN</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>本文记录了训练 GAN 来生成二次元头像的过程。我们先从网上获取二次元头像数据集，训练一个生成器、训练一个判别器，来获取生产二次元头像的网络。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2021-02-28">28 Feb 2021</time> <span class="bull">&bull;</span> 10 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

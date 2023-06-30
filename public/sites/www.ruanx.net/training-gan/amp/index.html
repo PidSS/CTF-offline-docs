@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>训练一个 GAN</title>
+
+    <meta name="description" content="本文记录了训练 GAN 来生成二次元头像的过程。我们先从网上获取二次元头像数据集，训练一个生成器、训练一个判别器，来获取生产二次元头像的网络。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="训练一个 GAN" />
+    <meta property="og:description" content="本文记录了训练 GAN 来生成二次元头像的过程。我们先从网上获取二次元头像数据集，训练一个生成器、训练一个判别器，来获取生产二次元头像的网络。" />
+    <meta property="og:url" content="https://www.ruanx.net/training-gan/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2021-02-28T02:32:40.000Z" />
+    <meta property="article:modified_time" content="2022-01-16T02:27:51.000Z" />
+    <meta property="article:tag" content="machine learning" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="训练一个 GAN" />
+    <meta name="twitter:description" content="本文记录了训练 GAN 来生成二次元头像的过程。我们先从网上获取二次元头像数据集，训练一个生成器、训练一个判别器，来获取生产二次元头像的网络。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/training-gan/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="machine learning" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "训练一个 GAN",
+    "url": "https://www.ruanx.net/training-gan/",
+    "datePublished": "2021-02-28T02:32:40.000Z",
+    "dateModified": "2022-01-16T02:27:51.000Z",
+    "keywords": "machine learning",
+    "description": "本文记录了训练 GAN 来生成二次元头像的过程。我们先从网上获取二次元头像数据集，训练一个生成器、训练一个判别器，来获取生产二次元头像的网络。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">训练一个 GAN</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2021-02-28">28 Feb 2021</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　我们的任务是训练一个 GAN 用于生成二次元头像。主要参考了李宏毅老师的 <a href="https://youtu.be/DQNNMiAP5lw">GAN 教程</a> ，数据集来源于李宏毅老师的 <a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLDS18.html">作业 3</a>。</p><p>　　生成器是输入 100 维度的 latent vector，通过转置卷积和最后的全连接层，生成 64×64 的图像。</p><p>　　先简要说一下训练过程中遇到的问题。</p><ul><li>迭代若干次之后，生成图片为纯黑色。<br />降低学习率可以避免这种情况。</li><li>D 太强势，对真图直接标为 1.0，对假图直接标为 0.0，梯度很小，导致 G 学不到多少东西。<br />网上有人说「给标签加噪音」，有人说「改 k 值」。我这边把 k 值调得很低，可以缓解。另外降低了 D 的学习率，也有一些效果。</li><li>D 严重欠拟合，所有的图片都给出同样的分数。<br />我是调整网络结构之后缓解了这个情况。降低学习率似乎也有用。</li></ul><p>　　第一遍写代码，是自己搞的模型。生成器通过转置卷积层与卷积层的组合来造图片；判别器是 CNN，但是没有池化层（为了尽量少丢失信息），而是采用了 <code>stride = 2</code> 的卷积层来减少特征。代码如下：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">import torch
+import torch.nn as nn
+import torchvision
+import os
+import numpy as np
+import PIL.Image as Image
+import itertools
+
+import matplotlib.pyplot as plt</code></pre><figcaption>▲ 引入库</figcaption></figure><figure class="kg-card kg-code-card"><pre><code class="language-python">batchsize = 32
+
+images_dataset = torchvision.datasets.ImageFolder(
+    os.path.join('data'),
+    transform=torchvision.transforms.Compose([
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Resize(64)]))
+
+realimg_loader = torch.utils.data.DataLoader(
+    images_dataset, 
+    batch_size=batchsize,
+    shuffle=True)
+
+realimg_iter = iter(realimg_loader)
+
+sample_x, _ = next(iter(realimg_loader))</code></pre><figcaption>▲ 引入数据集</figcaption></figure><pre><code class="language-python">plt.figure(figsize=(10, 10))
+plt.imshow(torchvision.utils.make_grid(sample_x).numpy().transpose((1, 2, 0)))</code></pre><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/03/image.png" class="kg-image" alt width="960" height="450" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image.png 600w, https://www.ruanx.net/content/images/2021/03/image.png 960w" layout="responsive"></amp-img><figcaption>▲ 数据集样例</figcaption></figure><p>　　接下来定义生成器：先经过一个全连接层，再用转置卷积层、卷积层来生成更大的图片；最后输出 64×64 的图。激活函数用 relu，输出层用 tanh。这里我在输出时规范化到 $[0, 1]$ 之间，之后实践证明这不是很好的方案。应该不改这个 tanh，而是把真实图像规范化到 $[-1, 1]$ 内。</p><pre><code class="language-python">class Gen(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.fc = nn.Linear(100, 32*16*16)
+        
+        self.upsamp1 = nn.ConvTranspose2d(32, 128, 4, stride=2)
+        self.conv1 = nn.Conv2d(128, 128, 4)
+        
+        self.upsamp2 = nn.ConvTranspose2d(128, 128, 4, stride=2)
+        self.conv2 = nn.Conv2d(128, 64, 4)
+        
+        self.conv3 = nn.Conv2d(64, 3, 4, padding=3)
+        
+    def forward(self, x):
+        x = self.fc(x)
+        x = torch.relu(x)
+        x = x.view(-1, 32, 16, 16)
+        
+        x = self.upsamp1(x)
+        x = self.conv1(x)
+        x = torch.relu(x)
+        
+        x = self.upsamp2(x)
+        x = self.conv2(x)
+        x = torch.relu(x)
+        
+        x = self.conv3(x)
+        x = torch.tanh(x)
+        
+        return x / 2 + .5</code></pre><p>　　判别器，一个简单的 CNN，没有池化。</p><pre><code class="language-python">class Dis(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.conv1 = nn.Conv2d(3, 32, 4, stride=2)
+        self.conv2 = nn.Conv2d(32, 64, 4, stride=2)
+        self.conv3 = nn.Conv2d(64, 128, 4, stride=2)
+        self.conv4 = nn.Conv2d(128, 256, 4, stride=2)
+        self.fc = nn.Linear(256 * 2 * 2, 1)
+    
+    def forward(self, x):
+        x = torch.relu(self.conv1(x))
+        x = torch.relu(self.conv2(x))
+        x = torch.relu(self.conv3(x))
+        x = torch.relu(self.conv4(x))
+        
+        x = x.view(-1, 256 * 2 * 2)
+        x = torch.sigmoid(self.fc(x))
+
+        return x</code></pre><p>　　采用 Adam 优化器：</p><pre><code class="language-python">gen = Gen()
+optim_gen = torch.optim.Adam(gen.parameters(), lr=0.0002, betas=(.5, .999))
+
+dis = Dis()
+optim_dis = torch.optim.Adam(dis.parameters(), lr=0.0002, betas=(.5, .999))</code></pre><p>　　训练这两个网络的代码：</p><pre><code class="language-python">def train_dis(cnt, gen, dis):
+    gen.requires_grad_(False)
+    dis.requires_grad_(True)
+    
+    for x in range(cnt):
+        fake_img = gen(torch.randn([batchsize, 100]))
+        real_img, _ = next(realimg_iter)
+
+        optim_dis.zero_grad()
+        loss = - (torch.sum(torch.log(1 - dis(fake_img))) + torch.sum(torch.log(dis(real_img)))) / batchsize
+#         print(f'train dis, round {x} loss={loss.item()}')
+        
+        loss.backward()
+        optim_dis.step()
+    
+#     with torch.no_grad():
+#         correct_real = sum(dis(real_img) &gt; .5)
+#         correct_fake = sum(dis(fake_img) &lt; .5)
+#         print(f'correct_real: {correct_real.item()} / {batchsize}, correct_fake: {correct_fake.item()} / {batchsize}')
+
+def train_gen(cnt, gen, dis):
+    gen.requires_grad_(True)
+    dis.requires_grad_(False)
+    
+    for x in range(cnt):
+        fake_img = gen(torch.randn([batchsize, 100]))
+        
+        optim_gen.zero_grad()
+        loss = - torch.sum(torch.log(dis(fake_img))) / batchsize
+#         print(f'train gen, round {x} loss={loss.item()}')
+        
+        loss.backward()
+        optim_gen.step()
+    
+#     with torch.no_grad():
+#         success_cnt = sum(dis(fake_img) &gt; .5)
+#         print(f'success: {success_cnt.item()} / {batchsize}')
+</code></pre><p>　　接下来开始迭代。注意 GAN 非常不稳定，随时可能过拟合、模式坍塌，需要回档调参数继续训练。所以模型要定期存 checkpoint。</p><pre><code class="language-python">for x in range(2000):
+    print(f'&gt; round {x}\n')
+    
+    realimg_iter = itertools.cycle(realimg_loader)
+    
+    for c in range(10):
+        train_dis(5, gen, dis)
+        train_gen(1, gen, dis)
+    
+    with torch.no_grad():
+        test = gen(torch.randn([batchsize, 100]))
+    show_img(test[0])
+    
+    if x % 100 == 99:
+        torch.save({
+            'gen': gen.state_dict(),
+            'optim_gen': optim_gen.state_dict(),
+            'dis': dis.state_dict(),
+            'optim_dis': optim_dis.state_dict()
+        }, f'checkpoint0227-{x}.pth')</code></pre><p>　　几百次迭代之后，产出如下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-1.png" class="kg-image" alt width="1280" height="432" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-1.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/03/image-1.png 1000w, https://www.ruanx.net/content/images/2021/03/image-1.png 1280w" layout="responsive"></amp-img></figure><p>　　再进行一些迭代之后结果如下。注意到已经产生了模式坍塌。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-3.png" class="kg-image" alt width="1280" height="235" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-3.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/03/image-3.png 1000w, https://www.ruanx.net/content/images/2021/03/image-3.png 1280w" layout="responsive"></amp-img></figure><p>　　调整参数之后训练几千轮，最终结果如下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-2.png" class="kg-image" alt width="1302" height="832" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-2.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/03/image-2.png 1000w, https://www.ruanx.net/content/images/2021/03/image-2.png 1302w" layout="responsive"></amp-img></figure><p>　　总之就是非常抽象。挑了几张好看一点的，与诸君共赏：</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/2.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/1.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/6.png" width="251" height="251" alt layout="fixed"></amp-img></div></div><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/10.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/13.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/14.png" width="251" height="251" alt layout="fixed"></amp-img></div></div><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/30.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/31.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/3.png" width="251" height="251" alt layout="fixed"></amp-img></div></div></div></figure><p>　　看起来确实像个人，反正比我画得好。</p><hr></hr><p>　　3 月 1 日，我用 DCGAN 重写了一遍。主要参考了 PyTorch 的官方教程。</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html"><div class="kg-bookmark-content"><div class="kg-bookmark-title">DCGAN Tutorial — PyTorch Tutorials 1.7.1 documentation</div><div class="kg-bookmark-description"></div><div class="kg-bookmark-metadata"></div></div><div class="kg-bookmark-thumbnail"><amp-img src="https://pytorch.org/tutorials/_images/sphx_glr_dcgan_faces_tutorial_001.png" width="800" height="800" layout="responsive"></amp-img></div></a></figure><p>　　DCGAN 引入了 BatchNorm 来加快收敛、改善效果，另外取消了全连接层，使得生成器和判别器都是全卷积网络。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-11.png" class="kg-image" alt width="924" height="397" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-11.png 600w, https://www.ruanx.net/content/images/2021/03/image-11.png 924w" layout="responsive"></amp-img></figure><pre><code class="language-python">import torch
+import torch.nn as nn
+import torchvision
+import os
+import numpy as np
+import PIL.Image as Image
+import itertools
+
+import matplotlib.pyplot as plt</code></pre><pre><code class="language-python">batchsize = 128
+
+learning_rate_gen = 0.0002
+learning_rate_dis = 0.0002
+beta1 = 0.5
+
+dim_latent_vector = 100
+num_gen_feature_map = 64
+num_dis_feature_map = 64
+
+num_gen_output_channel = 3
+
+k = 1</code></pre><figure class="kg-card kg-code-card"><pre><code class="language-python">images_dataset = torchvision.datasets.ImageFolder(
+    os.path.join('data'),
+    transform=torchvision.transforms.Compose([
+        torchvision.transforms.Resize(64),
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize([.5, .5, .5], [.5, .5, .5])]))
+
+realimg_loader = torch.utils.data.DataLoader(
+    images_dataset, 
+    batch_size=batchsize,
+    shuffle=True)
+
+images_dataset</code></pre><figcaption>▲ 引入数据集。注意这里做了归一化</figcaption></figure><p>　　现在我们的图像，无论是真实的图，还是生成的图，都是 $[-1, 1]$ 范围内的了。写一点用于输出图像的辅助函数：</p><pre><code class="language-python">realimg_iter = iter(realimg_loader)
+sample_x, _ = next(iter(realimg_loader))
+
+data_to_image = torchvision.transforms.Compose([
+    torchvision.transforms.Normalize([-1, -1, -1], [2, 2, 2]),
+    torchvision.transforms.ToPILImage()])
+
+def show_img(x):
+    plt.imshow(data_to_image(x))
+
+def show_grid(x, title=None):
+    plt.figure(figsize=(10, 10))
+    plt.title(title)
+    plt.imshow(data_to_image(torchvision.utils.make_grid(x)))
+    plt.show()
+
+show_grid(sample_x[:32], 'training dataset');</code></pre><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-4.png" class="kg-image" alt width="884" height="410" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-4.png 600w, https://www.ruanx.net/content/images/2021/03/image-4.png 884w" layout="responsive"></amp-img></figure><p>　　这一次网络很大，我们采用 GPU 来训练：</p><pre><code class="language-python">device = torch.device("cuda:0")
+device
+
+# device(type='cuda', index=0)</code></pre><p>　　根据 paper，需要把网络的初始参数调成 $N(0, 0.02)$，我们写一个函数，用于接下来初始化网络。</p><pre><code class="language-python">def set_layer_init_weight(layer):
+    if 'Conv' in layer.__class__.__name__:
+        nn.init.normal_(layer.weight.data, 0, 0.02)
+    elif 'BatchNorm' in layer.__class__.__name__:
+        nn.init.normal_(layer.weight.data, 1, 0.02)
+        nn.init.constant_(layer.bias.data, 0)</code></pre><p>　　定义生成器和判别器：</p><pre><code class="language-python">class Gen(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.main = nn.Sequential(
+            nn.ConvTranspose2d(dim_latent_vector, num_gen_feature_map * 8, 4, bias=False),
+            nn.BatchNorm2d(num_gen_feature_map * 8),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(num_gen_feature_map * 8, num_gen_feature_map * 4, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_gen_feature_map * 4),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(num_gen_feature_map * 4, num_gen_feature_map * 2, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_gen_feature_map * 2),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(num_gen_feature_map * 2, num_gen_feature_map, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_gen_feature_map),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(num_gen_feature_map, num_gen_output_channel, 4, stride=2, padding=1, bias=False),
+            nn.Tanh()
+        )
+        
+    def forward(self, x):
+        return self.main(x)
+        
+net_gen = Gen().to(device)
+net_gen.apply(set_layer_init_weight)
+
+net_gen</code></pre><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-5.png" class="kg-image" alt width="1390" height="499" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-5.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/03/image-5.png 1000w, https://www.ruanx.net/content/images/2021/03/image-5.png 1390w" layout="responsive"></amp-img></figure><pre><code class="language-python">class Dis(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.main = nn.Sequential(
+            nn.Conv2d(num_gen_output_channel, num_dis_feature_map, 4, stride=2, padding=1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(num_dis_feature_map, num_dis_feature_map * 2, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_dis_feature_map * 2),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(num_dis_feature_map * 2, num_dis_feature_map * 4, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_dis_feature_map * 4),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(num_dis_feature_map * 4, num_dis_feature_map * 8, 4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(num_dis_feature_map * 8),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(num_dis_feature_map * 8, 1, 4, bias=False),
+            nn.Sigmoid()
+        )
+    
+    def forward(self, x):
+        return self.main(x)
+        
+net_dis = Dis().to(device)
+net_dis.apply(set_layer_init_weight)
+
+net_dis</code></pre><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-6.png" class="kg-image" alt width="1310" height="469" srcset="https://www.ruanx.net/content/images/size/w600/2021/03/image-6.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/03/image-6.png 1000w, https://www.ruanx.net/content/images/2021/03/image-6.png 1310w" layout="responsive"></amp-img></figure><p>　　定义损失函数和优化器：</p><pre><code class="language-python">criterion = nn.BCELoss()
+
+fixed_noise = torch.randn(64, dim_latent_vector, 1, 1, device=device)
+
+label_real = 1.0
+label_fake = 0.0
+
+optim_gen = torch.optim.Adam(net_gen.parameters(), lr=learning_rate_gen, betas=(beta1, 0.999))
+optim_dis = torch.optim.Adam(net_dis.parameters(), lr=learning_rate_dis, betas=(beta1, 0.999))</code></pre><p>　　训练：</p><pre><code class="language-python">loss_gen = []
+loss_dis = []
+iter_count = 0
+
+def train_epoch():
+    global iter_count
+    
+    for i, real_data in enumerate(realimg_loader):
+        
+        # 训练 dis，maximize log(D(x)) + log(1 - D(G(z)))
+        
+        for x in range(k):
+            net_dis.zero_grad()
+            real_data_gpu = real_data[0].to(device)
+
+            this_data_size = real_data[0].size(0)
+
+            label = torch.full((this_data_size, ), label_real, device=device)
+            output = net_dis(real_data_gpu).view(-1)
+
+            err_dis_real = criterion(output, label)
+            err_dis_real.backward()
+
+            avg_real_score = output.mean().item()
+
+
+            noise = torch.randn(this_data_size, dim_latent_vector, 1, 1, device=device)
+            fake_data_gpu = net_gen(noise)
+            label.fill_(label_fake)
+            output = net_dis(fake_data_gpu.detach()).view(-1)
+            err_dis_fake = criterion(output, label)
+            err_dis_fake.backward()
+
+            avg_fake_score = output.mean().item()
+
+            err_dis = err_dis_real + err_dis_fake
+
+            optim_dis.step()
+        
+        # 训练 gen, maximize log(D(G(z)))
+        
+        net_gen.zero_grad()
+        label.fill_(label_real)
+        
+        output = net_dis(fake_data_gpu).view(-1)    # 复用刚刚训练 dis 时生成的假图
+        err_gen = criterion(output, label)
+        err_gen.backward()
+        
+        avg_fake_score_after = output.mean().item() # dis 训练一次之后，再判断假图的打分
+
+        optim_gen.step()
+        
+        
+        if i % 50 == 0:
+            print(f'iter {iter_count} [{i}/{len(realimg_loader)}] dis loss: {err_dis.item()} gen loss: {err_gen.item()}')
+            print(f'D(real): {avg_real_score} D(fake): {avg_fake_score} -&gt; {avg_fake_score_after}')
+        
+        loss_gen.append(err_gen.item())
+        loss_dis.append(err_dis.item())
+
+        
+        if i % 50 == 0:
+            with torch.no_grad():
+                new_fake_img = net_gen(fixed_noise).detach().cpu()
+            show_grid(new_fake_img[:32])
+            
+        iter_count += 1</code></pre><p>　　于是就写完了。来看一下效果：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/03/1-1.png" class="kg-image" alt width="598" height="314" layout="responsive"></amp-img><figcaption>▲ 初始</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/03/2-1.png" class="kg-image" alt width="598" height="314" layout="responsive"></amp-img><figcaption>▲ 50 次迭代</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/03/3-1.png" class="kg-image" alt width="598" height="314" layout="responsive"></amp-img><figcaption>▲ 100 次迭代</figcaption></figure><p>　　可见 DCGAN 比我们之前的模型生成能力强很多。1000 次迭代之后是下面的样子：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-8.png" class="kg-image" alt width="598" height="314" layout="responsive"></amp-img></figure><p>　　48000 次迭代之后，成品如下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/03/image-9.png" class="kg-image" alt width="598" height="314" layout="responsive"></amp-img></figure><p>　　当然仍然很不真实，但比我们旧模型还是稍好一些。我们旧模型有类似抽象画的纹理，DCGAN 生成的图没有这种纹理。选了一些 DCGAN 产品，奇图共赏：</p><figure class="kg-card kg-gallery-card kg-width-wide"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/4.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/3-2.png" width="251" height="251" alt layout="fixed"></amp-img></div></div><div class="kg-gallery-row"><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/1-2.png" width="251" height="251" alt layout="fixed"></amp-img></div><div class="kg-gallery-image"><amp-img src="https://www.ruanx.net/content/images/2021/03/2-2.png" width="251" height="251" alt layout="fixed"></amp-img></div></div></div></figure>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

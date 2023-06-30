@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>块加密的工作模式</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="块加密的工作模式" />
+    <meta property="og:description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <meta property="og:url" content="https://www.ruanx.net/block-cipher-mode/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-04-14T03:14:52.000Z" />
+    <meta property="article:modified_time" content="2020-04-15T01:45:16.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="块加密的工作模式" />
+    <meta name="twitter:description" content="DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/block-cipher-mode/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "块加密的工作模式",
+    "url": "https://www.ruanx.net/block-cipher-mode/",
+    "datePublished": "2020-04-14T03:14:52.000Z",
+    "dateModified": "2020-04-15T01:45:16.000Z",
+    "keywords": "Crypto, algorithm",
+    "description": "DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto tag-algorithm">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">块加密的工作模式</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto tag-algorithm no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">块加密的工作模式</h1>
+
+                <p class="post-full-custom-excerpt">DES 只能加密 64 位的数据，不能直接用于数据加密。本文介绍 PKCS#5 填充算法，以及分组密码的 ECB、CBC、CFB 工作模式。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-04-14">14 Apr 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 8 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　上一篇文章讨论了 DES 算法，现在我们有了“给定 64-bit 的明文、64-bit 的密钥，输出 64-bit 的密文”的加密手段。这离实际应用还有一点点距离，因为要传递的信息当然不止 64 位。</p><p>　　要用 DES 加密一条信息，一般先把信息填充到 64 的倍数，于是就可以分成许多组，每组 8 个字节。利用密钥对每一组进行加密，最终的结果拼接起来，这就是 ECB(Electronic Code Book，电子密码本) 模式。</p><h3 id="pkcs-5">PKCS#5</h3><p>　　现在我们要把信息填充到 8 的倍数个字节，还得能无歧义地恢复。PKCS#5 就是用来干这个事的。它的规则是：</p><ul><li>若原文长度不是 8 的倍数，则设其模 8 为 p，在消息后面填充 (8-p) 个 (8-p). <br>例子： <code>12345678hello</code> 被填充为 <code>12345678hello\x03\x03\x03</code></li><li>若原文长度是 8 的倍数，则往消息后面填充 8 个 <code>\x08</code> .</li></ul><p>　　为什么原文长度已经是 8 的倍数时，还要进行填充？这是为了消除歧义。假设信息本来就是 <code>hello\x03\x03\x03</code> ，长度为 8，如果不再填充，解码时可能就认为原文是“hello”. </p><p>　　要解码 PKCS#5 填充的数据，解码器直接去看整个数据的最后一个字节 x，抛弃掉末尾 x 位就得到了原文，这是快速且无歧义的。</p><pre><code class="language-python"># PKCS5
+def addPadding(s):
+    p = 8 - len(s)%8
+    return s + p * chr(p).encode()
+
+def delPadding(s):
+    p = s[-1]
+    return s[:-p]</code></pre><h3 id="ecb-">ECB（电子密码本）</h3><p>　　ECB 是最朴素的工作模式。把明文每 8 位一组进行加密，得到的密文直接拼接。代码如下：</p><pre><code class="language-python">def des_ecb_enc(plain, key):
+    m = addPadding(plain)
+    m = [m[x : x+8] for x in range(0, len(m), 8)]
+
+    c = [DES(int.from_bytes(x, 'big'), 
+             int.from_bytes(key, 'big'), 
+             'encrypt') for x in m]
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_ecb_dec(enc, key):
+    assert len(enc) % 8 == 0
+
+    c = [enc[x : x+8] for x in range(0, len(enc), 8)]
+
+    c = [DES(int.from_bytes(x, 'big'), 
+             int.from_bytes(key, 'big'), 
+             'decrypt') for x in c]
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return delPadding(reduce(lambda x, y: x + y, c))
+
+m = b'helloQAQwww'
+key = b'lilac666'
+
+c = des_ecb_enc(m, key)
+print(c)
+# b'w\xb4\n\xccM\xd6\xd1\xcd4\xe6aQ\x0c\x88\x826'
+
+p = des_ecb_dec(c, key)
+print(p)
+# b'helloQAQwww'</code></pre><p>　　ECB 模式是最简单的模式。由于每个块都是独立加密的，所以它对并行加密解密很友好。此外，传输过程中出现的偶然错误，不会扩大到影响整个数据。但正因为每个块都独立加密，重复的块会被加密成重复的明文。这会导致泄漏明文的一些统计信息。</p><p>　　下面演示一个例子。对 Lilac 的 logo 位图（左）进行加密，得到的结果修复一下文件头，即得到加密后的 logo（右）。</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2020/04/lilac-square.png" width="600" height="600" loading="lazy" alt srcset="../content/images/2020/04/lilac-square.png 600w"></div><div class="kg-gallery-image"><img src="../content/images/2020/04/ecb.png" width="600" height="600" loading="lazy" alt srcset="../content/images/2020/04/ecb.png 600w"></div></div></div><figcaption>ECB 模式加密的 Lilac 队徽。 左：原图　右：加密后的位图</figcaption></figure><p>　　可见，图像的轮廓被完整地保留了下来。所以 ECB 显然不是一个好的工作模式：尽管窃听者不知道原图的任何一个像素，但他一眼可以看出原图大概是长什么样的。</p><p></p><h3 id="cbc-">CBC（密码块链接）</h3><p>　　CBC（Cipher-block chaining，密码块链接）模式需要一个初始向量 IV. 加密过程中，先把 IV 与第一块明文混合，再交由 DES 加密；对于下一块，其 IV 采用这一块的加密结果。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-5.png" class="kg-image" alt loading="lazy"><figcaption>CBC 加密流程图。 图源：<a href="https://zh.wikipedia.org/wiki/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F">wikipedia&nbsp;</a></figcaption></figure><p>　　CBC 由于每一个块在加密的时候，都需要把明文与上一个块的加密结果进行异或，故加密是串行的。不过解密可以并行，因为解密时已知每一个密文块，直接拿来异或即可。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-6.png" class="kg-image" alt loading="lazy"><figcaption>CBC 解密流程图</figcaption></figure><p>　　代码实现如下：</p><pre><code class="language-python">def des_cbc_enc(plain, key, iv):
+    key = int.from_bytes(key, 'big')
+    iv = int.from_bytes(iv, 'big')
+
+    m = addPadding(plain)
+    m = [int.from_bytes(m[x : x+8], 'big') for x in range(0, len(m), 8)]
+    
+    c = []
+
+    for i in range(len(m)):
+        r = iv ^ m[i]
+        iv = DES(r, key, 'encrypt')
+        c.append(iv)
+    
+    c = [x.to_bytes(8, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_cbc_dec(enc, key, iv):
+    key = int.from_bytes(key, 'big')
+    iv = int.from_bytes(iv, 'big')
+
+    c = [int.from_bytes(enc[x : x+8], 'big') for x in range(0, len(enc), 8)]
+    
+    m = []
+
+    for i in range(len(c)):
+        p = DES(c[i], key, 'decrypt')
+
+        m.append(p ^ iv)
+        iv = c[i]
+
+    m = [x.to_bytes(8, 'big') for x in m]
+    
+    return delPadding(reduce(lambda x, y: x + y, m))
+
+m = b'helloQAQwww'
+key = b'lilac666'
+iv = b'ruan1234'
+
+c = des_cbc_enc(m, key, iv)
+print(c)
+# b'\x93W\xb7\xf5\x93\xd2?\n\xe2\x9bR\x179\x94\xa1\x00'
+
+p = des_cbc_dec(c, key, iv)
+print(p)
+# b'helloQAQwww'</code></pre><p>　　显然，由于明文每次加密开始的时候，都得异或上前一块的密文，故对任何明文的改动，都将会影响到此后的所有块。CBC 克服了 ECB “相同明文块变成相同密文块” 的缺点。以 CBC 模式加密 Lilac logo，得到的结果如右图，就像整个图都是噪点：</p><figure class="kg-card kg-gallery-card kg-width-wide kg-card-hascaption"><div class="kg-gallery-container"><div class="kg-gallery-row"><div class="kg-gallery-image"><img src="../content/images/2020/04/lilac-square-1.png" width="600" height="600" loading="lazy" alt srcset="../content/images/2020/04/lilac-square-1.png 600w"></div><div class="kg-gallery-image"><img src="../content/images/2020/04/ecb-1.png" width="600" height="600" loading="lazy" alt srcset="../content/images/2020/04/ecb-1.png 600w"></div><div class="kg-gallery-image"><img src="../content/images/2020/04/cbc.jpg" width="600" height="600" loading="lazy" alt srcset="../content/images/2020/04/cbc.jpg 600w"></div></div></div><figcaption>左：原图 中：ECB 加密模式 右：CBC 加密模式</figcaption></figure><p>　　从 CBC 模式加密后的图像上，已经看不出原图的特点。</p><h3 id="cfb-">CFB（密文反馈）</h3><p>　　CFB（Cipher feedback，密文反馈）是一种接近于<strong>流密码</strong>的工作模式。它不用 DES 加密明文，而是把 DES 作为伪随机数生成器，把 IV 作为种子。这样就可以从 IV 和指定的 key 生成字节流，然后把明文与这个字节流异或。</p><p>　　CFB 模式中，每次加密明文的一个字节。故 CFB 模式不需要添加Padding. 工作流程如下：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-7.png" class="kg-image" alt loading="lazy"><figcaption>CFB 加密流程，图片来源：<a href="https://www.cnblogs.com/happyhippy/archive/2006/12/23/601353.html">对称加密和分组加密中的四种模式</a></figcaption></figure><p>　　加密过程中，维护了一个寄存器 <code>reg</code> ，长度为 64-bit，初始值为 IV. 每次对明文的一个字节进行加密时，把这个 <code>reg</code> 交给 DES 加密，生成一个 64-bit 的结果 <code>K</code>；然后把 <code>K</code> 的高 8-bit 与明文的这一个字节异或，得到了一个字节的密文。接下来，把这个 8-bit 密文补充到移位寄存器 <code>reg</code> 的最右边，抛弃 <code>reg</code> 此前的高 8 位。</p><p>　　随着加密的进行， <code>reg</code> 不断地变化，每次都往右边加 8 位（也就是上一轮得到的密文）、抛弃掉最左边的 8 位。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/04/image-8.png" class="kg-image" alt loading="lazy"><figcaption>CFB 模式的加密（左）和解密（右）。 图片来源：<a href="https://www.cnblogs.com/slqt/p/6559828.html">DES加密模式详解&nbsp;</a></figcaption></figure><p>　　而解密过程也很简单：既然 CFB 模式是流密码，那么解密的时候，只要得到<strong>与加密过程一样的密钥流</strong>，拿去与密文异或就能得到明文了。加密、解密代码如下：　</p><figure class="kg-card kg-code-card"><pre><code class="language-python">def des_cfb_enc(plain, key, iv):
+    key = int.from_bytes(key, 'big')
+    reg = int.from_bytes(iv, 'big')
+
+    m = [x for x in plain]
+
+    c = []
+
+    for i in range(len(m)):
+        K = DES(reg, key, 'encrypt')
+        cip = (K &gt;&gt; 56) ^ m[i]
+
+        c.append(cip)
+        reg = ((reg &lt;&lt; 8) &amp; 0xFFFFFFFFFFFFFFFF) | cip
+
+    c = [x.to_bytes(1, 'big') for x in c]
+    
+    return reduce(lambda x, y: x + y, c)
+
+def des_cfb_dec(enc, key, iv):
+    key = int.from_bytes(key, 'big')
+    reg = int.from_bytes(iv, 'big')
+
+    c = [x for x in enc]
+
+    m = []
+
+    for cip in c:
+        K = DES(reg, key, 'encrypt')
+        msg = (K &gt;&gt; 56) ^ cip
+
+        m.append(msg)
+        reg = ((reg &lt;&lt; 8) &amp; 0xFFFFFFFFFFFFFFFF) | cip
+
+    m = [x.to_bytes(1, 'big') for x in m]
+    
+    return reduce(lambda x, y: x + y, m)
+
+m = b'helloQAQwww'
+key = b'lilac666'
+iv = b'ruan1234'
+
+c = des_cfb_enc(m, key, iv)
+print(c)
+# b'\xaf\x1a\xba\xeb-\xc2\xaa\x0b\t\xea\x83'
+
+p = des_cfb_dec(c, key, iv)
+print(p)
+# b'helloQAQwww'</code></pre><figcaption>与 CyberChef 的结果不一样，但是与 pycrypto 的结果一样。我也不知道为什么。</figcaption></figure><hr><h3 id="-">总结</h3><p>　　我们讨论了 ECB, CBC, CFB 三种工作模式，其中</p><ul><li>ECB 模式是不安全的模式。</li><li>对明文进行改动，CBC、CFB 模式都会使得后序所有块错误。</li><li>CBC 模式，如果密文传输过程中有错误，则后面所有密文都出错。</li><li>CFB 模式，如果密文传输过程中出错，只会影响到之后几个块（因为移位寄存器的存在，在 8 个块之后这个错误就会离开 <code>reg</code> ，此后的数据都会正常）。</li><li>ECB、CBC 模式需要填充。填充常用 PKCS#5 规则。CFB 模式是类似于流密码的逐字节加密，无需填充。</li></ul>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-writeup no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../tiny-lfsr-writeup/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">writeup</div>
+                <h2 class="post-card-title">Tiny LFSR writeup</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>BUUCTF上 Tiny LFSR 的题解。题目出自 AFCTF2018。本篇文章为英文。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-04-28">28 Apr 2020</time> <span class="bull">&bull;</span> 3 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-crypto tag-python tag-algorithm no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../des/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">DES算法原理及实现</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>DES是一种常用的分组密码（块密码）加密技术。本文介绍了 DES 加密体系，给出了详细的算法描述和 Python 版代码实现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-04-13">13 Apr 2020</time> <span class="bull">&bull;</span> 26 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

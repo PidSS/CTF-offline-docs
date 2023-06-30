@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>论文阅读：上世纪的 RSA 攻击方式</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="Dan Boneh 对上世纪 RSA 攻击的综述。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="论文阅读：上世纪的 RSA 攻击方式" />
+    <meta property="og:description" content="Dan Boneh 对上世纪 RSA 攻击的综述。" />
+    <meta property="og:url" content="https://www.ruanx.net/rsa-attack-survey/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/08/--2022-08-19---7.55.17.png" />
+    <meta property="article:published_time" content="2022-08-19T11:51:45.000Z" />
+    <meta property="article:modified_time" content="2022-08-22T01:15:38.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="论文阅读：上世纪的 RSA 攻击方式" />
+    <meta name="twitter:description" content="Dan Boneh 对上世纪 RSA 攻击的综述。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/rsa-attack-survey/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/08/--2022-08-19---7.55.17.png" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto" />
+    <meta property="og:image:width" content="1054" />
+    <meta property="og:image:height" content="648" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "论文阅读：上世纪的 RSA 攻击方式",
+    "url": "https://www.ruanx.net/rsa-attack-survey/",
+    "datePublished": "2022-08-19T11:51:45.000Z",
+    "dateModified": "2022-08-22T01:15:38.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/08/--2022-08-19---7.55.17.png",
+        "width": 1054,
+        "height": 648
+    },
+    "keywords": "Crypto",
+    "description": "Dan Boneh 对上世纪 RSA 攻击的综述。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">论文阅读：上世纪的 RSA 攻击方式</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">论文阅读：上世纪的 RSA 攻击方式</h1>
+
+                <p class="post-full-custom-excerpt">Dan Boneh 对上世纪 RSA 攻击的综述。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-08-19">19 Aug 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 11 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/08/--2022-08-19---7.55.17.png 300w,
+                            ../content/images/size/w600/2022/08/--2022-08-19---7.55.17.png 600w,
+                            ../content/images/size/w1000/2022/08/--2022-08-19---7.55.17.png 1000w,
+                            ../content/images/size/w2000/2022/08/--2022-08-19---7.55.17.png 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/08/--2022-08-19---7.55.17.png"
+                    alt="论文阅读：上世纪的 RSA 攻击方式"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>论文：Dan Boneh, Twenty Years of Attacks on the RSA Cryptosytem<br><a href="https://www.ams.org/journals/notices/199902/boneh.pdf">https://www.ams.org/journals/notices/199902/boneh.pdf</a></p><p></p><h3 id="rsa-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86">RSA 基本原理</h3><p>　　考虑 $N=pq$，则 $\varphi(N) = (p-1)(q-1)$ 是 $\newcommand{ZZ}{\mathbb{Z}} \ZZ_n^*$ 的阶。对于消息 $M\in\ZZ_N ^ *$，我们计算密文：$$C\equiv M ^ {e} \pmod N$$</p><p>　　取 $d \equiv e^{-1} \pmod {\varphi(n)}$，我们有解密方式： $$M \equiv  C ^ d \pmod N $$</p><p></p><h3 id="%E8%A7%A3%E5%AF%86-rsa-vs-%E8%B4%A8%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3">解密 RSA vs 质因数分解</h3><p>　　显然，一旦能高效分解 $N$，RSA 就可以被唯密文攻击。但是，如果我们已经能攻破 RSA，即有了解密 oracle，我们能否高效内分解 $N$？这暂且还是个 open problem。</p><p>　　如果这个问题的回答是 Yes，那么 RSA 立即就会面临选择密文攻击。</p><p>　　目前的研究进展：对于 $e$ 很小的情况，这个问题的答案是 No。</p><p></p><h3 id="d-%E4%B8%AD%E8%95%B4%E5%90%AB%E7%9A%84%E4%BF%A1%E6%81%AF">d 中蕴含的信息</h3><p>　　这是一个比较重要的结论：可以通过 $d$ 获知 $p,q$。亦即，泄漏 $d$ 的后果与泄漏 $p, q$ 是一样的。</p><p>　　本博客在之前的文章中描述过，针对较小的 $e$，例如 $e=65537$ 时，可以很简单地从 $d$ 恢复出 $p,q$。这是因为，考虑 $$ed = 1 + \lambda\cdot \varphi(n)$$我们注意到 $d &lt; \varphi(n)$，所以 $\lambda \leq e$。只需逐个枚举 $\lambda$，就能生成 $e$ 个候选 $\varphi(n)$，逐个检验即可。</p><p>　　事实上，即使 $e$ 很大，我们也可以从 $d$ 中恢复 $p, q$。考虑 $k:=de-1$，既然它是 $\newcommand\pn{\varphi(n)} \pn$ 的倍数，那么 $\forall g\in \newcommand\ZN{\mathbb{Z}_n ^ *}  \ZN$，显然有 $$g ^ k \equiv 1 \pmod N$$由于 $d,e$ 都是奇数，所以 $k=de-1$ 是偶数。从而，$g ^ {k/2}$ 是单位元的平方根。</p><p>　　从中国剩余定理不难得知，模 $N$ 的二次剩余有四个平方根（参考本博客此前<a href="../rsa-solutions/index.html">对 Rabin 密码体系的讨论</a>）。至于 $\sqrt 1$，符合条件的 $x$ 必须满足 $x \bmod p = \pm 1, x\bmod q = \pm 1$。四个解分别是：$\pm 1$；一个模 $p$ 余 $1$、模 $q$ 余 $-1$ 的数；一个模 $p$ 余 $-1$、模 $q$ 余 $1$ 的数。显然，如果成功寻找到了最后两个解中的任意一个，我们可以通过 $\gcd(N, x-1)$ 分解 $N$。</p><p>　　一个结论：我们随机选 $g\in \ZN$，至少有 $1/2$ 的概率，让我们可以从 $g^{k/2},  g ^ {k/4} , \dots$ 里面寻找到可以用于分解 $N$ 的数。</p><pre><code class="language-python">def getP(n, e, d):
+    Zn = Zmod(n)
+    
+    while True:
+        k = e * d - 1
+        g = Zn.random_element()
+        
+        while k % 2 == 0:
+            x = g ^ (k // 2)
+
+            if gcd(n, x-1) != 1 and x != 1 and x != -1:
+                return gcd(n, x-1)
+            k //= 2
+
+n = 5055564873164791798998595469924270494721652549402483550876753287712523145412327358012051249786753503127928354257756642432168351758243948307133240838123487
+e = 386312431431200410322386756984896382137727629258464315345596535167754143307792177204894145926095582888050781892932396559241831257141533983846913759719199
+d = 660879895576170767756524226912189778014892427815241185405353906082334266157525335037467385415526224369167361997656721661303087347748814854869897375576799
+
+getP(n, e, d)
+# 52137974362017044045537416634732902521906826858008397059266859138063523017751</code></pre><h3 id="%E9%92%88%E5%AF%B9%E5%85%B1%E4%BA%AB-n-%E7%9A%84%E6%94%BB%E5%87%BB">针对共享 N 的攻击</h3><p>　　如果有群体为了省事起见，采用了相同的 $N$、不同的密钥对 $(e_i, d_i)$，那么任何一个成员都可以通过刚刚的方法分解 $N$，从而解密其他所有人的信息。这件事说明，$N$ 必须独一无二地选取。</p><p>　　另一个攻击场景，常常被称为「共模攻击」：相同的消息 $M$，被两组密钥对分别加密，且 $N_1 = N_2, e_1 \neq e_2$。此时，攻击者只需要通过扩展欧几里得算法，寻找到 $\lambda_1, \lambda_2$ 符合 $$\lambda_1 e_1 + \lambda_2 e_2 = 1$$即可计算出$$C_1 ^ {\lambda_1} \cdot C_2 ^ {\lambda _ 2} \equiv M ^ {e_1 \lambda _ 1 + e_ 2 \lambda _ 2} \equiv M \pmod N$$</p><p></p><h3 id="%E9%92%88%E5%AF%B9%E7%AD%BE%E5%90%8D-oracle-%E7%9A%84%E6%94%BB%E5%87%BB">针对签名 oracle 的攻击</h3><p>　　如果攻击者拥有签名 oracle 的访问权限，即对于 $x\neq M$，可以询问 $x ^ d \bmod N$，那么攻击者有办法给目标信息 $M$ 签名。尽管这个 oracle 不会接受 $M$，但它会接受 $M^\prime = M \cdot r ^ e$，其中 $r$ 是攻击者随便选的。oracle 将会返回： $$(M ^ \prime ) ^ d \equiv M ^ d r ^ {ed} \equiv M ^ d \cdot r \pmod N$$攻击者只需要将其除以 $r$，就能获得 $M$ 的签名结果。</p><p>　　应当指出，这个攻击对于「hash + 签名」的 oracle 是无效的，因为攻击者无法让信息在 hash 之后等于 $\text{hash}(M)\cdot r ^ e$；读者可能会想，攻击者能否不预先决定 $r$，而是随便拿一个 $M ^ \prime$，解 $\text{hash}(M ^ \prime) = \text{hash}(M) \cdot r ^ e$ 的方程获得 $r$。很遗憾这也是不行的，因为给 $r ^ e$ 开 $e$ 次根号本质上就是攻破 RSA。</p><p></p><h3 id="%E4%BD%8E%E8%A7%A3%E5%AF%86%E6%8C%87%E6%95%B0%E6%94%BB%E5%87%BB">低解密指数攻击</h3><p>　　这在 CTF 里面已经是套路了。Wiener 给出了 $d &lt; \frac13 N ^ {1/4}$ 时，从 $(N,e)$ 恢复 $d$ 的方法；Boneh 和 Durfee 把这个 bound 进一步做到了 $d &lt; N ^ {0.292}$。</p><p>　　据推测，最紧的 bound 应该是 $N ^ {0.5}$，但尚缺算法。这是一个 open problem。</p><p></p><h3 id="coppersmith">Coppersmith</h3><p>　　Coppersmith 是一个用途非常广泛的数学工具。具体描述：</p><blockquote><strong>（Coppersmith 定理）</strong>设 $N$ 为整数，$f$ 是 $d$ 次多项式。取 $X = N ^ {\frac1d - \epsilon}$，其中 $\epsilon \geq  0$。<br>可以高效地求出所有小根 $|x  _ 0| &lt; X$，满足 $f (x_0) \equiv 0 \pmod n $。<br>复杂度与 LLL 子程序相关，它会调用 LLL 对 $O(w)$ 维度的 Lattice 进行格基规约，其中 $w = \min(1/\epsilon, \log_2 N)$。</blockquote><p>　　Coppersmith 使得我们可以快速求出 $d$ 次多项式的小于 $X = N ^ {1/d}$ 的根（模 $N$ 意义下）。它主要用于 $N$ 为合数的情况，因为 $N$ 为质数时有其他更好的方法。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/08/--2022-08-19---10.13.19.png" class="kg-image" alt loading="lazy" width="1648" height="780" srcset="../content/images/size/w600/2022/08/--2022-08-19---10.13.19.png 600w, ../content/images/size/w1000/2022/08/--2022-08-19---10.13.19.png 1000w, ../content/images/size/w1600/2022/08/--2022-08-19---10.13.19.png 1600w, ../content/images/2022/08/--2022-08-19---10.13.19.png 1648w" sizes="(min-width: 720px) 720px"><figcaption>▲ sagemath 对 small_roots 的描述</figcaption></figure><p>　　实践中应当注意，sage 在 $X$ 过大时，不返回任何解（而不是抛出异常或超时）。Coppersmith 在 CTF 中的一些典型用途见<a href="../coppersmith/index.html">本站之前的博文</a>。</p><h3 id="hastad-%E5%B9%BF%E6%92%AD%E6%94%BB%E5%87%BB">Hastad 广播攻击</h3><p>　　如果 $e$ 选取较小，那么无法抵抗广播攻击：例如 $e=3$，相同的消息 $M$ 被 $N_1, N_2, N_3$ 分别加密，那么攻击者可以通过 CRT 计算$$M ^ 3 \bmod (N _ 1 N_ 2 N _ 3)$$又注意到 $M ^ 3 &lt; N _ 1 N _ 2 N _3$，故直接对其开三次方，即可恢复 $M$。</p><p>　　为了对抗这种攻击，发信者可以考虑使用 padding。例如，对第 $i$ 个人发送 $i || M$，即 $i \cdot 2 ^ {\text{len}(M)} + M$。不幸的是，这样的 padding 可以被 Coppersmith 攻破。具体而言：</p><blockquote><strong>（Hastad 定理）</strong> 有 $k$ 个互质整数 $N_1, \dots, N_k$。<br>有 $k$ 个公开的多项式 $g_i$，最大次数为 $d$。<br>若有唯一的 $M &lt; N_{min}$ 使得 $$g_i (M) = 0 \pmod {N_i}$$则只要 $k&gt;d$，攻击者就能获取 $M$。</blockquote><p>　　具体的攻击方法如下。<strong>首先我们给每个 $g_i$ 乘以恰当的 $x$ 的幂，来让它们次数全部都是 $d$</strong>；接下来我们尝试构造一个多项式 $G$，使得 $G$ 在模一个很大的 $N$ 的意义下，拥有 $M$ 作为零点。具体而言，采用类似于 CRT 的方法：$$G(x) = \sum _ {i} T_i g_i(x) , \quad \text{where } T_i = \prod_{ j \neq i} N_j \cdot \text{inv}(\prod_{ j \neq i} N_j, N_i)$$显然，$G(M)$ 在模每一个 $N_i$ 的意义下都等于 $0$。于是，$G(M)$ 在模 $\overline N := \prod N_i$ 的意义下也是 $0$。应当指出，多项式 $G$ 在模 $\overline N$ 意义下必定是 monic 的，因为 $G$ 在模任意 $N_i$ 意义下都 monic。</p><p>　　由于 $M &lt; N_{min} \leq \overline N ^ {1/k} \leq \overline N ^ {1/d}$，我们可以采用 Coppersmith 求出 $G$ 的小根 $M$。</p><pre><code class="language-python">n = [73181, 47629, 49433, 22877]
+R0.&lt;x&gt; = PolynomialRing(Zmod(n[0]))
+f0 = R0(x^3 + x^2 + x  - 1881518374995)
+
+R1.&lt;x&gt; = PolynomialRing(Zmod(n[1]))
+f1 = R1(x^2 - 77*x - 35869)
+
+R2.&lt;x&gt; = PolynomialRing(Zmod(n[2]))
+f2 = R2(x^3 + 12698*x^2 + 12194)
+
+R3.&lt;x&gt; = PolynomialRing(Zmod(n[3]))
+f3 = R3(x^3 + 3333*x^2 - 12376)
+
+assert [f0(m), f1(m), f2(m), f3(m)] == [0, 0, 0, 0]
+
+
+
+f1 = f1 * R1(x)   # 保证所有多项式齐次
+
+NN = n[0] * n[1] * n[2] * n[3]
+Zn = Zmod(NN)
+
+def T(i):
+    return (NN // n[i]) * inverse_mod(NN // n[i], n[i])
+
+G = f0.change_ring(Zn)*T(0) + f1.change_ring(Zn)*T(1) + f2.change_ring(Zn)*T(2) + f3.change_ring(Zn)*T(3)
+G
+# x^3 + 1996844698887072453*x^2 + 3581443332824663805*x + 951620134267600110
+
+G.small_roots(X=20000)
+# [12345]</code></pre><h3 id="franklin-reiter-%E7%9B%B8%E5%85%B3%E6%B6%88%E6%81%AF%E6%94%BB%E5%87%BB">Franklin-Reiter 相关消息攻击</h3><p>　　假设采用相同的密钥对加密了两条消息 $M_1, M_2$，且满足 $M_1 = f(M_2) \bmod N$，其中 $f$ 是公开的多项式。那么，若 $e$ 足够小（例如 $e=3$），攻击者可以恢复 $M_1, M_2$。</p><p>　　做法如下。攻击者注意到 $M$ 同时是以下两个多项式的根：$$\begin{cases}g_1 (x) = f(x) ^ e - C_1 \\ g_ 2(x) = x ^ e - C_2\end{cases}$$于是 $(x-M)$ 是这两个多项式的公因式。攻击者对 $g_1, g_2$ 做 gcd 即可获得 $(x-M)$。</p><p>　　应当注意，当 $e$ 够大时，计算 gcd 的代价不可承受。因此 Franklin-Reiter 只能用于攻击 $e$ 很小的情况。</p><p></p><h3 id="coppersmith-short-pad-%E6%94%BB%E5%87%BB">Coppersmith Short Pad 攻击</h3><p>　　考虑某人发送消息时，总是在尾部加上一些随机的短 padding。如果一个人将相同的信息发送两次（padding 不同），攻击者可以恢复出明文。</p><blockquote>（Short Pad 攻击）设 $(N,e)$ 是 RSA 公钥，$N$ 长度为 $n$。记 $m:= \lfloor n/e^2 \rfloor $。<br>今有不超过 $n-m$ 长度的明文 $M$。考虑 $M_1 = 2 ^ m M + r _ 1, M _ 2 = 2 ^ m M + r _2$，其中 $r _ 1, r_ 2$ 的长度小于 $m$。<br>若给定 $C_1, C_2$，攻击者可以高效恢复 $M$。</blockquote><p>　　具体的方法：考虑先获取到两个明文之间的差值 $r_2 - r_1$，问题即可转化为 Franklin-Reiter。</p><p>　　定义 $g_1 (x, y) = x ^ e - C_1, g_2(x, y) = (x + y) ^ e - C_2$，显然，当 $y$ 取 $(r_2 - r_1)$ 时，这两个函数拥有 $x=M_1$ 作为公共根。换句话讲，$\Delta = r _ 2 - r_1$ 是结式 $h(y) := \text{res}_x (g_1, g_2) \in \mathbb{Z}_N [y]$ 的根。而 $h$ 的次数顶多 $e^2$，且 $|\Delta| &lt; 2 ^m &lt; N ^{1/e ^ 2}$，于是 $\Delta$ 是模 $N$ 下 $h$ 的一个小根，可以通过 Coppersmith 得到。</p><p>　　知 $\Delta$ 之后，可以使用 Franklin-Reiter 做相关消息攻击。网上有<a href="https://github.com/ValarDragon/CTF-Crypto/blob/master/RSA/FranklinReiter.sage">参考代码</a>。</p><pre><code class="language-python">N = 147560516509868629649957267817803694619228124354925314885515791316324923003875671351329125757976834400817548677872819677080629134724723675686621779218525433371747881410084483453473659760099784521546880648108933073105493585486912907554888403159988949821983127882698445040267583800926823851843063207106149260879
+e = 3
+
+m = bytes_to_long(b'flag{helloworld-----coppersmith-----12345678987654321}')
+pad_len = 64
+
+r1, r2 = randint(1, 2^pad_len), randint(1, 2^pad_len)
+m1 = m*2^pad_len + r1
+m2 = m*2^pad_len + r2
+
+hex(m1), hex(m2)
+# ('0x666c61677b68656c6c6f776f726c642d2d2d2d2d636f70706572736d6974682d2d2d2d2d31323334353637383938373635343332317d635c7d78ec6c46c1',
+#  '0x666c61677b68656c6c6f776f726c642d2d2d2d2d636f70706572736d6974682d2d2d2d2d31323334353637383938373635343332317d77c7f14335b18e42')
+
+
+c1 = m1^e % N
+c2 = m2^e % N
+
+c1, c2
+# (77057136553039015345576133157090380102418815377448333969326628299945662107344154844516843296128733900775646701272736348442341286883691269830867415397962344570365589584535600359957784804498158166703138860397038324185900759267823714069270977153172175167575961150699995064783986678433355379166634628581965681262,
+#  101183053419405872377139193010919487763144997264116191784647789473940757320310381966850439519064971456830390365119398489723885718983898828784700546999052289257567244587850027505752032025342196461503917841756933993292900851248827187660066705639801599238888852412027691932301724474472443995971243809491008598810)
+
+
+P.&lt;x, y&gt; = PolynomialRing(ZZ)
+g1 = P(x^e-c1)
+g2 = P((x+y)^e - c2)
+
+g1, g2
+# (x^3 - 77057136553039015345576133157090380102418815377448333969326628299945662107344154844516843296128733900775646701272736348442341286883691269830867415397962344570365589584535600359957784804498158166703138860397038324185900759267823714069270977153172175167575961150699995064783986678433355379166634628581965681262,
+#  x^3 + 3*x^2*y + 3*x*y^2 + y^3 - 101183053419405872377139193010919487763144997264116191784647789473940757320310381966850439519064971456830390365119398489723885718983898828784700546999052289257567244587850027505752032025342196461503917841756933993292900851248827187660066705639801599238888852412027691932301724474472443995971243809491008598810)
+
+
+h = g1.resultant(g2)
+T.&lt;y&gt; = PolynomialRing(Zmod(N))
+f = T(h)
+f
+# y^9 + 75182765910768058555268088256316371637049578694921741439552307794339637364976989984328337089168121732653317686332833253235995838424100998825122384415255599310142916400141202016090918097567669637144543704029246065784493309543902486782501217700100677608044454098715354437714370412809558001429235664379020508235*y^6 + 18533785375769026176371012496341095528434803647999759395839390073023224410391193067227916238144090178926713046556681745938814430943500063346120852667252487069723256652008723192238389662577939132188033190632007028866765722537553392968908001416763541434424026670350458421930588954998208742211794585676993860570*y^3 + 89716595702761571341386136325448582633690897297078673713374589820351363397360398207112515590873043335841753334724604976847493641392102179516041783812773125897554071300116148305750690789037273322027697922080125074955511814868720753233463747250043976374499853180226171210820809061338875559480035291959318076344
+
+
+delta = f.small_roots(epsilon=1/30)[0]    # 不设 epsilon 跑不出来结果
+delta
+# 147560516509868629649957267817803694619228124354925314885515791316324923003875671351329125757976834400817548677872819677080629134724723675686621779218525433371747881410084483453473659760099784521546880648108933073105493585486912907554888403159988949821983127882698445040267583800926823851833597440325411867039
+
+
+R.&lt;x&gt; = PolynomialRing(Zmod(N))
+
+f1 = x^e - c1
+f2 = (x+delta)^e - c2
+# m1 是 f1, f2 的公共根
+
+
+def my_gcd(a, b):
+    if b == 0:
+        return a.monic()
+    return my_gcd(b, a % b)
+
+my_gcd(f1, f2)
+# x + 147560516509868629649957267817803694619228124354925314885515791316324923003875671351329125757976834400817548677872819677080629134724723675686621779218525433371666027975315886345606874552233847872711547920548823606037295565180172732594958629619501103249780513159760157325173868530555189260882995438608215912692
+
+
+long_to_bytes(-147560516509868629649957267817803694619228124354925314885515791316324923003875671351329125757976834400817548677872819677080629134724723675686621779218525433371666027975315886345606874552233847872711547920548823606037295565180172732594958629619501103249780513159760157325173868530555189260882995438608215912692 % N)
+# b'flag{helloworld-----coppersmith-----12345678987654321}\xee\x02-\xe4&lt;\x07m['</code></pre><p>　　当 $e=3$ 时，理论上只要 padding 长度小于 $1/9$ 倍消息长度，即可进行 Short Pad 攻击。但实际上 sagemath 这 <code>small_roots()</code> 参数很难调。上面的代码给出了 $N = 1024 ~ \text{bits}$，pad 长度 $64 ~ \text{bits}$ 的攻击实例。</p><p>　　显然，当 $e$ 够大（例如 $65537$）时，Short Pad 攻击无效。</p><p></p><h3 id="%E9%83%A8%E5%88%86%E5%AF%86%E9%92%A5%E6%B3%84%E6%BC%8F%E6%94%BB%E5%87%BB">部分密钥泄漏攻击</h3><p>　　这部分是 Coppersmith 的初级应用，本站此前的博客已经描述。几个常用例子：</p><blockquote><strong>(Boneh, Durfee, Frankel) </strong>若已知 $d$ 的低 $\lceil n/4 \rceil$ 位，则可以快速恢复 $d$。</blockquote><blockquote><strong>(Coppersmith) </strong>知 $p$ 的低 $n/4$ 位或高 $n/4$ 位，可以恢复 $p$。</blockquote><p></p><h3 id="%E6%B3%84%E6%BC%8F-d-%E9%AB%98%E4%BD%8D">泄漏 d 高位</h3><p>　　听起来难以置信：当 $e$ 比较小时，RSA 会泄漏出 $d$ 的高一半 bit。我们考虑方程 $$ed = k(p-1)(q-1) + 1$$显然，$0&lt;k\leq e$。考虑$$\hat d = \lfloor (kN+1) / e \rfloor$$我们注意到$$|\hat d - d| \leq \frac{k(p+q)}{e} \leq \frac{k\cdot 3 \sqrt N}{e} &lt; 3\sqrt N$$这说明 $\hat d$ 是对 $d$ 的一个比较好的近似。我们逐个枚举 $k$ 的候选，若 $k$ 取值正确，则 $\hat d$ 与 $d$ 的高一半 bit 是相同的。由于 $k$ 仅有 $\mathcal{O}(e)$ 个候选，这种枚举往往是可行的。</p><p>　　特殊地，若 $e=3$，则必有 $k=2$。下面是实验：</p><pre><code class="language-python">n = 127587394851859383255415496456634724390780070796758636328641060359137994497551850686444745665811485729222928371352768755832609151543640426288630648139851734271262614975427701059419135863809037646300308248598166388899507414149450677802143623882479472308646515881771818204750674811261799571528718229231680793993
+e = 3
+p = 9742624800405161055481468838582241960585667180214892496090617034897693575079009544730908059418379075691816860229709353313969056852610004107918476363544609
+q = 13095792711482995635638613448731750500947894644482983779181518426760177733080607790666352628482006622723223474058367683263221216025701119444269996070479977
+d_real = 85058263234572922170276997637756482927186713864505757552427373572758662998367900457629830443874323819481952247568512503888406101029093617525753765426567807621896735391514006626224565699877717408492322367147927411176030504185428345456538817747861047948632067227625020085142731747325947506936777360506164512939
+
+
+d_estimate = (2*n+1) / 3
+hex(d_estimate), hex(d_real)
+
+# ('0x79208240c3ee8f871fde0897d5ad63aecad8e5b816e0d1b852530d8e8b4511266b5bab2d9e945b01cd2d5284e188a1dd643060f2547c813038c8577b10297eebd9fa026d3d161361b92e95b7a672848b3e606d59335699cf946396df1985f67ac4aabb0077999fb940d4d8c0ef6dae478195850d9b9c9bf2fa577069412c73b1',
+#  '0x79208240c3ee8f871fde0897d5ad63aecad8e5b816e0d1b852530d8e8b4511266b5bab2d9e945b01cd2d5284e188a1dd643060f2547c813038c8577b10297eeab744c515a287fadd1db22c57a35adb625d00a2ccf0027b258a0b9166b2ee2d97989740ae18f3cc83a5820fc37714c09e8a933e182c0dfa56b78cab0ce93a88ab')</code></pre><p>　　可见 $d$ 确实被泄漏了高 $511$ bit。</p><p></p>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../a-crypto-problem/index.html">一道密码学趣题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2021-03-09">9 Mar 2021</time> –
+                                        9 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="../shijima-story/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 300w,
+                    ../content/images/size/w600/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 600w,
+                    ../content/images/size/w1000/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 1000w,
+                    ../content/images/size/w2000/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg"
+            alt="《春逝百年抄》简评"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../shijima-story/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《春逝百年抄》简评</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>SE新本格推理游戏《春逝百年抄》简要评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-09-08">8 Sep 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="../xb3/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/08/2022080910502600_s-2.jpg 300w,
+                    ../content/images/size/w600/2022/08/2022080910502600_s-2.jpg 600w,
+                    ../content/images/size/w1000/2022/08/2022080910502600_s-2.jpg 1000w,
+                    ../content/images/size/w2000/2022/08/2022080910502600_s-2.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/08/2022080910502600_s-2.jpg"
+            alt="《异度之刃3》评测：可能是今年最好的JRPG"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../xb3/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《异度之刃3》评测：可能是今年最好的JRPG</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Switch《异度之刃3》评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-08-09">9 Aug 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

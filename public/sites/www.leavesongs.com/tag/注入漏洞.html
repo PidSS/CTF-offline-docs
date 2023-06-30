@@ -1,0 +1,801 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>文章列表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                注入漏洞
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="col-11 columns" id="mainbody">
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/thinkphp5-in-sqlinjection.html" title="ThinkPHP5 SQL注入漏洞 &amp;&amp; PDO真/伪预处理分析">ThinkPHP5 SQL注入漏洞 &amp;&amp; PDO真/伪预处理分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2017-7-4 1:59</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/thinkphp5-in-sqlinjection.html#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/thinkphp5-in-sqlinjection.html">36544人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="thinkphp.html">thinkphp</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>刚才先知分享了一个漏洞（ <a href="https://xianzhi.aliyun.com/forum/read/1813.html">https://xianzhi.aliyun.com/forum/read/1813.html</a> ），文中说到这是一个信息泄露漏洞，但经过我的分析，除了泄露信息以外，这里其实是一个（鸡肋）SQL注入漏洞，<strong>似乎</strong>是一个不允许子查询的SQL注入点。</p>
+<p>漏洞上下文如下：</p>
+<div class="codehilite"><pre><span></span><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nx">namespace</span> <span class="nx">app</span><span class="err">\</span><span class="nx">index</span><span class="err">\</span><span class="nx">controller</span><span class="p">;</span>
+
+<span class="nx">use</span> <span class="nx">app</span><span class="err">\</span><span class="nx">index</span><span class="err">\</span><span class="nx">model</span><span class="err">\</span><span class="nx">User</span><span class="p">;</span>
+
+<span class="kr">class</span> <span class="nx">Index</span>
+<span class="p">{</span>
+    <span class="kr">public</span> <span class="kd">function</span> <span class="nx">index</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nx">$ids</span> <span class="o">=</span> <span class="nx">input</span><span class="p">(</span><span class="s1">&#39;ids/a&#39;</span><span class="p">);</span>
+        <span class="nx">$t</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+        <span class="nx">$result</span> <span class="o">=</span> <span class="nx">$t</span><span class="o">-&gt;</span><span class="nx">where</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="nx">$ids</span><span class="p">)</span><span class="o">-&gt;</span><span class="nx">sele...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/destoon-v6-0-sql-injection.html" title="Destoon 6.0 guestbook.php 通用SQL注入漏洞">Destoon 6.0 guestbook.php 通用SQL注入漏洞</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2017-1-13 13:21</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/destoon-v6-0-sql-injection.html#reply-list">6条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/destoon-v6-0-sql-injection.html">46934人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="destoon.html">destoon</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <h2 id="_1"><a class="toclink" href="#_1">补丁分析</a></h2>
+<p><a href="../content/uploadfile/201701/3bcf1484288670.jpg"><img alt="14842844351228.jpg" src="../content/uploadfile/201701/3bcf1484288670.jpg" title="点击查看原图"></a></p>
+<p>刚看到今天发布了Destoon 6.0 2017-01-09 更新，用我在【代码审计】小密圈里说过的方法，瞬间找到修复的一处SQL注入漏洞。用中午的20分钟，小小地分析一下。</p>
+<p>我们先看看diff（左新右老）：</p>
+<p><a href="../content/uploadfile/201701/6c6e1484288668.jpg"><img alt="14842843330983.jpg" src="../content/uploadfile/201701/thum-6c6e1484288668.jpg" title="点击查看原图"></a></p>
+<p>mobile/guestbook.php 中将<code>$_SERVER['HTTP_USER_AGENT']</code>删掉了。分析一下，这里是手机端的留言板，destoon将用户的User-Agent放入了留言内容变量<code>$post[content]</code>中。</p>
+<p>而据我对destoon的了解，其全局对GPC做了转义和WAF，但User-Agent没有进行过滤，所以这里有可能存在一个SQL注入漏洞。</p>
+<p>所以往后看看吧，其调用了guestbook类的add方法，将<code>$post</code>变量传入：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$post</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$post</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="nv">$...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/cve-2015-5623-and-wordpress-sql-injection.html" title="Wordpress4.2.3提权与SQL注入漏洞(CVE-2015-5623)分析">Wordpress4.2.3提权与SQL注入漏洞(CVE-2015-5623)分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-8-18 14:22</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/cve-2015-5623-and-wordpress-sql-injection.html#reply-list">4条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/cve-2015-5623-and-wordpress-sql-injection.html">14989人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+    
+        <a href="wordpress.html">wordpress</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这是我在TSRC实习期间的研究任务X号：<a href="http://security.tencent.com/index.php/blog/msg/93"><a href="http://security.tencent.com/index.php/blog/msg/93">http://security.tencent.com/index.php/blog/msg/93</a></a></p>
+<p>这是这几天一直关注的漏洞了，wordpress上个礼拜发布的4.2.4版本，其中提到修补了可能存在的SQL漏洞和多个XSS。</p>
+<p>Check point也很快发出了分析，我也来分析与复现一下最新的这个漏洞。</p>
+<h2 id="0x01-gp"><a class="toclink" href="#0x01-gp">0x01 GP混用造成的越权漏洞</a></h2>
+<p>首先，说明一下背景。wordpress中用户权限分为订阅者、投稿者、作者、编辑和管理员。</p>
+<p>权限最低的是订阅者，订阅者只有订阅文章的权限，wordpress开启注册后默认注册的用户就是订阅者。国内很多知名网站，如Freebuf，用户注册后身份即为“订阅者”。</p>
+<p>我们先看到一个提权漏洞，通过这个提权漏洞，我们作为一个订阅者，可以越权在数据库里插入一篇文章。</p>
+<p>Wordpress检查用户权限是调用current_user_...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/cmseasy-sql-injection-bypass-360webscan.html" title="cmseasy最新注入+360webscan的绕过分析">cmseasy最新注入+360webscan的绕过分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-4-18 15:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/cmseasy-sql-injection-bypass-360webscan.html#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/cmseasy-sql-injection-bypass-360webscan.html">9512人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="360webscan.html">360webscan</a>
+    
+        <a href="WAF%E7%BB%95%E8%BF%87.html">WAF绕过</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>最近一直没什么好文章，只有闲下来挖了几个洞。一般挖洞的时候就没法发文章，因为自己提交上去的洞在公开前是不能泄露的。不过这个洞与乌云某大牛的洞重复了，于是我就发出来一起学习一下。不过这个洞应该有些年头了。</p>
+<p>先下载最新版：<a href="http://ftp.cmseasy.cn/CmsEasy5.x/CmsEasy_5.5_UTF-8_20150318.zip">http://ftp.cmseasy.cn/CmsEasy5.x/CmsEasy_5.5_UTF-8_20150318.zip</a>。经过神器比对，发现最新版进行了一些功能上的修改，可就是这处修改造成注入。</p>
+<p>/lib/default/archive_act.php 283行</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&#39;</span><span class="p">))</span> <span class="p">{</span>
+
+           <span class="nv">$cateobj</span> <span class="o">=</span> <span class="nx">category</span><span class="o">::</span><span class="na">getInstance</span><span class="p">();</span>
+           <span class="nv">$sons</span> <span class="o">=</span> <span class="nv">$cateobj</span><span class="o">-&gt;</span><span class="na">sons</span><span class="p">(</span><span class="nx">front</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;catid&...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/sql-injections-in-mysql-limit-clause.html" title="[转载]Mysql下Limit注入方法">[转载]Mysql下Limit注入方法</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-1-24 14:29</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/sql-injections-in-mysql-limit-clause.html#reply-list">12条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/sql-injections-in-mysql-limit-clause.html">26194人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="limit%E6%B3%A8%E5%85%A5.html">limit注入</a>
+    
+        <a href="Mysql.html">Mysql</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>很长一段时间我、以及很多同学认为“mysql limit后的注入点”是没办法解决的难题，但这次真的被解决了。我很少转载文章，这次再破个例。</p>
+<p>原文： <a href="https://rateip.com/blog/sql-injections-in-mysql-limit-clause/"><a href="https://rateip.com/blog/sql-injections-in-mysql-limit-clause/">https://rateip.com/blog/sql-injections-in-mysql-limit-clause/</a></a> <a href="http://zone.wooyun.org/content/18220"><a href="http://zone.wooyun.org/content/18220">http://zone.wooyun.org/content/18220</a></a></p>
+<p>此方法适用于MySQL 5.x中，在limit语句后面的注入 </p>
+<p>例如： </p>
+<div class="codehilite"><pre><span></span><span class="n">SELECT</span> <span class="n">field</span> <span class="n">FROM</span> <span class="n">table</span> <span class="n">WHERE</span> <span class="kt">id</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="kt">id</span> <span class="n">LIMIT</span> <span class="n">injection_point</span>
+<span class="err">```</span>   <span class="err">上面的语句包含了</span><span class="n">ORDER</span> <span class="n">BY</span><span class="err">，</span><span class="n">MySQL当中UNION语句不能在ORDER</span> <span class="n">BY的后面</span><span class="err">，否则利用</span><span class="n">UNION很容易就可以读取数据了</span><span class="err">，看看在</span><span class="n">MySQL</span> <span class="mi">5</span><span class="err">中的</span><span class="n">SELECT语法</span><span class="err">：</span> <span class="err">```</span>
+<span class="n">SELECT</span> 
+    <span class="p">[</span><span class="n">A...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/discuz72-sql-injection.html" title="discuz7.2 faq.php 最新注入漏洞分析">discuz7.2 faq.php 最新注入漏洞分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-7-3 4:49</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/discuz72-sql-injection.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/discuz72-sql-injection.html">19243人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="discuz.html">discuz</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>
+	&nbsp; &nbsp; 之前乌云上被提交的漏洞，今天突然被人发出来了，然后就各种中枪。奈何各种考试马上就来了，我也没工夫去写exp或脚本什么的，趁点休息时间把代码看看就好。实话说我很讨厌这种情况，一大堆人会的不会的拿着别人发的exp刷漏洞，刷分刷钱。不如静下心来分析一下漏洞产生的原因，也算是我吃不到葡萄在说葡萄酸吧，笑。
+</p>
+<p>
+	&nbsp; &nbsp; 因为有同学给出POC了，POC如下：
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;http://www.xxx.com/faq.php?action=grouppermission&amp;gids[99]='&amp;gids[100][0]=) and (select 1 from (select count(*),concat(version(),floor(rand(0)*2))x from informa...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/mutibyte-sql-inject.html" title="浅析白盒审计中的字符编码及SQL注入">浅析白盒审计中的字符编码及SQL注入</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-4-19 17:43</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/mutibyte-sql-inject.html#reply-list">12条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/mutibyte-sql-inject.html">24588人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E5%AE%BD%E5%AD%97%E7%AC%A6.html">宽字符</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>在freebuf上莫名地被喷，可能是因为被喷让人气上来了，最后得到的金币比前一篇文章更多。塞翁失马，焉知非福？</p>
+<p><strong>尽管现在呼吁所有的程序都使用unicode编码，所有的网站都使用utf-8编码，来一个统一的国际规范。但仍然有很多，包括国内及国外（特别是非英语国家）的一些cms，仍然使用着自己国家的一套编码，比如gbk，作为自己默认的编码类型。</strong>也有一些cms为了考虑老用户，所以出了gbk和utf-8两个版本。</p>
+<p>我们就以gbk字符编码为示范，拉开帷幕。gbk是一种多字符编码，具体定义自行百度。但有一个地方尤其要注意：</p>
+<p>通常来说，一个gbk编码汉字，占用2个字节。一个utf-8编码的汉字，占用3个字节。在php中，我们可以通过输出</p>
+<div class="codehilite"><pre><span></span>echo strlen(&quot;和&quot;);
+</pre></div>
+
+
+<p>来测试。当将页面编码保存为gbk时输出2，utf-8时输出3。</p>
+<p>除了gbk以外，所有ANSI编码都是...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/emlog-writter-sql-inj.html" title="emlog后台作者权限SQL注入">emlog后台作者权限SQL注入</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-2-25 18:01</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/emlog-writter-sql-inj.html#reply-list">24条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/emlog-writter-sql-inj.html">17351人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="emlog.html">emlog</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 实话说，以后不想再挖web漏洞了，也不想发这类文章，web的东西搞来搞起就是那个样，我原本就不想深入，想那些大神一样能把一个cms分析得透彻。我有时候只是泛泛地看，泛泛地找一些简单的漏洞，深入又得花不少时间，而且做出的东西也不一定尽如人意。前段时间总有种刷分刷钱的想法，结果后来都是化为泡影，估计也是因为自己对待漏洞的态度不正确，有时候也是受到他人的影响。</span>
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 前几天某人问到我的一个学长，我才知道有些人虽然不常在网络上出现但实际上真正有实力的人完全不需要混脸熟。曾经我没接触web的时候多么向往去成为一个能写木马的人，也曾经确确实实分析过一段时间的gh0st，写过一些C++程序。</span>
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp; &nbsp; 这几天有个朋友在我博客留言问我为什么gh0st的文章不继续写了，我无言以对。自己这么久执迷于pyth...</span></p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/hdwiki-timebase-blind.html" title="HDwiki时间延迟盲注及利用代码">HDwiki时间延迟盲注及利用代码</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-2-25 17:20</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/hdwiki-timebase-blind.html#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/hdwiki-timebase-blind.html">13542人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="hdwiki.html">hdwiki</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;hdwiki某处对referer未做过滤，造成sql注入</span><br />
+<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;但因为没有输出点，只能做盲注。</span><br />
+<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;基于时间的盲注脚本已写好，测试可注入出“光明网百科”等百科网站的管理员密码md5值：</span> 
+</p>
+<p>
+	<span style="font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="../content/uploadfile/201402/c11b1393323952.jpg" id="ematt:473"><img src="../content/uploadfile/201402/c11b1393323952.jpg" title="点击查看原图" alt="t01584d474b55919165.jpg" border="0" width="495" height="503" /></a><br />
+</span> 
+</p>
+<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:14px;">在文件/model/user.class.php 第41行add_referer函数：</span>
+</p>
+<p>
+	<br />
+</p>
+<span style="font-size:14px;"> 
+<pre class="brush: php;auto-links: false;">function add_referer(){
+		if($_SERVER['HTTP_REFERER']){
+			$this-&gt;db-&gt;query("UPDATE ".DB_TABLEPRE."session SET referer =...</pre></span>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/Appcms-Vulnerability.html" title="AppCMS注入及评论xss漏洞">AppCMS注入及评论xss漏洞</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-12-26 12:51</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/Appcms-Vulnerability.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/Appcms-Vulnerability.html">12309人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="appcms.html">appcms</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+        <a href="0day.html">0day</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>近期在法客上发表的文章，在博客里做个整理。</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 漏洞演示</a></h2>
+<p>Appcms是一款开源cms系统，适合做手机应用类的网站。官网地址：<a href="http://www.appcms.cc/"><a href="http://www.appcms.cc/">http://www.appcms.cc/</a></a><br />
+这是默认首页，看起来挺不错的：<br />
+<a href="../content/uploadfile/201312/4efd1388033909.jpg"><img alt="01.jpg" src="../content/uploadfile/201312/thum-4efd1388033909.jpg" /></a></p>
+<p>Sql注入，当时官网演示站的管理账号密码（现在官方已经补了）：<br />
+<a href="../content/uploadfile/201312/3fb51388033910.jpg"><img alt="02.jpg" src="../content/uploadfile/201312/thum-3fb51388033910.jpg" /></a></p>
+<p>xss打后台：<br />
+<a href="../content/uploadfile/201312/f9961388033911.jpg"><img alt="03.jpg" src="../content/uploadfile/201312/thum-f9961388033911.jpg" /></a></p>
+<h2 id="0x02-sql"><a class="toclink" href="#0x02-sql">0x02 SQL注入原理</a></h2>
+<p>下载最新版本appcms_1.3.890。<br />
+查看index.php，有一段似乎是限制了搜索词的代码：</p>
+<div class="codehilite"><pre><span></span>if (!preg_match(&quot;/^[\x{4e00}-\x{9fa5}\w {0}]+$/u&quot;, $_GET[&#39;q&#39;])) {
+die(&#39;搜索词只允许下划线，数字，字母，汉字和空格，请重新输入。点此<span class="nt">&lt;a</span> <span class="na">href =</span><span class="s">&quot;&#39; . SITE_PATH . &#39;&quot;</span><span class="nt">&gt;</span>回到首页<span class="nt">&lt;/a...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/fornews.html" title="四种简单的漏洞获取webshell解析">四种简单的漏洞获取webshell解析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-2-20 1:03</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/fornews.html#reply-list">2条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/fornews.html">12474人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC.html">一句话木马</a>
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+        <a href="%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.html">上传漏洞</a>
+    
+        <a href="%E6%B8%97%E9%80%8F.html">渗透</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>&nbsp; &nbsp; 很多新手对一些漏洞还有很多不懂，什么情况下用什么漏洞，什么情况下不能用这个漏洞，我自己的见解也不太深。正因如此，我才会想到一些菜鸟才会想到的问题，然后去解决。通过解决这些问题，大家可以学习经验。因为我也是最近才接触，所以应该说是很多东西都还记得，所以趁这时候录点视频，以免以后我自己忘了的时候还能拿出来温习一下。</p>
+
+<p>&nbsp; &nbsp; 这个视频讲了4个漏洞，实战练习，不过都很简单：注入漏洞、数据库备份漏洞、ewebeditor编辑器漏洞、配置文件插入一句话木马漏洞。我分4成个录像，大家如果觉得注入漏洞你懂得，就可以不下，很方便。</p>
+
+<p>&nbsp; &nbsp; 我建议新手都看一下，因为4个漏洞是一套，都是一个网站显示出来的问题。我可以告诉你什么情况下使用什么漏洞，为什么我会注意到这些漏洞。</p>
+
+<p>&nbsp; &nbsp; 还有一些黑客的好习惯...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/UseOfDede0day.html" title="利用织梦CMS0day注入漏洞渗透测试">利用织梦CMS0day注入漏洞渗透测试</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-2-13 16:32</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/UseOfDede0day.html#reply-list">10条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/UseOfDede0day.html">42999人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.html">注入漏洞</a>
+    
+        <a href="0day.html">0day</a>
+    
+        <a href="%E7%BB%87%E6%A2%A6.html">织梦</a>
+    
+        <a href="dede.html">dede</a>
+    
+        <a href="%E6%B8%97%E9%80%8F.html">渗透</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>网上已经有几篇这样的文章了，当然我也是汇总了一些方法，并非原创。这个0day注入漏洞是1月份爆出来的，立马有人写出了利用方法。当然，渗透之路并非一番风顺，dede的安全防护做的也很好，所以成功与否仍然还是要看运气。</p>
+<p>测试的是这两个网站：<a href="http://www.example1.com/">http://www.example1.com/</a> 和 <a href="http://www.example2.tv/">http://www.example2.tv/</a> ，利用页面是plus/search.php。</p>
+<p>步骤1：注入得到账号密码</p>
+<p>提交http://<a href="http://www.example1.com/plus/search.php?keyword=as&amp;typeArr">www.example1.com/plus/search.php?keyword=as&amp;typeArr</a>[ uNion ]=a 和 <a href="http://www.example2.tv/plus/search.php?keyword=as&amp;typeArr">http://www.example2.tv/plus/search.php?keyword=as&amp;typeArr</a>[ uNion ]=a 我们得到如下反馈：</p>
+<p><a href="../content/uploadfile/201302/f9961360745262.jpg"><img alt="检测是否存在漏洞1" src="../content/uploadfile/201302/thum-f9961360745262.jpg" /></a></p>
+<p><a href="../content/uploadfile/201302/4efd1360745262.jpg"><img alt="检测是否存在漏洞2" src="../content/uploadfile/201302/thum-4efd1360745262.jpg" /></a></p>
+<p>反馈为1时利用如下exp:</p>
+<div class="codehilite"><pre><span></span><code><span class="c">http://example....</span></code></pre></div>
+        
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="2019.html">2019</a>
+        
+        <a rel="tag" href="xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="php.html">php</a>
+        
+        <a rel="tag" href="CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="django.html">django</a>
+        
+        <a rel="tag" href="%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="getshell.html">getshell</a>
+        
+        <a rel="tag" href="%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="webshell.html">webshell</a>
+        
+        <a rel="tag" href="%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="feed/index.rss" title="离别歌"/>
+
+  <title>首页 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+</head>
+<body>
+
+
+
+  <div class="container-xl">
+    <div class="row justify-content-center min-height">
+      <div class="col">
+        
+
+
+
+    <header class="header my-5">
+      <a href="#">
+        <div class="logo" style="background-image: url('static/cactus/images/logo.png');"></div>
+        <div class="title color-white">
+          <h1>离别歌</h1>
+        </div>
+      </a>
+      <nav>
+        <ul>
+          <li class="icon">
+            <a href="#"><i class="fa fa-bars fa-2x"></i></a>
+          </li>
+
+          
+            <li><a class="color-main" href="index.html" title=""
+                   >首页</a></li>
+          
+            <li><a class="color-main" href="list/index.html" title=""
+                   >文章</a></li>
+          
+            <li><a class="color-main" href="other/tinger.html" title=""
+                   >关于</a></li>
+          
+            <li><a class="color-main" href="other/friends-link.html" title="友情链接"
+                   >友链</a></li>
+          
+            <li><a class="color-main" href="https://github.com/phith0n" title="Phithon的开源项目"
+                   target="_blank">项目</a></li>
+          
+            <li><a class="color-main" href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" title="代码审计小密圈宣传文案"
+                   target="_blank">代码审计</a></li>
+          
+
+        </ul>
+      </nav>
+    </header>
+  
+        <section class="section">
+          <p>我是phith0n，『离别歌』是我的个人博客，现就职于<a href="THINK/from-China-to-Singapore-1.html"
+                                          target="_blank">Shopee</a>，坐标新加坡。</p>
+          <p>业余时间，我大概有1/3是一个黑客，喜欢研究和挑战计算机世界的各种代码与协议，对未知的技术充满好奇；1/3是一个程序员，热爱所有创造性的工作，包括编码、写作和沙盒游戏（比如<a
+              href="https://store.steampowered.com/app/457140/Oxygen_Not_Included/" target="_blank">缺氧</a>和<a
+              href="https://store.steampowered.com/app/813780/Age_of_Empires_II_Definitive_Edition/">帝国时代</a>）；还有约1/3是个文字工作者，可能现在不到1/3了，因为我发现我的表达欲正在逐渐消失。
+          </p>
+          <p>我的梦想之一是成为一个世界级开源软件的核心贡献者，<a href="https://github.com/vulhub/vulhub" target="_blank">Vulhub</a>是我正在维护的一个开源项目，我也是<a
+              href="https://github.com/chaitin/xray" target="_blank">xray</a>、<a href="https://govuln.com/"
+                                                                                 target="_blank">代码审计社区</a>的核心创始人。</p>
+          <p>2021年10月我对这个博客进行了改版，我希望以后能分享更多非技术向的内容，逐渐找回自己的表达欲和十年前建立起个人博客时的初心：<strong>一个想当文人的黑客</strong>。</p>
+        </section>
+        <section class="search section">
+          <span class="h1 color-main">Search</span>
+          <form action="https://www.leavesongs.com/search/" method="get">
+            <div class="row">
+              <div class="col-xs-8 col-md-4 col-lg-3">
+                <input title="关键词" type="text" name="keyword" value="">
+              </div>
+              <div class="col-xs-4 col-md-2">
+                <button type="submit" class="ui-button ui-button-sgreen">&nbsp;搜索&nbsp;</button>
+              </div>
+            </div>
+          </form>
+        </section>
+        <section class="row section">
+          <div class="col-lg-7 col-xs-12">
+            <span class="h1 color-main">Security</span>
+            <ul class="post-list">
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="June 10, 2023, 1:48 a.m." itemprop="datePublished">
+                        2023 Jun 10 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/talk-about-3ds-userland-flaw.html"
+                       >3DS userland漏洞那些事</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="March 19, 2023, 11:54 p.m." itemprop="datePublished">
+                        2023 Mar 19 
+                      </time>
+                    
+                  </span>
+                    <a href="https://www.leavesongs.com/PENETRATION/django-race-condition-defense.html"
+                       target="_blank">Django下防御Race Condition漏洞</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Oct. 16, 2022, 12:25 a.m." itemprop="datePublished">
+                        2022 Oct 16 
+                      </time>
+                    
+                  </span>
+                    <a href="SOFT/paas-service-from-heroku-to-fly-io.html"
+                       >PaaS服务从Heroku迁移到fly.io小计</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Aug. 20, 2022, 12:48 a.m." itemprop="datePublished">
+                        2022 Aug 20 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/flarum-rce-tour.html"
+                       >从偶遇Flarum开始的RCE之旅</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="June 19, 2022, 3:17 a.m." itemprop="datePublished">
+                        2022 Jun 19 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/xss-from-my-blog.html"
+                       >我自己博客的一个XSS的故事</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Feb. 20, 2022, 3:47 a.m." itemprop="datePublished">
+                        2022 Feb 20 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/how-I-hack-bash-through-environment-injection.html"
+                       >我是如何利用环境变量注入执行任意命令</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Jan. 5, 2022, 11:26 p.m." itemprop="datePublished">
+                        2022 Jan 05 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/goahead-en-injection-cve-2021-42342.html"
+                       >GoAhead环境变量注入复现踩坑记</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Nov. 1, 2021, 5:49 p.m." itemprop="datePublished">
+                        2021 Nov 01 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/docker-php-include-getshell.html"
+                       >Docker PHP裸文件本地包含综述</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Oct. 18, 2021, 10:05 a.m." itemprop="datePublished">
+                        2021 Oct 18 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/apache-mod-proxy-ssrf-cve-2021-40438.html"
+                       >Apache mod_proxy SSRF（CVE-2021-40438）的一点分析和延伸</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Aug. 30, 2021, 10:21 a.m." itemprop="datePublished">
+                        2021 Aug 30 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/cachet-from-laravel-sqli-to-bug-bounty.html"
+                       >CVE-2021-39165: 从一个Laravel SQL注入漏洞开始的Bug Bounty之旅</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Aug. 6, 2021, 6:21 p.m." itemprop="datePublished">
+                        2021 Aug 06 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/a-tour-of-tui-editor-xss.html"
+                       >一次对 Tui Editor XSS 的挖掘与分析</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="May 4, 2021, 8:30 p.m." itemprop="datePublished">
+                        2021 May 04 
+                      </time>
+                    
+                  </span>
+                    <a href="https://www.leavesongs.com/PENETRATION/defcon-29-threefactooorx-writeup.html"
+                       target="_blank">JavaScript逆向调试记 —— defcon threefactooorx writeup</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="April 19, 2021, 8:30 p.m." itemprop="datePublished">
+                        2021 Apr 19 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/commons-beanutils-without-commons-collections.html"
+                       >CommonsBeanutils与无commons-collections的Shiro反序列化利用</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Jan. 30, 2021, 10:25 p.m." itemprop="datePublished">
+                        2021 Jan 30 
+                      </time>
+                    
+                  </span>
+                    <a href="PENETRATION/the-collision-of-containers-and-the-cloud-pentesting-a-MinIO.html"
+                       >CVE-2021-21287: 容器与云的碰撞——一次对MinIO的测试</a>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Nov. 28, 2020, 6:13 p.m." itemprop="datePublished">
+                        2020 Nov 28 
+                      </time>
+                    
+                  </span>
+                    <a href="PHP/php-8-0-release.html"
+                       >有安全研究者混入了PHP 8.0开发组！</a>
+                </li>
+              
+            </ul>
+          </div>
+          <div class="col-lg-5 col-xs-12">
+            <span class="h1 color-main">Life</span>
+            <ul class="post-list">
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="March 4, 2023, 10:38 p.m." itemprop="datePublished">
+                        2023 Mar 04 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/using-chatgpt-for-antispam.html"
+                       >用ChatGPT帮我检查广告评论</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Dec. 31, 2022, 11:41 p.m." itemprop="datePublished">
+                        2022 Dec 31 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/talk-about-2022.html"
+                       >2022年终总结</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Dec. 13, 2022, 12:41 a.m." itemprop="datePublished">
+                        2022 Dec 13 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/iOS-with-chuangmiplug-smart-plug2.html"
+                       >iOS备用机自动充电方案</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Nov. 2, 2022, 12:28 a.m." itemprop="datePublished">
+                        2022 Nov 02 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/europe-trip-2022.html"
+                       >2022年欧洲游记</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="July 24, 2022, 4:21 p.m." itemprop="datePublished">
+                        2022 Jul 24 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/um560-two-weeks-using-experience.html"
+                       >使用Minisforum UM560小主机办公一周体验</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="July 18, 2022, 2:10 a.m." itemprop="datePublished">
+                        2022 Jul 18 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/xray-3-years.html"
+                       >XRay三周年活动寄语</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="April 20, 2022, 10:21 p.m." itemprop="datePublished">
+                        2022 Apr 20 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/why-subscribe-a-newspaper-in-2022.html"
+                       >2022年我为什么订报纸</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="April 5, 2022, 12:12 a.m." itemprop="datePublished">
+                        2022 Apr 05 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/vulhub-10k-stars-moment.html"
+                       >Vulhub万赞纪念与抽奖</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="March 19, 2022, 8:40 p.m." itemprop="datePublished">
+                        2022 Mar 19 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/how-to-verify-individual-in-singapore.html"
+                       >新加坡企业是怎么做实名认证的？</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="March 1, 2022, 12:21 a.m." itemprop="datePublished">
+                        2022 Mar 01 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/my-github-account-used-to-be-suspended.html"
+                       >分享下我 GitHub 被封的经历</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Jan. 9, 2022, 10:47 p.m." itemprop="datePublished">
+                        2022 Jan 09 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/from-China-to-Singapore-2.html"
+                       >出中国记（下）</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Dec. 15, 2021, 12:25 a.m." itemprop="datePublished">
+                        2021 Dec 15 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/open-source-sponsor-budget-for-me.html"
+                       >开源项目捐赠预算</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Nov. 27, 2021, 10:13 p.m." itemprop="datePublished">
+                        2021 Nov 27 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/from-China-to-Singapore-1.html"
+                       >出中国记（上）</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Jan. 23, 2020, 7:14 p.m." itemprop="datePublished">
+                        2020 Jan 23 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/talk-about-2019.html"
+                       >2019年的一部分总结</a>
+                </span>
+                </li>
+              
+                <li class="post-item">
+                  <span class="meta">
+                    
+                      <time datetime="Feb. 2, 2017, 1:15 a.m." itemprop="datePublished">
+                        2017 Feb 02 
+                      </time>
+                    
+                  </span>
+                  <span>
+                    <a href="THINK/about-talkbook.html"
+                       >新博客，新的开始</a>
+                </span>
+                </li>
+              
+            </ul>
+          </div>
+        </section>
+        <section class="section">
+          <span class="h1 color-main">Advert</span>
+          <p>感谢你支持我的博客，如果有什么想对我说的话，可以在<a href="other/tinger.html" target="_blank">这个页面</a>给我留言。如果我的某篇文章对你有所帮助，也欢迎使用文章下方的二维码对我进行赞赏。如果你喜欢我的开源项目，可以在<a
+              href="https://github.com/sponsors/phith0n" target="_blank">Github Sponsor</a>对项目进行赞助。</p>
+          <p class="d-none d-lg-flex">下面是一些硬广：</p>
+        </section>
+        <div class="d-none d-lg-flex flex-row">
+          <div class="me-4">
+            <p><a href="https://union-click.jd.com/jdc?e=618%7Cpc%7C&amp;p=JF8BANoJK1olXwQDVllfC00fCl8IGloTXgIGXVpaAE0fAV9MRANLAjZbERscSkAJHTdNTwcKBlMdBgABFksWAmkLH18cWQEKUlZfFxJSXzI4XwVKXHplIS04Cwt1czFJYxpDXlsENFJROEonA24JGFoXWg8DVm5tCEwnQgENG1ocXzYDZF5aAUsTAmgPG1MUXAcyU15UOEISBGkNElMdM1oyZG5eOEwXCnsOaRpHSQBwZG5dOEgnA24IEl8dWwEFV19BCEgWB2sBB1sSVAYGVVpVC04TAWo4GVoUWQ8yZA" target="_blank">
+              <img src="static/cactus/images/book.png" alt="" class="advert-img"></a></p>
+            <p>我们的新书《Web漏洞解析与攻防实战》</p>
+          </div>
+          <div class="me-4">
+            <p><a href="other/singapore-shopee-security-team-recruitment.html"><img
+                src="static/cactus/images/recruitment.jpg" class="advert-img"></a></p>
+            <p>Shopee新加坡安全团队内推</p>
+          </div>
+          <div class="me-4">
+            <p><img src="static/cactus/images/xuegao.jpg" class="advert-img" alt="雪糕"></p>
+            <p>我的猫，名字叫雪糕，不卖~</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="index.html">首页</a></li>
+        <li><a href="feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+</html>

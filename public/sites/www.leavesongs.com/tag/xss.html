@@ -1,0 +1,827 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>文章列表 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                xss
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+<div class="col-11 columns" id="mainbody">
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/xss-from-my-blog.html" title="我自己博客的一个XSS的故事">我自己博客的一个XSS的故事</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2022-6-19 3:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/xss-from-my-blog.html#reply-list">36条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/xss-from-my-blog.html">48245人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="DOMXSS.html">DOMXSS</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>今天晚上收到几个提醒，打开一看是有人在我博客评论区测试XSS：</p>
+<p><a href="../media/attachment/2022/06/19/15ef69f3-c60c-4b8e-9826-46690e54fafd.png"><img alt="image-20220619003454334-16555700950171.png" src="../media/attachment/2022/06/19/15ef69f3-c60c-4b8e-9826-46690e54fafd.4c15fcb8c7b9.png" /></a></p>
+<p>本来这种测试司空见惯了，而且此人也没成功找到XSS，放以前我多半就关掉页面了。</p>
+<p>不过我今晚不知为何临时起意，就顺势看了一下自己写的代码，居然被我自己找到一个XSS漏洞：</p>
+<p><a href="../media/attachment/2022/06/19/ae138aa5-8acb-456f-9672-f823fed43700.png"><img alt="image-20220619003357418.png" src="../media/attachment/2022/06/19/ae138aa5-8acb-456f-9672-f823fed43700.a589111d5b2f.png" /></a></p>
+<p>原因是什么呢？</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 开发历史介绍</a></h2>
+<p>我当时在开发这个回复按钮的时候，为了方便，直接用JavaScript伪协议来调用<code>reply_to</code>函数，比如：</p>
+<p><a href="../media/attachment/2022/06/19/dbba68a6-f9db-4464-9649-7f2d136ee48c.png"><img alt="image-20220619003805674.png" src="../media/attachment/2022/06/19/dbba68a6-f9db-4464-9649-7f2d136ee48c.a00ea07f4f19.png" /></a></p>
+<p><code>reply_to</code>函数接受两个参数，一个是这条评论的id，第二个是这条评论的用户昵称。</p>
+<p>当然，因为我的博客基于Django开发，所以默认在输出页面的时候会有HTML编码，这里不会直接逃逸出href属性的范围。</p>
+<p>但其实如果只使用默认的HTML编码，在这个上下文中是不够的，会产生一个DOM型XSS，例如：</p>
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;javascript:console.log(&#39;&amp;#...</span></code></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/a-tour-of-tui-editor-xss.html" title="一次对 Tui Editor XSS 的挖掘与分析">一次对 Tui Editor XSS 的挖掘与分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2021-8-6 18:21</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/a-tour-of-tui-editor-xss.html#reply-list">4条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/a-tour-of-tui-editor-xss.html">43614人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p><a href="https://github.com/nhn/tui.editor">TOAST Tui Editor</a>是一款富文本Markdown编辑器，用于给HTML表单提供Markdown和富文本编写支持。最近我们在工作中需要使用到它，相比于其他一些Markdown编辑器，它更新迭代较快，功能也比较强大。另外，它不但提供编辑器功能，也提供了渲染功能（Viewer），也就是说编辑和显示都可以使用Tui Editor搞定。</p>
+<p>Tui Editor的Viewer功能使用方法很简单：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">import</span> <span class="nx">Viewer</span> <span class="k">from</span> <span class="s1">&#39;@toast-ui/editor/dist/toastui-editor-viewer&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="s1">&#39;@toast-ui/editor/dist/toastui-editor-viewer.css&#39;</span><span class="p">;</span>
+
+
+<span class="kd">const</span> <span class="nx">viewer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Viewer</span><span class="p">({</span>
+    <span class="nx">el</span><span class="o">:</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelect...</span></code></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/django-debug-page-xss.html" title="Django debug page XSS漏洞（CVE-2017-12794）分析">Django debug page XSS漏洞（CVE-2017-12794）分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2017-9-8 10:05</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/django-debug-page-xss.html#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/django-debug-page-xss.html">26926人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="django.html">django</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>Django发布了新版本1.11.5，修复了500页面中可能存在的一个XSS漏洞，这篇文章说明一下该漏洞的原理和复现，和我的一点点评。</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 补丁分析</a></h2>
+<p>因为官方说明是500页面中出现的BUG，所以我们重点关注的就是<code>django/views/debug.py</code>。</p>
+<p>Github上有Django的仓库，下载下来，用1.11.4和1.11.5进行比较：</p>
+<div class="codehilite"><pre><span></span>git clone https://github.com/django/django.git
+<span class="nb">cd</span> django
+git diff <span class="m">1</span>.11.4 <span class="m">1</span>.11.5 django/views/debug.py
+</pre></div>
+
+
+<p><a href="../media/attachment/2017/09/08/309888f0-44f6-49f7-8d62-9abfddb7351c.png"><img alt="sp170908_035017.png" src="../media/attachment/2017/09/08/309888f0-44f6-49f7-8d62-9abfddb7351c.31c1203978d6.png" /></a></p>
+<p>可见，外部关闭了全局转义，然后在这两个地方增加了强制转义。那么，漏洞肯定是在这个位置触发的。</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 功能点探索</a></h2>
+<p>如果要触发这两个输出点，就必须进入这个if语句：<code>{% ifchanged frame.exc_cause %}{% ...</code></p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/opensource-software-safe-about-wtform-xss.html" title="WTForm的URLXSS谈开源组件的安全性">WTForm的URLXSS谈开源组件的安全性</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2016-9-2 23:01</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/opensource-software-safe-about-wtform-xss.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/opensource-software-safe-about-wtform-xss.html">7831人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="WTForm.html">WTForm</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>开源组件是我们大家平时开发的时候必不可少的工具，所谓『不要重复造轮子』的原因也是因为，大量封装好的组件我们在开发中可以直接调用，减少了重复开发的工作量。 开源组件和开源程序也有一些区别，开源组件面向的使用者是开发者，而开源程序就可以直接面向用户。开源组件，如JavaScript里的uploadify，php里的PHPExcel等；开源程序，如php写的wordpress、joomla，node.js写的ghost等。 就安全而言，毋庸置疑，开源组件的漏洞影响面远比开源软件要大。但大量开源组件的漏洞却很少出现在我们眼中，我总结了几条原因：</p>
+<ol>
+<li>开源程序的漏洞具有通用性，很多可以通过一个通用的poc来测试全网，更具『商业价值』；而开源组件由于开发者使用方法不同，导致测试方法不统一，利用门槛也相对较高</li>
+<li>大众更熟悉开源软件，如wordpress，而很少有人知道wordpress内部使用了哪些开...</li></ol>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../HTML/zhihu-xss-worm.html" title="知乎某处XSS+刷粉超详细漏洞技术分析">知乎某处XSS+刷粉超详细漏洞技术分析</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/HTML.html">web前端</a></span>
+  
+  <span class="date">时间: 2016-4-17 15:13</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../HTML/zhihu-xss-worm.html#reply-list">8条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../HTML/zhihu-xss-worm.html">22601人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E7%9F%A5%E4%B9%8E.html">知乎</a>
+    
+        <a href="CSRF%E6%BC%8F%E6%B4%9E.html">CSRF漏洞</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>我觉得十分经典的一个漏洞，和大家分享一下~</p>
+<p>好久没法前端漏洞分析了，这次来一个。</p>
+<h2 id="xss"><a class="toclink" href="#xss">老问题导致的XSS漏洞</a></h2>
+<p>首先看一个XSS漏洞，这个点是老问题了， <a href="http://www.wooyun.org/bugs/wooyun-2016-0171240"><a href="http://www.wooyun.org/bugs/wooyun-2016-0171240">http://www.wooyun.org/bugs/wooyun-2016-0171240</a></a><br />
+知乎按照洞主提供的方法进行修复了，但明显是不行的。我们看到 <a href=""><a href="">https://link.zhihu.com/?target=http://www.baidu.com</a></a> 这个链接的源码：</p>
+<p><a href="../content/uploadfile/201604/ef3d1460877348.jpg"><img alt="14566414207565.jpg" src="../content/uploadfile/201604/thum-ef3d1460877348.jpg" /></a></p>
+<p>将输入的信息传入URI参数，解码以后赋值与location.href。明显可以利用JavaScript:伪协议执行js代码。</p>
+<p>如下： <a href=""><a href="">https://link.zhihu.com/?target=javascript:alert(1</a>)</a></p>
+<p><a href="../content/uploadfile/201604/4ab01460877349.jpg"><img alt="14566415103785.jpg" src="../content/uploadfile/201604/thum-4ab01460877349.jpg" /></a></p>
+<p>如何利用这个漏洞，有如下办法：</p>
+<ol>
+<li>获取用户Cookie</li>
+<li>刷粉、蠕虫等</li>
+</ol>
+<p>但经过分析，这两种利用办法都无法直接达到。首先，因为知乎重...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../HTML/wordpress-4-1-stored-xss.html" title="Wordpress &lt; 4.1.2 存储型XSS分析与稳定POC">Wordpress &lt; 4.1.2 存储型XSS分析与稳定POC</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/HTML.html">web前端</a></span>
+  
+  <span class="date">时间: 2015-4-27 22:59</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../HTML/wordpress-4-1-stored-xss.html#reply-list">9条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../HTML/wordpress-4-1-stored-xss.html">28419人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="xss.html">xss</a>
+    
+        <a href="%E5%AF%8C%E6%96%87%E6%9C%AC.html">富文本</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>Wordpress这个XSS实际上是很好用的，匿名用户即可发表并触发，这里给出简单的分析与稳定的好触发的POC。</p>
+<p>其实漏洞的作者已经在文章（<a href="https://cedricvb.be/post/wordpress-stored-xss-vulnerability-4-1-2/"><a href="https://cedricvb.be/post/wordpress-stored-xss-vulnerability-4-1-2/">https://cedricvb.be/post/wordpress-stored-xss-vulnerability-4-1-2/</a></a>）里说明了，但文章给的Payload不知道为何在我的测试wp中不能触发。</p>
+<p>这个漏洞的原理很有意思，由MYSQL的一个特性导致，当我们将一个4字节的UTF8字符插入mysql时，mysql将会视之为utf8mb4编码，当将utf8mb4编码的字符插入到UTF8编码的列中，在非strict mode下就会造成一个截断。</p>
+<p>截断的话，就能绕过很多富文本过滤器了。比如，插入两个评论<code>&lt;img src=1</code>，和<code>onerror=alert(1)//</code>，这二者都不会触发某些富文本过滤器（因为前者并不含有白名单外的属性，后者并不是一个...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PYTHON/python-xss-filter.html" title="python富文本XSS过滤器">python富文本XSS过滤器</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PYTHON.html">Python</a></span>
+  
+  <span class="date">时间: 2015-4-8 21:37</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PYTHON/python-xss-filter.html#reply-list">10条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PYTHON/python-xss-filter.html">17858人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="xss.html">xss</a>
+    
+        <a href="%E5%AF%8C%E6%96%87%E6%9C%AC.html">富文本</a>
+    
+        <a href="python.html">python</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>前言：那天我正在开发网站最关键的部分——XSS过滤器，女神突然来电话说：“那东西好难呀，别开发了，来我家玩吧！”。我“啪”地一下把电话挂了，想让我的网站出XSS漏洞，没门~</p>
+<p>python做web开发当今已经逐渐成为主流之一，但相关的一些第三方模块和库还没有php和node.js多。</p>
+<p>比如XSS过滤组件，PHP下有著名的“HTML Purifier”（<a href="http://htmlpurifier.org/">http://htmlpurifier.org/</a> ），还有非著名过滤组件“XssHtml”（<a href="http://phith0n.github.io/XssHtml">http://phith0n.github.io/XssHtml</a> ），当然后者是我自己开发的。</p>
+<p>python的pip下也可以安装一款名为“html-purifier”的库，但此purifier和php下的就大不相同了。这个库负责将html中，白名单以外的标签和属性过滤掉。</p>
+<p>注意，他并不是过滤XSS的，只是过滤不在白名单内的标签和属性。也就是说，类似...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/roundcube-webmail-email-body-store-xss.html" title="RoundCube Webmail邮件正文存储型XSS(CVE-2015-1433)">RoundCube Webmail邮件正文存储型XSS(CVE-2015-1433)</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2015-2-5 15:32</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/roundcube-webmail-email-body-store-xss.html#reply-list">0条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/roundcube-webmail-email-body-store-xss.html">7788人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="xss.html">xss</a>
+    
+        <a href="%E5%AF%8C%E6%96%87%E6%9C%AC.html">富文本</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这是前段时间发现的一个漏洞，可能又让一些人深恶痛绝了，见谅。自从当年自己那个gnuboard getshell被晾了半年捂烂了以后，感觉国外的洞还是提交了吧，捂在手里也没用，还能维护世界和平。</p>
+<p>中间有个搞笑的事，之前想去申请个CVE证书，结果用我国内的企业邮箱给他们企业邮箱发邮件，虽然显示发成功了，但一直没得到回应。后来想想，gmail被封了大概就是这个状况，估计邮件这辈子也到不了那里了，嘿。(BUT 还是被人申请下来了：CVE-2014-1433)</p>
+<p>roundcube webmail官网：<a href="http://roundcube.net/">http://roundcube.net/</a>，下载最新版本。</p>
+<p>/program/lib/Roundcube/rcube_washtml.php ，这文件实际上是一个富文本过滤类class rcube_washtml。roundcube就是利用这个类对富文本进行过滤。</p>
+<p>先大概看一下，我知道了这个类的特...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/QQ-show-dom-xss-analyze.html" title="QQ某业务主站DOM XSS挖掘与分析(绕过WAF)">QQ某业务主站DOM XSS挖掘与分析(绕过WAF)</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: None</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-12-27 23:43</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/QQ-show-dom-xss-analyze.html#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/QQ-show-dom-xss-analyze.html">9524人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="DOMXSS.html">DOMXSS</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>腾讯已经修复了，所以我发出来，贵在挖掘与分析过程。</p>
+<p>可盗取skey与uin全浏览器通用不会被拦截。</p>
+<p>挖掘flashxss的时候偶然发现的，反编译的时候发现这样的URL：</p>
+<p><a href="../content/uploadfile/201412/b5441419695101.png"><img alt="QQ秀DOM XSS挖掘与分析97.png" src="../content/uploadfile/201412/b5441419695101.png" /></a></p>
+<p>show.qq.com 属于QQ秀主站业务。</p>
+<p>来到show.html，看到如下代码：</p>
+<div class="codehilite"><pre><span></span><span class="kd">var</span> <span class="nx">aNUrl</span><span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;M&quot;</span><span class="o">:</span><span class="s2">&quot;http://imgcache.qq.com/qqshow_v3/htdocs/inc/main.html&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="o">:</span><span class="s2">&quot;http://imgcache.qq.com/qqshow_v3/htdocs/inc/header.html&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="o">:</span><span class="s2">&quot;http://imgcache.qq.com/qqshow_v3/htdocs/inc/sidebar.html&quot;</span> <span class="p">};</span>
+<span class="kd">var</span> <span class="nx">s...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/use-location-xss-bypass.html" title="利用location来变形我们的XSS Payload">利用location来变形我们的XSS Payload</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-7-1 6:52</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/use-location-xss-bypass.html#reply-list">7条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/use-location-xss-bypass.html">18581人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E7%BB%95%E8%BF%87%E8%BF%87%E6%BB%A4.html">绕过过滤</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这篇文章是前段时间从某群中学到的姿势，我分享出来~</p>
+<p>在XSS的时候，有时候有的过滤器很变态，会过滤很多特殊符号和关键词，比如&amp;、(、)、#、'、"，特别是&amp;和括号，少了的话payload很难构造出来。</p>
+<p>举个例子吧，比如过滤器过滤了array("(",")","&amp;","\","&lt;","&gt;","'")，而没有过滤双引号，输出点在&lt;img src="xxxx"&gt;，xxxx这里，怎么构造一个可以利用的XSS Payload？</p>
+<p>过滤代码如下：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;X-XSS-Protection: 0&#39;</span><span class="p">);</span>
+<span class="nv">$xss</span> <span class="o">=</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;xss&#39;</span><span class="p">])</span><span class="o">?</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;xss&#39;</span><span class="p">]</span><span class="o">:</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="nv">$xss</span> <span class="o">=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;(&quot;...</span></pre></div>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/Sina-CRLF-Injection.html" title="新浪某站CRLF Injection导致的安全问题">新浪某站CRLF Injection导致的安全问题</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-6-30 6:45</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/Sina-CRLF-Injection.html#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/Sina-CRLF-Injection.html">19935人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="HRS.html">HRS</a>
+    
+        <a href="CRLF.html">CRLF</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>CRLF Injection很少遇见，这次被我逮住了。我看zone中（<a href="http://zone.wooyun.org/content/13323"><a href="http://zone.wooyun.org/content/13323">http://zone.wooyun.org/content/13323</a></a>）还有一些同学对于这个漏洞不甚了解，甚至分不清它与CSRF，我详细说一下吧。</p>
+<p>CRLF是”回车 + 换行”（\r\n）的简称。在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来。所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码，所以CRLF Injection又叫HTTP Response Splitting，简称HRS。</p>
+<p>HRS是比XSS危害更大的安全问题，具体是为什么，我们往下看。</p>
+<p>对于HRS最简单的利用方式是注入两个\r\n，之后在写入XSS代码，来构造一个xss。</p>
+<p>举个例子，...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/xsshtml.html" title="XssHtml – 基于白名单的富文本XSS过滤类">XssHtml – 基于白名单的富文本XSS过滤类</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-6-26 23:35</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/xsshtml.html#reply-list">4条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/xsshtml.html">10559人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="fliter.html">fliter</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>啦啦啦，去了北京参加荣耀6的发布会，真心不错呀这款手机，在这里无耻地推荐一下。与会的同学都获得了一枚荣耀6，说说我的感受吧：CPU真心给力，跑分很高；价格合理，2000是荣耀一贯的高性价比；特权给力，寝室的Chinanet可以免费用了；相机真不错，全景拍照，把整个鸟巢拍得一清二楚，抓拍也很给力，黑屏状态下按两次音量下就能在0.6秒完成一次拍摄；触屏很舒服，滑动没有一丝卡顿。</p>
+<p>好了，去北京之前freebuf上投了一篇文章，发到博客里吧。</p>
+<p>关于富文本XSS，我在之前的一篇文章里(<a href="http://www.freebuf.com/articles/web/30201.html">http://www.freebuf.com/articles/web/30201.html</a>)已经比较详细地说明了一些开源应用使用的XSS Filter以及绕过方法。之前我也总结了一些filter的缺点，利用白名单机制完成了一个XSS Filter类，希望能更大程度地避免富文本XSS的产生。</p>
+<p>总结一下现存的一些X...</p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/xss-fliter-bypass.html" title="浅析白盒安全审计中的XSS Fliter">浅析白盒安全审计中的XSS Fliter</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2014-4-2 17:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/xss-fliter-bypass.html#reply-list">0条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/xss-fliter-bypass.html">9169人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="%E7%BB%95%E8%BF%87%E8%BF%87%E6%BB%A4.html">绕过过滤</a>
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>好久没写总结文。一转眼就到了4月，离可以游泳的季节又近了一步，心里还有点小激动。</p>
+<p>这段时间也是学习了一些新东西，包括富文本的XSS，还有我正在看的node.js。我想还是要跟上时代的潮流，东西总在更新，如果还固守陈旧的观念和古老的事物，就很容易被淘汰。php已至暮年，更新换代也是迟早的事情，我觉得node已成为大趋势，如果前后端都能用javascript编写的话，不光是数据传输方面方便了很多，调试起来也有php没法比拟的优势。但可能在功能方面node还欠缺不少，毕竟是最近几年才出来的产物，各种平台兼容性、第三方模块、开发难度都有待加强。</p>
+<p>前段时间发在freebuf上的一篇xss文章，在我博客里也发一下。文章是我自己分析的一些cms实例，并一个一个提取出来测试，然后又在cms环境下测试，最后得出的结论。希望能提供给大家以后审计的一点思路。</p>
+<p><a href="../content/files/%E6%B5%85%E6%9E%90%E7%99%BD%E7%9B%92%E5%AE%A1%E8%AE%A1%E4%B8%AD%E7%9A%84xss%20fliter.pdf" target="_blank">https://www.leavesongs....</a></p>
+        
+    </div>
+</div>
+
+<div class="post type-post" >
+    <h2 class='loading-title' itemprop="name headline">
+      <a itemtype="url" href="../PENETRATION/xss-collect.html" title="那些年我们没能bypass的xss filter[from wooyun]">那些年我们没能bypass的xss filter[from wooyun]</a>
+    </h2>
+
+    <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2013-9-22 23:14</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="../PENETRATION/xss-collect.html#reply-list">3条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="../PENETRATION/xss-collect.html">17568人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="xss.html">xss</a>
+    
+  </span>
+  
+</div>
+
+    <div class="entry">
+        
+          <p>这么久没发文章，因为很忙。。为了防止站点被老顾客嫌弃，转载一篇来自乌云的文章吧：《那些年我们没能bypass的xss filter》</p>
+<p>原文链接：<a href="http://zone.wooyun.org/content/6899">http://zone.wooyun.org/content/6899</a></p>
+<p>小弟初学xss才10天。不过个人很喜欢收集xss payload.在这里把自己平时挖xss时会用到的payloads列出来和大家一起分享。很希望大家能把自己的一些payload也分享出来。（由于我是linux党，所以本文出现在的所有payload只在firefox和chrome之下进行过测试。IE不在本文的讨论范围之内。本文只以直接输出在HTML的情况为中心进行探讨。）有错误的地方还请大家不吝赐教。 </p>
+<p>在XSS的世界里，有很多标签,事件，属性都是可以拿来执行js的。但是又都有哪一些呢？ </p>
+<p>可以执行js的标签: </p>
+<div class="codehilite"><pre><span></span>&lt;script&gt; &lt;a&gt; &lt;p...</pre></div>
+        
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="../PENETRATION/javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="../PENETRATION/discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="%E4%BA%8C%E6%89%8B%E5%95%86%E5%93%81.html">二手商品</a>
+        
+        <a rel="tag" href="%E7%9F%A5%E4%B9%8E.html">知乎</a>
+        
+        <a rel="tag" href="sqlite_bind.html">sqlite_bind</a>
+        
+        <a rel="tag" href="flashxss.html">flashxss</a>
+        
+        <a rel="tag" href="%E7%BB%87%E6%A2%A6.html">织梦</a>
+        
+        <a rel="tag" href="Go.html">Go</a>
+        
+        <a rel="tag" href="Docker.html">Docker</a>
+        
+        <a rel="tag" href="%E5%85%BC%E5%AE%B9%E6%80%A7.html">兼容性</a>
+        
+        <a rel="tag" href="Linux.html">Linux</a>
+        
+        <a rel="tag" href="php-fpm.html">php-fpm</a>
+        
+        <a rel="tag" href="goahead.html">goahead</a>
+        
+        <a rel="tag" href="%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="emlog%E6%8F%92%E4%BB%B6.html">emlog插件</a>
+        
+        <a rel="tag" href="%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B5%84%E6%BA%90.html">自定义资源</a>
+        
+        <a rel="tag" href="joomla.html">joomla</a>
+        
+        <a rel="tag" href="%E6%B1%89%E5%8C%96.html">汉化</a>
+        
+        <a rel="tag" href="%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5.html">环境变量注入</a>
+        
+        <a rel="tag" href="%E5%A4%9A%E7%BA%BF%E7%A8%8B.html">多线程</a>
+        
+        <a rel="tag" href="%E4%B8%8A%E7%BD%91.html">上网</a>
+        
+        <a rel="tag" href="wopus.html">wopus</a>
+        
+        <a rel="tag" href="%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2.html">进制转换</a>
+        
+        <a rel="tag" href="audit.html">audit</a>
+        
+        <a rel="tag" href="htaccess.html">htaccess</a>
+        
+        <a rel="tag" href="%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="yxcms.html">yxcms</a>
+        
+        <a rel="tag" href="%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="tea.html">tea</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="../PENETRATION/detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="../PENETRATION/webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="../PENETRATION/php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+</body>
+
+</html>

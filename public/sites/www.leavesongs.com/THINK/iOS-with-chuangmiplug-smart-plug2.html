@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>iOS备用机自动充电方案 | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;text=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;title=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;is_video=false&amp;description=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88&amp;body=Check out this article: https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;title=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;title=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;title=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;title=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/THINK/iOS-with-chuangmiplug-smart-plug2.html&amp;name=iOS%E5%A4%87%E7%94%A8%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%85%85%E7%94%B5%E6%96%B9%E6%A1%88&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">iOS备用机自动充电方案</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2022年12月13日 00:41" itemprop="datePublished">
+                  2022 十二月 13 00:41
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：15088
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/THINK.html">心得与体会</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/iOS.html">iOS</a>,
+                  
+                  
+                    <a class="tag-link" href="../tag/%E6%8D%B7%E5%BE%84.html">捷径</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>搬到新加坡以后，我拥有了很多张手机卡：</p>
+<ul>
+<li>1张国内的电话卡，回国时使用</li>
+<li>1张新加坡电话卡，本地使用</li>
+<li>1张马来西亚电话卡，去马来西亚旅行时使用</li>
+<li>1张英国电话卡，去欧洲旅行时使用</li>
+</ul>
+<p>相对应的，我需要有备用机来运行这些号码。正好手上有一台旧的iPhone XR，于是我就把其中两张卡插到了这个手机里。但随之而来的是另一个问题，手机长期插电对电池非常不友好，很有可能导致备用机电池彻底废掉。</p>
+<p>垃圾佬的家里从来不缺少设备，很快我翻出一个之前从国内带来的米家智能插座2，前几年买来当智能网关用的。但来新加坡以后家里基本没有智能设备了，所以一直在吃灰。</p>
+<p>我完整的预想是，将备用机插在智能插座上，然后通过iOS的Shortcuts来监控手机电量——当手机电量小于30%的时候自动开启插座；当手机电量充到80%的时候自动关闭插座。</p>
+<h2 id="_1"><a class="toclink" href="#_1">控制米家智能设备</a></h2>
+<p>说干就干，查了下资料，网上对米家生态的协议、工具其实都分析的比较完善了，没有遇到太多困难。</p>
+<p>首先，使用<a href="https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor.git" target="_blank">https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor.git</a>这个Python脚本获取我的小米账户绑定的智能设备：</p>
+<p><a href="../media/attachment/2022/12/13/252c4104-87be-4316-b362-f29332e3b22d.png"><img alt="image.png" src="../media/attachment/2022/12/13/252c4104-87be-4316-b362-f29332e3b22d.23e905c4e2ca.png" /></a></p>
+<p>可见，我只有3个智能设备，第一个就是米家智能插座2（“Mi Smart Power Plug 2”）。</p>
+<p>这个插座信息里包含了其ID，Mac地址，IP地址，通信使用的Token和其设备型号（Model）：</p>
+<div class="codehilite"><pre><span></span><code><span class="n">NAME</span><span class="o">:</span><span class="w">     </span><span class="n">Mi</span><span class="w"> </span><span class="n">Smart</span><span class="w"> </span><span class="n">Power</span><span class="w"> </span><span class="n">Plug</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="n">Wi</span><span class="o">-</span><span class="n">Fi</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">Bluetooth</span><span class="w"> </span><span class="n">Gateway</span><span class="o">)</span><span class="w"></span>
+<span class="n">ID</span><span class="o">:</span><span class="w">       </span><span class="n">xxxxx</span><span class="w"></span>
+<span class="n">MAC</span><span class="o">:</span><span class="w">      </span><span class="mi">12</span><span class="o">:</span><span class="mi">34</span><span class="o">:</span><span class="mi">56</span><span class="o">:</span><span class="mi">78</span><span class="o">:</span><span class="mi">90</span><span class="o">:</span><span class="n">AB</span><span class="w"></span>
+<span class="n">IP</span><span class="o">:</span><span class="w">       </span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.187</span><span class="w"></span>
+<span class="n">TOKEN</span><span class="o">:</span><span class="w">    </span><span class="n">token</span><span class="o">....</span><span class="w"></span>
+<span class="n">MODEL</span><span class="o">:</span><span class="w">    </span><span class="n">chuangmi</span><span class="o">.</span><span class="na">plug</span><span class="o">.</span><span class="mi">212</span><span class="n">a01</span><span class="w"></span>
+</code></pre></div>
+
+<p>米家设备通信端口是54321，协议是UDP，所以想知道自己家里的米家设备地址，也可以用nmap扫描这个端口，比如：</p>
+<div class="codehilite"><pre><span></span><code>nmap -sU -p54321 --open 192.168.1.0/24
+</code></pre></div>
+
+<p><a href="../media/attachment/2022/12/13/9a3db758-40c8-4b49-981b-28cc4f109b50.png"><img alt="image.png" src="../media/attachment/2022/12/13/9a3db758-40c8-4b49-981b-28cc4f109b50.b3b7caf67544.png" /></a></p>
+<p>拿到IP地址和token以后，我们可以使用<a href="https://github.com/rytilahti/python-miio" target="_blank">python-miio</a>这个工具来访问我们的设备。</p>
+<div class="codehilite"><pre><span></span><code>miiocli chuangmiplug --ip 192.168.1.187 --token xxxxx info
+</code></pre></div>
+
+<p>尝试一下后发现工具报错，并不识别我的插座model：</p>
+<p><a href="../media/attachment/2022/12/13/4f7b3f15-d86a-4e6c-b1dd-24aff0fa2293.png"><img alt="image.png" src="../media/attachment/2022/12/13/4f7b3f15-d86a-4e6c-b1dd-24aff0fa2293.eb9091da0c2e.png" /></a></p>
+<p>原因可能是我的设备型号比较小众，所以命令没有添加进来。问题不大，到<a href="https://home.miot-spec.com/" target="_blank">这个网站</a>使用Model名称是可以搜索到这款产品的：</p>
+<p><a href="../media/attachment/2022/12/13/8f20fed5-2fd4-4693-b413-f1d3821b027e.png"><img alt="image.png" src="../media/attachment/2022/12/13/8f20fed5-2fd4-4693-b413-f1d3821b027e.6efd42d4f998.png" /></a></p>
+<p>点击进去，就能看到米家智能插座2全部功能的通信协议属性：</p>
+<p><a href="../media/attachment/2022/12/13/99bca49e-dc42-42a8-8379-a80b718579b8.png"><img alt="image.png" src="../media/attachment/2022/12/13/99bca49e-dc42-42a8-8379-a80b718579b8.a6dd828a3ee3.png" /></a></p>
+<p>还挺全的，其中我最需要的当然是第一个“Switch”。</p>
+<p>看到其中的SIID和PIID了吗？Switch功能的SIID是2，开关on的PIID是1，所以发送如下信息就可以开启开关：</p>
+<div class="codehilite"><pre><span></span><code>[{&#39;did&#39;: &#39;MYDID&#39;, &#39;siid&#39;: 2, &#39;piid&#39;: 1, &#39;value&#39;:True}]
+</code></pre></div>
+
+<p>同理，发送如下信息可以关闭开关：</p>
+<div class="codehilite"><pre><span></span><code>[{&#39;did&#39;: &#39;MYDID&#39;, &#39;siid&#39;: 2, &#39;piid&#39;: 1, &#39;value&#39;:False}]
+</code></pre></div>
+
+<p>参考这个<a href="https://github.com/rytilahti/python-miio/issues/844" target="_blank">issue</a>，使用如下命令来发送raw message：</p>
+<div class="codehilite"><pre><span></span><code>miiocli device --ip 192.168.1.187 --token xxxxx raw_command set_properties &quot;[{&#39;did&#39;: &#39;MYDID&#39;, &#39;siid&#39;: 2, &#39;piid&#39;: 1, &#39;value&#39;:True}]&quot;
+</code></pre></div>
+
+<p>成功点亮。</p>
+<h2 id="_2"><a class="toclink" href="#_2">自动化控制</a></h2>
+<p>在网上浏览一番，发现有一个系统<a href="https://www.home-assistant.io/" target="_blank">Home Assistant</a>，基本可以完全实现自动化，且不需要编程。不过我家里智能设备少得可怜，杀鸡焉用牛刀呢？如果我只为了控制开关，其实简单写个脚本就行了。</p>
+<p>家里正好有一个树莓派上面运行着一个DNS服务器，是PHP写的，所以我也用PHP写了一个简陋的脚本丢在树莓派Web目录下：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type: text/plain&#39;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s2">&quot;HTTP_X_CSRF_TOKEN&quot;</span><span class="p">])</span> <span class="o">||</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s2">&quot;HTTP_X_CSRF_TOKEN&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;xxxxxx&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;csrf check error</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+    <span class="k">exit</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;TOKEN&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">);</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;IP&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.187&#39;</span><span class="p">);</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;PUSHDEER_KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;pushdeer key&#39;</span><span class="p">);</span>
+
+<span class="nv">$action</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span> <span class="o">??</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="nv">$battery</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;battery&#39;</span><span class="p">]</span> <span class="o">??</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$action</span> <span class="o">===</span> <span class="s1">&#39;on&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">shell_exec</span><span class="p">(</span><span class="s1">&#39;miiocli device --ip &#39;</span><span class="o">.</span><span class="nx">IP</span><span class="o">.</span><span class="s1">&#39; --token &#39;</span><span class="o">.</span><span class="nx">TOKEN</span><span class="o">.</span><span class="s1">&#39; raw_command set_properties &quot;[{\&#39;did\&#39;: \&#39;MYDID\&#39;, \&#39;siid\&#39;: 2, \&#39;piid\&#39;: 1, \&#39;value\&#39;:True}]&quot;&#39;</span><span class="p">);</span>
+    <span class="nv">$message</span> <span class="o">=</span> <span class="s2">&quot;当前电量：</span><span class="si">${</span><span class="nv">battery</span><span class="si">}</span><span class="s2">%，已开始充电&quot;</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nv">$action</span> <span class="o">===</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nb">shell_exec</span><span class="p">(</span><span class="s1">&#39;miiocli device --ip &#39;</span><span class="o">.</span><span class="nx">IP</span><span class="o">.</span><span class="s1">&#39; --token &#39;</span><span class="o">.</span><span class="nx">TOKEN</span><span class="o">.</span><span class="s1">&#39; raw_command set_properties &quot;[{\&#39;did\&#39;: \&#39;MYDID\&#39;, \&#39;siid\&#39;: 2, \&#39;piid\&#39;: 1, \&#39;value\&#39;:False}]&quot;&#39;</span><span class="p">);</span>
+    <span class="nv">$message</span> <span class="o">=</span> <span class="s2">&quot;当前电量：</span><span class="si">${</span><span class="nv">battery</span><span class="si">}</span><span class="s2">%，已停止充电&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">echo</span> <span class="nv">$result</span><span class="p">;</span>
+<span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">&#39;https://api2.pushdeer.com/message/push?pushkey=&#39;</span><span class="o">.</span><span class="nx">PUSHDEER_KEY</span><span class="o">.</span><span class="s1">&#39;&amp;text=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$message</span><span class="p">));</span>
+
+<span class="k">echo</span> <span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+<p>前两行主要是为了防止CSRF漏洞，不要正常上网的时候插座被其他人控制。</p>
+<p>后面的代码就非常简单了，主要就是调用miiocli的命令开关插座，并且在开启和关闭时，通过<a href="https://github.com/easychen/pushdeer" target="_blank">pushdeer</a>给我发送通知。</p>
+<p>使用burp来测试一下效果，实测可以正常开启插座：</p>
+<p><a href="../media/attachment/2022/12/13/06bfe80e-50b6-410e-ae71-ce4b6466280d.png"><img alt="image.png" src="../media/attachment/2022/12/13/06bfe80e-50b6-410e-ae71-ce4b6466280d.5825e1bbd5c7.png" /></a></p>
+<p>我的主力机也收到了pushdeer的推送：</p>
+<p><a href="../media/attachment/2022/12/13/2fb1c444-bcd0-4637-b7c1-38378dbb61c3.png"><img alt="image-20221213000420980.png" src="../media/attachment/2022/12/13/2fb1c444-bcd0-4637-b7c1-38378dbb61c3.5bdd1af671c8.png" /></a></p>
+<h2 id="ios"><a class="toclink" href="#ios">集成iOS快捷指令</a></h2>
+<p>现在完成了服务端，还需要定制一下客户端，用于触发开关。</p>
+<p>首先添加一个开启插座的快捷指令，其内容是发送HTTP请求给树莓派：</p>
+<p><a href="../media/attachment/2022/12/13/3de711aa-32a8-404d-a05e-dafd0e74ae92.png"><img alt="image.png" src="../media/attachment/2022/12/13/3de711aa-32a8-404d-a05e-dafd0e74ae92.e2f8a02b13fe.png" /></a></p>
+<p>然后在捷径里增加一个Automation，选择在电量小于30%时触发：</p>
+<p><a href="../media/attachment/2022/12/13/af63fe34-0e4e-471e-8e5b-504844ae32fd.png"><img alt="image.png" src="../media/attachment/2022/12/13/af63fe34-0e4e-471e-8e5b-504844ae32fd.1bd0e7fdf5df.png" /></a></p>
+<p>找到刚才添加的Shortcut，组成一个完整的指令：</p>
+<p><a href="../media/attachment/2022/12/13/6d065891-febc-4f3d-91bc-e4687ee43a1a.png"><img alt="image.png" src="../media/attachment/2022/12/13/6d065891-febc-4f3d-91bc-e4687ee43a1a.5a3e4dab3809.png" /></a></p>
+<p>注意，要把Ask Before Running关掉，否则不能实现全过程自动化。</p>
+<p>同理，增加一个电量大于80%时自动关闭的自动化。</p>
+<p>另外，我还增加了一个定时任务，每天检查一次一次当前手机电量，如果发现大于90%或小于20%，说明前面的动作没成功，那么再重启关闭或开启一次开关。这是为了防止某一天网络不问题，开关没有成功开启或关闭的情况下，能够有兜底机制。</p>
+<p>不知道为何苹果没有提供小时级别的定时任务，否则这个方案会更完美一些。</p>
+<h2 id="_3"><a class="toclink" href="#_3">总结</a></h2>
+<p>最后，花了大概3个小时时间，把整个流程搞完了，又等了一天测试，完美运行，非常顺滑，妈妈再也不用担心我的电池~</p>
+<p>从成本上来讲，这个方案其实还是有点浪费，智能插座的大部分功能实际上并没有用上（虽然它本身也是吃灰）。以后有机会，可以研究研究更廉价的方案，早日实现多备用机同时待机。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-4048">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/e368ce5700b3b26558fb590f9b89d808.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://xavierksip.com" target="_blank" rel="nofollow noopener">skip</a>
+                    <time datetime="2023年1月18日 19:05" itemprop="datePublished">
+                      2023 一月 18 19:05
+                    </time>
+                    <a href="javascript:reply_to('4048', 'skip')">回复</a>
+                  </p>
+                  <p class="comment-meta">看了这篇文章，我也想试一下家里的米家设备能不能用代码来操作。文章里只说了调用 raw_command set_properties ，为了找调用Actions的方法我找了很多，也试了很多次，https://github.com/rytilahti/python-miio/issues/901 这里介绍了 get_properties 和 get_properties 来设置 属性 Properties，但是没有说如何使用方法。<br><br>如果使用 raw_command action 的话后面的 params 不能是列表而是字典格式，就是说要把外面的方括号要去掉。<br><br>`miiocli device --ip [ip] --token [token] raw_command action &quot;{&#x27;did&#x27;: &#x27;start-sweep&#x27;, &#x27;aiid&#x27;: 1, &#x27;siid&#x27;: 3 }&quot;<br><br>试了好多的可能性，太惨了。看到这里我才意识到哪里不对。https://github.com/rytilahti/python-miio/issues/1181#issuecomment-963903615</p>
+                </div>
+              </div>
+              
+            
+              <div class="flex mb-2" id="comment-4038">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">坝北</a>
+                    <time datetime="2022年12月14日 17:36" itemprop="datePublished">
+                      2022 十二月 14 17:36
+                    </time>
+                    <a href="javascript:reply_to('4038', '%E5%9D%9D%E5%8C%97')">回复</a>
+                  </p>
+                  <p class="comment-meta">感觉玩到最后都要玩到硬件上</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="006963b588e9b6f9eeabb3734d36d8b7a0bc224b" />
+</div><div class="col-6">
+<img src="../captcha/image/006963b588e9b6f9eeabb3734d36d8b7a0bc224b/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="489" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="GggbpsGOP7YSMqOPzvcVQmBREJzj81umsOE2XxhxdtcBkYCdBw9GNPEWZ6QuHDGE">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

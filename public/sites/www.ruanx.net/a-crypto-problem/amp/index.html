@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>一道密码学趣题</title>
+
+    <meta name="description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="一道密码学趣题" />
+    <meta property="og:description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <meta property="og:url" content="https://www.ruanx.net/a-crypto-problem/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2021-03-09T10:46:47.000Z" />
+    <meta property="article:modified_time" content="2021-03-11T08:22:20.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="一道密码学趣题" />
+    <meta name="twitter:description" content="我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/a-crypto-problem/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "一道密码学趣题",
+    "url": "https://www.ruanx.net/a-crypto-problem/",
+    "datePublished": "2021-03-09T10:46:47.000Z",
+    "dateModified": "2021-03-11T08:22:20.000Z",
+    "keywords": "Crypto",
+    "description": "我们讨论了 2020 年信息安全国赛华南赛区的一道密码学题目。整体来看不太难，但需要考虑一些细节。这也是一道典型的概率性成功、需要爆破的问题。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">一道密码学趣题</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2021-03-09">09 Mar 2021</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　今天上网安课的时候，HIT-SZ 的同学发我一道 CISCN2020 华南赛区的一道密码学题目，叫做「easyRSA」。这几年名为「easy」的往往不是很 easy，不过本题难度还是很适合国赛选手的。需要一点点思维能力。</p><p>　　题目是交互的，源码如下：</p><pre><code class="language-python">#!/usr/bin/python3 -u
+
+import random
+from Crypto.Util.number import *
+from gmpy2 import *
+
+a = 0x497a81edc78549df
+block_len = 64
+
+def gen_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return p
+
+n = None
+e = 0x10001
+flag = open("flag.txt", "rb").read()
+
+with open("challenge.py") as f:
+    print(f.read())
+    
+print("Welcome to my Prime Obsession. Tell me what do you want.\n")
+while True:
+    print("[1] Generate key")
+    print("[2] Get Encrypted flag")
+    print("[3] Exit")
+    opt = int(input("&gt;&gt;&gt; "))
+    if opt == 1:
+        p = gen_prime(1024)
+        q = gen_prime(1024)
+        n1 = p * q
+        print('pq =',hex(n1))
+        c = getRandomInteger(100)
+        p = next_prime(p+c)
+        q = next_prime(q+c)
+        n = p * q
+        print('n =',hex(n)) 
+    if opt == 2:
+        if not n:
+            print("No key generated :(")
+        else:
+            print('cipher =',hex(pow(bytes_to_long(flag), e, n)))
+    if opt == 3:
+        print("Good bye! Good luck in this game :)")
+        break
+    print("\n")
+</code></pre><p>　　首先我们需要注意到两件事：</p><ol><li>质数生成是自己实现的。这里可能有漏洞点。</li><li>每次交互，一共只提供了 $p\times q$ 以及 $p ^ \prime \times q ^ \prime$ 的值。</li></ol><p>　　先考虑第二件事。交互题目可能是从多次交互中获取信息，把这些信息综合起来解题；也可能是做题的成功率并非 100%，需要爆破。前者的典型例子是「爆破梅森旋转」的题目，需要用连续的随机数生成结果来恢复 MT19937 的状态；后者的典型例子是各种有特殊条件要求的数论题目。确定题目到底属于哪一种，可以节省大量的做题时间。</p><p>　　本题源码，每次 $p, q$ 是随机生成的，而源码里面密码学不安全的 PRNG，只有用于生成 <code>s</code> 的 <code>random.getrandbits()</code> 。由于后文 <code>if is_prime(p)</code> 的条件极为苛刻，几乎不可能一次就成功，故我们无法拿到当初的 <code>s</code> 。所以本题不是 MT19937 爆破，而是概率性解题。</p><p></p><p>　　现在来考虑本题的质数生成算法。</p><pre><code class="language-python">def gen_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return p</code></pre><p>　　不难分析出，算法会尝试以下步骤：</p><ol><li>$s$ 是一个 64 位数。</li><li>把 $s$ 作为一个块，接在目前的结果后面。</li><li>$s$ 置为 $a \cdot s$，保留低 64 位。 </li><li>重复步骤 2、3，直到生成一个 1024 位的数。<br />如果上述算法成功地生成了一个质数，则返回；否则重复上述算法，直到产出质数为止。</li></ol><p>　　我们只关注 <code>s |= 0xe000000000000003</code> 之后的 $s$，称为其所产生的质数的<strong>种子</strong>。随便模拟一下上面的算法，可以发现：$$p = s \| s\cdot a \| s\cdot a ^ 2 \| \cdots \| s \cdot a ^ {15}$$其中每个块都要模 $2 ^ {64}$。来用代码验证一下：</p><pre><code class="language-python">def test_get_prime(bits_len):
+    s = random.getrandbits(block_len)
+    
+    while True:
+        s |= 0xe000000000000003
+        
+        origin_s = s
+        
+        p = 0
+        for _ in range(bits_len // block_len):
+            p = (p &lt;&lt; block_len) + s
+            s = a * s % 2**block_len
+        if is_prime(p):
+            return origin_s, p
+        
+test_get_prime(1024)
+
+# p = 0xe402458e1aa2fbbf171cf392f0fdc2616d735e74acdefb7f7b1d85d98def4aa1c61b9a5dcc5eeb3fa919b57d487ee2e1a59c89641b1ecaff2cf2adce17308b217fd4620efa1a9abfa8cbd04d5188436164d10992494e5a7fce77d1f5f00a0ba1047f6ffe27b60a3f59926694cc39e3e1bb7d3c5eb34da9ffdef8fe30e09bcc21
+# s = 0xe402458e1aa2fbbf
+# s * a % 2^64 = 0x171cf392f0fdc261
+# ...
+# s * a^15 % 2^64 = 0xdef8fe30e09bcc21</code></pre><p>　　从而，$p$ 的最初 64 位就是它的种子 $s$；$p$ 的末尾 64 位除以 $a ^ {15}$，也可以得到 $s$（运算需要在模 $2 ^ {64}$ 下进行）。如果我们能知道种子，我们就可以直接调用上面的生成算法来产出对应的质数 $p$。于是，<strong>种子和质数是一一对应的</strong>。</p><p>　　但我们现在只知道 $p\times q$，不知道 $p, q$ 各自的种子 $s_1, s_2$. 这里我们注意到两点性质：</p><ol><li>$p\times q$ 的低 64 位除以 $a  ^ {30}$，一定等于 $s_1 \times s_2$ 的低 64 位。这很容易证明。</li><li>$p\times q$ 的高 64 位，可能等于 $s_1 \times s_2$ 的高 64 位，也可能等于这个值加上 1。</li></ol><p>　　来验证一下：</p><pre><code class="language-python">s1, p = test_get_prime(1024)
+s2, q = test_get_prime(1024)
+
+s1, s2, p, q
+'''
+(16243107326219462111,
+ 17432706745670175347,
+ 158294181414880499770651112900548083954434772914472730549340087434970226774360616234703762340566481057536952421125964808455071783034621762005413503653274430171642354361906447116811174866340950519316076420777049700943049933805894766346310426693961910435971922759361714776387154457211555746264926998149652735489,
+ 169887201305206840068646556183834380043094239543227647711110290353531119335337866448387930053370040451159123818495584829213442749847091386275830475868414884168339924826011599148098370699032169016502100581570327973098847038588859614367540256927662605166485372884790453289507254371825313084721972174725171008493)
+'''
+
+R = Zmod(2 ^ 64)
+(p * q) / R(a) ^ 30, R(s1 * s2)
+# (8570911218002475309, 8570911218002475309)
+
+((p * q) &gt;&gt; (2048 - 64)), (s1 * s2) &gt;&gt; 64
+# (15350206276238985089, 15350206276238985088)</code></pre><p>　　于是，我们只要手上有 $p \times q$，我们就可以得到 $s_1 \times s_2$ 的高 64 位和低 64 位（其中高位有两种可能性）。而 $s_1 \times s_2$ 一共才 128 位，我们可以完全恢复出 $s_1 \times s_2$，然后质因数分解之，得到 $s_1, s_2$ 的确切值，从而求出 $p, q$！</p><p>　　这里有一个细节：质因数分解 $s_1 \times s_2$ 可能会得到多个质因子，需要找出合适的 $s_1, s_2$. 做法是枚举分解结果的子集，求个乘积，我们已经知道 $s$ 必然落在 $[\text{0xe000000000000003}, 2^{64})$ 内，故很容易判断合法性。</p><pre><code class="language-python">import random
+from Crypto.Util.number import *
+from gmpy2 import *
+import itertools
+import functools
+
+a = 0x497a81edc78549df
+
+# 从种子生成质数
+def build_p(s):
+    assert s &gt;= 0xe000000000000003
+
+    p = 0
+    for _ in range(1024 // 64):
+        p = (p &lt;&lt; 64) + s
+        s = a * s % 2**64
+    assert is_prime(p)
+    return p
+
+assert build_p(17361778395699355931) == 169195982262430730898037798646562657888768606161540984197124026057984801045528687609713183918888150519974429332633850456287413410292677840077409039763029168042539147308080880278827892817507057470081212780508473831501271300644154803233797207298692699435252423812271233139678356819016235706919593528823372354117
+
+
+# 给定 s1*s2，找出合法的 s1, s2.
+def test_s1s2(m):
+    r = list(factor(m))
+    lis = []
+    
+    for x, cnt in r:
+        for _ in range(cnt):
+            lis.append(x)
+    
+    print(f'factor: {lis}')
+    
+    ans = []
+    
+    for num in range(len(lis)):
+        for f in itertools.combinations(lis, num):
+            if f:
+                maybe_s = functools.reduce(lambda x,y: x*y, f)
+                
+                if 0xe000000000000003 &lt;= maybe_s &lt;= 2**64:
+                    ans.append(maybe_s)
+    
+    return ans
+    
+test_s1s2(309177609417944057766013526324891519733)
+'''
+factor: [3, 2539, 8750453, 824716561, 5624563537715845553]
+[16873690613147536659, 18323057860089065687]
+'''</code></pre><p>　　从 $p\times q$ 中恢复 $s_1, s_2$，进而获取 $p, q$ 的代码如下：</p><pre><code class="language-python"># 给定 p*q，恢复出 p, q
+def attack_pq(n):
+    R = Zmod(2^64)
+    
+    last = R(n) / R(a^30)
+    first = n &gt;&gt; (2048 - 64)
+    
+    s = test_s1s2(int(int(first-1) &lt;&lt; 64) + int(last))
+    
+    if len(s) != 2 or build_p(s[0]) * build_p(s[1]) != n:
+        s = test_s1s2(int(int(first) &lt;&lt; 64) + int(last))
+    
+    print(f's: {s}')
+    
+    assert s
+    p, q = build_p(s[0]), build_p(s[1])
+    assert p * q == n
+    
+    
+    print(f'✅ p = {p}')
+    print(f'✅ q = {q}')
+    
+    return p, q
+
+attack_pq(25625978037564023374054812252766044742673016474380449671434417557988683145342557433392338411568097592174126890010367975804729035315018122328818953482824183616532541483357942995500254875116460438812227079806451323262767112848392097604212800284648459461746966222062286184693080278059901247068922366712016948770993253748320480569966269448769253837874539131187463351933833504083780041515646366807785588792568168133501958654184904533902107193125303230406615614009544017592608298466267250350122225533985589679020422790330076477130447738445165355516162779670614159780415964621699239667668730434728470462911970718793385464741)
+'''
+factor: [7, 73, 263, 1795877, 215313151, 1049925013, 4945460059]
+s: [16502574388980455299, 16350727310827583863]
+✅ p = 160822769417102009618567552156182921546741447360725683118172696897367965121337165186908622589209139632843608852568696104089644870013508160510721639945162275182824416298942113379063991609668151500017228073190018871134644149081490901642408360701118595923659997953670380025262649577673799718463762187171438880989
+✅ q = 159342971958788680920230866791247521236447945260297678924204288359901348836858194337996522293090932934733371676245041069970267950853712578389627531630378737762022350847049839429987844064870186209635909347054818141164832660432576265456168359085362019835152391005771348487649822270428353946391414002824201438569
+'''</code></pre><p>　　现在我们已经搞到 $p, q$ 了！下一个问题是：RSA 采用的质数是 $p ^ \prime, q ^ \prime$，如何从 $p, q$ 找到它们呢？</p><p>　　来分析题目源码，生成 $p^\prime, q ^\prime$ 的算法如下：</p><pre><code class="language-python">p = gen_prime(1024)
+q = gen_prime(1024)
+n1 = p * q
+print('pq =',hex(n1))
+c = getRandomInteger(100)
+p = next_prime(p+c)
+q = next_prime(q+c)
+n = p * q
+print('n =',hex(n)) </code></pre><p>　　可见，程序先生成了一对 $p, q$（我们可以求出它们），然后随机生成了一个 100 位的整数 $c$，求出 $p+c, q+c$ 的下一个质数，作为 $p ^ \prime$ 和 $q ^ \prime$.</p><p>　　由于「下一个质数」这个函数性质极其烂，相当难以研究，我们直接绕过它，记 $\newcommand\pp{p ^ \prime} \newcommand\qq{q ^ \prime} c_1 := \pp - p, c_2 := \qq - q$，于是可以重新表示 $\pp, \qq$：$$\pp = p + c_1, \qquad \qq = q + c_2$$于是$$\pp \times \qq = (p + c_1)(q + c_2) = pq + c_1 q + c_2 p + c_1 c_2$$上面的式子中，$p\times q$ 和 $\pp\times \qq$ 是我们已知的，于是可以求出 $$\pp\times\qq - p\times q = c_1 q + c_2 p + c_1 c_2$$我们把这个值记为 $\Delta$，它是已知量。接下来要干的事情是解出这个不定方程，拿到 $c_1, c_2$，然后求出 $\pp, \qq$.</p><p>　　事实上，上面的话说起来容易，做起来难。$c$ 有 100 位，$c_1, c_2$ 比 $c$ 还大一点点，所以是不可枚举的；这个方程有俩未知数，还是二次的，解起来相当困难。</p><p>　　开点脑洞：如果 $c_1 = c_2$，会是什么情形？整个方程变成了一元二次方程，可以快速求解了：$$\Delta = x^2 + px + qx$$</p><p>　　那么，$c_1 = c_2$ 的概率是多少呢？我们考虑 $c_1$ 与 $c$ 的距离，它等于 $p+c$ 的下一个质数与 $p+c$ 的距离。而由质数分布定理，数量级为 $n$ 的俩质数之间的距离，是 $\ln n$ 量级的。所以 $c_1$ 与 $c$ 的距离，平均来看不会超过 $\ln 2 ^ {1024} \approx 710$ 这个级别；$c_2$ 同理。这样的话，我们预期 $c_1, c_2$ 都在 $[c, c+710]$ 以内取值，它们恰好相等的概率是 $1/710$.</p><p>　　由于质数定理的 bound 在 $n$ 很小的时候极其粗糙，故上面的概率计算误差非常大；但至少数量级是没有问题的。所以解题的总体思路就形成了：</p><ol><li>疯狂交互，获取海量的 $p\times q, \pp\times\qq$ 组。</li><li>假设 $c_1 = c_2$，求出 $\pp$ 和 $\qq$。这大概有 $1/710$ 级别的概率成功。</li></ol><p>　　我们交互几千次，事情基本上必定成功了。代码如下：</p><pre><code class="language-python"># 从 p*q, p'*q' 拿到 p', q' 和私钥 d
+def work(pq, n):
+    try:
+        p, q = attack_pq(pq)
+        dt = n - pq
+#         dt = x(p+q)+x^2
+
+        print(f'dt: {dt}')
+
+        x = var('x')
+        ans = solve(x*(p+q) + x^2 == dt, x)
+        x1, x2 = ans[0].right(), ans[1].right()
+        
+        c = x1
+        
+        if not c.is_integer():
+            c = x2
+        elif not c.is_positive():
+            c = x2
+        
+        assert c.is_integer()
+        assert c.is_positive()
+        
+        print(f'✅ c = {c}')
+        
+        
+        pp = p + c
+        qq = q + c
+        
+        print(f'✅ p\' = {pp}')
+        print(f'✅ q\' = {qq}')
+
+        
+        
+        assert pp * qq == n
+        
+        print(f'✅ d = {inverse_mod(0x10001, (pp-1) * (qq-1))}')
+        
+    except Exception:
+        print(f'这组不太行，换一个吧')
+
+work(25625978037564023374054812252766044742673016474380449671434417557988683145342557433392338411568097592174126890010367975804729035315018122328818953482824183616532541483357942995500254875116460438812227079806451323262767112848392097604212800284648459461746966222062286184693080278059901247068922366712016948770993253748320480569966269448769253837874539131187463351933833504083780041515646366807785588792568168133501958654184904533902107193125303230406615614009544017592608298466267250350122225533985589679020422790330076477130447738445165355516162779670614159780415964621699239667668730434728470462911970718793385464741, 28021904302129336729440775301567915332437216258089567111767564794016674457018155360039100520951355548380576284595610697291190503936385180226538571965741142420627721060581430072608205374836150303308140153045011513224970372092841229476265755575324796173767510268509134100146537708142088453311940311115215141352187534401616817279239626963929615354185356780526239992752179350385945092938270110754347951812524816974827773746044388551113627524532864731322649347204697974569586931351733171516384937029102764549501466259800373343884249624949732899362023883491675849231649767788103527947639812648454167039111814437985284546309)
+
+'''
+factor: [7, 73, 263, 1795877, 215313151, 1049925013, 4945460059]
+s: [16502574388980455299, 16350727310827583863]
+✅ p = 160822769417102009618567552156182921546741447360725683118172696897367965121337165186908622589209139632843608852568696104089644870013508160510721639945162275182824416298942113379063991609668151500017228073190018871134644149081490901642408360701118595923659997953670380025262649577673799718463762187171438880989
+✅ q = 159342971958788680920230866791247521236447945260297678924204288359901348836858194337996522293090932934733371676245041069970267950853712578389627531630378737762022350847049839429987844064870186209635909347054818141164832660432576265456168359085362019835152391005771348487649822270428353946391414002824201438569
+dt: 2395926264565313355385963048801870589764199783709117440333147236027991311675597926646762109383257956206449394585242721486461468621367057897719618482916958804095179577223487077107950499719689864495913073238560189962203259244449131872052955290676336712020544046446847915453457430082187206243017944403198192581194280653296336709273357515160361516310817649338776640818345846302165051422623743946562363019956648841325815091859484017211520331407561500916033733195153956976978632885465921166262711495117174870481043469470296866753801886504567543845861103821061689451233803166404288279971082213725696576199843719191899081568
+这组不太行，换一个吧
+'''</code></pre><p>　　我们来演示一下最终成功的情形：</p><pre><code class="language-python">work(26069239126763544144313564816903584919225468351493641473440054692950282153197487195135311414223645356673159563866063143967003230219599632002379909718878017334229566083385213429707426557827637628431984902602452592854163064832279957432054115424063715513512846471585266280161741825703159883696402247451433556277788724769658068000934928422898992126447860516665865835501335448925851168676214586852842707909375735783055136350498143128185177506086227282670017144764020593609782382354586453914439607583463700059239194111980984987953393701453010426104042888563904056559044144190741477237154627975857816010726687018495994122029, 26069239126763544144313564816903584919225468351493641473440054692950282153197487195135311414223645356673159563866063143967003230219599632002379909718878017334229566083385213429707426557827637628431984902602452592854163064832279957432054115424063715513512846471585266280161741825988418992958523507177816456088510986107884156402419647457685387283014663915814410392002684523734647052244297209296553241947696498795250861154920248758349455971520660721702370823864378454485566700875895894094536122947448903755745971852539042819192334317553458436695944239919353727836898891349048982180198805160517418889084394272238730812629)
+
+'''
+factor: [5, 11, 331, 33132481, 9291179069, 48980273938841381]
+s: [16212470673756497111, 16931189768418210395]
+✅ p = 157995617616370774660638102567731907466273813434698819562579909149220302616489678170556176334851823929143192096314898180613977031807508943016229435352121365585415987271997059622520528656905503238568143547394575088942893875103855187924344429830281996743274207759666120554509518173226980108459374040551600080393
+✅ q = 164999760879838291412777527823360433620664042304532719501056970192987047135901399271919480366966970340411907976436953044179019339177047206138418296577749301575525466287977153837203774422689670859379538394344219536816095808445638679593826944251873998482593615255116197397498058399989519359456583919883121928453
+dt: 285259109262121259726382899810722261338226088401484719034786395156566803399148544556501349074808795883568082622443710534038320763012195724804422105630164278465434433439032353679100357860875784318521309440180096515363985203696506777740558057831238940616100448010591901351355449671277854747158307504943044177184659602878357707253742736690600
+✅ c = 883167773453047379752624032350
+✅ p' = 157995617616370774660638102567731907466273813434698819562579909149220302616489678170556176334851823929143192096314898180613977031807508943016229435352121365585415987271997059622520528656905503238568143547394575088942893875103855187924344429830281996743274207759666120554509518174110147881912421420304224112743
+✅ q' = 164999760879838291412777527823360433620664042304532719501056970192987047135901399271919480366966970340411907976436953044179019339177047206138418296577749301575525466287977153837203774422689670859379538394344219536816095808445638679593826944251873998482593615255116197397498058400872687132909631299635745960803
+✅ d = 18929902510086673211830542076561708694646090199112423578734741638811831139486324032673060025504509801771808146311580923115884412208684054615885034768324548986353522748099835541851880959770197706630601485114486724160958940633586689873415372978863362033241723770332350229742239219936263049207366452280163988720581935255212216393630786066330594961493485442924114415254227968155268214930303811721679329298962022684488694541088421353196184688495242084669325636237107146970285348650646151940584092889379909679798630064926270828345811339970011899882524877738169322630366930298295867738153903553061710361967599556469562610621
+'''</code></pre><p>　　至此问题解决。本题目一共两个大的难点：一是找到质数生成算法的漏洞；二是从 $p,q$ 出发拿到 $\pp, \qq$. 确实是很有价值的题目，值得密码学选手做一做。</p>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

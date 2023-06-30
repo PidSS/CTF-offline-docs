@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>Many-Time-Pad 攻击</title>
+
+    <meta name="description" content="以简单异或实现的流密码，如果不能保证一次一密，则是不安全的。本文展示了多次加密采用同一个密钥的情形，此时从密文可能推断出明文和密钥。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Many-Time-Pad 攻击" />
+    <meta property="og:description" content="以简单异或实现的流密码，如果不能保证一次一密，则是不安全的。本文展示了多次加密采用同一个密钥的情形，此时从密文可能推断出明文和密钥。" />
+    <meta property="og:url" content="https://www.ruanx.net/many-time-pad/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-03-22T02:32:33.000Z" />
+    <meta property="article:modified_time" content="2020-03-22T11:33:02.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Many-Time-Pad 攻击" />
+    <meta name="twitter:description" content="以简单异或实现的流密码，如果不能保证一次一密，则是不安全的。本文展示了多次加密采用同一个密钥的情形，此时从密文可能推断出明文和密钥。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/many-time-pad/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "Many-Time-Pad 攻击",
+    "url": "https://www.ruanx.net/many-time-pad/",
+    "datePublished": "2020-03-22T02:32:33.000Z",
+    "dateModified": "2020-03-22T11:33:02.000Z",
+    "keywords": "Crypto",
+    "description": "以简单异或实现的流密码，如果不能保证一次一密，则是不安全的。本文展示了多次加密采用同一个密钥的情形，此时从密文可能推断出明文和密钥。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">Many-Time-Pad 攻击</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2020-03-22">22 Mar 2020</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　本文讨论的加密方式是最简单的一种：简单异或。准备一个 <code>key</code> 字符串，然后利用 <code>key</code> 去异或相同长度的明文，即得到密文。如果每个密文都利用新的 <code>key</code> 去加密，那么这种方式称为<strong>“一次一密”（One-Time-Pad）</strong>。OTP是无条件安全的：即使攻击者拥有无限的计算资源，都不可能破译OTP加密的密文。</p><p>　　然而，一次一密的密钥分发是比较困难的。首先，Alice 想要 给 Bob 发送长度为 n 的信息，则必须在这之前传送长度为 n 的密钥，相当于传输的数据总量翻了倍。其次，尽管密文是无条件安全的，但密钥的传输信道未必是安全的，攻击者一旦窃听了密钥，则可以解密密文。</p><p>　　那么马上就可以想到一个投机取巧的方法—— Alice 造一个比较长的密钥，然后用非常秘密的方式告诉 Bob. 接下来，Alice 每次向 Bob 发送信息，都把明文异或上这个约定好的字符串；Bob 收到信息之后，把密文异或上 <code>key</code>, 于是就可以拿到明文。整个过程只需要传送一次密钥，这是很方便的。这种方式称为 Many-Time-Pad (MTP).</p><p>　　很遗憾，上述的 MTP 办法是不安全的。攻击者如果截获了足够多的密文，就有可能推断出明文、进而拿到密钥。这个缺陷是异或运算的性质带来的。</p><h3 id="-">例子</h3><p>　　作为 MTP 攻击的范例，来看下面一道例题：</p><blockquote>BUUCTF: [AFCTF2018]你听过一次一密么？<br /><br />(原题有bug, 笔者有少量改动)<br />25030206463d3d393131555f7f1d061d4052111a19544e2e5d54<br />0f020606150f203f307f5c0a7f24070747130e16545000035d54<br />1203075429152a7020365c167f390f1013170b1006481e13144e<br />0f4610170e1e2235787f7853372c0f065752111b15454e0e0901<br />081543000e1e6f3f3a3348533a270d064a02111a1b5f4e0a1855<br />0909075412132e247436425332281a1c561f04071d520f0b1158<br />4116111b101e2170203011113a69001b47520601155205021901<br />041006064612297020375453342c17545a01451811411a470e44<br />021311114a5b0335207f7c167f22001b44520c15544801125d40<br />06140611460c26243c7f5c167f3d015446010053005907145d44<br />0f05110d160f263f3a7f4210372c03111313090415481d49530f</blockquote><p>　　上述的每一个字符串 $C_i$，都是某个 <code>key</code> 异或上明文 $M_i$ 得到的。我们的目标是获取这个 <code>key</code>. <strong>已知明文是英文句子</strong>。</p><p>　　回顾异或运算的性质：结合律、交换律、逆元为其自身。这是非常好的性质，然而也为攻击者提供了方便。因为：$$C_1 \oplus C_2 = (M_1 \oplus key) \oplus (M_2 \oplus key) = M_1 \oplus  M_2$$</p><p>　　这表明，两个密文的异或，就等于对应明文的异或。这是很危险的性质，高明的攻击者可以通过频率分析，来破译这些密文。我们来看字符串 $C_1$ 异或上其他密文会得到什么东西。以下只保留了英文字符，其余字符以 “.” 代替。</p><pre><code class="language-shell">....S....N.U.....A..M.N...
+...Ro..I...I....SE....P.I.
+.E..H...IN..H...........TU
+..A.H.R.....E....P......E.
+...RT...E...M....M....A.L.
+d...V..I..DNEt........K.DU
+.......I....K..I.ST...TiS.
+.....f...N.I........M.O...
+.........N.I...I.S.I..I...
+....P....N.OH...SA....Sg..</code></pre><p>　　可以观察到，有些列上有大量的英文字符，有些列一个英文字符都没有。这是偶然现象吗？</p><h3 id="ascii-">ascii表</h3><p>　　ascii 码表在 Linux 下可以通过 <code>man ascii</code> 指令查看。它的性质有：</p><ul><li><code>0x20</code> 是空格。 低于 <code>0x20</code> 的，全部是起特殊用途的字符； <code>0x20~0x7E</code> 的，是可打印字符。</li><li><code>0x30~0x39</code> 是数字 <code>0,1,2...9</code>。</li><li><code>0x41~0x5A</code> 是大写字母 <code>A-Z</code>； <code>0x61~0x7A</code> 是小写字母 <code>a-z</code>.</li></ul><p>　　我们可以注意到一个至关重要的规律：小写字母 xor 空格，会得到对应的大写字母；大写字母 xor 空格，会得到小写字母！所以，如果 $x \oplus y$ 得到一个英文字母，那么 $x, y$ 中的某一个有很大概率是空格。再来回头看上面 $C_1$ xor 其他密文——也就等于 $M_1$ xor 其他明文的表，如果第 $col$ 列存在大量的英文字母，我们可以猜测 $M_1[col]$ 是一个空格。那一列英文字母越多，把握越大。</p><p>　　知道 $M_1$ 的 $col$ 位是空格有什么用呢？别忘了异或运算下，$x$ 的逆元是其自身。所以$$M_i[col] = M_1[col] \oplus M_i[col] \oplus  M_1[col]  = M_1[col] \oplus M_i[col] \oplus  \text{0x20}$$</p><p>　　于是，<u>只要知道某个字符串的某一位是空格，我们就可以恢复出所有明文在这一列的值</u>。</p><h3 id="--1">攻击</h3><p>　　攻击过程显而易见：对于每一条密文$C_i$，拿去异或其他所有密文。然后去数每一列有多少个英文字符，作为“$M_i$在这一位是空格”的评分。</p><p>　　上面的事情做完时候，依据评分从大到小排序，依次利用 “某个明文的某一位是空格” 这种信息恢复出所有明文的那一列。如果产生冲突，则舍弃掉评分小的。不难写出代码：</p><pre><code class="language-python">import Crypto.Util.strxor as xo
+import libnum, codecs, numpy as np
+
+def isChr(x):
+    if ord('a') &lt;= x and x &lt;= ord('z'): return True
+    if ord('A') &lt;= x and x &lt;= ord('Z'): return True
+    return False
+
+def infer(index, pos):
+    if msg[index, pos] != 0:
+        return
+    msg[index, pos] = ord(' ')
+    for x in range(len(c)):
+        if x != index:
+            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ ord(' ')
+
+dat = []
+
+def getSpace():
+    for index, x in enumerate(c):
+        res = [xo.strxor(x, y) for y in c if x!=y]
+        f = lambda pos: len(list(filter(isChr, [s[pos] for s in res])))
+        cnt = [f(pos) for pos in range(len(x))]
+        for pos in range(len(x)):
+            dat.append((f(pos), index, pos))
+
+c = [codecs.decode(x.strip().encode(), 'hex') for x in open('Problem.txt', 'r').readlines()]
+
+msg = np.zeros([len(c), len(c[0])], dtype=int)
+
+getSpace()
+
+dat = sorted(dat)[::-1]
+for w, index, pos in dat:
+    infer(index, pos)
+
+print('\n'.join([''.join([chr(c) for c in x]) for x in msg]))
+</code></pre><p>　　执行代码，得到的结果是：</p><pre><code class="language-shell">Dear Friend, T%is tim&lt; I u
+nderstood my m$stake 8nd u
+sed One time p,d encr ptio
+n scheme, I he,rd tha- it 
+is the only en.ryptio7 met
+hod that is ma9hemati:ally
+ proven to be #ot cra:ked 
+ever if the ke4 is ke)t se
+cure, Let Me k#ow if  ou a
+gree with me t" use t1is e
+ncryption sche e alwa s...</code></pre><p>　　显然这不是最终结果，我们得修正几项。把 "k#now" 修复成 "know"，把 "alwa s" 修复成 "always". 代码如下：</p><pre><code class="language-python">def know(index, pos, ch):
+    msg[index, pos] = ord(ch)
+    for x in range(len(c)):
+        if x != index:
+            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ ord(ch)
+
+know(10, 21, 'y')
+know(8, 14, 'n')
+
+print('\n'.join([''.join([chr(c) for c in x]) for x in msg]))</code></pre><p>　　结果得到：</p><pre><code class="language-shell">Dear Friend, This time I u
+nderstood my mistake and u
+sed One time pad encryptio
+n scheme, I heard that it 
+is the only encryption met
+hod that is mathematically
+ proven to be not cracked 
+ever if the key is kept se
+cure, Let Me know if you a
+gree with me to use this e
+ncryption scheme always...</code></pre><p>　　我们成功恢复了明文！那么 <code>key</code> 也很好取得了：把 $C_1$ 异或上 $M_1$ 即可。</p><pre><code class="language-python">key = xo.strxor(c[0], ''.join([chr(c) for c in msg[0]]).encode())
+print(key)
+
+# b'afctf{OPT_1s_Int3rest1ng}!'</code></pre><h3 id="--2">结论</h3><p>　　Many-Time-Pad 是不安全的。我们这一次的攻击，条件稍微有点苛刻：明文必须是英文句子、截获到的密文必须足够多。但是只要攻击者有足够的耐心进行词频分析、监听大量密文，还是能够发起极具威胁性的攻击。如果铁了心要用直接xor来加密信息，应当采用一次一密(One-Time-Pad).</p><p>　　完整的解题脚本如下：</p><pre><code class="language-python">import Crypto.Util.strxor as xo
+import libnum, codecs, numpy as np
+
+def isChr(x):
+    if ord('a') &lt;= x and x &lt;= ord('z'): return True
+    if ord('A') &lt;= x and x &lt;= ord('Z'): return True
+    return False
+
+
+def infer(index, pos):
+    if msg[index, pos] != 0:
+        return
+    msg[index, pos] = ord(' ')
+    for x in range(len(c)):
+        if x != index:
+            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ ord(' ')
+
+def know(index, pos, ch):
+    msg[index, pos] = ord(ch)
+    for x in range(len(c)):
+        if x != index:
+            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ ord(ch)
+
+
+dat = []
+
+def getSpace():
+    for index, x in enumerate(c):
+        res = [xo.strxor(x, y) for y in c if x!=y]
+        f = lambda pos: len(list(filter(isChr, [s[pos] for s in res])))
+        cnt = [f(pos) for pos in range(len(x))]
+        for pos in range(len(x)):
+            dat.append((f(pos), index, pos))
+
+c = [codecs.decode(x.strip().encode(), 'hex') for x in open('Problem.txt', 'r').readlines()]
+
+msg = np.zeros([len(c), len(c[0])], dtype=int)
+
+getSpace()
+
+dat = sorted(dat)[::-1]
+for w, index, pos in dat:
+    infer(index, pos)
+
+know(10, 21, 'y')
+know(8, 14, 'n')
+
+print('\n'.join([''.join([chr(c) for c in x]) for x in msg]))
+
+key = xo.strxor(c[0], ''.join([chr(c) for c in msg[0]]).encode())
+print(key)</code></pre><blockquote>BUUCTF: [De1CTF2019]xorz<br /><br /><a href="https://buuoj.cn/files/d2d42fe1e168e38e5e2e6363b02a70f1/attachment.zip">【附件】</a></blockquote><p>　　给的是 $m[i] \oplus k[i] \oplus s[i]$, 其中 $s$ 已知，故实际上我们拿到了 $m[i] \oplus k[i]$. 在这里 $k$ 是有周期的，且周期不超过38。如果知道了 $k$ 的周期，那么用 Many-Time-Pad 就可以成功攻击。由于 <code>len(key)</code> 并不大，从大到小枚举 <code>len(key)</code>，肉眼判断是否为flag即可。最后发现 <code>len(key)=30</code> 是满足要求的。</p><pre><code class="language-python">from itertools import cycle
+import codecs, numpy as np
+import Crypto.Util.strxor as xo
+
+salt="WeAreDe1taTeam"
+si=cycle(salt)
+
+
+c = codecs.decode('49380d773440222d1b421b3060380c3f403c3844791b202651306721135b6229294a3c3222357e766b2f15561b35305e3c3b670e49382c295c6c170553577d3a2b791470406318315d753f03637f2b614a4f2e1c4f21027e227a4122757b446037786a7b0e37635024246d60136f7802543e4d36265c3e035a725c6322700d626b345d1d6464283a016f35714d434124281b607d315f66212d671428026a4f4f79657e34153f3467097e4e135f187a21767f02125b375563517a3742597b6c394e78742c4a725069606576777c314429264f6e330d7530453f22537f5e3034560d22146831456b1b72725f30676d0d5c71617d48753e26667e2f7a334c731c22630a242c7140457a42324629064441036c7e646208630e745531436b7c51743a36674c4f352a5575407b767a5c747176016c0676386e403a2b42356a727a04662b4446375f36265f3f124b724c6e346544706277641025063420016629225b43432428036f29341a2338627c47650b264c477c653a67043e6766152a485c7f33617264780656537e5468143f305f4537722352303c3d4379043d69797e6f3922527b24536e310d653d4c33696c635474637d0326516f745e610d773340306621105a7361654e3e392970687c2e335f3015677d4b3a724a4659767c2f5b7c16055a126820306c14315d6b59224a27311f747f336f4d5974321a22507b22705a226c6d446a37375761423a2b5c29247163046d7e47032244377508300751727126326f117f7a38670c2b23203d4f27046a5c5e1532601126292f577776606f0c6d0126474b2a73737a41316362146e581d7c1228717664091c', 'hex')
+
+
+a = [r ^ ord(next(si)) for r in c]  # a[i] = m[i] ^ k[i]
+
+def div(sz):
+    ret = [''.join([chr(ch) for ch in a[i*sz : (i+1)*sz]]).encode() for i in range(len(a)//sz)]
+    # if len(a) % sz != 0:
+        # ret.append(a[len(a)//sz*sz:])
+    print('\n'.join(map(lambda x:codecs.encode(x, 'hex').decode(), ret)))
+    return ret
+
+sz = 30
+t = div(sz)</code></pre><pre><code class="language-shell">➜  workspace python3 work.py &gt; out.txt
+➜  workspace python3 mtp.py
+In faith I do not love thee wi
+th mine eyes,For they in thee
+a thousand errors note;But `ti
+s my heart that loves what the
+y despise,Who in despite of vi
+ew is pleased to dote.Nor are
+mine ears with thy tongue`s tu
+ne delighted;Nor tender feelin
+g to base touches prone,Nor ta
+ste, nor smell, desire to be i
+nvitedTo any sensual feast wit
+h thee alone.But my five wits,
+ nor my five senses canDissuad
+e one foolish heart from servi
+ng thee,Who leaves unswayed th
+e likeness of a man,Thy proud
+heart`s slave and vassal wretc
+h to be.Only my plague thus fa
+r I count my gain,That she tha
+t makes me sin awards me pain.
+b'W3lc0m3tOjo1nu55un1ojOt3m0cl3W'</code></pre>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

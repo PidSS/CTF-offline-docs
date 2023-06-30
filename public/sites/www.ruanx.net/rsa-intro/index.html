@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>RSA原理和实现</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="RSA原理和实现" />
+    <meta property="og:description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <meta property="og:url" content="https://www.ruanx.net/rsa-intro/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2020-03-18T06:33:42.000Z" />
+    <meta property="article:modified_time" content="2022-11-04T07:41:19.000Z" />
+    <meta property="article:tag" content="Crypto" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RSA原理和实现" />
+    <meta name="twitter:description" content="RSA算法的原理及Python代码实现，以及在CTF中的简单利用。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/rsa-intro/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Crypto, algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "RSA原理和实现",
+    "url": "https://www.ruanx.net/rsa-intro/",
+    "datePublished": "2020-03-18T06:33:42.000Z",
+    "dateModified": "2022-11-04T07:41:19.000Z",
+    "keywords": "Crypto, algorithm",
+    "description": "RSA算法的原理及Python代码实现，以及在CTF中的简单利用。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-crypto tag-algorithm">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">RSA原理和实现</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-crypto tag-algorithm no-image no-image">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/crypto/index.html">Crypto</a>
+                </section>
+
+                <h1 class="post-full-title">RSA原理和实现</h1>
+
+                <p class="post-full-custom-excerpt">RSA算法的原理及Python代码实现，以及在CTF中的简单利用。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2020-03-18">18 Mar 2020</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 11 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <p>　　RSA是一种非对称加密算法。谓之“非对称”，是因为加密和解密使用的是不同的密钥。RSA算法利用公钥来加密，用私钥来解密；公钥可以随意公布，任何人都可以利用公钥来加密一条信息，但只有私钥持有者才能把信息解密。</p><p>　　这是非常有用的加密体系。譬如，Alice 想给 Bob 发送一条信息，那么她可以在网上找到 Bob 的公钥，然后加密信息，并通过随便什么渠道传送给 Bob. 假设有一位窃听者 Eve 得到了加密后的信息，他也无法解密，因为没有私钥。</p><p>　　RSA另有一个特点：用私钥加密的信息，用公钥可以解密。这让基于RSA的数字签名成为可能。假如我写了一篇文章，我可以用私钥加密这一篇文本的md5值，把密文（也就是签名）附在文章后面。读者从可信的渠道得到我的公钥，利用公钥解密签名，发现与这篇文章的md5值一致，于是可以确信这篇文章确实是我写的。</p><p>　　RSA是极其巧妙的算法，而它的数学基础却出奇地简单，代码实现也不复杂。RSA同时是一个难以破解的密码体系，破解RSA的速度取决于大整数分解的速度。从RSA中，我们可以看到数论在现实生活中的运用，以及令人惊叹的人类智慧。</p><p>　　RSA算法的发明者是：Ron Rivest、Adi Shamir、Leonard Adleman，算法提出于1977年。</p><h3 id="rsa-">RSA的数学基础</h3><p>　　学过数论的同学，对欧拉函数不会陌生。它是一个数论函数（定义域为正整数集，值域为复数集），定义是：$\varphi(n)$ 为 $\{1, 2,3,\cdots ,n\}$ 中与$n$互质的数的个数。</p><p>　　举几个例子：$\varphi(6)=2$，因为6以内与6互质的数只有1和5. 而$\varphi(10)=4$，因为10以内与10互质的数有1、3、7、9，共4个。另外，不难发现，对于质数$p$，有$\varphi(p) = p-1$.</p><p>　　为了更深入地讨论欧拉函数的性质，我们需要知道欧拉函数的通项公式。<u>如果您只是想知道 RSA 算法怎么写、怎么用，则下面一段可以跳过。</u></p><hr><p>　　欧拉函数的通项公式是什么？我们先给出结论，再谈谈是如何找到这个结论的。$$\varphi(n) = n \cdot \prod_{p}(1 - \frac1p)~~,其中p是n的质因子$$</p><p>　　想求出$\varphi(n)$，那就得统计出 $n$ 以内有多少个与 $n$ 互质的数。那么，与 $n$ 互质的数 $r$ 有什么特点呢？关键在于： $n$ 拥有的质因子， $r$ 全都没有。换句话讲：假设 $n$ 的质因数分解为$$n = p_1^{k_1}\cdot p_2 ^ {k_2} \cdots p_c ^{k_c}$$则 $r$ 必然满足 $r \% p_1 = 0, r\% p_2=0,\cdots$ 既然如此，研究 $r$ 模掉 $n$ 的质因子们所得到的结果，就可以看出 $r$ 的一些性质。我们来造一个函数：$G(x) = (x\% p_1^ {k_1}, ~ x\% p_2 ^ {k_2},  ~ \cdots x \% p_c ^ {k_c})$，有性质如下：</p><p>　　$r$ 与 $n$ 互质，<strong>当且仅当</strong> $G(r)$ 生成的元组中，对于第 $i$ 位，总有它不能被 $p_i$ 整除。我们把这种元组称为合法元组。</p><p>　　这是一条很平凡的性质，但它可以成为计数的一把钥匙。直接统计 $n$ 以内与 $n$ 互质的数是困难的，但统计有多少个合法元组则简单得多。合法元组的第 $i$ 位不能是 $p_i$ 的倍数或0，那么这一位有 $p_i^{k_i} \cdot (1-\frac1{p_i})$ 种取值，故依据乘法原理，合法元组的总数是：$$\prod_{i&lt;c}p_i ^ {k_i} (1-\frac1{p_i}) ~ = ~ \prod_{i&lt;c}p_i ^ {k_i} \prod_{i&lt;c}(1-\frac1{p_i})  ~ =  ~ n \prod_{i&lt;c}(1-\frac1{p_i})$$</p><p>　　这个式子要成为欧拉函数的通项公式，还有最后一步路要走：$G$目前只是一个普通映射，既有可能多个 $r$ 对应同一个合法元组，也可能一个合法元组对应不了任何 $r$. 从而合法元组的数量未必恰好就是与 $n$ 互质的数的数量。接下来的任务是：证明 $G: \{1,2,3,\cdots ,n\} \to (元组)$ 是一个双射。</p><p>　　还记得<strong>中国剩余定理（CRT）</strong>吗？它通过一个精妙的构造，指出了 $(元组)\to \{1,2,3,\cdots ,n\}$是一个双射（当然了，这个结论只是CRT的一个副产品）。中国剩余定理在这里不再赘述，感兴趣的读者可以去查阅相关资料。总之，既然元组与 $n$ 以内的整数是一一对应的，那么合法元组的数量就是 $n$ 以内与 $n$ 互质的数的个数。从而我们得到了欧拉函数的通项公式：$$\varphi(n) = n \cdot \prod_{p}(1 - \frac1p)~~,其中p是n的质因子$$</p><hr><p>　　现在我们手上有欧拉函数的通项公式了。可以随便挑几个数验证一下：$$\varphi(10) = 10 \times \frac12 \times \frac45 = 4,\quad \varphi(24) = 24 \times \frac12 \times \frac23 = 8$$</p><p>　　利用欧拉函数的通项公式，可以得到两条性质：</p><ol><li>$\varphi$ 是积性函数。若 $a,b$ 互质，则有$\varphi(ab) = \varphi(a)\cdot \varphi(b)$      </li><li><strong>欧拉定理</strong>。若 $a, m$ 互质，则有 $a^{\varphi(m)} \equiv 1 \pmod m$<br>不难发现，费马小定理是欧拉定理在 $m$ 为质数下的情形。               </li></ol><p>　　以上这堆性质的证明、欧拉函数通项的求法、线性筛欧拉函数、扩展欧几里得算法，是接下来代码实现的基础。我一年前给高中生讲数论的时候做了篇课件，恰好涵盖了这些内容，<strong><a href="https://www.jianguoyun.com/p/DQEFzTgQyNGbCBi_pfcC">点这里下载</a></strong>。</p><p>　　<strong>欧拉定理</strong>是欧拉函数最大的作用。利用欧拉定理可以得到结论：若$a,m$互质，则$$a^b \equiv a ^ {b \% \varphi(m)} \pmod m$$ 这不仅大大降低了计算复杂度（可以利用快速幂算法），也是 RSA 算法的基石。</p><h3 id="rsa--1">RSA算法</h3><p>　　RSA算法的过程如下：</p><ol><li>随便选择两个极大的质数，分别记为 $p, q$. 当然这里 $p\neq q$.</li><li>记 $N = p\cdot q$, 则由欧拉函数的积性有 $\varphi(N) = (p-1)(q-1)$.</li><li>选取一个小于 $ N $ 的 $e$, 使得 $\gcd(e, \varphi(N))=1$. 求出 $e$ 在模 $\varphi(N)$ 意义下的逆元，记为$d$.</li><li>我们得到了$(N, e)$作为公钥，$(N, d)$作为私钥。 <br>P.S. 注意到 $e$ 和 $d$ 是对称的，把 $e$ 拿去当私钥，把 $d$ 拿去当公钥也可行。 </li></ol><p>　　公钥可以分发给所有人，私钥必须保存好。接下来，别人可以用公钥加密信息发给我，我用私钥可以解密这条信息。下面来讨论加密、解密算法。</p><p>　　假设 Alice 想给 Bob 发一条信息，于是搞到了 Bob 的公钥$(N, e)$. 设 $m$ 为明文，则我们这样计算出密文：$$c \equiv m^e \pmod N$$ Bob 收到密文 $c$ 之后，用自己手上的私钥解密：$$m \equiv c^ d \pmod N$$</p><p>　　为什么这样就可以恢复出明文 $m$？注意到$$c^d \equiv (m^e) ^ d \equiv m^{ed} \equiv m^ {ed \% \varphi(N)} \pmod N$$而 $e,d$ 在模$\varphi(N)$意义下互为逆元，故$ed \% \varphi(N) = 1$. 从而 $m^ {ed \% \varphi(N)} \equiv m \pmod N$. 证毕。</p><p></p><p>　　代码实现RSA加密、解密异常简单，只需要会扩展欧几里得算法、快速幂就行了。如下：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">def exgcd(a, b):                   # 扩展欧几里得算法
+    if b==0: return (1, 0)
+    x, y = exgcd(b, a%b)
+    return (y, x-a//b*y)
+
+def getInv(a, mod):                # exgcd求逆元
+    x, y = exgcd(a, mod)
+    return x
+    # Python下负数模正数得到正数。如果是其他语言，得返回 (x % mod + mod) % mod
+
+def quickPow(x, p, mod):           # 模 mod 意义下求 x 的 p 次方
+    if p==0: return 1
+    if p==1: return x
+
+    t = quickPow(x, p//2, mod)
+    if p%2 == 0: return t * t % mod
+    return t * t * x % mod
+
+def encrypt(m, N, e):           # 加密
+    return quickPow(m, e, N)
+
+def decrypt(c, N, d):           # 解密
+    return quickPow(c, d, N)
+
+# 拿 bsdgames 里面的 `primes` 程序随便造的 p, q
+p = 100088459
+q = 1000049473
+
+N = p * q
+phi = (p-1) * (q-1)
+e = 2333333
+d = getInv(e, phi)
+
+c = encrypt(123454321, N, e)
+print(c) # 加密 `123454321`，得到密文：`8922052926595796`
+
+m = decrypt(c, N, d)
+print(m) # 解密，得到明文 `123454321`</code></pre><figcaption>RSA加密和解密</figcaption></figure><h3 id="rsa--2">RSA的安全性</h3><p>　　RSA是一个简单的算法，（主流的）攻击思路也不复杂：解密是需要私钥 $(N, d)$ 的，那么目标就是取得 $d$；由于$d$是 $e$ 在模 $\varphi(N)$ 意义下的逆元，故只需要知道 $\varphi(N)$ 就可以由公钥推出私钥；而要想知道 $\varphi(N)$ 是多少，只需要质因数分解$N$——因此，一般认为，RSA的安全性取决于分解$N$的难度。</p><p>　　目前，分解质因数是极端困难的。人们没有找到多项式时间内分解质因数的做法。而生成一个质数却很简单——我们拥有判断一个数是否为质数的快速算法（例如Miller-Rabin算法），又有质数定理： $\Pi (n) \sim n/\ln n$ 保证了 $n$ 附近期望每 $\ln n$ 个数里面就有一个质数。想找到适合RSA的大质数 $p,q$，只需要随机生成很大的数，然后检验是不是质数，重复几次就可以达到目标。</p><p>　　尽管现在没有多项式时间内分解质因数的算法，但有些算法还是比较快的——例如 Pollard's rho. 此外，量子计算机上可以实现Shor算法，但目前没有多大的应用价值。推荐使用不低于2048位的密钥，这里的密钥长度是指模数 $N$ 的二进制长度。</p><h3 id="-rsa-">生成RSA密钥对</h3><p>　　<code>ssh-keygen</code> 程序可以造一个RSA密钥对，接下来这个密钥对可以用于git身份验证、ssh服务器身份验证等很多功能。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/03/image-3.png" class="kg-image" alt loading="lazy"><figcaption>生成一个RSA密钥对&nbsp;</figcaption></figure><p>　　接下来，我们来看这里面有什么东西。 <code>hello</code> 是私钥文件， <code>hello.pub</code> 是公钥文件。里面的东西都是base64编码过的，可以用RsaCtfTool来查看。</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/03/image-4.png" class="kg-image" alt loading="lazy"><figcaption>公钥文件&nbsp;</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2020/03/image-5.png" class="kg-image" alt loading="lazy"><figcaption>私钥文件&nbsp;</figcaption></figure><h3 id="-ctf-">几道CTF题</h3><blockquote>Jarvis OJ: veryeasyRSA<br><br>已知RSA公钥生成参数：<br>p = 3487583947589437589237958723892346254777 <br>q = 8767867843568934765983476584376578389<br>e = 65537, 求d</blockquote><pre><code class="language-python">In [2]: p = 3487583947589437589237958723892346254777
+
+In [3]: q = 8767867843568934765983476584376578389
+
+In [4]: e = 65537
+
+In [5]: phi = (p-1) * (q-1)
+
+In [6]: gmpy2.invert(e, phi)
+Out[6]: mpz(19178568796155560423675975774142829153827883709027717723363077606260717434369)</code></pre><blockquote>JarvisOJ: Easy RSA<br><br>还记得veryeasy RSA吗？是不是不难？那继续来看看这题吧，这题也不难。<br>已知一段RSA加密的信息为：0xdc2eeeb2782c<br>已知加密所用的公钥：(N=322831561921859 e = 23)<br>请解密出明文，提交时请将数字转化为ascii码提交</blockquote><pre><code class="language-python">In [2]: c = 0xdc2eeeb2782c
+
+In [3]: n = 322831561921859
+
+In [4]: e = 23
+
+In [7]: !factor {n}
+322831561921859: 13574881 23781539
+
+In [8]: p = 13574881; q = 23781539
+
+In [9]: phi = (p-1)*(q-1)
+
+In [10]: d = gmpy2.invert(e, phi)
+
+In [14]: hex(gmpy2.powmod(c, d, n))
+Out[14]: '0x33613559'
+
+In [16]: codecs.decode('33613559', 'hex')
+Out[16]: b'3a5Y'</code></pre><blockquote>BUUCTF: RSA<br><br>在一次RSA密钥对生成中，假设p=473398607161，q=4511491，e=17<br>求解出d作为flag提交</blockquote><pre><code class="language-python">In [21]: p = 473398607161
+
+In [22]: q = 473398607161
+
+In [23]: e = 17
+
+In [24]: gmpy2.invert(e, (p-1)*(q-1))
+Out[24]: mpz(13182720074178117839153)</code></pre><blockquote>BUUCTF: rsarsa<br><br>Math is cool! Use the RSA algorithm to decode the secret message, c, p, q, and e are parameters for the RSA algorithm.<br>(给定了 p, q, e, c)<br>Use RSA to find the secret message</blockquote><pre><code class="language-python">In [25]: p =  96484230290105156765905517400104265349457376392357398006439893520398525072984913995610350091634    ...: 27050370107570733633350911691280297777160200625281665378483
+
+In [26]: q =  11874843837980297032092405848653656852760910154543380907650040190704283358909208578251063047732    ...: 443992230647903887510065547947313543299303261986053486569407
+
+In [27]: e =  65537
+
+In [28]: c =  83208298995174604174773590298203639360540024871256126892889661345742403314929861939100492666605    ...: 6473166465764865262174570063768422808697285817267464015837058999417682141387422596893348407356335530    ...: 5388764184765117377625182029308721288567018036740680740676592363897316137581739273774783276275169010    ...: 4423869019034
+
+In [29]: d = gmpy2.invert(e, (p-1)*(q-1))
+
+In [30]: gmpy2.powmod(c, d, p*q)
+Out[30]: mpz(5577446633554466577768879988)</code></pre>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/crypto/index.html">Crypto</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../totp/index.html">二步验证 TOTP 协议及其实现</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-18">18 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../2022-fall-crypto-problems/index.html">2022秋见到的一些Crypto题</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-09-15">15 Sep 2022</time> –
+                                        38 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../rsa-attack-survey/index.html">论文阅读：上世纪的 RSA 攻击方式</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-08-19">19 Aug 2022</time> –
+                                        11 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/crypto/index.html">See all 24 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-crypto tag-python no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../rsa-solutions/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">CTF RSA题解集</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>这里是一大堆CTF比赛中RSA题的题解。深入讨论了 Rabin 加密算法、小解密指数攻击、共模数攻击、模不互质攻击。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-03-18">18 Mar 2020</time> <span class="bull">&bull;</span> 24 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-sql tag-injection tag-binary-search no-image no-image">
+
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../sql-time-injection/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">SQL</div>
+                <h2 class="post-card-title">SQL时间盲注笔记</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>在SQL注入的过程中，我们经常遇到完全没有返回值的情况。此时，要进行SQL盲注，可以通过延时来进行。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2020-03-13">13 Mar 2020</time> <span class="bull">&bull;</span> 4 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

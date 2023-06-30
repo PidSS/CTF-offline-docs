@@ -1,0 +1,672 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>Mysql字符编码利用技巧 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="mysql-charset-trick.html">Mysql字符编码利用技巧</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">Mysql字符编码利用技巧</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2017-4-9 22:17</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">5条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="mysql-charset-trick.html">31555人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/ctf.html">ctf</a>
+    
+        <a href="../tag/Mysql.html">Mysql</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <h2 id="0x01-ctf"><a class="toclink" href="#0x01-ctf">0x01 由某CTF题解说起</a></h2>
+<p>小密圈里有人提出的问题，大概代码如下：</p>
+<p><a href="../media/attachment/2017/04/09/e25177ac-27e4-4ad7-92a5-3ff6a728718a.jpg"><img alt="14917408262207.jpg" src="../media/attachment/2017/04/09/e25177ac-27e4-4ad7-92a5-3ff6a728718a.6f8fe63f3367.jpg" /></a></p>
+<p>看了一下，明显考点是这几行：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$username</span> <span class="o">===</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">die</span><span class="p">(</span><span class="s1">&#39;Permission denied!&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM z_users where username = &#39;</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2">&#39; and password = &#39;</span><span class="si">{</span><span class="nv">$password</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>这个if语句嫌疑很大，大概是考我们怎么登陆<code>admin</code>的账号，请先看这一篇文章 <a href="Mini-XCTF-Writeup.html">https://www.leavesongs.com/PENETRATION/Mini-XCTF-Writeup.html</a> </p>
+<p>本文中利用<code>Â</code>等latin1字符来绕过php的判断。这个CTF也是用同样的方法来解决：</p>
+<p><a href="../media/attachment/2017/04/09/4d877bf9-6f66-4082-b9b7-b207da16882b.jpg"><img alt="14917408495441.jpg" src="../media/attachment/2017/04/09/4d877bf9-6f66-4082-b9b7-b207da16882b.e2607c30b760.jpg" /></a></p>
+<p>可见，我传入的<code>username=admin%c2</code>，php的检测<code>if ($username === 'admin')</code>自然就可以绕过的，在mysql中可以正常查出<code>username='admin'</code>的结果。</p>
+<h2 id="0x02-trick"><a class="toclink" href="#0x02-trick">0x02 Trick复现</a></h2>
+<p>那么，为什么执行<code>SELECT * FROM user WHERE username='admin\xC2' and password='admin'</code>却可以查出用户名是<code>admin</code>的记录？</p>
+<p>刚好这段时间有人问我为什么在他的计算机上无法复现，我们来深入研究研究。</p>
+<p>编写如下代码：</p>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
+<span class="nv">$mysqli</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">mysqli</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">);</span>
+
+<span class="cm">/* check connection */</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">connect_errno</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;Connect failed: %s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">connect_error</span><span class="p">);</span>
+    <span class="k">exit</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;set names utf8&quot;</span><span class="p">);</span>
+
+<span class="nv">$username</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]);</span>
+
+<span class="cm">/* Select queries return a resultset */</span>
+<span class="nv">$sql</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM `table1` WHERE username=&#39;</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span> <span class="nv">$sql</span> <span class="p">))</span> <span class="p">{</span>
+    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;Select returned %d rows.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">num_rows</span><span class="p">);</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">fetch_array</span><span class="p">(</span><span class="nx">MYSQLI_ASSOC</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$row</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* free result set */</span>
+    <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nv">$mysqli</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span>
+</pre></div>
+
+
+<p>然后在数据库<code>cat</code>中创建表<code>table1</code>：</p>
+<div class="codehilite"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">table1</span><span class="o">`</span> <span class="p">(</span>
+  <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="n">unsigned</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">username</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">latin1_general_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">password</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">latin1_general_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">MyISAM</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">1</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">latin1</span> <span class="k">COLLATE</span><span class="o">=</span><span class="n">latin1_general_ci</span><span class="p">;</span>
+</pre></div>
+
+
+<p>我特地将字符集设置为<code>latin1</code>，其实默认情况下，Mysql的字符集就是<code>latin1</code>，没必要写明。</p>
+<p>插入一个管理员账户：</p>
+<div class="codehilite"><pre><span></span><span class="k">INSERT</span> <span class="o">`</span><span class="n">table1</span><span class="o">`</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>然后，我们访问<code>http://localhost/test.php?username=admin%c2</code>，即可发现<code>%c2</code>被忽略，Mysql查出了<code>username=admin</code>的结果：</p>
+<p><a href="../media/attachment/2017/04/09/fbb48210-00ee-4c28-9476-f753d03d5585.jpg"><img alt="14917408641502.jpg" src="../media/attachment/2017/04/09/fbb48210-00ee-4c28-9476-f753d03d5585.f90d1f80153e.jpg" /></a></p>
+<p>假设我们将<code>table1</code>表的字符集换成<code>utf8</code>，就得不到结果了。</p>
+<h2 id="0x03-mysql"><a class="toclink" href="#0x03-mysql">0x03 Mysql字符集转换</a></h2>
+<p>经过0x02中对该Mysql Trick的复现，大概也能猜到原理了。</p>
+<p>造成这个Trick的根本原因是，<strong>Mysql字段的字符集和php mysqli客户端设置的字符集不相同</strong>。</p>
+<p><code>set names utf8</code> 的意思是将客户端的字符集设置为utf8。我们打开mysql控制台，依次执行<code>SHOW VARIABLES LIKE 'character_set_%';</code>、<code>set names utf8;</code>、<code>SHOW VARIABLES LIKE 'character_set_%';</code>，即可得到如下结果：</p>
+<p><a href="../media/attachment/2017/04/09/ffb4bf0c-ba58-444e-a056-d75f6ebf8d38.jpg"><img alt="14917422428663.jpg" src="../media/attachment/2017/04/09/ffb4bf0c-ba58-444e-a056-d75f6ebf8d38.9251a10908b4.jpg" /></a></p>
+<p>如上图，在默认情况下，mysql字符集为latin1，而执行了<code>set names utf8;</code>以后，<code>character_set_client</code>、<code>character_set_connection</code>、<code>character_set_results</code>等与客户端相关的配置字符集都变成了utf8，但<code>character_set_database</code>、<code>character_set_server</code>等服务端相关的字符集还是latin1。</p>
+<p>这就是该Trick的核心，因为这一条语句，导致客户端、服务端的字符集出现了差别。既然有差别，Mysql在执行查询的时候，就涉及到字符集的转换。</p>
+<p>2008年鸟哥曾在<a href="http://www.laruence.com/2008/01/05/12.html">博客</a>中讲解了Mysql字符集：</p>
+<blockquote>
+<ol>
+<li>MySQL Server收到请求时将请求数据从character_set_client转换为character_set_connection；</li>
+<li>进行内部操作前将请求数据从character_set_connection转换为内部操作字符集</li>
+</ol>
+</blockquote>
+<p>在我们这个案例中，<code>character_set_client</code>和<code>character_set_connection</code>被设置成了utf8，而<code>内部操作字符集</code>其实也就是<code>username</code>字段的字符集还是默认的latin1。于是，整个操作就有如下字符串转换过程：</p>
+<p><code>utf8 --&gt; utf8 --&gt; latin1</code></p>
+<p>最后执行比较<code>username='admin'</code>的时候，<code>'admin'</code>是一个latin1字符串。</p>
+<h2 id="0x04"><a class="toclink" href="#0x04">0x04 漏洞成因</a></h2>
+<p>那么，字符集转换为什么会导致<code>%c2</code>被忽略呢？</p>
+<p>说一下我的想法，虽然我没有深入研究，但我觉得原因应该是，<strong>Mysql在转换字符集的时候，将不完整的字符给忽略了</strong>。</p>
+<p>举个简单的例子，<code>佬</code>这个汉字的UTF-8编码是<code>\xE4\xBD\xAC</code>，我们可以依次尝试访问下面三个URL：</p>
+<div class="codehilite"><pre><span></span>http://localhost:9090/test.php?username=admin%e4
+http://localhost:9090/test.php?username=admin%e4%bd
+http://localhost:9090/test.php?username=admin%e4%bd%ac
+</pre></div>
+
+
+<p>可以发现，前两者都能成功获取到<code>username=admin</code>的结果，而最后一个URL，也就是当我输入<code>佬</code>字完整的编码时，将会被抛出一个错误：</p>
+<p><a href="../media/attachment/2017/04/09/137a7289-ea01-4d32-b11e-638f25c8ee8c.jpg"><img alt="14917436746982.jpg" src="../media/attachment/2017/04/09/137a7289-ea01-4d32-b11e-638f25c8ee8c.6bb3c6d30e29.jpg" /></a></p>
+<p><a href="../media/attachment/2017/04/09/5d50006b-1fb5-435d-928b-9e8652d84025.jpg"><img alt="14917436885556.jpg" src="../media/attachment/2017/04/09/5d50006b-1fb5-435d-928b-9e8652d84025.926c7951adc1.jpg" /></a></p>
+<p><a href="../media/attachment/2017/04/09/4015771c-f706-4425-ae44-cc19a0c6dbc0.jpg"><img alt="14917436998958.jpg" src="../media/attachment/2017/04/09/4015771c-f706-4425-ae44-cc19a0c6dbc0.bf9a2c529106.jpg" /></a></p>
+<p>为什么会抛出错误？原因很简单，因为latin1并不支持汉字，所以utf8汉字转换成latin1时就抛出了错误。</p>
+<p>那前两次为什么没有抛出错误？因为前两次输入的编码并不完整，Mysql在进行编码转换时，就将其忽略了。</p>
+<p>这个特点也导致，我们查询<code>username=admin%e4</code>时，<code>%e4</code>被省略，最后查出了<code>username=admin</code>的结果。</p>
+<h2 id="0x05"><a class="toclink" href="#0x05">0x05 为什么只有部分字符可以使用</a></h2>
+<p>我在测试这个Trick的时候发现，<code>username=admin%c2</code>时可以正确得到结果，但<code>username=admin%c1</code>就不行，这是为什么？</p>
+<p>我简单fuzz了一下，如果在admin后面加上一个字符，有如下结果：</p>
+<ol>
+<li><code>\x00</code>~<code>\x7F</code>： 返回空白结果</li>
+<li><code>\x80</code>~<code>\xC1</code>： 返回错误Illegal mix of collations</li>
+<li><code>\xC2</code>~<code>\xEF</code>： 返回admin的结果</li>
+<li><code>\xF0</code>~<code>\xFF</code>： 返回错误Illegal mix of collations</li>
+</ol>
+<p>这就涉及到Mysql编码相关的知识了，先看看<a href="https://zh.wikipedia.org/wiki/UTF-8">维基百科</a>吧。</p>
+<p>UTF-8编码是变长编码，可能有1~4个字节表示：</p>
+<ol>
+<li>一字节时范围是[00-7F]</li>
+<li>两字节时范围是[C0-DF][80-BF]</li>
+<li>三字节时范围是[E0-EF][80-BF][80-BF]</li>
+<li>四字节时范围是[F0-F7][80-BF][80-BF][80-BF]</li>
+</ol>
+<p>然后根据RFC 3629规范，又有一些字节值是不允许出现在UTF-8编码中的：</p>
+<p><a href="../media/attachment/2017/04/09/db28c7b4-4dc9-4592-9fc7-23f0290c3892.jpg"><img alt="14917445720884.jpg" src="../media/attachment/2017/04/09/db28c7b4-4dc9-4592-9fc7-23f0290c3892.6e734d61aa73.jpg" /></a></p>
+<p>所以最终，UTF-8第一字节的取值范围是：00-7F、C2-F4，这也是我在admin后面加上80-C1、F5-FF等字符时会抛出错误的原因。</p>
+<p>关于所有的UTF-8字符，你可以在这个表中一一看到： <a href="http://utf8-chartable.de/unicode-utf8-table.pl">http://utf8-chartable.de/unicode-utf8-table.pl</a></p>
+<h2 id="0x06-mysql-utf8"><a class="toclink" href="#0x06-mysql-utf8">0x06 Mysql UTF8 特性</a></h2>
+<p>那么，为什么<code>username=admin%F0</code>也不行呢？F0是在C2-F4的范围中呀？</p>
+<p>这又涉及到Mysql中另一个特性：<strong>Mysql的utf8其实是阉割版utf-8编码，Mysql中的utf8字符集最长只支持三个字节</strong>，</p>
+<p>所以，我们回看前文列出的UTF-8编码第一字节的范围，</p>
+<blockquote>
+<p>三字节时范围是[E0-EF][80-BF][80-BF]<br />
+四字节时范围是[F0-F7][80-BF][80-BF][80-BF]</p>
+</blockquote>
+<p>F0-F4是四字节才有的，所以我传入<code>username=admin%F0</code>也将抛出错误。</p>
+<p>如果你需要Mysql支持四字节的utf-8，可以使用<code>utf8mb4</code>编码。我将原始代码中的set names改成<code>set names utf8mb4</code>，再看看效果：</p>
+<p><a href="../media/attachment/2017/04/09/e774e309-df2f-4c20-8445-20865afca44f.jpg"><img alt="14917457463556.jpg" src="../media/attachment/2017/04/09/e774e309-df2f-4c20-8445-20865afca44f.ace7483fad1e.jpg" /></a></p>
+<p>已经成功得到结果。</p>
+<h2 id="0x07"><a class="toclink" href="#0x07">0x07 总结</a></h2>
+<p>本文深入研究了Mysql编码的数个特性，相信看完本文，对于第一章中的CTF题目也没有疑问了。</p>
+<p>通过这次研究，我有几个感想：</p>
+<ol>
+<li>研究东西还是需要深入，之前写那篇文章的时候并没有深入研究原理，所以心里总是很迷糊</li>
+<li>维基百科上涵盖了很多知识，有必要的时候也可以多看看</li>
+</ol>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/ctf.html">ctf</a>
+                
+                    <a href="../tag/Mysql.html">Mysql</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 5 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3089">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/14f8c3050e0b94f0377c11048385fb26.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">tuhao</a></div>
+                    <p>深入浅出，👍</p>
+                    <span class="comment-time">时间: 2018-06-18 21:41</span>
+                    <span class="comment-reply"><a href="#comment-3089" onclick="reply_to('3089','tuhao')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2644">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">盘古科技</a></div>
+                    <p>盘古打造大格局</p>
+                    <span class="comment-time">时间: 2017-04-23 20:53</span>
+                    <span class="comment-reply"><a href="#comment-2644" onclick="reply_to('2644','盘古科技')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2615">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">admin</a></div>
+                    <p>你好，请问&quot;测试&quot;的utf-8编码的为什么表示为\xe6\xb5\x8b\xe8\xaf\x95，而不是\xe6\xb5\x8a\xe8\xaf\x96呢？</p>
+                    <span class="comment-time">时间: 2017-04-10 22:01</span>
+                    <span class="comment-reply"><a href="#comment-2615" onclick="reply_to('2615','admin')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2616">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@admin 字符集就是一个字节序列和字符的对应关系表，就跟化学元素周期表一样，为什么第一个元素是字母H而不是字母O，这个你得问当初编写这个表的人。</p>
+                    <span class="comment-time">时间: 2017-04-10 22:25</span>
+                    <span class="comment-reply"><a href="#comment-2616" onclick="reply_to('2616','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-2614">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">hckmaple</a></div>
+                    <p>膜p师傅，刚卡在一个字符集的问题上，看完这篇，柳暗花明</p>
+                    <span class="comment-time">时间: 2017-04-10 16:15</span>
+                    <span class="comment-reply"><a href="#comment-2614" onclick="reply_to('2614','hckmaple')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="0d0d74411af3b606a7484e6b23b20faf534491fc" />
+</div><div class="col-6">
+<img src="../captcha/image/0d0d74411af3b606a7484e6b23b20faf534491fc/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="414" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="nOgpgXQojRMSWuKCORSIb1xnD1s26kK89mEgO2r7Hd0Bu2y0QSPt8uAsYoJdFWWq">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E5%AE%89%E5%85%A8%E7%8B%97.html">安全狗</a>
+        
+        <a rel="tag" href="../tag/md5.html">md5</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86.html">大文件处理</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.html">端口扫描</a>
+        
+        <a rel="tag" href="../tag/%E5%AE%A2%E6%88%B7%E7%AB%AFXSS.html">客户端XSS</a>
+        
+        <a rel="tag" href="../tag/appcms.html">appcms</a>
+        
+        <a rel="tag" href="../tag/ctf.html">ctf</a>
+        
+        <a rel="tag" href="../tag/java.html">java</a>
+        
+        <a rel="tag" href="../tag/%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90.html">好物推荐</a>
+        
+        <a rel="tag" href="../tag/%EF%B9%AA00%E6%88%AA%E6%96%AD.html">%00截断</a>
+        
+        <a rel="tag" href="../tag/%E6%90%AC%E5%AE%B6.html">搬家</a>
+        
+        <a rel="tag" href="../tag/jar%E6%89%93%E5%8C%85.html">jar打包</a>
+        
+        <a rel="tag" href="../tag/fineCMS.html">fineCMS</a>
+        
+        <a rel="tag" href="../tag/Mysql.html">Mysql</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%8A%A8%E8%AE%BE%E7%BD%AE.html">自动设置</a>
+        
+        <a rel="tag" href="../tag/exe.html">exe</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/WAF.html">WAF</a>
+        
+        <a rel="tag" href="../tag/kali.html">kali</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E6%8A%A5%E7%BA%B8.html">报纸</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/string.html">string</a>
+        
+        <a rel="tag" href="../tag/Vulhub.html">Vulhub</a>
+        
+        <a rel="tag" href="../tag/%E5%BA%93%E5%87%BD%E6%95%B0.html">库函数</a>
+        
+        <a rel="tag" href="../tag/CSRF%E6%BC%8F%E6%B4%9E.html">CSRF漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8A%A0%E5%AF%86.html">加密</a>
+        
+        <a rel="tag" href="../tag/%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91.html">端口转发</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/ipv6.html">ipv6</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

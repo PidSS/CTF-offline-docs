@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Fuzzing101-2：libexif</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="../assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="libexif 0.6.14 漏洞的 fuzz、复现和修复。" />
+    <link rel="icon" href="../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="amp/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Fuzzing101-2：libexif" />
+    <meta property="og:description" content="libexif 0.6.14 漏洞的 fuzz、复现和修复。" />
+    <meta property="og:url" content="https://www.ruanx.net/fuzzing101-wp-2/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/10/output-2.jpg" />
+    <meta property="article:published_time" content="2022-10-06T08:02:39.000Z" />
+    <meta property="article:modified_time" content="2022-10-07T04:39:27.000Z" />
+    <meta property="article:tag" content="Fuzzing" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fuzzing101-2：libexif" />
+    <meta name="twitter:description" content="libexif 0.6.14 漏洞的 fuzz、复现和修复。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/fuzzing101-wp-2/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/10/output-2.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Fuzzing" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "Fuzzing101-2：libexif",
+    "url": "https://www.ruanx.net/fuzzing101-wp-2/",
+    "datePublished": "2022-10-06T08:02:39.000Z",
+    "dateModified": "2022-10-07T04:39:27.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/10/output-2.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "Fuzzing",
+    "description": "libexif 0.6.14 漏洞的 fuzz、复现和修复。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="../public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="../public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="post-template tag-fuzzing">
+
+    <div class="site-wrapper">
+
+        
+
+<header class="site-header">
+    <div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="../index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home"><a href="../index.html">Home</a></li>
+    <li class="nav-about"><a href="../about/index.html">About</a></li>
+</ul>
+
+                    <span class="nav-post-title dash">Fuzzing101-2：libexif</span>
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+<script>
+ MathJax = {
+        tex:{
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        svg:{
+                fontCache: 'global'
+            }
+        }; 
+    </script>
+    <script src="https://cdn.staticfile.org/babel-polyfill/7.12.1/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async  src="https://cdn.staticfile.org/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>@media (prefers-color-scheme: light) {
+		.post-full-content  
+    pre{background:#fafafa;margin:10px 10px 20px 10px;border-style: solid;border-color:#DCDFE6;}
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.ruanx.net/css/atom-one-dark.css">
+<link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.ruanx.net/css/atom-one-light.min.css">
+<style>.post-full-content  code{font-family: 'Fira Mono', 'Jetbrains mono', 'ubuntu mono', consolas, 'monospace' !important;}
+</style>
+
+</header>
+
+
+<main id="site-main" class="site-main outer">
+    <div class="inner">
+
+        <article class="post-full post tag-fuzzing ">
+
+            <header class="post-full-header">
+
+                <section class="post-full-tags">
+                    <a href="../tag/fuzzing/index.html">Fuzzing</a>
+                </section>
+
+                <h1 class="post-full-title">Fuzzing101-2：libexif</h1>
+
+                <p class="post-full-custom-excerpt">libexif 0.6.14 漏洞的 fuzz、复现和修复。</p>
+
+                <div class="post-full-byline">
+
+                    <section class="post-full-byline-content">
+
+                        <ul class="author-list">
+                            <li class="author-list-item">
+
+                                <div class="author-card">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                    <div class="author-info">
+                                        <div class="bio">
+                                            <h2>Ruan Xingzhi</h2>
+                                            <p>Welcome to my site and hope you have fun.</p>
+                                            <p><a href="../author/blue/index.html">More posts</a> by Ruan Xingzhi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="../author/blue/index.html" class="author-avatar">
+                                    <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                                </a>
+
+                            </li>
+                        </ul>
+
+                        <section class="post-full-byline-meta">
+                            <h4 class="author-name"><a href="../author/blue/index.html">Ruan Xingzhi</a></h4>
+                            <div class="byline-meta-content">
+                                <time class="byline-meta-date" datetime="2022-10-06">6 Oct 2022</time>
+                                <span class="byline-reading-time"><span class="bull">&bull;</span> 15 min read</span>
+                            </div>
+                        </section>
+
+                    </section>
+
+
+                </div>
+            </header>
+
+            <figure class="post-full-image">
+                <img
+                    srcset="../content/images/size/w300/2022/10/output-2.jpg 300w,
+                            ../content/images/size/w600/2022/10/output-2.jpg 600w,
+                            ../content/images/size/w1000/2022/10/output-2.jpg 1000w,
+                            ../content/images/size/w2000/2022/10/output-2.jpg 2000w"
+                    sizes="(max-width: 800px) 400px,
+                        (max-width: 1170px) 1170px,
+                            2000px"
+                    src="../content/images/size/w2000/2022/10/output-2.jpg"
+                    alt="Fuzzing101-2：libexif"
+                />
+            </figure>
+
+            <section class="post-full-content">
+                <div class="post-content">
+                    <h2 id="exercise-2-libexif">Exercise 2: libexif</h2><p>　　任务目标是获得 <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2009-3895" rel="nofollow"><strong>CVE-2009-3895</strong></a> 以及<strong> <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2836" rel="nofollow">CVE-2012-2836</a> </strong>两个漏洞。前者是一个堆溢出；后者是一个越界读取，可以实现 DoS，也可能导致信息泄露。</p><h3 id="0x01-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87">0x01 环境准备</h3><p>　　首先获取 libexif 0.6.14 的源码。在 Github 可以下载到：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://github.com/libexif/libexif/releases/tag/libexif-0_6_14-release"><div class="kg-bookmark-content"><div class="kg-bookmark-title">Release libexif-0_6_14-release · libexif/libexif</div><div class="kg-bookmark-description">properly update so name for API/ABI addition</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://github.com/fluidicon.png" alt=""><span class="kg-bookmark-author">GitHub</span><span class="kg-bookmark-publisher">libexif</span></div></div><div class="kg-bookmark-thumbnail"><img src="https://opengraph.githubassets.com/a73054d9feaf2e32c4d836de89c1327ca58e1b0ff531a1fdb81485ed26eea86a/libexif/libexif" alt=""></div></a></figure><p>　　readme 中提到，libexif 自带有 <code>exif</code> 这个简单的前端程序（CLI），展示 JPEG 图片的 EXIF 信息。我们将其定为 fuzz 目标。</p><p>　　编译 libexif：</p><pre><code class="language-bash">apt install automake libtool autopoint gettext  # 重点是 autopoint
+autoreconf -i
+CC=/afl/afl-clang-lto ./configure --prefix=/work/out/
+make
+make install # 安装到 /work/out</code></pre><p>　　编译前端程序 exif：</p><pre><code class="language-bash">git clone https://github.com/libexif/exif.git
+cd exif
+git reset --hard dcf592e6abfcb70f365e92211ebf80ceafe73e5a
+# 回滚到 2007 年 5 月 17 日的一次 commit，以适配 libexif 版本
+autoreconf -i
+
+apt install libpopt-dev
+CC=/afl/afl-clang-lto ./configure --prefix=/work/bin PKG_CONFIG_PATH=/work/out/lib/pkgconfig
+make
+make install # 安装到 /work/bin
+</code></pre><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-55.png" class="kg-image" alt loading="lazy" width="1871" height="1328" srcset="../content/images/size/w600/2022/10/image-55.png 600w, ../content/images/size/w1000/2022/10/image-55.png 1000w, ../content/images/size/w1600/2022/10/image-55.png 1600w, ../content/images/2022/10/image-55.png 1871w" sizes="(min-width: 720px) 720px"></figure><h3 id="0x02-%E7%94%9F%E6%88%90-seed-corpus">0x02 生成 seed corpus</h3><p>　　下一步，我们需要寻找一些 jpg 文件，作为种子语料库（seed corpus）。笔者使用了两张文件。第一张来自 <a href="https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg">wikimedia</a>，第二张是笔者用 GIMP 画的。</p><pre><code class="language-bash">fuzzer :: /work/bin/bin » ./exif /work/inputs/cat.jpg
+EXIF tags in '/work/inputs/cat.jpg' ('Motorola' byte order):
+--------------------+----------------------------------------------------------
+Tag                 |Value                                                     
+--------------------+----------------------------------------------------------
+Orientation         |top - left                                                
+x-Resolution        |72.00                                                     
+y-Resolution        |72.00                                                     
+Resolution Unit     |Inch                                                      
+Software            |Adobe Photoshop CS4 Windows                               
+Date and Time       |2009:01:31 22:25:45                                       
+Compression         |JPEG compression                                          
+x-Resolution        |72.00                                                     
+y-Resolution        |72.00                                                     
+Resolution Unit     |Inch                                                      
+Color Space         |Uncalibrated                                              
+PixelXDimension     |1600                                                      
+PixelYDimension     |1598                                                      
+--------------------+----------------------------------------------------------
+EXIF data contains a thumbnail (5620 bytes).
+
+fuzzer :: /work/bin/bin » ./exif /work/inputs/abc.jpg
+EXIF tags in '/work/inputs/abc.jpg' ('Intel' byte order):
+--------------------+----------------------------------------------------------
+Tag                 |Value                                                     
+--------------------+----------------------------------------------------------
+Image Description   |Created with GIMP                                         
+x-Resolution        |300.00                                                    
+y-Resolution        |300.00                                                    
+Resolution Unit     |Inch                                                      
+Software            |GIMP 2.10.30                                              
+Date and Time       |2022:10:06 17:08:32                                       
+New Subfile Type    |1                                                         
+Image Width         |256                                                       
+Image Length        |256                                                       
+Bits per Sample     |8, 8, 8                                                   
+Compression         |JPEG compression                                          
+Photometric Interpre|YCbCr                                                     
+Samples per Pixel   |3                                                         
+User Comment        |Created with GIMP                                         
+Color Space         |sRGB                                                      
+Altitude            |0.00                                                      
+--------------------+----------------------------------------------------------
+EXIF data contains a thumbnail (4196 bytes).</code></pre><h3 id="0x03-fuzz">0x03 fuzz</h3><p>　　这次 fuzz 的输入文件比较大，我们设置 <code>AFL_TEMPDIR</code> 以节省 SSD 寿命。</p><pre><code class="language-bash">AFL_TMPDIR=/tmp /afl/afl-fuzz -i /work/inputs -o out -s 123 -- ./exif @@</code></pre><p>　　运行大约 1h 之后，获得 5 个 crash 和 1 个 hang。注意到 stablity 指标为 100%，说明这些 bug 可以稳定复现。</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-58.png" class="kg-image" alt loading="lazy" width="2000" height="1397" srcset="../content/images/size/w600/2022/10/image-58.png 600w, ../content/images/size/w1000/2022/10/image-58.png 1000w, ../content/images/size/w1600/2022/10/image-58.png 1600w, ../content/images/size/w2400/2022/10/image-58.png 2400w" sizes="(min-width: 720px) 720px"></figure><h3 id="0x04-%E5%A4%8D%E7%8E%B0%E5%92%8C%E4%BF%AE%E5%A4%8D">0x04 复现和修复</h3><p>　　首先在 <code>-O0 -g</code> 模式下编译：</p><pre><code class="language-bash"># 对于 libexif
+autoreconf -i
+CC=gcc-12 CFLAGS="-O0 -g" ./configure --prefix=/work/build/libexif
+make
+make install
+
+# 对于 exif
+autoreconf -i
+CC=gcc-12 CFLAGS="-O0 -g" ./configure PKG_CONFIG_PATH=/work/build/libexif/lib/pkgconfig --prefix=/work/build/exif
+make
+make install</code></pre><p>　　先在服务器上复现一下：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-59.png" class="kg-image" alt loading="lazy" width="2000" height="708" srcset="../content/images/size/w600/2022/10/image-59.png 600w, ../content/images/size/w1000/2022/10/image-59.png 1000w, ../content/images/size/w1600/2022/10/image-59.png 1600w, ../content/images/size/w2400/2022/10/image-59.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　然而，在本机复现时，这个 hang 样例的结果是 segmentation fault。修改编译参数为 <code>-O2</code> 或 <code>-O3</code> 或去掉 <code>-g</code>，或者把编译器改成 clang，结果都仍然是 segmation fault。笔者选择在 debug 时再考虑这个问题。</p><h4 id="crash-%E6%A0%B7%E4%BE%8B">crash 样例</h4><p>　　首先，我们看一下各个样例的 crash 现场。 </p><pre><code class="language-c">// crash0
+* thread #1, name = 'exif', stop reason = signal SIGSEGV: invalid address (fault address: 0x555555581a24)
+  * frame #0: 0x00007ffff7ed7e90 libc.so.6`__memcpy_avx_unaligned_erms at memmove-vec-unaligned-erms.S:872
+    frame #1: 0x00007ffff7f8f3b1 libexif.so.12`exif_data_load_data_thumbnail(data=0x0000555555561fa0, d="MM", ds=382, offset=302, size=4294967295) at exif-data.c:292:2
+    frame #2: 0x00007ffff7f8f8d0 libexif.so.12`exif_data_load_data_content(data=0x0000555555561fa0, ifd=EXIF_IFD_1, d="MM", ds=382, offset=210, recursion_depth=0) at exif-data.c:381:6
+    frame #3: 0x00007ffff7f90e98 libexif.so.12`exif_data_load_data(data=0x0000555555561fa0, d_orig="Exif", ds_orig=388) at exif-data.c:835:3
+    frame #4: 0x00007ffff7f98829 libexif.so.12`exif_loader_get_data(loader=0x0000555555561f50) at exif-loader.c:387:2
+    frame #5: 0x0000555555559eac exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:438:9
+    
+// crash1
+* thread #1, name = 'exif', stop reason = signal SIGSEGV: invalid address (fault address: 0x5556555648c3)
+  * frame #0: 0x00007ffff7f99e0e libexif.so.12`exif_get_sshort(buf="", order=EXIF_BYTE_ORDER_MOTOROLA) at exif-utils.c:92:29
+    frame #1: 0x00007ffff7f99e77 libexif.so.12`exif_get_short(buf="", order=EXIF_BYTE_ORDER_MOTOROLA) at exif-utils.c:104:10
+    frame #2: 0x00007ffff7f90d94 libexif.so.12`exif_data_load_data(data=0x0000555555561fa0, d_orig="Exif", ds_orig=379) at exif-data.c:819:6
+    frame #3: 0x00007ffff7f98829 libexif.so.12`exif_loader_get_data(loader=0x0000555555561f50) at exif-loader.c:387:2
+    frame #4: 0x0000555555559eac exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:438:9
+
+// crash 2
+* thread #1, name = 'exif', stop reason = signal SIGSEGV: invalid address (fault address: 0x5556555648c3)
+  * frame #0: 0x00007ffff7f99e33 libexif.so.12`exif_get_sshort(buf="", order=EXIF_BYTE_ORDER_INTEL) at exif-utils.c:94:29
+    frame #1: 0x00007ffff7f99e77 libexif.so.12`exif_get_short(buf="", order=EXIF_BYTE_ORDER_INTEL) at exif-utils.c:104:10
+    frame #2: 0x00007ffff7f90d94 libexif.so.12`exif_data_load_data(data=0x0000555555561fa0, d_orig="Exif", ds_orig=410) at exif-data.c:819:6
+    frame #3: 0x00007ffff7f98829 libexif.so.12`exif_loader_get_data(loader=0x0000555555561f50) at exif-loader.c:387:2
+    frame #4: 0x0000555555559eac exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:438:9
+
+// crash 3
+(lldb) thread backtrace
+* thread #1, name = 'exif', stop reason = signal SIGSEGV: invalid address (fault address: 0x5556555648e4)
+  * frame #0: 0x00007ffff7f99e0e libexif.so.12`exif_get_sshort(buf="", order=EXIF_BYTE_ORDER_MOTOROLA) at exif-utils.c:92:29
+    frame #1: 0x00007ffff7f99e77 libexif.so.12`exif_get_short(buf="", order=EXIF_BYTE_ORDER_MOTOROLA) at exif-utils.c:104:10
+    frame #2: 0x00007ffff7f90d94 libexif.so.12`exif_data_load_data(data=0x0000555555561fa0, d_orig="\xff\xff\xd8\xff\xd8\xff\xff\xff\xd8\xff\xe0", ds_orig=278) at exif-data.c:819:6
+    frame #3: 0x00007ffff7f98829 libexif.so.12`exif_loader_get_data(loader=0x0000555555561f50) at exif-loader.c:387:2
+    frame #4: 0x0000555555559eac exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:438:9
+
+// crash 4
+* thread #1, name = 'exif', stop reason = signal SIGSEGV: invalid address (fault address: 0x555555581aa5)
+  * frame #0: 0x00007ffff7ed7e90 libc.so.6`__memcpy_avx_unaligned_erms at memmove-vec-unaligned-erms.S:872
+    frame #1: 0x00007ffff7f8f3b1 libexif.so.12`exif_data_load_data_thumbnail(data=0x0000555555561fa0, d="II*", ds=12638, offset=380, size=4294967295) at exif-data.c:292:2
+    frame #2: 0x00007ffff7f8f8d0 libexif.so.12`exif_data_load_data_content(data=0x0000555555561fa0, ifd=EXIF_IFD_0, d="II*", ds=12638, offset=10, recursion_depth=0) at exif-data.c:381:6
+    frame #3: 0x00007ffff7f90d63 libexif.so.12`exif_data_load_data(data=0x0000555555561fa0, d_orig="\xff\xff\xff\xff\xff\xff\xd8\xff\xff\xd8\xff\xe0", ds_orig=12695) at exif-data.c:813:2
+    frame #4: 0x00007ffff7f98829 libexif.so.12`exif_loader_get_data(loader=0x0000555555561f50) at exif-loader.c:387:2
+    frame #5: 0x0000555555559eac exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:438:9
+</code></pre><p>　　显然，这些 crash 可以分为两类：</p><ul><li>调用 <code>exif_data_load_data_thumbnail</code> 时崩溃。样例 0、4 是这种情况。</li><li>调用 <code>exif_get_sshort</code> 时崩溃。样例 1、2、3 是这张情况。</li></ul><p>　　首先以 crash0 作为输入，来分析第一类。<a href="https://libexif.github.io/docs.html">libexif 文档</a>描述了内部各个函数的用途，给我们的分析带来了很大方便。简要浏览执行过程：</p><ol><li><code>main</code> 函数，载入文件，然后调用 <code>exif_loader_get_data</code> 生成 <code>ExifData</code> </li><li><code>exif_loader_get_data</code> 函数为一个 <code>ExifData</code> 申请空间，然后调用 <code>exif_data_load_data</code> 读取 <code>loader-&gt;buf</code> 地址的字节流，长度为 <code>loader-&gt;bytes_read</code></li><li><code>exif_data_load_data</code> 经过校验文件头等一系列步骤之后，解析 IFD 0，然后解析 IFD 1，此过程调用 <code>exif_data_load_data_content</code> </li><li><code>exif_data_load_data_content</code> 函数有一个防无限递归的检查。检查通过之后，读取 entry 数量，对于每一个 entry，按 tag 进行路由。若 tag 为 <code>EXIF_TAG_JPEG_INTERCHANGE_FORMAT_LENGTH</code> 即 <code>0x0202</code>，则读入 <code>thumbnail_length</code>，此时若 <code>thumbnail_offset</code> 已经被设置，则调用 <code>exif_data_load_data_thumbnail</code> 去 parse 缩略图。<strong>注意到此时读入的 <code>thumbnail_length</code> 达到 <code>4294967295</code>，明显不合理。</strong></li><li><code>exif_data_load_data_thumbnail</code> 调用 <code>memcpy</code> 复制数据，由于 len 过大导致 segmentation fault。</li></ol><p>　　于是粗略判断，<strong>bug 原因在于读取缩略图时不检查 len</strong>。现在开始以 crash1 为样本分析第二类 crash：</p><ol><li>与第一类 crash 一致，<code>main</code> 调用 <code>exif_loader_get_data</code></li><li>与第一类 crash 一致，<code>exif_data_load_data</code> 被调用</li><li>调用 <code>exif_data_load_data</code> 时，成功通过了第一类 crash 的崩溃地点 <code>exif_data_load_data_content</code>，然而在接下来调用 <code>exif_get_short(d + 6 + offset, data-&gt;priv-&gt;order)</code> 读取一个 short 时崩溃。注意到这里的 <code>offset</code> 为4294967293，明显异常。接下来越界读取，导致崩溃。</li></ol><p>　　动态调试，追踪 <code>offset</code> 的变化：</p><pre><code class="language-c">	/* IFD 0 offset */
+	offset = exif_get_long (d + 10, data-&gt;priv-&gt;order);
+	// 读入 offset = 4294967293，异常
+    
+	exif_log (data-&gt;priv-&gt;log, EXIF_LOG_CODE_DEBUG, "ExifData", 
+		  "IFD 0 at %i.", (int) offset);
+
+	/* Parse the actual exif data (usually offset 14 from start) */
+	exif_data_load_data_content (data, EXIF_IFD_0, d + 6, ds - 6, offset, 0);
+	// 此函数是第一类 crash 崩溃处，但第二类 crash 样本可以通过此地
+    
+	/* IFD 1 offset */
+	if (offset + 6 + 2 &gt; ds) {
+		return;
+	}
+	n = exif_get_short (d + 6 + offset, data-&gt;priv-&gt;order);
+	// 第二类 crash 崩溃</code></pre><p>　　因此，第一、二类 crash 的原因，都是读入一个 offset 或 len 之后不加检查，导致越界读取。由于这个输入非常好控制（在文件内修改特定位置的 4 个字节即可），攻击者可以轻易做到：</p><ul><li>要求程序读取指定的固定地址，泄露某些信息（地址空间随机化能缓解此问题）</li><li>要求程序读取一个合法地址块的起始位置，导致超时</li><li>要求程序读取非法地址，造成崩溃</li></ul><p>　　但是，第二类 crash 中，这个 <code>offset</code> 是如何通过的 <code>(offset + 6 + 2 &gt; ds)</code> 越界检查？注意到  <code>offset</code> 的类型是 <code>uint32_t</code>，而$$4294967293+6+2 \equiv 5 \pmod {2^{32}} $$</p><p>　　于是 <code>offset</code> 的取值落在 $[-8, -1]$ 时，<code>offset+8</code> 会溢出 uint32，让这个检查失败。不得不说这是一个非常巧妙的 corner case。</p><p>　　修复方法：给这个 <code>if</code> 添加条件，判断这个溢出。</p><pre><code class="language-c">	/* IFD 1 offset */
+	if (offset &gt; 0xffffff00 || offset + 6 + 2 &gt; ds) {
+		return;
+	}</code></pre><p>　　成功修复第二类 crash：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/10/image-61.png" class="kg-image" alt loading="lazy" width="2000" height="524" srcset="../content/images/size/w600/2022/10/image-61.png 600w, ../content/images/size/w1000/2022/10/image-61.png 1000w, ../content/images/size/w1600/2022/10/image-61.png 1600w, ../content/images/size/w2400/2022/10/image-61.png 2400w" sizes="(min-width: 720px) 720px"><figcaption>▲ 修复后，第二类 crash 正常返回</figcaption></figure><p>　　接下来去修复第一类 crash。观察 <code>exif_data_load_data_thumbnail</code> 函数：</p><pre><code class="language-c">static void
+exif_data_load_data_thumbnail (ExifData *data, const unsigned char *d,
+			       unsigned int ds, ExifLong offset, ExifLong size)
+{
+	if (ds &lt; offset + size) {
+		exif_log (data-&gt;priv-&gt;log, EXIF_LOG_CODE_DEBUG, "ExifData",
+			  "Bogus thumbnail offset and size: %i &lt; %i + %i.",
+			  (int) ds, (int) offset, (int) size);
+		return;
+	}
+	if (data-&gt;data) 
+		exif_mem_free (data-&gt;priv-&gt;mem, data-&gt;data);
+	data-&gt;size = size;
+	data-&gt;data = exif_data_alloc (data, data-&gt;size);
+	if (!data-&gt;data) 
+		return;
+	memcpy (data-&gt;data, d + offset, data-&gt;size);
+}</code></pre><p>　　不难发现这里崩溃的原因也是 <code>offset + size</code> 溢出 uint32。修复方法：</p><pre><code class="language-c">if ((uint64_t)ds &lt; (uint64_t)offset + (uint64_t)size) {
+		// ...</code></pre><p>　　成功修复第一类 crash：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/10/image-62.png" class="kg-image" alt loading="lazy" width="2000" height="846" srcset="../content/images/size/w600/2022/10/image-62.png 600w, ../content/images/size/w1000/2022/10/image-62.png 1000w, ../content/images/size/w1600/2022/10/image-62.png 1600w, ../content/images/size/w2400/2022/10/image-62.png 2400w" sizes="(min-width: 720px) 720px"><figcaption>▲ crash0，返回正常信息</figcaption></figure><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/10/image-64.png" class="kg-image" alt loading="lazy" width="2000" height="1351" srcset="../content/images/size/w600/2022/10/image-64.png 600w, ../content/images/size/w1000/2022/10/image-64.png 1000w, ../content/images/size/w1600/2022/10/image-64.png 1600w, ../content/images/size/w2400/2022/10/image-64.png 2400w" sizes="(min-width: 720px) 720px"><figcaption>▲ crash4，返回正常信息</figcaption></figure><h3 id="hang-%E6%A0%B7%E4%BE%8B">hang 样例</h3><p>　　看一下 backtrace：</p><pre><code class="language-c">// ....
+    frame #130945: 0x00007ffff7f985eb libexif.so.12`exif_loader_write(eld=0x0000555555561f50, buf="\xf3\x94UUUU", len=0) at exif-loader.c:301:9
+    frame #130946: 0x00007ffff7f985eb libexif.so.12`exif_loader_write(eld=0x0000555555561f50, buf="\xf3\x94UUUU", len=0) at exif-loader.c:301:9
+    frame #130947: 0x00007ffff7f985eb libexif.so.12`exif_loader_write(eld=0x0000555555561f50, buf="\xf3\x94UUUU", len=0) at exif-loader.c:301:9
+    frame #130948: 0x00007ffff7f985eb libexif.so.12`exif_loader_write(eld=0x0000555555561f50, buf="\U00000002\U00000001\nH\xf4H", len=20) at exif-loader.c:301:9
+    frame #130949: 0x00007ffff7f97f1d libexif.so.12`exif_loader_write_file(l=0x0000555555561f50, path="./hang/data0") at exif-loader.c:120:8
+    frame #130950: 0x0000555555559e9d exif`main(argc=2, argv=0x00007fffffffdf38) at main.c:437:4
+    frame #130951: 0x00007ffff7d60d90 libc.so.6`__libc_start_call_main(main=(exif`main at main.c:321:1), argc=2, argv=0x00007fffffffdf38) at libc_start_call_main.h:58:16
+    frame #130952: 0x00007ffff7d60e40 libc.so.6`__libc_start_main_impl(main=(exif`main at main.c:321:1), argc=2, argv=0x00007fffffffdf38, init=0x00007ffff7ffd040, fini=&lt;unavailable&gt;, rtld_fini=&lt;unavailable&gt;, stack_end=0x00007fffffffdf28) at libc-start.c:392:3
+    frame #130953: 0x0000555555557625 exif`_start + 37</code></pre><p>　　这是一个无限递归。追踪执行过程：</p><ol><li><code>main</code> 函数调用 <code>exif_loader_write_file</code> 读取文件。尽管它的名字里面有 <code>write</code>，但实际上它的功能是读取</li><li><code>exif_loader_write_file</code> 内，打开一个文件描述符，从文件内每次读 1024 字节进 buffer，并调用 <code>exif_loader_write</code> 把 buffer 内的信息导入 <code>ExifLoader</code> </li><li><code>exif_loader_write</code> 函数，首先通过一个状态机，确保完全读入 exif 信息。在函数的末尾，开发者宣称“如果抵达这个位置，则 buffer 没有大到能存完所有数据。向 buffer 填充新的数据”，于是递归调用自己</li></ol><p>　　注意到：第一次调用 <code>exif_loader_write</code> 的末尾， <code>len=20</code>；从第二次调用开始，始终有 <code>len=0</code>。然而， 我们看此函数第一次被调用，是在<code>exif_loader_write_file</code>：</p><pre><code class="language-c">while (1) {
+		size = fread (data, 1, sizeof (data), f);
+		if (size &lt;= 0) 
+			break;
+		if (!exif_loader_write (l, data, size)) 
+			break;
+	}</code></pre><p>　　显然，开发者并不期望 <code>size=0</code>。修复方案是：</p><pre><code class="language-c">unsigned char
+exif_loader_write (ExifLoader *eld, unsigned char *buf, unsigned int len)
+{
+	unsigned int i;
+
+	// if (!eld || (len &amp;&amp; !buf)) 
+	// 	return 0;
+    
+    if (!eld || (len &amp;&amp; !buf) || len == 0) 
+	return 0;
+    
+    // ...</code></pre><p>　　修复成功：</p><figure class="kg-card kg-image-card kg-card-hascaption"><img src="../content/images/2022/10/image-65.png" class="kg-image" alt loading="lazy" width="2000" height="1351" srcset="../content/images/size/w600/2022/10/image-65.png 600w, ../content/images/size/w1000/2022/10/image-65.png 1000w, ../content/images/size/w1600/2022/10/image-65.png 1600w, ../content/images/size/w2400/2022/10/image-65.png 2400w" sizes="(min-width: 720px) 720px"><figcaption>▲ 修复后，对正常 jpg 可以成功解析，对于 hang 样本报错并返回</figcaption></figure><p>　　官方 fix：<a href="https://github.com/libexif/libexif/commit/f885d858efcd57c4c02155411ff3d90d28f04f4b">commit f885</a> </p><h3 id="0x05-%E5%A4%8D%E7%9B%98%EF%BC%9A%E8%A2%AB%E6%BC%8F%E6%8E%89%E7%9A%84-cve-2009-3895">0x05 复盘：被漏掉的 CVE-2009-3895</h3><p>　　我们寻找到了 5 个 crash 和 1 个 hang。其中 crash 对应 <strong><strong><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2836" rel="nofollow">CVE-2012-2836</a></strong></strong>；而 hang 对应的漏洞并非 <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2009-3895" rel="nofollow"><strong><strong>CVE-2009-3895</strong></strong></a>。翻阅 git 记录，Google Security Team 指出了此漏洞，而作者在 2007 年 12 月修复了这个 bug。</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://github.com/libexif/libexif/commit/f885d858efcd57c4c02155411ff3d90d28f04f4b#diff-0f29d6a12c6f718820abe678ae44d7f7034b5aca1f0abb3ce360da7428a8747c"><div class="kg-bookmark-content"><div class="kg-bookmark-title">2007-12-14 Lutz Mueller &lt;lutz@users.sourceforge.net&gt; · libexif/libexif@f885d85</div><div class="kg-bookmark-description">Bug pointed out by Meder Kydyraliev, Google Security Team: * libexif/exif-loader.c: (exif_loader_write) Ignore buffers of zero length.</div><div class="kg-bookmark-metadata"><img class="kg-bookmark-icon" src="https://github.com/fluidicon.png" alt=""><span class="kg-bookmark-author">GitHub</span><span class="kg-bookmark-publisher">libexif</span></div></div><div class="kg-bookmark-thumbnail"><img src="https://opengraph.githubassets.com/1d0dfbe04b290a2615fb5b0d76694f24747ef69fb2ee513e5e7127acf0f54d8b/libexif/libexif/commit/f885d858efcd57c4c02155411ff3d90d28f04f4b" alt=""></div></a></figure><p>　　简而言之：<strong>我们漏掉了 Fuzzing101 编者所期望的 CVE-2009-3895，而找到了另一个 bug。</strong></p><p>　　然而，我们的 fuzzer 现在已经运行了 5 小时多，last new find 是两小时前。似乎很难再获取到新的 crash 了。</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-66.png" class="kg-image" alt loading="lazy" width="2000" height="1443" srcset="../content/images/size/w600/2022/10/image-66.png 600w, ../content/images/size/w1000/2022/10/image-66.png 1000w, ../content/images/size/w1600/2022/10/image-66.png 1600w, ../content/images/size/w2400/2022/10/image-66.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　应当反思我们的语料集，seed coupus 是否有问题。我们只提供了两个 jpg 文件，其中一个是网上找的，一个是自己画的。那么，我们的语料集中，不存在存储了相机信息的图片。除了相机信息之外，可能还有其他的 exif 数据被我们忽略了。</p><p>　　笔者用 iPhone 拍摄了一张照片。发现 Exif 信息非常丰富：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-67.png" class="kg-image" alt loading="lazy" width="1972" height="1445" srcset="../content/images/size/w600/2022/10/image-67.png 600w, ../content/images/size/w1000/2022/10/image-67.png 1000w, ../content/images/size/w1600/2022/10/image-67.png 1600w, ../content/images/2022/10/image-67.png 1972w" sizes="(min-width: 720px) 720px"></figure><p>　　将这张照片加入语料集之后，再次 fuzz。</p><p>　　睡一觉醒来，发现有收获：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-71.png" class="kg-image" alt loading="lazy" width="2000" height="1443" srcset="../content/images/size/w600/2022/10/image-71.png 600w, ../content/images/size/w1000/2022/10/image-71.png 1000w, ../content/images/size/w1600/2022/10/image-71.png 1600w, ../content/images/size/w2400/2022/10/image-71.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　在 6h+ 的 fuzz 之后，我们获得了 8 个 crash。逐一调试，发现最后一个样本，即 crash7，能触发 CVE-2009-3895 所描述的 <code>exif_entry_fix</code> 函数：</p><figure class="kg-card kg-image-card kg-width-wide"><img src="../content/images/2022/10/image-72.png" class="kg-image" alt loading="lazy" width="2000" height="1415" srcset="../content/images/size/w600/2022/10/image-72.png 600w, ../content/images/size/w1000/2022/10/image-72.png 1000w, ../content/images/size/w1600/2022/10/image-72.png 1600w, ../content/images/size/w2400/2022/10/image-72.png 2400w" sizes="(min-width: 1200px) 1200px"></figure><p>　　追踪执行过程。</p><ol><li>与本文前述样本相同，<code>main</code> 调用 <code>exif_loader_get_data</code> </li><li><code>exif_data_load_data</code> 被调用。程序通过了本文前述两个漏洞的 fail 位置，抵达函数尾部，调用 <code>exif_data_fix</code></li><li><code>exif_data_fix</code> 调用 <code>exif_data_foreach_content(d, fix_func, NULL)</code></li><li><code>exif_data_foreach_content</code> 是一个 mapper，对 <code>ExifData *d</code> 里面的 <code>ifd[]</code> 施加函数 <code>fix_func</code> </li><li>（ <code>exif-data.c</code> 里面的 static 函数）<code>fix_func</code> 对 ifd 进行路由，若 ifd 不为 <code>EXIF_IFD_1</code>，则调用 <code>exif_content_fix(c)</code></li><li><code>exif_content_fix(ExifContent *c)</code> 调用 <code>exif_content_foreach_entry(c, fix_func, NULL)</code> ，按代码注释，其作用是“fix all existing entries”</li><li><code>exif_content_foreach_entry (ExifContent *content, ExifContentForeachEntryFunc func, void *data)</code> 也是个 mapper。调用 <code>fix_func(content-&gt;entries[i], data)</code></li><li>（ <code>exif-content.c</code> 里面的 static 函数）<code>fix_func</code>是 <code>exif_entry_fix(e)</code> 的包装</li><li><code>exif_entry_fix (ExifEntry *e)</code> 调用 <code>exif_get_long(e-&gt;data + i * exif_format_get_size (EXIF_FORMAT_LONG), o)</code></li><li><code>exif_get_long</code> 实际被 call 时的参数是 <code>buf=0x555555581000, order=INTEL</code>，这里 <code>buf</code> 已经是非法地址</li><li>尝试在非法的 <code>buf</code> 中读取，产生 segmentation fault</li></ol><p>　　来追踪步骤 10 里面这个 <code>buf</code> 的来历。它是 <code>e-&gt;data + i * exif_format_get_size (EXIF_FORMAT_LONG)</code>，而此时 <code>e-&gt;data</code> 为 <code>0x555555563950</code>， <code>exif_format_get_size (EXIF_FORMAT_LONG)</code> 返回的是常量 <code>4</code>。此处 <code>i=30124</code>。相关代码：</p><pre><code class="language-c">for (i = 0; i &lt; e-&gt;components; i++)
+    exif_set_short (
+        e-&gt;data + i * 2,
+        o,
+        (ExifShort) exif_get_long (e-&gt;data + i * 4, o));</code></pre><p>　　动态调试发现 <code>e-&gt;componets = 1073741828</code>，异常。动态调试观察 <code>e-&gt;components</code> 的变化，发现是在  <code>exif_data_load_data</code> 中，调用 <code>exif_data_load_data_content</code> 后被改为 <code>1073741828</code>。</p><p>　　考虑修复这个漏洞。注意到 <code>ExifEntry</code> 有一个 <code>size</code> 属性，注释称“Number of bytes in the buffer at <code>data</code>. This must be no less than <code>exif_format_get_size(format)*components</code>”，所以显然读取 <code>data</code> buffer 时，不应该超过 <code>size</code> 界限。所以有了修复方案：在 <code>exif_entry_fix</code> 开始 <code>i=0 to e-&gt;components</code> 循环之前，判断 <code>e-&gt;components</code> 是否符合这一约定。patch：</p><pre><code class="language-c">switch (e-&gt;format) {
+    case EXIF_FORMAT_LONG:
+        if (!e-&gt;parent || !e-&gt;parent-&gt;parent) break;
+        
+        // patch: 判断 e-&gt;components 是否符合约定
+        if(e-&gt;components * exif_format_get_size(EXIF_FORMAT_LONG) &gt; e-&gt;size) break;
+
+        o = exif_data_get_byte_order (e-&gt;parent-&gt;parent);
+        for (i = 0; i &lt; e-&gt;components; i++)
+		// ...</code></pre><p>　　修复成功：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-74.png" class="kg-image" alt loading="lazy" width="2000" height="1357" srcset="../content/images/size/w600/2022/10/image-74.png 600w, ../content/images/size/w1000/2022/10/image-74.png 1000w, ../content/images/size/w1600/2022/10/image-74.png 1600w, ../content/images/size/w2400/2022/10/image-74.png 2400w" sizes="(min-width: 720px) 720px"></figure><p>　　然而，当笔者去验证这个漏洞是否确为 CVE-2009-3895 时，发现该 CVE <a href="https://www.openwall.com/lists/oss-security/2009/11/19/2">只影响 libexif 0.6.18 版本</a>：</p><blockquote>Date: Thu, 19 Nov 2009 11:05:49 -0500 (EST) <br>From: Josh Bressers &lt;bressers@...hat.com&gt; <br>To: oss-security &lt;oss-security@...ts.openwall.com&gt; <br>Cc: coley &lt;coley@...re.org&gt; <br>Subject: CVE assignment (libexif) <br><br>I'm giving libexif CVE-2009-3895. I've not seen an ID for this yet. <br><br>Only libexif version 0.6.18 is affected, all other versions are safe. <a href="http://article.gmane.org/gmane.comp.graphics.libexif.devel/806" rel="nofollow">http://article.gmane.org/gmane.comp.graphics.libexif.devel/806</a><br><a href="http://bugs.gentoo.org/show_bug.cgi?id=293190" rel="nofollow">http://bugs.gentoo.org/show_bug.cgi?id=293190</a> <br><br>Thanks. <br>-- JB</blockquote><p>　　漏洞的发现者，Alex Legler 也在 <a href="https://bugs.gentoo.org/293190">Gentoo Bugzilla</a> 中指出，“Only libexif version 0.6.18 is affected by this flaw. Version 0.6.17 and previous and 0.6.19 and later are not affected.”</p><p>　　然而，Fuzzing101 文档提供的任务是要我们在 libexif 0.6.14 中寻找这个 CVE。双方说法是矛盾的。观察 Fuzzing101 官方题解，他们找到的漏洞也是本章节我们找到的漏洞，而非 CVE-2009-3895。<a href="https://github.com/Ruanxingzhi/Fuzzing101/tree/main/Exercise%202#fix-the-issues">官方题解</a>提到的 patch commit 是 2012 年的 <a href="https://github.com/libexif/libexif/commit/8ce72b7f81e61ef69b7ad5bdfeff1516c90fa361">8ce7 commit</a>。</p><p>　　本章节找到的漏洞，于 <a href="https://github.com/libexif/libexif/commit/99dfef05ee82cc9238511b831f92d4c9a2584423">99df commit</a> 存在，2007 年 5 月 <a href="https://github.com/libexif/libexif/commit/8a79c60dc808abe53745d821ccc382ac41b26054">8a79 commit</a> 修复：</p><figure class="kg-card kg-image-card"><img src="../content/images/2022/10/image-76.png" class="kg-image" alt loading="lazy" width="2000" height="948" srcset="../content/images/size/w600/2022/10/image-76.png 600w, ../content/images/size/w1000/2022/10/image-76.png 1000w, ../content/images/size/w1600/2022/10/image-76.png 1600w, ../content/images/size/w2400/2022/10/image-76.png 2400w" sizes="(min-width: 720px) 720px"></figure><p></p><h3 id="0x06-%E6%80%BB%E7%BB%93">0x06 总结</h3><ul><li><strong>初始语料集非常重要。</strong>应当尽可能覆盖各种各样的情况。</li></ul>
+                </div>
+            </section>
+
+
+            <div id="gitalk-container"></div>
+
+            <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.css">
+            <script src="https://cdn.staticfile.org/gitalk/1.6.2/gitalk.min.js"></script>
+
+            <script>
+                const gitalk = new Gitalk({
+
+                    proxy: 'https://cors.pion1eer.workers.dev/?https://github.com/login/oauth/access_token',
+
+                    clientID: '9f7e67174f5ab8b1a2b9',
+                    clientSecret: 'ddee425a0b50ed02a05fdedb1a4ea039e01b3170',
+                    repo: 'blogComment',
+                    owner: 'Ruanxingzhi',
+                    admin: ['Ruanxingzhi'],
+                    id: location.pathname,      // Ensure uniqueness and length less than 50
+                    distractionFreeMode: false  // Facebook-like distraction free mode
+
+                    });
+
+                gitalk.render('gitalk-container');
+            </script>
+
+        </article>
+
+    </div>
+</main>
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+                <article class="read-next-card">
+                    <header class="read-next-card-header">
+                        <h3><span>More in</span> <a href="../tag/fuzzing/index.html">Fuzzing</a></h3>
+                    </header>
+                    <div class="read-next-card-content">
+                        <ul>
+                            <li>
+                                <h4><a href="../afl-source-2/index.html">AFL源码阅读（二）：Main Payload 汇编</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-05-16">16 May 2023</time> –
+                                        12 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../afl-source-1/index.html">AFL源码阅读（一）：启程</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2023-05-07">7 May 2023</time> –
+                                        25 min read</p>
+                                </div>
+                            </li>
+                            <li>
+                                <h4><a href="../fuzzing101-wp-5/index.html">Fuzzing101-5：LibXML2</a></h4>
+                                <div class="read-next-card-meta">
+                                    <p><time datetime="2022-11-02">2 Nov 2022</time> –
+                                        5 min read</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="read-next-card-footer">
+                        <a href="../tag/fuzzing/index.html">See all 8 posts
+                            →</a>
+                    </footer>
+                </article>
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="../fuzzing101-wp-3/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/10/output-3.jpg 300w,
+                    ../content/images/size/w600/2022/10/output-3.jpg 600w,
+                    ../content/images/size/w1000/2022/10/output-3.jpg 1000w,
+                    ../content/images/size/w2000/2022/10/output-3.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/10/output-3.jpg"
+            alt="Fuzzing101-3：TCPdump"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../fuzzing101-wp-3/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-3：TCPdump</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>TCPdump CVE-2017-13028 的复现和修复。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-07">7 Oct 2022</time> <span class="bull">&bull;</span> 8 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="../fuzzing101-wp-1/index.html">
+        <img class="post-card-image"
+            srcset="../content/images/size/w300/2022/10/output-1.jpg 300w,
+                    ../content/images/size/w600/2022/10/output-1.jpg 600w,
+                    ../content/images/size/w1000/2022/10/output-1.jpg 1000w,
+                    ../content/images/size/w2000/2022/10/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="../content/images/size/w600/2022/10/output-1.jpg"
+            alt="Fuzzing101-1：Xpdf"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="../fuzzing101-wp-1/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-1：Xpdf</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Xpdf CVE-2019-13288 的 fuzzing、复现和修复。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="../author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="../content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="../author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-03">3 Oct 2022</time> <span class="bull">&bull;</span> 13 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+        </div>
+    </div>
+</aside>
+
+
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="../index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="../index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="../assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        // FitVids - start
+        var $postContent = $(".post-full-content");
+        $postContent.fitVids();
+        // FitVids - end
+
+        // Replace nav with title on scroll - start
+        Casper.stickyNavTitle({
+            navSelector: '.site-nav-main',
+            titleSelector: '.post-full-title',
+            activeClass: 'nav-post-title-active'
+        });
+        // Replace nav with title on scroll - end
+
+        // Hover on avatar
+        var hoverTimeout;
+        $('.author-list-item').hover(function () {
+            var $this = $(this);
+
+            clearTimeout(hoverTimeout);
+
+            $('.author-card').removeClass('hovered');
+            $(this).children('.author-card').addClass('hovered');
+
+        }, function () {
+            var $this = $(this);
+
+            hoverTimeout = setTimeout(function () {
+                $this.children('.author-card').removeClass('hovered');
+            }, 800);
+        });
+    });
+</script>
+
+<script src="https://cdn.staticfile.org/highlight.js/10.1.1/highlight.min.js"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>

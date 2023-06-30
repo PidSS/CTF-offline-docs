@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>Fuzzing101-1：Xpdf</title>
+
+    <meta name="description" content="Xpdf CVE-2019-13288 的 fuzzing、复现和修复。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Fuzzing101-1：Xpdf" />
+    <meta property="og:description" content="Xpdf CVE-2019-13288 的 fuzzing、复现和修复。" />
+    <meta property="og:url" content="https://www.ruanx.net/fuzzing101-wp-1/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/10/output-1.jpg" />
+    <meta property="article:published_time" content="2022-10-03T10:38:50.000Z" />
+    <meta property="article:modified_time" content="2022-10-03T16:06:16.000Z" />
+    <meta property="article:tag" content="Fuzzing" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fuzzing101-1：Xpdf" />
+    <meta name="twitter:description" content="Xpdf CVE-2019-13288 的 fuzzing、复现和修复。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/fuzzing101-wp-1/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/10/output-1.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Fuzzing" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="480" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "Fuzzing101-1：Xpdf",
+    "url": "https://www.ruanx.net/fuzzing101-wp-1/",
+    "datePublished": "2022-10-03T10:38:50.000Z",
+    "dateModified": "2022-10-03T16:06:16.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/10/output-1.jpg",
+        "width": 640,
+        "height": 480
+    },
+    "keywords": "Fuzzing",
+    "description": "Xpdf CVE-2019-13288 的 fuzzing、复现和修复。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">Fuzzing101-1：Xpdf</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2022-10-03">03 Oct 2022</time>
+                </section>
+            </header>
+            <figure class="post-image">
+                <amp-img src="https://www.ruanx.net/content/images/2022/10/output-1.jpg" width="600" height="340" layout="responsive" 
+                alt="Fuzzing101-1：Xpdf"
+                ></amp-img>
+            </figure>
+            <section class="post-content">
+
+                <h2 id="exercise1-xpdf">Exercise1: Xpdf</h2><p>　　这个练习要求我们 fuzz 出 Xpdf CVE-2019-13288 漏洞。攻击者可以使程序陷入无限递归，从而达到 DoS 目的。</p><h3 id="0x01-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C">0x01 准备工作</h3><p>　　首先编译 xpdf：</p><pre><code class="language-bash">wget https://dl.xpdfreader.com/old/xpdf-3.02.tar.gz
+tar -zxvf xpdf-3.02.tar.gz
+cd xpdf-3.02/
+
+CC=/afl/afl-clang-lto CXX=/afl/afl-clang-lto++ ./configure --prefix="/home/xpdf/out"
+# ...
+# configure: WARNING: -- You will be able to compile pdftops, pdftotext,
+#        pdfinfo, pdffonts, and pdfimages, but not xpdf or pdftoppm
+
+make
+# strcmp: length 3/3 "def"
+# AUTODICTIONARY: 309 strings found
+# [+] Instrumented 20658 locations (1357 selects) without collisions (2939 collisions have been avoided) (non-hardened mode).
+# make[1]: 离开目录“/home/xpdf/xpdf-3.02/xpdf”
+
+make install
+</code></pre><p>　　编译完成，程序可以跑起来了：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-33.png" class="kg-image" alt width="1706" height="1221" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-33.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-33.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-33.png 1600w, https://www.ruanx.net/content/images/2022/10/image-33.png 1706w" layout="responsive"></amp-img></figure><p>　　弄来一些测试用例：</p><pre><code class="language-bash">wget https://github.com/mozilla/pdf.js-sample-files/raw/master/helloworld.pdf
+wget http://www.africau.edu/images/default/sample.pdf
+wget https://www.melbpc.org.au/wp-content/uploads/2017/10/small-example-pdf-file.pdf</code></pre><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-34.png" class="kg-image" alt width="1672" height="815" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-34.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-34.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-34.png 1600w, https://www.ruanx.net/content/images/2022/10/image-34.png 1672w" layout="responsive"></amp-img></figure><h3 id="0x02-fuzz">0x02 fuzz</h3><p>　　我们的 fuzz 目标是 pdftotext 程序。这个程序负责从 pdf 中提取文本：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-35.png" class="kg-image" alt width="1962" height="906" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-35.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-35.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-35.png 1600w, https://www.ruanx.net/content/images/2022/10/image-35.png 1962w" layout="responsive"></amp-img></figure><p>　　执行 fuzz（这里的指令和教程不一样，笔者把程序输出放到了 stdout）：</p><pre><code class="language-bash">/afl/afl-fuzz -i inputs/ -o out -s 123 -- ./pdftotext @@ -</code></pre><p>　　五分多钟之后，出现几个 crash：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-36.png" class="kg-image" alt width="2029" height="1542" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-36.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-36.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-36.png 1600w, https://www.ruanx.net/content/images/2022/10/image-36.png 2029w" layout="responsive"></amp-img></figure><p>　　再跑一会：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-37.png" class="kg-image" alt width="2029" height="1542" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-37.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-37.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-37.png 1600w, https://www.ruanx.net/content/images/2022/10/image-37.png 2029w" layout="responsive"></amp-img></figure><p>　　我们的 fuzzing 效率比 Fuzzing101 教程文档快不少，几乎是一倍的速度。来看一下 crash 输入：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-38.png" class="kg-image" alt width="2544" height="1920" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-38.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-38.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-38.png 1600w, https://www.ruanx.net/content/images/size/w2400/2022/10/image-38.png 2400w" layout="responsive"></amp-img></figure><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-40.png" class="kg-image" alt width="2093" height="749" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-40.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-40.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-40.png 1600w, https://www.ruanx.net/content/images/2022/10/image-40.png 2093w" layout="responsive"></amp-img></figure><p>　　测试一下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-39.png" class="kg-image" alt width="2640" height="318" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-39.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-39.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-39.png 1600w, https://www.ruanx.net/content/images/size/w2400/2022/10/image-39.png 2400w" layout="responsive"></amp-img></figure><p>　　复现 segmentation fault。接下来，我们尝试分析这个漏洞。</p><h3 id="0x03-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90">0x03 漏洞分析</h3><p>　　拿 lldb 去调试。首先用 crash 输入让它崩溃，然后看看 stack 现场：<code>thread backtrace unique</code></p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-42.png" class="kg-image" alt width="2236" height="1661" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-42.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-42.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-42.png 1600w, https://www.ruanx.net/content/images/2022/10/image-42.png 2236w" layout="responsive"></amp-img></figure><p>　　这相当明显是无限递归了。用 VS Code 调试，先看看这个环的入口：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-43.png" class="kg-image" alt width="1617" height="925" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-43.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-43.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-43.png 1600w, https://www.ruanx.net/content/images/2022/10/image-43.png 1617w" layout="responsive"></amp-img></figure><p>　　因此这一个 <code>Object::fetch(XRef*, Object*)</code> 应该是入口。先看看程序从 <code>main</code> 到这个位置的过程。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-44.png" class="kg-image" alt width="1886" height="1029" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-44.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-44.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-44.png 1600w, https://www.ruanx.net/content/images/2022/10/image-44.png 1886w" layout="responsive"></amp-img></figure><p>　　VS Code 提示 main 执行 <code>info.isDict()</code> 时调用了 <code>displayPages()</code>，然而事实上这个 <code>isDict()</code> 如下：</p><pre><code class="language-cpp">class Object {
+public:
+
+  // Default constructor.
+  Object():
+    type(objNone) {}
+	
+  // ...
+  GBool isArray() { return type == objArray; }
+  GBool isDict() { return type == objDict; }
+  GBool isStream() { return type == objStream; }
+  GBool isRef() { return type == objRef; }
+  
+  // ...</code></pre><p>　　这显然不可能调用 <code>displayPages()</code>，分析过程出错了。想到可能 <code>-O2</code> 选项对 debug 有影响，我们用 <code>-O0</code> 重新编译一遍：</p><pre><code class="language-bash">./configure --prefix="/home/blue/Desktop/workspace/xpdf" CFLAGS="-O0 -g" CXXFLAGS="-O0 -g" CC=afl-clang-lto CXX=afl-clang-lto++
+make</code></pre><p>　　于是在 <code>main()</code> 中指示了正确的位置。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-45.png" class="kg-image" alt width="2395" height="1399" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-45.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-45.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-45.png 1600w, https://www.ruanx.net/content/images/2022/10/image-45.png 2395w" layout="responsive"></amp-img></figure><p>　　这段代码的逻辑是：准备一个输出设备（本例中是 stdout），就绪后调用 <code>doc-&gt;displayPages()</code> 输出文本。跟进 <code>displayPages</code> ：</p><pre><code class="language-cpp">void PDFDoc::displayPages(OutputDev *out, int firstPage, int lastPage,
+			  double hDPI, double vDPI, int rotate,
+			  GBool useMediaBox, GBool crop, GBool printing,
+			  GBool (*abortCheckCbk)(void *data),
+			  void *abortCheckCbkData) {
+  int page;
+
+  for (page = firstPage; page &lt;= lastPage; ++page) {
+    displayPage(out, page, hDPI, vDPI, rotate, useMediaBox, crop, printing,
+		abortCheckCbk, abortCheckCbkData);
+  }
+}</code></pre><p>　　也就是对于 pdf 中的每一页，调用 <code>displayPage</code> 将其转文字输出。跟进 <code>displayPage</code> ：</p><pre><code class="language-cpp">void PDFDoc::displayPage(OutputDev *out, int page,
+			 double hDPI, double vDPI, int rotate,
+			 GBool useMediaBox, GBool crop, GBool printing,
+			 GBool (*abortCheckCbk)(void *data),
+			 void *abortCheckCbkData) {
+  if (globalParams-&gt;getPrintCommands()) {
+    printf("***** page %d *****\n", page);
+  }
+  catalog-&gt;getPage(page)-&gt;display(out, hDPI, vDPI,
+				  rotate, useMediaBox, crop, printing, catalog,
+				  abortCheckCbk, abortCheckCbkData);
+}</code></pre><p>　　通过 <code>catalog-&gt;getPage(page)</code> 来获取指定页码，再将其展示出来。由于我们 pdf 只有一页，这个 <code>getPage</code> 结果肯定是第一页。跟进 <code>Page::display</code>：</p><pre><code class="language-cpp">void Page::display(OutputDev *out, double hDPI, double vDPI,
+		   int rotate, GBool useMediaBox, GBool crop,
+		   GBool printing, Catalog *catalog,
+		   GBool (*abortCheckCbk)(void *data),
+		   void *abortCheckCbkData) {
+  displaySlice(out, hDPI, vDPI, rotate, useMediaBox, crop,
+	       -1, -1, -1, -1, printing, catalog,
+	       abortCheckCbk, abortCheckCbkData);
+}</code></pre><p>　　是直接调用 <code>displaySlice</code> 输出。跟进：</p><pre><code class="language-cpp">void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
+			int rotate, GBool useMediaBox, GBool crop,
+			int sliceX, int sliceY, int sliceW, int sliceH,
+			GBool printing, Catalog *catalog,
+			GBool (*abortCheckCbk)(void *data),
+			void *abortCheckCbkData) {
+#ifndef PDF_PARSER_ONLY
+  PDFRectangle *mediaBox, *cropBox;
+  PDFRectangle box;
+  Gfx *gfx;
+  Object obj;
+  Annots *annotList;
+  Dict *acroForm;
+  int i;
+
+  if (!out-&gt;checkPageSlice(this, hDPI, vDPI, rotate, useMediaBox, crop,
+			   sliceX, sliceY, sliceW, sliceH,
+			   printing, catalog,
+			   abortCheckCbk, abortCheckCbkData)) {
+    return;
+  }
+
+  rotate += getRotate();
+  if (rotate &gt;= 360) {
+    rotate -= 360;
+  } else if (rotate &lt; 0) {
+    rotate += 360;
+  }
+
+  makeBox(hDPI, vDPI, rotate, useMediaBox, out-&gt;upsideDown(),
+	  sliceX, sliceY, sliceW, sliceH, &amp;box, &amp;crop);
+  cropBox = getCropBox();
+
+  if (globalParams-&gt;getPrintCommands()) {
+    mediaBox = getMediaBox();
+    printf("***** MediaBox = ll:%g,%g ur:%g,%g\n",
+	   mediaBox-&gt;x1, mediaBox-&gt;y1, mediaBox-&gt;x2, mediaBox-&gt;y2);
+    printf("***** CropBox = ll:%g,%g ur:%g,%g\n",
+	   cropBox-&gt;x1, cropBox-&gt;y1, cropBox-&gt;x2, cropBox-&gt;y2);
+    printf("***** Rotate = %d\n", attrs-&gt;getRotate());
+  }
+
+  gfx = new Gfx(xref, out, num, attrs-&gt;getResourceDict(),
+		hDPI, vDPI, &amp;box, crop ? cropBox : (PDFRectangle *)NULL,
+		rotate, abortCheckCbk, abortCheckCbkData);
+  contents.fetch(xref, &amp;obj);
+  // 在这个 fetch() 内进入无限递归
+  
+  
+  if (!obj.isNull()) {
+    gfx-&gt;saveState();
+    gfx-&gt;display(&amp;obj);
+    gfx-&gt;restoreState();
+  }
+  obj.free();
+
+  // draw annotations
+  annotList = new Annots(xref, catalog, getAnnots(&amp;obj));
+  obj.free();
+  acroForm = catalog-&gt;getAcroForm()-&gt;isDict() ?
+               catalog-&gt;getAcroForm()-&gt;getDict() : NULL;
+  if (acroForm) {
+    if (acroForm-&gt;lookup("NeedAppearances", &amp;obj)) {
+      if (obj.isBool() &amp;&amp; obj.getBool()) {
+	annotList-&gt;generateAppearances(acroForm);
+      }
+    }
+    obj.free();
+  }
+  if (annotList-&gt;getNumAnnots() &gt; 0) {
+    if (globalParams-&gt;getPrintCommands()) {
+      printf("***** Annotations\n");
+    }
+    for (i = 0; i &lt; annotList-&gt;getNumAnnots(); ++i) {
+      annotList-&gt;getAnnot(i)-&gt;draw(gfx, printing);
+    }
+    out-&gt;dump();
+  }
+  delete annotList;
+
+  delete gfx;
+#endif
+}</code></pre><p>　　我们是在执行 <code>contents.fetch(xref, &amp;obj)</code> 时陷入无限递归。 <code>contents</code> 是一个 <code>Object</code>，type 为 <code>objRef</code>，里面有一个 union， <code>Ref</code> 二元组为 <code>(num=7, gen=0)</code>。 来研究一下 <code>xref</code>，它是 <code>Page</code> 类里面的成员，定义：</p><pre><code class="language-cpp">class Page {
+
+private:
+  XRef *xref;			// the xref table for this PDF file
+  int num;			// page number
+  PageAttrs *attrs;		// page attributes
+  Object annots;		// annotations array
+  Object contents;		// page contents
+  GBool ok;			// true if page is valid
+}</code></pre><p>　　注释里面表示 <code>xref</code> 是 pdf 文件的 xref table。查阅资料：</p><figure class="kg-card kg-bookmark-card"><a class="kg-bookmark-container" href="https://labs.appligent.com/pdfblog/pdf_cross_reference_table/"><div class="kg-bookmark-content"><div class="kg-bookmark-title">PDF Cross Reference Table | Appligent Labs | PDF</div><div class="kg-bookmark-description">The PDF Cross Reference Table (xref) is the third major section of a PDF File. It is the index by which all the indirect objects in the PDF file are located.</div><div class="kg-bookmark-metadata"><amp-img class="kg-bookmark-icon" src="https://labs.appligent.com/favicon.ico" alt width="48" height="48" layout="fixed"></amp-img><span class="kg-bookmark-author">PDF</span><span class="kg-bookmark-publisher">Mark Gavin</span></div></div><div class="kg-bookmark-thumbnail"><amp-img src="https://labs.appligent.com/files/2013/04/PDF_XRef_Table.png" alt width="444" height="310" layout="responsive"></amp-img></div></a></figure><p>　　简而言之，xref table 是文件里所有 object 的索引表。编码规则如下：</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-46.png" class="kg-image" alt width="444" height="310" layout="responsive"></amp-img></figure><p>　　来看看示例文件 helloworld.pdf 的 xref 表：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-47.png" class="kg-image" alt width="2424" height="1265" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-47.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-47.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-47.png 1600w, https://www.ruanx.net/content/images/size/w2400/2022/10/image-47.png 2400w" layout="responsive"></amp-img></figure><p>　　<a href="https://resources.infosecinstitute.com/topic/pdf-file-format-basic-structure/">另一篇资料</a>中提到，xref table 的目的是允许随机访问文件中的 object 而无需先读入整个 pdf。那么，当 xref 表损坏时，我们应当可以从文件中重构 xref 表。</p><p>　　分析 crash 输入，有的 input 不存在 xref table（但有 <code>startxref</code> 字符串），有的 xref table 损坏。xref table 损坏的例子：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-48.png" class="kg-image" alt width="2424" height="1265" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-48.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-48.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-48.png 1600w, https://www.ruanx.net/content/images/size/w2400/2022/10/image-48.png 2400w" layout="responsive"></amp-img></figure><p>　　动态调试后发现，“xref 损坏”与“xref 不存在”的例子，崩溃路径并不相同。所以我们还是继续分析原来的 xref 不存在的例子。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-49.png" class="kg-image" alt width="2040" height="1276" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-49.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-49.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-49.png 1600w, https://www.ruanx.net/content/images/2022/10/image-49.png 2040w" layout="responsive"></amp-img></figure><p>　　在这里，xref 仅有一个 entry，其 offset 为 <code>4294967295</code>，明显不合理。跟进这个 <code>contents.fetch()</code>：</p><pre><code class="language-cpp">Object *Object::fetch(XRef *xref, Object *obj) {
+  return (type == objRef &amp;&amp; xref) ?
+         xref-&gt;fetch(ref.num, ref.gen, obj) : copy(obj);
+}</code></pre><p>　　就是包装了一下 <code>xref</code> 对象自己的 <code>fetch()</code>，其中由于 <code>contents</code> 共用体里面 <code>ref.num=7, ref.gen=0</code>，所以这里调用的是 <code>xref-&gt;fetch(7, 0, &amp;obj)</code>。现在我们去跟进 <code>XRef::fetch</code>：</p><pre><code class="language-cpp">Object *XRef::fetch(int num, int gen, Object *obj) {
+  XRefEntry *e;
+  Parser *parser;
+  Object obj1, obj2, obj3;
+
+  // check for bogus ref - this can happen in corrupted PDF files
+  if (num &lt; 0 || num &gt;= size) {
+    goto err;
+  }
+
+  e = &amp;entries[num];
+  switch (e-&gt;type) {
+
+  case xrefEntryUncompressed:
+    if (e-&gt;gen != gen) {
+      goto err;
+    }
+    obj1.initNull();
+    parser = new Parser(this,
+	       new Lexer(this,
+		 str-&gt;makeSubStream(start + e-&gt;offset, gFalse, 0, &amp;obj1)),
+	       gTrue);
+    parser-&gt;getObj(&amp;obj1);
+    parser-&gt;getObj(&amp;obj2);
+    parser-&gt;getObj(&amp;obj3);
+    if (!obj1.isInt() || obj1.getInt() != num ||
+	!obj2.isInt() || obj2.getInt() != gen ||
+	!obj3.isCmd("obj")) {
+      obj1.free();
+      obj2.free();
+      obj3.free();
+      delete parser;
+      goto err;
+    }
+    parser-&gt;getObj(obj, encrypted ? fileKey : (Guchar *)NULL,
+		   encAlgorithm, keyLength, num, gen);
+    obj1.free();
+    obj2.free();
+    obj3.free();
+    delete parser;
+    break;
+
+  case xrefEntryCompressed:
+    // ...
+    break;
+
+  default:
+    goto err;
+  }
+
+  return obj;
+
+ err:
+  return obj-&gt;initNull();
+}</code></pre><p>　　其中，这一句 <code>parser-&gt;getObj(obj, encrypted ? fileKey : (Guchar *)NULL, encAlgorithm, keyLength, num, gen)</code> 进入死递归。动态调试到这里，它的实际参数是： <code>getObj(obj, NULL, &lt;RC4&gt;, 0, 7, 0)</code>。推测语义为把 obj 置为 <code>id=7</code> 的 object。跟进 <code>getObj</code>：</p><pre><code class="language-cpp">Object *Parser::getObj(Object *obj, Guchar *fileKey,
+		       CryptAlgorithm encAlgorithm, int keyLength,
+		       int objNum, int objGen) {
+  // ...
+
+  // array
+  if (buf1.isCmd("[")) {
+    // ...
+  // dictionary or stream
+  } else if (buf1.isCmd("&lt;&lt;")) {
+    shift();
+    obj-&gt;initDict(xref);     // 初始化 obj 为 objDict
+    while (!buf1.isCmd("&gt;&gt;") &amp;&amp; !buf1.isEOF()) {
+      if (!buf1.isName()) {
+	error(getPos(), "Dictionary key must be a name object");
+	shift();
+      } else {
+	key = copyString(buf1.getName());
+	shift();
+	if (buf1.isEOF() || buf1.isError()) {
+	  gfree(key);
+	  break;
+	}
+	obj-&gt;dictAdd(key, getObj(&amp;obj2, fileKey, encAlgorithm, keyLength,
+				 objNum, objGen));
+      }
+    }
+    if (buf1.isEOF())
+      error(getPos(), "End of file inside dictionary");
+    
+    // stream objects are not allowed inside content streams or
+    // object streams
+    if (allowStreams &amp;&amp; buf2.isCmd("stream")) {
+      if ((str = makeStream(obj, fileKey, encAlgorithm, keyLength,
+			    objNum, objGen))) {
+      // 这个 makeStrem 进入无限递归
+      // ...</code></pre><p>　　这里调用 <code>Parser::makeStream</code>，参数列表与上文的 <code>getObj</code> 参数基本相同。跟进：</p><pre><code class="language-cpp">Stream *Parser::makeStream(Object *dict, Guchar *fileKey,
+			   CryptAlgorithm encAlgorithm, int keyLength,
+			   int objNum, int objGen) {
+  Object obj;
+  BaseStream *baseStr;
+  Stream *str;
+  Guint pos, endPos, length;
+
+  // get stream start position
+  lexer-&gt;skipToNextLine();
+  pos = lexer-&gt;getPos();
+
+  // get length
+  dict-&gt;dictLookup("Length", &amp;obj);
+  // 在此处进入无限递归
+  
+  if (obj.isInt()) {
+    length = (Guint)obj.getInt();
+    obj.free();
+  } else {
+    error(getPos(), "Bad 'Length' attribute in stream");
+    obj.free();
+    return NULL;
+  }
+  // ...</code></pre><p>　　这里的 <code>dict</code> 就是我们传进来的 <code>obj</code>，即 <code>Page</code> 类所调用的 <code>contents.fetch(xref, &amp;obj)</code> 里面的 <code>obj</code>。它现在已经被组装成一个 <code>objDict</code>，顾名思义应该是一个 dictionary。那么猜测这一行 <code>dict-&gt;dictLookup("Length", &amp;obj)</code> 的语义是“从 <code>dict</code> 中查找键 <code>Length</code> 对应的 value”。跟进：</p><pre><code class="language-cpp">inline Object *Object::dictLookup(char *key, Object *obj)
+  { return dict-&gt;lookup(key, obj); }</code></pre><p>　　应当注意上面代码中的 <code>dict</code> 是这个 <code>Object</code> 的 private 成员（类型为 <code>Dict</code> ），而非这个名为 <code>dict</code> 的 <code>Object</code> 本身。如下图，dictionary 里面存在名为 <code>Length</code> 的键。</p><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-50.png" class="kg-image" alt width="1478" height="834" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-50.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-50.png 1000w, https://www.ruanx.net/content/images/2022/10/image-50.png 1478w" layout="responsive"></amp-img></figure><p>跟进这个 <code>lookup</code>：</p><pre><code class="language-cpp">Object *Dict::lookup(char *key, Object *obj) {
+  DictEntry *e;
+
+  return (e = find(key)) ? e-&gt;val.fetch(xref, obj) : obj-&gt;initNull();
+}</code></pre><p>　　这里 <code>find(key)</code> 是寻找到 dictionary 里面的一条 entry，寻找成功之后，调用 <code>e-&gt;val.fetch(xref, obj)</code>。动态调试知，这里的 <code>e-&gt;val</code> 是一条 <code>objRef</code>：</p><figure class="kg-card kg-image-card kg-width-wide"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-51.png" class="kg-image" alt width="2089" height="842" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-51.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-51.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-51.png 1600w, https://www.ruanx.net/content/images/2022/10/image-51.png 2089w" layout="responsive"></amp-img></figure><p>　　发现这个 <code>objRef</code> 的 <code>ref</code> 属性是二元组 <code>(num=7, gen=0)</code>，与 <code>contents</code> 一致。跟进这个 <code>(e-&gt;val).fetch</code>。</p><pre><code class="language-cpp">Object *Object::fetch(XRef *xref, Object *obj) {
+  return (type == objRef &amp;&amp; xref) ?
+         xref-&gt;fetch(ref.num, ref.gen, obj) : copy(obj);
+}</code></pre><p>　　实际调用的是 <code>xref-&gt;fetch(7, 0, &amp;newobj)</code>，而我们之前讨论过 <code>contents.fetch(xref, &amp;obj)</code> 触发的 <code>xref-&gt;fetch(7, 0, &amp;obj)</code>，至此，我们成功还原了递归链条：</p><ol><li><code>main</code> 经过一些过程之后，调用 <code>displaySlice</code> 输出一些文本</li><li><code>displaySlice</code> 调用<code>contents.fetch(xref, &amp;obj)</code> ，其中 <code>contents</code> 是一个 <code>objRef</code>，共用体 <code>ref</code> 二元组为 <code>(num=7, gen=0)</code></li><li><code>xref-&gt;fetch(ref.num, ref.gen, obj)</code> 被调用，<strong>实际上 call 了 <code>xref-&gt;fetch(7, 0, obj)</code></strong></li><li><code>xref-&gt;fetch</code> 过程中，检测到这条 entry 是未被压缩的，调用 <code>parser-&gt;getObj(obj, fileKey=NULL, encAlgorithm=&lt;RC4&gt;, keyLength0, num=7, gen=0)</code>，以获取 num=7, gen=0 这个 pdf object</li><li><code>Parser::getObj</code> 过程中，首先通过 <code>obj-&gt;initDict(xref)</code> 把 <code>obj</code> 从 <code>objNone</code> 初始化成一个 <code>objDict</code>，调用 <code>makeStream(obj, fileKey=NULL, encAlgorithm=&lt;RC4&gt;, keyLength=0, objNum=7, objGen=0)</code> 生成一个 <code>Stream</code> </li><li><code>Parser::makeStream</code> 过程中，调用 <code>obj-&gt;dictLookup("Length", &amp;newobj)</code>，意图是从现在已经是 <code>objDict</code> 的 <code>obj</code> 里面取 key 为 <code>"Length"</code> 的键值对，把 value 给 <code>newobj</code></li><li>上述 <code>dictLookup</code> 是一个简单封装，调用 <code>obj-&gt;dict-&gt;lookup("Length", &amp;newobj)</code></li><li>上述 <code>lookup</code> 从 <code>obj-&gt;dict</code> 这个 dictionary 里面寻找到 key 为 <code>"Length"</code> 的 entry <code>e: (key="Length", val=&lt;objRef&gt;)</code>，且这里的这个类型为 <code>objRef</code> 的 <code>val</code> 的 <code>ref</code> 二元组为 <code>(num=7, gen=0)</code>。调用 <code>val.fetch(xref, &amp;newobj)</code></li><li>上述 <code>val.fetch(xref, &amp;newobj)</code>，<strong>由于 <code>val</code> 的 <code>ref</code> 二元组为 <code>(num=7, gen=0)</code>，所以会调用 <code>xref-&gt;fetch(7, 0, &amp;newobj)</code></strong>，这个 call 与第 3 条分析的 call 作用相同，至此进入无限递归。</li></ol><p>　　上述过程中，最违背常理的是第 6 条，<code>Length</code> 这个键为什么会对应一个 <code>objRef</code> 而不是 <code>objInt</code>。我们再看一遍 <code>makeStream</code> 过程：</p><pre><code class="language-cpp">  // get length
+  dict-&gt;dictLookup("Length", &amp;obj);  // 在这里陷入无限递归
+  if (obj.isInt()) {
+    length = (Guint)obj.getInt();
+    obj.free();
+  } else {
+    error(getPos(), "Bad 'Length' attribute in stream");
+    obj.free();
+    return NULL;
+  }</code></pre><p>　　这说明开发者也期望 <code>Length</code> 键对应一个整数，如果不是整数的话会报错。可惜程序没等到运行至 <code>isInt()</code> 检测，就进入死递归了。</p><p>　　正常的运行逻辑应该是： <code>Length</code> 键对应一个 <code>objInt</code> 类型的 <code>val</code>，调用 <code>val.fetch(xref, &amp;newobj)</code> ：</p><pre><code class="language-cpp">Object *Object::fetch(XRef *xref, Object *obj) {
+  return (type == objRef &amp;&amp; xref) ?
+         xref-&gt;fetch(ref.num, ref.gen, obj) : copy(obj);
+}</code></pre><p>　　如果 <code>val</code> 是 <code>objInt</code> 类型，那么它将会返回自己这个 <code>objInt</code> 的副本。程序将会正常运行，而不是递归 <code>fetch</code> 下去。</p><h3 id="0x04-%E4%BF%AE%E5%A4%8D">0x04 修复</h3><p>　　在研究清楚为什么 crash 之后，我们的修复方案已经明了：若 <code>Length</code> 所对应的 <code>val</code> 不是 <code>objInt</code>，则不能执行第 6 条分析里的 <code>obj-&gt;dictLookup("Length", &amp;newobj)</code> 。这可以通过在各种入口处特判来实现，<strong>但考虑到 <code>lookup</code> 使用非常频繁，入口处判断容易影响性能；且如果我们在 <code>lookup</code> 前就终止程序，那么原有的 <code>makeStream</code> 中判断 <code>val</code> 是否合法的代码就不能复用</strong>。故笔者写了 Length 查询特制版的 <code>Dict::lookupLength</code> 和 <code>Object::dictLookupLength</code>：</p><pre><code class="language-cpp">Object *Dict::lookupLength(char *key, Object *obj) {
+  DictEntry *e;
+
+  return (e = find(key)) ? e-&gt;val.copy(obj) : obj-&gt;initNull();
+}
+
+inline Object *Object::dictLookupLength(char *key, Object *obj)
+  { return dict-&gt;lookupLength(key, obj); }</code></pre><p>　　并将 <code>Parser::makeStream</code> 里的代码做如下修改。这样 patch 不影响程序性能。</p><pre><code class="language-cpp">// get length
+[-] dict-&gt;dictLookup("Length", &amp;obj);
+[+] dict-&gt;dictLookupLength("Length", &amp;obj);</code></pre><p>　　完整的改动列表可以在 git diff 中查看：<a href="https://github.com/Ruanxingzhi/Fuzzing101/commit/57d37c2a1ea91a30fa825068d14db48335190672">https://github.com/Ruanxingzhi/Fuzzing101/commit/57d3...</a></p><p>　　正常功能测试：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-52.png" class="kg-image" alt width="2081" height="772" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-52.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-52.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-52.png 1600w, https://www.ruanx.net/content/images/2022/10/image-52.png 2081w" layout="responsive"></amp-img><figcaption>▲ 原程序和 patch 后程序均正常处理</figcaption></figure><p>　　crash0 测试：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-53.png" class="kg-image" alt width="2081" height="772" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-53.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-53.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-53.png 1600w, https://www.ruanx.net/content/images/2022/10/image-53.png 2081w" layout="responsive"></amp-img><figcaption>▲ 原程序段错误，patch 后程序正常处理</figcaption></figure><p>　　crash1 测试：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2022/10/image-54.png" class="kg-image" alt width="2110" height="1532" srcset="https://www.ruanx.net/content/images/size/w600/2022/10/image-54.png 600w, https://www.ruanx.net/content/images/size/w1000/2022/10/image-54.png 1000w, https://www.ruanx.net/content/images/size/w1600/2022/10/image-54.png 1600w, https://www.ruanx.net/content/images/2022/10/image-54.png 2110w" layout="responsive"></amp-img><figcaption>▲ 原程序段错误，patch 后程序正常处理</figcaption></figure><p>　　可见我们成功修复了 bug。至此，我们完成了 exercise 1 的 fuzzing、复现和修复。</p><p></p><h3 id="0x05-%E6%80%BB%E7%BB%93">0x05 总结</h3><ul><li><code>-O2</code> 可能影响调试。调试时应该采用 <code>-O0</code>。</li><li>复现漏洞需要一些耐心。</li></ul>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

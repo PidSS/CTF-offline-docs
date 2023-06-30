@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html ⚡>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <title>欺骗神经网络</title>
+
+    <meta name="description" content="对神经网络的输入施加微小扰动，可能大幅度改变其输出。在本文中，我们训练了一个针对 MNIST 的简单网络，并小幅度修改指定的图片，让它作出错误判断。" />
+    <link rel="icon" href="../../content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="../index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="欺骗神经网络" />
+    <meta property="og:description" content="对神经网络的输入施加微小扰动，可能大幅度改变其输出。在本文中，我们训练了一个针对 MNIST 的简单网络，并小幅度修改指定的图片，让它作出错误判断。" />
+    <meta property="og:url" content="https://www.ruanx.net/cheat-neural-network/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="article:published_time" content="2021-02-06T05:16:06.000Z" />
+    <meta property="article:modified_time" content="2022-10-18T04:24:13.000Z" />
+    <meta property="article:tag" content="algorithm" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="欺骗神经网络" />
+    <meta name="twitter:description" content="对神经网络的输入施加微小扰动，可能大幅度改变其输出。在本文中，我们训练了一个针对 MNIST 的简单网络，并小幅度修改指定的图片，让它作出错误判断。" />
+    <meta name="twitter:url" content="https://www.ruanx.net/cheat-neural-network/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Ruan Xingzhi" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="algorithm" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Ruan Xingzhi",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://www.ruanx.net/content/images/2020/05/blue.jpeg",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://www.ruanx.net/author/blue/",
+        "sameAs": []
+    },
+    "headline": "欺骗神经网络",
+    "url": "https://www.ruanx.net/cheat-neural-network/",
+    "datePublished": "2021-02-06T05:16:06.000Z",
+    "dateModified": "2022-10-18T04:24:13.000Z",
+    "keywords": "algorithm",
+    "description": "对神经网络的输入施加微小扰动，可能大幅度改变其输出。在本文中，我们训练了一个针对 MNIST 的简单网络，并小幅度修改指定的图片，让它作出错误判断。",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="../../rss/index.rss" />
+
+    <style amp-custom>*,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        font-size: 62.5%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #3a4145;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.55em;
+        font-weight: 400;
+        font-style: normal;
+        background: #fff;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    hr,
+    pre,
+    form,
+    table,
+    video,
+    figure,
+    figcaption,
+    blockquote {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul[class],
+    ol[class] {
+        padding: 0;
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font: inherit;
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 700;
+    }
+
+    hr {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid currentcolor;
+        opacity: 0.1;
+    }
+
+    ::selection {
+        text-shadow: none;
+        background: #cbeafb;
+    }
+
+    mark {
+        background-color: #fdffb6;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        position: relative;
+        font-size: 75%;
+        line-height: 0;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.5em;
+    }
+    sub {
+        bottom: -0.25em;
+    }
+
+    ul li + li {
+        margin-top: 0.6em;
+    }
+
+    a {
+        color: var(--ghost-accent-color, #1292EE);
+        text-decoration-skip-ink: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        font-weight: 700;
+        color: #121212;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 3.4rem;
+        line-height: 1.1em;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+        line-height: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.7rem;
+    }
+
+    h5 {
+        font-size: 1.6rem;
+    }
+
+    h6 {
+        font-size: 1.6rem;
+    }
+
+    amp-img {
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    amp-img img {
+        object-fit: cover;
+    }
+
+    .page-header {
+        padding: 50px 5vmin 30px;
+        text-align: center;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .page-header a {
+        color: #121212;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.6rem;
+        letter-spacing: -0.1px;
+    }
+
+    .post {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .post-header {
+        margin: 0 5vmin 5vmin;
+        text-align: center;
+    }
+
+    .post-meta {
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+        color: #738a94;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+
+    .post-image {
+        margin: 0 0 5vmin;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .post-content {
+        padding: 0 5vmin;
+    }
+
+    .post-content > * + * {
+        margin-top: 1.5em;
+    }
+
+    .post-content [id]:not(:first-child) {
+        margin: 2em 0 0;
+    }
+
+    .post-content > [id] + * {
+        margin-top: 1rem;
+    }
+
+    .post-content [id] + .kg-card,
+    .post-content blockquote + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content > ul,
+    .post-content > ol,
+    .post-content > dl {
+        padding-left: 1.9em;
+    }
+
+    .post-content hr {
+        margin-top: 40px;
+    }
+
+    .post .post-content hr + * {
+        margin-top: 40px;
+    }
+
+    .post-content amp-img {
+        background-color: #f8f8f8;
+    }
+
+    .post-content blockquote {
+        position: relative;
+        font-style: italic;
+    }
+
+    .post-content blockquote::before {
+        content: "";
+        position: absolute;
+        left: -1.5em;
+        top: 0;
+        bottom: 0;
+        width: 0.3rem;
+        background: var(--ghost-accent-color, #1292EE);
+    }
+
+    .post-content blockquote.kg-blockquote-alt {
+        font-size: 1.2em;
+        font-style: italic;
+        line-height: 1.6em;
+        text-align: center;
+        color: #738a94;
+        padding: 0.75em 3em 1.25em;
+    }
+
+    .post-content blockquote.kg-blockquote-alt::before {
+        display: none;
+    }
+
+    .post-content :not(.kg-card):not([id]) + .kg-card {
+        margin-top: 40px;
+    }
+
+    .post-content .kg-card + :not(.kg-card) {
+        margin-top: 40px;
+    }
+
+    .kg-card figcaption {
+        padding: 1.5rem 1.5rem 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.4em;
+        opacity: 0.6;
+    }
+
+    .kg-card figcaption strong {
+        color: rgba(0,0,0,0.8);
+    }
+
+    .post-content :not(pre) code {
+        vertical-align: middle;
+        padding: 0.15em 0.4em 0.15em;
+        border: #e1eaef 1px solid;
+        font-weight: 400;
+        font-size: 0.9em;
+        line-height: 1em;
+        color: #15171a;
+        background: #f0f6f9;
+        border-radius: 0.25em;
+    }
+
+    .post-content > pre {
+        overflow: scroll;
+        padding: 16px 20px;
+        color: #fff;
+        background: #1F2428;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px -2px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.4);
+    }
+
+    .kg-embed-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .kg-image-card img {
+        margin: auto;
+    }
+
+    .kg-gallery-card + .kg-gallery-card {
+        margin-top: 0.75em;
+    }
+
+    .kg-gallery-container {
+        position: relative;
+    }
+
+    .kg-gallery-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .kg-gallery-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .kg-gallery-row:not(:first-of-type) {
+        margin: 0.75em 0 0 0;
+    }
+
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 0 0 0 0.75em;
+    }
+
+    .kg-bookmark-card,
+    .kg-bookmark-publisher {
+        position: relative;
+    }
+
+    .kg-bookmark-container,
+    .kg-bookmark-container:hover {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row-reverse;
+        color: currentColor;
+        background: rgba(255,255,255,0.6);
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+
+    .kg-bookmark-content {
+        flex-basis: 0;
+        flex-grow: 999;
+        padding: 20px;
+        order: 1;
+    }
+
+    .kg-bookmark-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3em;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        max-height: 45px;
+        margin: 0.5em 0 0 0;
+        font-size: 1.4rem;
+        line-height: 1.55em;
+        overflow: hidden;
+        opacity: 0.8;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .kg-bookmark-metadata {
+        margin-top: 20px;
+    }
+
+    .kg-bookmark-metadata {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1.3rem;
+        line-height: 1.3em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kg-bookmark-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-metadata amp-img {
+        width: 18px;
+        height: 18px;
+        max-width: 18px;
+        max-height: 18px;
+        margin-right: 10px;
+    }
+
+    .kg-bookmark-thumbnail {
+        display: flex;
+        flex-basis: 20rem;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .kg-bookmark-thumbnail amp-img {
+        max-height: 200px;
+    }
+
+    .kg-bookmark-author {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .kg-bookmark-publisher::before {
+        content: "•";
+        margin: 0 .5em;
+    }
+
+    .kg-toggle-card-icon {
+        display: none;
+    }
+
+    .kg-toggle-content {
+        margin-top: 0.8rem;
+    }
+
+    .kg-product-card-container {
+        background: transparent;
+        padding: 20px;
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
+    }
+
+    .kg-product-card-description p {
+        margin-top: 1.5em;
+    }
+
+    .kg-product-card-description ul {
+        margin-left: 24px;
+    }
+
+    .kg-product-card-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .kg-product-card-rating-star {
+        height: 28px;
+        width: 20px;
+        margin-right: 2px;
+    }
+
+    .kg-product-card-rating-star svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.15;
+    }
+
+    .kg-product-card-rating-active.kg-product-card-rating-star svg {
+    opacity: 1;
+    }
+
+    .kg-nft-card-container {
+        position: relative;
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        text-decoration: none;
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        box-shadow: 0 2px 6px -2px rgb(0 0 0 / 10%), 0 0 1px rgb(0 0 0 / 40%);
+        width: 100%;
+        max-width: 512px;
+        color: #15212A;
+        background: #fff;
+        border-radius: 5px;
+        transition: none;
+        margin: 0 auto;
+    }
+
+    .kg-nft-metadata {
+        padding: 2.0rem;
+    }
+
+    .kg-nft-image-container {
+        position: relative;
+    }
+
+    .kg-nft-image {
+        display: flex;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .kg-nft-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .kg-nft-header h4.kg-nft-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #15212A;
+    }
+
+    .kg-nft-header amp-img {
+        max-width: 114px;
+        max-height: 26px;
+    }
+
+    .kg-nft-opensea-logo {
+        margin-top: 2px;
+        width: 100px;
+    }
+
+    .kg-nft-creator {
+        font-family: inherit;
+        color: #95A1AD;
+    }
+
+    .kg-nft-creator span {
+        font-weight: 500;
+        color: #15212A;
+    }
+
+    .kg-nft-card p.kg-nft-description {
+        font-size: 1.4rem;
+        line-height: 1.4em;
+        margin: 2.0rem 0 0;
+        color: #222;
+    }
+
+    .kg-button-card {
+        display: flex;
+        position: static;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kg-btn {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 2.0rem;
+        height: 4.0rem;
+        line-height: 4.0rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .kg-btn:hover {
+        opacity: 0.85;
+    }
+
+    .kg-btn-accent {
+        background-color: var(--ghost-accent-color, #1292EE);
+        color: #fff;
+    }
+
+    .kg-callout-card {
+        display: flex;
+        padding: 20px 28px;
+        border-radius: 3px;
+    }
+
+    .kg-callout-card-grey {
+        background: rgba(124, 139, 154, 0.13);
+    }
+
+    .kg-callout-card-white {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-callout-card-blue {
+        background: rgba(33, 172, 232, 0.12);
+    }
+
+    .kg-callout-card-green {
+        background: rgba(52, 183, 67, 0.12);
+    }
+
+    .kg-callout-card-yellow {
+        background: rgba(240, 165, 15, 0.13);
+    }
+
+    .kg-callout-card-red {
+        background: rgba(209, 46, 46, 0.11);
+    }
+
+    .kg-callout-card-pink {
+        background: rgba(225, 71, 174, 0.11);
+    }
+
+    .kg-callout-card-purple {
+        background: rgba(135, 85, 236, 0.12);
+    }
+
+    .kg-callout-card-accent {
+        background: var(--ghost-accent-color);
+        color: #fff;
+    }
+
+    .kg-callout-card-accent a {
+        color: #fff;
+    }
+
+    .kg-callout-emoji {
+        padding-right: 16px;
+        line-height: 1.3;
+        font-size: 1.25em;
+    }
+
+    .kg-header-card {
+        padding: 6em 3em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .kg-header-card.kg-size-small {
+        padding-top: 4em;
+        padding-bottom: 4em;
+    }
+
+    .kg-header-card.kg-size-large {
+        padding-top: 12em;
+        padding-bottom: 12em;
+    }
+
+    .kg-header-card.kg-width-full {
+        padding-left: 4em;
+        padding-right: 4em;
+    }
+
+    .kg-header-card.kg-align-left {
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .kg-header-card.kg-style-dark {
+        background: #15171a;
+        color: #ffffff;
+    }
+
+    .kg-header-card.kg-style-light {
+        color: #15171a;
+        border: 1px solid rgba(124, 139, 154, 0.25);
+        border-width: 1px 0;
+    }
+
+    .kg-header-card.kg-style-accent {
+        background-color: var(--ghost-accent-color);
+    }
+
+    .kg-header-card.kg-style-image {
+        background-color: #e7e7eb;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .kg-header-card h2 {
+        font-size: 4em;
+        font-weight: 700;
+        line-height: 1.1em;
+        margin: 0;
+    }
+
+    .kg-header-card h2 strong {
+        font-weight: 800;
+    }
+
+    .kg-header-card.kg-size-small h2 {
+        font-size: 3em;
+    }
+
+    .kg-header-card.kg-size-large h2 {
+        font-size: 5em;
+    }
+
+    .kg-header-card h3 {
+        font-size: 1.25em;
+        font-weight: 500;
+        line-height: 1.3em;
+        margin: 0;
+    }
+
+    .kg-header-card h3 strong {
+        font-weight: 600;
+    }
+
+    .kg-header-card.kg-size-small h3 {
+        font-size: 1em;
+    }
+
+    .kg-header-card.kg-size-large h3 {
+        font-size: 1.5em;
+    }
+
+    .kg-header-card:not(.kg-style-light) h2,
+    .kg-header-card:not(.kg-style-light) h3 {
+        color: #ffffff;
+    }
+
+    .kg-header-card a.kg-header-card-button {
+        display: flex;
+        position: static;
+        align-items: center;
+        padding: 0 1.2em;
+        height: 2.4em;
+        line-height: 1em;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-size: 0.95em;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in-out;
+        background-color: var(--ghost-accent-color);
+        color: #ffffff;
+        margin: 1.75em 0 0;
+    }
+
+    .kg-header-card a.kg-header-card-button:hover {
+        opacity: 0.85;
+    }
+
+    .kg-header-card.kg-size-large a.kg-header-card-button {
+        margin-top: 2em;
+    }
+
+    .kg-header-card.kg-size-small a.kg-header-card-button {
+        margin-top: 1.5em;
+    }
+
+    .kg-header-card.kg-style-image a.kg-header-card-button,
+    .kg-header-card.kg-style-dark a.kg-header-card-button {
+        background: #ffffff;
+        color: #15171a;
+    }
+
+    .kg-header-card.kg-style-accent a.kg-header-card-button {
+        background: #ffffff;
+        color: var(--ghost-accent-color);
+    }
+
+    .kg-audio-card {
+        display: flex;
+        width: 100%;
+        box-shadow: inset 0 0 0 1px rgba(124, 139, 154, 0.25);
+    }
+
+    .kg-audio-thumbnail {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        min-width: 80px;
+        height: 80px;
+        background: transparent;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .kg-audio-thumbnail.placeholder {
+        background: var(--ghost-accent-color);
+    }
+
+    .kg-audio-thumbnail.placeholder svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+    .kg-audio-player-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        --seek-before-width: 0%;
+        --volume-before-width: 100%;
+        --buffered-width: 0%;
+    }
+
+    .kg-audio-title {
+        width: 100%;
+        padding: 8px 12px 0;
+        border: none;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .kg-audio-player {
+        display: none;
+    }
+
+    .kg-width-full.kg-card-hascaption {
+        display: grid;
+        grid-template-columns: inherit;
+    }
+
+    .post-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .post-content th {
+        padding: 0.5em 0.8em;
+        text-align: left;
+        font-size: .75em;
+        text-transform: uppercase;
+    }
+
+    .post-content td {
+        padding: 0.4em 0.7em;
+    }
+
+    .post-content tbody tr:nth-child(2n + 1) {
+        background-color: rgba(0,0,0,0.1);
+        padding: 1px;
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td:last-child {
+        box-shadow:
+            inset 1px 0 rgba(0,0,0,0.1),
+            inset -1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:nth-child(2n + 2) td {
+        box-shadow: inset 1px 0 rgba(0,0,0,0.1);
+    }
+
+    .post-content tbody tr:last-child {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .page-footer {
+        padding: 60px 5vmin;
+        margin: 60px auto 0;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
+
+    .page-footer h3 {
+        margin: 0.5rem 0 0 0;
+    }
+
+    .page-footer p {
+        max-width: 500px;
+        margin: 1rem auto 1.5rem;
+        font-size: 1.7rem;
+        line-height: 1.5em;
+        color: rgba(0,0,0,0.6)
+    }
+
+    .powered {
+        display: inline-flex;
+        align-items: center;
+        margin: 30px 0 0;
+        padding: 6px 9px 6px 6px;
+        border: rgba(0,0,0,0.1) 1px solid;
+        font-size: 12px;
+        line-height: 12px;
+        letter-spacing: -0.2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        color: #222;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 6px;
+    }
+
+    .powered svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px 0 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.6rem;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 2.6rem;
+            line-height: 1.15em;
+        }
+        h2 {
+            font-size: 2rem;
+            line-height: 1.2em;
+        }
+        h3 {
+            font-size: 1.7rem;
+        }
+    }
+
+    :root {--ghost-accent-color: #15171A;}
+    </style>
+
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+    
+
+</head>
+
+<body class="amp-template">
+    <header class="page-header">
+        <a href="../../index.html">
+                <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        </a>
+    </header>
+
+    <main class="content" role="main">
+        <article class="post">
+
+            <header class="post-header">
+                <h1 class="post-title">欺骗神经网络</h1>
+                <section class="post-meta">
+                    Ruan Xingzhi -
+                    <time class="post-date" datetime="2021-02-06">06 Feb 2021</time>
+                </section>
+            </header>
+            <section class="post-content">
+
+                <p>　　首先简要介绍一下欺骗神经网络的原理：</p><blockquote>输入数据微小的改变，可能大幅度地影响输出。</blockquote><p>　　神经网络中几乎到处都有这种机会。例如 sigmoid 函数，自变量在 0 附近的微小改变可以引发函数值很大的变化。一个全连接层，各个节点都变动一个微小数值，没准就能齐心协力把输出的 argmax 改变掉，让分类器作出错误的判断。</p><p>　　CTF 中也经常出现这类「指鹿为马」形式的问题：给出一个分类器（我遇到过神经网络和 k-nearest）的所有参数，然后给出一个样本 $x$，它被模型正确地识别为 $y$. 选手的任务是小幅度地修改 $x$，使得模型将之分类成 $y ^ \prime$. 这里可能要求 $x ^ \prime$ 与 $x$ 的距离小于某个值，例如求出 $x$ 与 $ x ^ \prime$ 的每个像素点之间的距离（RGB8，各个通道之差取绝对值求和），要求像素距离总和小于 $10 ^ 5$.</p><p>　　我们之所以可以欺骗神经网络，是因为神经网络缺乏泛化能力。一般来看，过拟合越严重，我们越能轻易地（指 $x ^ \prime$ 与 $x$ 距离很近）修改输入向量，来让神经网络输出我们想要的值。</p><p>　　这是如何做到的？回顾神经网络的训练过程：</p><ol><li>在网络中计算 output </li><li>求出 output 与 label 的误差，并求出各个网络参数的梯度</li><li>利用刚刚求出的梯度，更新网络参数</li></ol><p>　　而我们要欺骗一个已有的神经网络，可以这样做：</p><ol><li>在网络中计算 output</li><li>求出 output 与我们想要篡改到的 target 的误差，求出<strong>图片的梯度</strong></li><li>冻结网络的参数，而去对图片进行梯度下降</li></ol><p>　　重复上述过程若干次，可以让神经网络产生误判。</p><p>　　作为演示，我们接下来实现一个神经网络，它识别 MNIST 数据集的手写数字。然后我们随便找一张图像，将其修改一番，使得我们人类仍然能够正确识别，而神经网络给出错误判断。</p><hr></hr><h3 id="-">实现神经网络</h3><p>　　作为 PyTorch 玩家，我们当然用 PyTorch 来完成此项工作。先把包导入进来：</p><pre><code class="language-python">import torch
+import torchvision
+import torch.nn as nn
+import torchvision.transforms as transforms
+import torch.nn.functional as F
+import numpy as np
+
+import matplotlib.pyplot as plt</code></pre><p>　　然后导入数据集。 <code>torchvision</code> 库可以帮助我们快速导入 MNIST.</p><figure class="kg-card kg-code-card"><pre><code class="language-python">trans_to_tensor = transforms.Compose([
+    transforms.ToTensor()
+])
+
+data_train = torchvision.datasets.MNIST(
+    './data', 
+    train=True, 
+    transform=trans_to_tensor, 
+    download=True)
+
+data_test = torchvision.datasets.MNIST(
+    './data', 
+    train=False, 
+    transform=trans_to_tensor, 
+    download=True)
+
+data_train, data_test
+'''
+(Dataset MNIST
+     Number of datapoints: 60000
+     Root location: ./data
+     Split: Train
+     StandardTransform
+ Transform: Compose(
+                ToTensor()
+            ),
+ Dataset MNIST
+     Number of datapoints: 10000
+     Root location: ./data
+     Split: Test
+     StandardTransform
+ Transform: Compose(
+                ToTensor()
+            ))
+'''</code></pre><figcaption>▲ 注意导入的是图像，我们用 <code>ToTensor()</code> 将其变换为 <code>Tensor</code></figcaption></figure><p>　　接下来，弄一个训练数据的 loader：</p><figure class="kg-card kg-code-card"><pre><code>train_loader = torch.utils.data.DataLoader(
+    data_train, 
+    batch_size=100, 
+    shuffle=True)
+
+next(iter(train_loader))
+
+'''
+[tensor([[[[0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           ...,
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.]]],
+ 
+         ...,
+         
+         [[[0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           ...,
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.],
+           [0., 0., 0.,  ..., 0., 0., 0.]]]]),
+ tensor([0, 1, 4, 4, 6, 7, 7, 8, 3, 2, 6, 6, 5, 2, 9, 6, 3, 6, 4, 7, 1, 8, 5, 9,
+         8, 0, 2, 5, 3, 3, 4, 3, 2, 4, 8, 3, 4, 1, 7, 2, 7, 5, 4, 3, 8, 3, 0, 9,
+         1, 5, 8, 7, 6, 9, 5, 4, 9, 8, 6, 1, 0, 3, 3, 0, 0, 4, 5, 1, 8, 6, 0, 3,
+         2, 0, 0, 2, 7, 1, 2, 8, 6, 9, 3, 6, 1, 0, 1, 6, 1, 3, 8, 2, 3, 8, 0, 4,
+         0, 1, 0, 0])]
+'''</code></pre><figcaption>▲ 数据随机打乱，mini-batch 大小是 100</figcaption></figure><p>　　来展示一个数据看看：</p><pre><code class="language-python">x, y = next(iter(train_loader))
+
+plt.imshow(x[0].squeeze(0), cmap='gray'), y[0]</code></pre><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/02/image-2.png" class="kg-image" alt width="960" height="354" srcset="https://www.ruanx.net/content/images/size/w600/2021/02/image-2.png 600w, https://www.ruanx.net/content/images/2021/02/image-2.png 960w" layout="responsive"></amp-img></figure><p>　　现在来定义我们的网络。它接收 $28 \times 28$ 的图像，将其摊平成 $784$ 个特征维度的向量。经过一个全连接层，生成 $100$ 维度的特征，激活函数为 ReLU；再经过一个全连接层，生成 $10$ 维度的预测向量，激活函数为 Sigmoid.</p><figure class="kg-card kg-code-card"><pre><code class="language-python">class MyNet(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.fc1 = nn.Linear(28*28, 100)
+        self.fc2 = nn.Linear(100, 10)
+    
+    def forward(self, x):
+        x = x.view(-1, 28*28)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        x = torch.sigmoid(x)
+        
+        return x</code></pre><figcaption>▲ 注意全连接层接收的是向量，需要先用 <code>view()</code> 展开</figcaption></figure><p>　　接下来生成一个神经网络实例：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">net = MyNet()
+
+device = torch.device('cuda:0')
+net.to(device)
+
+net
+
+'''
+MyNet(
+  (fc1): Linear(in_features=784, out_features=100, bias=True)
+  (fc2): Linear(in_features=100, out_features=10, bias=True)
+)
+'''</code></pre><figcaption>▲ 我的电脑上有 GPU，所以将网络转到 GPU 上</figcaption></figure><p>　　定义损失函数和优化器：</p><figure class="kg-card kg-code-card"><pre><code class="language-python">criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(net.parameters())</code></pre><figcaption>▲ 采用交叉熵来衡量分类误差，用 Adam 优化器来训练</figcaption></figure><p>　　现在来训练网络。</p><figure class="kg-card kg-code-card"><pre><code class="language-python">def fit(net, epoch=1):
+    net.train()
+    run_loss = 0
+    
+    for num_epoch in range(epoch):
+        print(f'epoch {num_epoch}')
+        
+        for i, data in enumerate(train_loader):
+            x, y = data[0].to(device), data[1].to(device)
+
+            outputs = net(x)
+            loss = criterion(outputs, y)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            run_loss += loss.item()
+
+            if i % 100 == 99:
+                print(f'[{i+1} / 600] loss={run_loss / 100}')
+                run_loss = 0
+                
+                test(net)
+
+def test(net):
+    net.eval()
+    
+    test_loader = torch.utils.data.DataLoader(data_train, batch_size=10000, shuffle=False)
+    test_data = next(iter(test_loader))
+    
+    with torch.no_grad():
+        x, y = test_data[0].to(device), test_data[1].to(device)
+    
+        outputs = net(x)
+
+        pred = torch.max(outputs, 1)[1]
+        print(f'test acc: {sum(pred == y) / outputs.shape[0]}')
+    
+    net.train()</code></pre><figcaption>▲ 每 100 次训练，进行一次测试</figcaption></figure><p>　　开始训练：</p><pre><code class="language-python">fit(net, epoch=5)
+
+'''
+epoch 0
+[100 / 600] loss=1.512832807302475
+test acc: 0.9493999481201172
+[200 / 600] loss=1.5147511053085327
+test acc: 0.9512999653816223
+[300 / 600] loss=1.5131039583683015
+test acc: 0.9527999758720398
+[400 / 600] loss=1.5105569410324096
+test acc: 0.9528999924659729
+[500 / 600] loss=1.5110788369178771
+test acc: 0.9526000022888184
+[600 / 600] loss=1.5110698103904725
+test acc: 0.9556999802589417
+
+...
+
+epoch 4
+[100 / 600] loss=1.49038764834404
+test acc: 0.9696999788284302
+[200 / 600] loss=1.4929101729393006
+test acc: 0.9692999720573425
+[300 / 600] loss=1.490309545993805
+test acc: 0.9702999591827393
+[400 / 600] loss=1.4926683104038239
+test acc: 0.9710999727249146
+[500 / 600] loss=1.4924321293830871
+test acc: 0.9702000021934509
+[600 / 600] loss=1.488825489282608
+test acc: 0.9722999930381775
+'''</code></pre><p>　　我们这个双层感知机取得了 97.23% 的准确率。接下来我们攻击之。</p><hr></hr><h3 id="--1">欺骗神经网络</h3><p>　　首先取个图出来：</p><pre><code class="language-python">origin_img, origin_tag = next(iter(train_loader))
+origin_img = origin_img[0]
+origin_tag = origin_tag[0]
+
+plt.imshow(origin_img.view(28, 28), cmap='gray'), origin_tag</code></pre><figure class="kg-card kg-image-card"><amp-img src="https://www.ruanx.net/content/images/2021/02/image-3.png" class="kg-image" alt width="956" height="354" srcset="https://www.ruanx.net/content/images/size/w600/2021/02/image-3.png 600w, https://www.ruanx.net/content/images/2021/02/image-3.png 956w" layout="responsive"></amp-img></figure><p>　　现在我们想欺骗神经网络，让网络把 9 误认为 7. 我们冻结网络参数，让神经网络进行反向传播，最后对图片进行梯度下降：</p><pre><code class="language-python">def play(epoch):
+    for num_epoch in range(epoch):
+        net.requires_grad_(False)
+        img.requires_grad_(True)
+
+        loss_fn = nn.CrossEntropyLoss()
+
+        output = net(img)
+        target = torch.tensor([7]).to(device)
+        loss = loss_fn(output, target)
+
+        loss.backward()
+        img.data.sub_(img.grad * .05)
+        img.grad.zero_()
+
+        net.requires_grad_(True)
+        
+        if num_epoch % 100 == 99:
+            print(f'[{num_epoch + 1} / {epoch}] loss: {loss} pred: {torch.max(output, 1)[1].item()}')
+        
+        if torch.max(output, 1)[1].item() == 7:
+            print(f'done in round {num_epoch + 1}')
+            return
+            
+img = origin_img.detach().to(device).view(1, 28, 28)
+img.requires_grad_(True)
+
+play(1000)
+
+'''
+[100 / 1000] loss: 2.4601898193359375 pred: 9
+[200 / 1000] loss: 1.6000720262527466 pred: 9
+done in round 207
+'''</code></pre><p>　　我们发现，在迭代 207 次之后，神经网络就把图片误认为是 7 了。来看一下原图和新图的对比：</p><figure class="kg-card kg-image-card kg-width-wide kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/02/output.png" class="kg-image" alt width="1150" height="290" srcset="https://www.ruanx.net/content/images/size/w600/2021/02/output.png 600w, https://www.ruanx.net/content/images/size/w1000/2021/02/output.png 1000w, https://www.ruanx.net/content/images/2021/02/output.png 1150w" layout="responsive"></amp-img><figcaption>▲ 左起：原图、生成的图、像素差异（颜色越暖差异越大）、像素差异与原图叠加</figcaption></figure><p>　　人眼能轻易地识别为 9，但我们的网络判断这图是 7，于是我们成功地欺骗了神经网络。最后，来欣赏一张关于神经网络泛化能力的漫画：</p><figure class="kg-card kg-image-card kg-card-hascaption"><amp-img src="https://www.ruanx.net/content/images/2021/02/image-4.png" class="kg-image" alt width="910" height="910" srcset="https://www.ruanx.net/content/images/size/w600/2021/02/image-4.png 600w, https://www.ruanx.net/content/images/2021/02/image-4.png 910w" layout="responsive"></amp-img><figcaption>图片来源：<a href="https://redd.it/lbn8f7">reddit</a>，r/ProgrammerHumor</figcaption></figure>
+
+            </section>
+
+        </article>
+    </main>
+    <footer class="page-footer">
+            <amp-img class="site-icon" src="https://www.ruanx.net/content/images/2020/02/small-3.png" width="50" height="50" layout="fixed" alt="Pion1eer"></amp-img>
+        <h3>Pion1eer</h3>
+            <p>Stand with Ukraine 💙💛</p>
+        <p><a href="../../index.html">Read more posts →</a></p>
+        <a class="powered" href="https://ghost.org" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 156"><g fill="none" fill-rule="evenodd"><rect fill="#15212B" width="156" height="156" rx="27"/><g transform="translate(36 36)" fill="#F6F8FA"><path d="M0 71.007A4.004 4.004 0 014 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0130 84H4a4 4 0 01-4-4.007v-8.986zM50 71.007A4.004 4.004 0 0154 67h26a4 4 0 014 4.007v8.986A4.004 4.004 0 0180 84H54a4 4 0 01-4-4.007v-8.986z"/><rect y="34" width="84" height="17" rx="4"/><path d="M0 4.007A4.007 4.007 0 014.007 0h41.986A4.003 4.003 0 0150 4.007v8.986A4.007 4.007 0 0145.993 17H4.007A4.003 4.003 0 010 12.993V4.007z"/><rect x="67" width="17" height="17" rx="4"/></g></g></svg> Published with Ghost</a>
+    </footer>
+    
+</body>
+</html>

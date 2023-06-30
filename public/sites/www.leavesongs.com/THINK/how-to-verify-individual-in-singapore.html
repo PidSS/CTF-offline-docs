@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="description" content="phith0n的小站，长期存在与分享关于网络安全与各种编程的原创文章。">
+  <meta name="keywords" content="phith0n,网络安全,代码审计,信息安全,漏洞挖掘,php,C++,mysql,python">
+  <link rel="shortcut icon" href="../static/cactus/images/favicon.ico">
+  <link rel="icon" type="image/png" href="../static/cactus/images/favicon-192x192.png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/cactus/images/apple-touch-icon.png">
+  <link rel="alternate" type="application/atom+xml" href="../feed/index.rss" title="离别歌"/>
+
+  <title>新加坡企业是怎么做实名认证的？ | 离别歌</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.1.3/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="../static/cactus/css/style%EF%B9%96v=20220521.css">
+  
+  <link rel="stylesheet" href="../static/cactus/css/code%EF%B9%96v=20211026.css">
+  <link href="https://cdn.staticfile.org/fancybox/2.1.7/css/jquery.fancybox.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+
+
+  <div class="sticky">
+    <a href="#" id="menu-icon" class="menu-icon active"><i class="fa fa-bars fa-lg"></i></a>
+    <div class="menu">
+      <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="javascript:history.back(-1)">返回</a></li>
+      </ul>
+      <br>
+    </div>
+    <div class="clearfix"></div>
+    <div class="info" style="position: fixed">
+      <span id="i-top" style="display: none">Back to top</span>
+      <span id="i-share" style="display: none">Share post</span>
+    </div>
+    <ul class="actions">
+      <li><a class="icon" href="#" id="back-top"><i
+          class="fa fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();"
+          onmouseout="$('#i-top').toggle();"></i></a></li>
+      <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true"
+                                      onmouseover="$('#i-share').toggle();"
+                                      onmouseout="$('#i-share').toggle();"
+                                      onclick="$('#share').toggleClass('hidden');return false;"></i></a></li>
+    </ul>
+    <div id="share" class="hidden">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;text=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;title=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;is_video=false&amp;description=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F&amp;body=Check out this article: https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;title=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;title=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;title=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;title=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https%3A//www.leavesongs.com/THINK/how-to-verify-individual-in-singapore.html&amp;name=%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%BC%81%E4%B8%9A%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E5%AE%9E%E5%90%8D%E8%AE%A4%E8%AF%81%E7%9A%84%EF%BC%9F&amp;description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+    </div>
+  </div>
+
+  <div class="container-md">
+    <div class="article row justify-content-center min-height">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="post-header">
+            <h1 class="color-main h1 mb-0" itemprop="name headline">新加坡企业是怎么做实名认证的？</h1>
+            <div class="meta">
+              <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">phithon</span>
+              </span>
+
+              <div class="postdate">
+                <time datetime="2022年3月19日 20:40" itemprop="datePublished">
+                  2022 三月 19 20:40
+                </time>
+              </div>
+
+              <div class="article-tag">
+                阅读：33770
+              </div>
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-bookmark"></i>
+                  <a class="tag-link" href="../sort/THINK.html">心得与体会</a>
+                </div>
+              
+
+              
+                <div class="article-tag">
+                  <i class="fa fa-tag"></i>
+                  
+                    <a class="tag-link" href="../tag/%E6%96%B0%E5%8A%A0%E5%9D%A1.html">新加坡</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+          <div class="content" itemprop="articleBody">
+            <p>三月是国内个税申报的月份，也是新加坡个税申报的月份，前几天收到一封信，告诉我应该填写个税申报的表格了。</p>
+<p><a href="../media/attachment/2022/03/19/269b3888-254a-4372-9a18-ddf860cb3f71.png"><img alt="image-20220319190748002.png" src="../media/attachment/2022/03/19/269b3888-254a-4372-9a18-ddf860cb3f71.29c65d9e69b2.png" /></a></p>
+<p>在这封信里，提到了下面这段话：</p>
+<blockquote>
+<p>To file your Income Tax Return, log in to myTax Portal with Singpass.</p>
+</blockquote>
+<p>这里面有说到一个东西叫<strong>Singpass</strong>，在我来新加坡的这几个月里，几乎可以把Singpass看成新加坡政府数字化建设的核心，也是我非常看好的一个模式。本文就来聊聊Singpass究竟是个什么，他能给我们带来什么。</p>
+<p>这些年，中国的互联网行业发展有目共睹，从曾经的网购、团购，发展到现在几乎有点过犹不及的线上化，我们办任何事几乎都可以在线上解决，包括很多政府相关的业务。</p>
+<p>这些线上服务极大地方便了日常生活，但也给我们带来了很多隐私相关的问题，今年315晚会也正好说到了手机号泄露、骚扰电话等问题。</p>
+<p>手机号是国内用于识别独立用户的基本方式，国家也出台了相关法律规定，允许网民发表评论的网站和App必须使用手机号进行实名认证，这也导致我们日常生活中接触的每个线上服务，都需要使用手机短信验证码登录。更甚者，对于一些对用户实名身份要求较高的业务（比如云计算、金融相关），甚至需要我们上传身份证、手持身份证照片来进行实名认证，而用户上传的这些数据只能由这些业务厂商进行储存与保护。</p>
+<p>保护隐私这件事，很多互联网厂商尚且无法独善其身，传统企业以及地方相关部门的安全建设我更加悲观。我认为从根本上来看，现有的很多安全防御措施是治标不治本的方法，而把国民数据保存在各个企业自己的数据库里才是核心问题所在。</p>
+<p>相比起来，新加坡大量的网站、App可以直接使用邮箱注册与登录，他们如何来确保自己的用户是真实的用户，避免被“薅羊毛”呢？这就得说到Singpass。</p>
+<p>Singpass是新加坡政府推出的一个统一身份验证应用，所有在新加坡工作的本地人、外国人都会有自己的Singpass账号。之前我也跟别人分享过一个趣事，就是这边Singpass的账号密码居然是线下通过信的方式寄给我的。</p>
+<p>可以认为Singpass就是新加坡居民在政府部门数据库的一把钥匙，每个人有且只有一把。从技术层面来看，其实Singpass就是一个OAuth2.0的一个认证服务器，使用者集成OAuth2的流程，就可以用于获取访问者的各种信息。</p>
+<p>我查阅了一下Singpass的官方开发文档api.singpass.gov.sg，能通过这个接口获取的信息真的还是挺多的，比如有用户的个人信息、公积金信息、工作信息、家庭信息、房产信息等等：</p>
+<p><a href="../media/attachment/2022/03/19/5046db2a-f6b5-419b-ba11-d022f1d6dc7f.png"><img alt="image-20220319194805395.png" src="../media/attachment/2022/03/19/5046db2a-f6b5-419b-ba11-d022f1d6dc7f.502174acfc66.png" /></a></p>
+<p>据我的观察，这边基本所有的政府网站都使用了Singpass作为统一登录方式，很多需要验证用户身份的商业应用，比如银行、支付、保险等，也都集成了Singpass作为实名认证的方法。</p>
+<p>不过可能有同学也会有疑问，既然开发者也可以通过Singpass来获取到这些用户的隐私信息，那么是否仍然可能存在隐私泄露的风险？</p>
+<p>对于这个问题，Singpass官方当然也有想到。首先，申请Singpass API的企业需要编写一个PPT文档来描述自己需要哪些用户数据，这些数据主要会被如何使用，从业务设计层面来审核你是否真的需要这些数据。</p>
+<p><a href="../media/attachment/2022/03/19/7cfd075f-d9ef-423b-974e-5f35d6238dcc.png"><img alt="image-20220319200411620.png" src="../media/attachment/2022/03/19/7cfd075f-d9ef-423b-974e-5f35d6238dcc.442c056cc3f7.png" /></a></p>
+<p>如果你的业务只是用Singpass做用户合法性认证（比如防止薅羊毛、二次认证等），那么可以只把Singpass作为Verify的工具，并不需要拉取用户信息。</p>
+<p><a href="../media/attachment/2022/03/19/d904ab0f-f9cf-4c25-a8a5-ce25313e250a.png"><img alt="image-20220319200546048.png" src="../media/attachment/2022/03/19/d904ab0f-f9cf-4c25-a8a5-ce25313e250a.ee76a8a71b09.png" /></a></p>
+<p>最后，服务真的需要拉取用户信息时，仍然需要用户在Singpass上对企业进行授权，此时会显示这个服务将会拉取的信息有哪些（实际上就是OAuth2里的scope），你可以自行决定是否其授予权限，甚至可以对滥用权限的应用进行举报等。</p>
+<p>我还可以在Singpass的手机应用里看到历史上我授权了哪些信息给哪些服务。比如，这是我授权给花旗银行的信息列表，里面有姓名、联系方式、身份证号、公积金信息等：</p>
+<p><a href="../media/attachment/2022/03/19/a3e22b47-b0d5-4c31-b52f-d0c73bbf840d.png"><img alt="image-20220319201409039.png" src="../media/attachment/2022/03/19/a3e22b47-b0d5-4c31-b52f-d0c73bbf840d.7ba2f2893eda.png" /></a></p>
+<p>使用Singpass以后，我会更感觉自己的个人信息的掌控权是掌握在自己手上的，对于整个社会来说，也能更好地收窄企业对个人信息的索取范围。</p>
+<p>当然，Singpass有没有缺点呢？我认为Singpass最大的问题可能就出在于它本身的安全性上，Singpass相当于是一个新加坡国民数据库，一旦这个数据库自己的安全出了问题，那整个国家的国民信息将会被一锅端。</p>
+<p>最后说点自己的看法，从Singpass这一点上来看，新加坡国家政府给我的感觉更是像一个巨型的互联网企业，它提供了一系列开放接口给国内的第三方企业和民众，而自己仅作为一个信息Provider。</p>
+<p>给我这个感觉的另一个事情就是，我发现新加坡政府居然有一个开发者平台（<a href="https://www.developer.tech.gov.sg/" target="_blank">https://www.developer.tech.gov.sg/</a>），里面有提供一系列的开发工具与文档，甚至还有政府维护的开源项目，我们可以在Github上找到他们：<a href="https://github.com/GovTechSG" target="_blank">https://github.com/GovTechSG</a></p>
+<p>怎么说呢，有时候新加坡政府部门给我的感觉是低效率的，办一个工作准证就要等大半个月；有时候政府部门给我的感觉又是高效和现代化的，能提供类似互联网公司才有的服务。也许这个世界就没有什么完美无缺的事物存在吧。</p>
+          </div>
+        </article>
+
+        
+          <h1 class="h1 color-main">赞赏</h1>
+          <div class="zan text-center">
+            <p>喜欢这篇文章？打赏1元</p>
+            <p class="m-0"><img src="../static/wx.jpg" width="280" alt=""></p>
+          </div>
+        
+
+        <div id="reply-list">
+          <h1 class="h1 color-main">评论</h1>
+          
+            
+              <div class="flex mb-2" id="comment-3837">
+                <div class="gravatar">
+                  <img src="../static/placeholder.jpg" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">Escape</a>
+                    <time datetime="2022年3月21日 10:19" itemprop="datePublished">
+                      2022 三月 21 10:19
+                    </time>
+                    <a href="javascript:reply_to('3837', 'Escape')">回复</a>
+                  </p>
+                  <p class="comment-meta">【几乎可以把Sinpass看成新加坡】应该是拼写错误了吧？Singpass</p>
+                </div>
+              </div>
+              
+                
+                  <div class="child-node">
+              <div class="flex mb-2" id="comment-3839">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/c4267eb6d17276fa31c547ac71611e90.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="https://www.leavesongs.com" target="_blank" rel="nofollow noopener">phithon</a>
+                    <time datetime="2022年3月22日 21:18" itemprop="datePublished">
+                      2022 三月 22 21:18
+                    </time>
+                    <a href="javascript:reply_to('3839', 'phithon')">回复</a>
+                  </p>
+                  <p class="comment-meta">@Escape 感谢已修改~</p>
+                </div>
+              </div>
+              
+            </div>
+                
+              
+            
+              <div class="flex mb-2" id="comment-3836">
+                <div class="gravatar">
+                  <img src="https://secure.gravatar.com/avatar/1c732b135a553f3c63729f390c34ab5f.jpg?s=100&amp;d=mm&amp;r=g" width="40px" height="40px" alt="">
+                </div>
+                <div class="ps-2">
+                  <p class="comment-meta title">
+                    <a href="" target="_blank" rel="nofollow noopener">吃葡萄不吐葡萄皮</a>
+                    <time datetime="2022年3月21日 10:02" itemprop="datePublished">
+                      2022 三月 21 10:02
+                    </time>
+                    <a href="javascript:reply_to('3836', '%E5%90%83%E8%91%A1%E8%90%84%E4%B8%8D%E5%90%90%E8%91%A1%E8%90%84%E7%9A%AE')">回复</a>
+                  </p>
+                  <p class="comment-meta">国内的eID和CTID也有类似的设计理念，但生活中很难见到它们的影子。</p>
+                </div>
+              </div>
+              
+            
+          
+        </div>
+
+        
+
+        <form method="post" enctype="multipart/form-data" action="#reply" id="reply" class="mb-4">
+          <div class="container-fluid px-0">
+            
+            <div class="row">
+              <div class="col">
+                <textarea name="content" cols="40" rows="6" required id="id_content">
+</textarea>
+              </div>
+            </div>
+            <div class="row gx-2">
+              <div class="col-4">
+                <input type="text" name="nickname" placeholder="昵称" maxlength="64" required id="id_nickname">
+              </div>
+              <div class="col-4">
+                <input type="text" name="email" placeholder="邮箱（可留空）" maxlength="254" id="id_email">
+              </div>
+              <div class="col-4">
+                <input type="text" name="url" placeholder="链接（可留空）" maxlength="200" id="id_url">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row gx-2" style="margin-top: 8px"><div class="col-6"><input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" placeholder="验证码" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="69eb5fc12c087c2ea595e15867856e4df968571b" />
+</div><div class="col-6">
+<img src="../captcha/image/69eb5fc12c087c2ea595e15867856e4df968571b/index.png" alt="captcha" class="captcha" /></div></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <input type="submit" class="ui-button ui-button-sgreen" value="提交">
+            </div>
+          </div>
+          <input type="hidden" name="archive" value="479" id="id_archive">
+          <input type="hidden" name="parent" id="id_parent">
+          <input type="hidden" name="csrfmiddlewaretoken" value="y8iCpFUg9Gy34NoOfIZtiunybxompIGXkGGtXKvZx2MMClcchJWefXqDwUFxYkSf">
+        </form>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10 col-sm-12">
+        <footer class="footer mx-auto">
+  <div class="footer-left">
+    Copyright &copy; 2023 Powered by talkbook
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../feed/index.rss" target="_blank">RSS订阅</a></li>
+        <li><a href="http://weibo.com/101yx" target="_blank">微博</a></li>
+        <li><a href="https://github.com/phith0n" target="_blank">项目</a></li>
+        <li><a href="../index.html">更换模板</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+<script src="../static/cactus/js/main%EF%B9%96v=2021102502.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5KPQ1CZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FF5KPQ1CZ6');
+</script>
+
+  <script src="https://cdn.staticfile.org/fancybox/2.1.7/js/jquery.fancybox.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $(".content a").each(function (i, e) {
+              if (e.host != 'www.leavesongs.com') {
+                  e.target = '_blank';
+              }
+          });
+          $(".content img").each(function (i, e) {
+              if (e.parentNode.tagName.toUpperCase() != 'A') {
+                  $(e).wrap('<a href="' + escapeHtml(e.src) + '" class="fancybox"></a>');
+              } else {
+                  $(e.parentNode).addClass('fancybox');
+              }
+          });
+          $('.fancybox').fancybox();
+      })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Pion1eer</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="assets/built/screen%EF%B9%96v=792c672b3c.css" />
+
+    <meta name="description" content="Ruan Xingzhi&#x27;s blog. 
+CTF, algorithms, cryptography and math." />
+    <link rel="icon" href="content/images/size/w256h256/2020/02/small-3.png" type="image/png" />
+    <link rel="canonical" href="index.html" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="next" href="page/2/index.html" />
+    
+    <meta property="og:site_name" content="Pion1eer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pion1eer" />
+    <meta property="og:description" content="Ruan Xingzhi&#x27;s blog. 
+CTF, algorithms, cryptography and math." />
+    <meta property="og:url" content="https://www.ruanx.net/" />
+    <meta property="og:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pion1eer" />
+    <meta name="twitter:description" content="Ruan Xingzhi&#x27;s blog. 
+CTF, algorithms, cryptography and math." />
+    <meta name="twitter:url" content="https://www.ruanx.net/" />
+    <meta name="twitter:image" content="https://www.ruanx.net/content/images/2022/01/--.jpg" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1250" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pion1eer",
+        "url": "https://www.ruanx.net/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "content/images/size/w256h256/2020/02/small-3.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "url": "https://www.ruanx.net/",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://www.ruanx.net/content/images/2022/01/--.jpg",
+        "width": 2000,
+        "height": 1250
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://www.ruanx.net/"
+    },
+    "description": "Ruan Xingzhi&#x27;s blog. \nCTF, algorithms, cryptography and math."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 5.8" />
+    <link rel="alternate" type="application/rss+xml" title="Pion1eer" href="rss/index.rss" />
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/portal@~2.5/umd/portal.min.js" data-ghost="https://www.ruanx.net/" data-key="595acd8f13c14d79a10527399d" data-api="https://www.ruanx.net/ghost/api/content/" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/sodo-search.min.js" data-key="595acd8f13c14d79a10527399d" data-styles="https://cdn.jsdelivr.net/npm/@tryghost/sodo-search@~1.1/umd/main.css" data-sodo-search="https://www.ruanx.net/" crossorigin="anonymous"></script>
+    <script defer src="public/cards.min%EF%B9%96v=792c672b3c.js"></script>
+    <link rel="stylesheet" type="text/css" href="public/cards.min%EF%B9%96v=792c672b3c.css">
+    <!-- link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" rel="stylesheet" -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono&amp;family=Noto+Serif+SC&amp;display=swap" rel="stylesheet">
+
+<style>.post-content,.post-card-excerpt{font-family: 'Noto Serif SC', "PingFang SC","Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+    .post-full-content{font-size: 100%;}
+    .post-full-custom-excerpt {font-size: 1.8rem;}
+    .post-full-title {font-size:3.2rem;}
+    .post-full-content blockquote{margin:20px;padding: 1em;  background-color: #3eb0ef14; }
+    .post-full-content blockquote p {font-style:normal;}
+    .post-full-image {display:none;}
+    
+    /* .post-full-content figcaption {margin: .4em 0 .5em  !important} */
+    
+    .kg-callout-card {width: 100%; margin-bottom: 1em;}
+    
+    .post-full-content figure {margin: 0.8em 0 1em;}
+    
+    p {margin: 0.2em 0 0.5em !important;}
+    
+    .post-full-content img{border-radius:5px;}
+    
+    code {font-family: 'Noto Serif SC';}
+</style>
+
+
+<style>:root {--ghost-accent-color: #15171A;}</style>
+
+</head>
+<body class="home-template">
+
+    <div class="site-wrapper">
+
+        
+<header class="site-home-header">
+    
+
+<style type="text/css">.responsive-header-img {
+        background-image: url(content/images/size/w2000/2022/01/--.jpg);
+    }
+
+    @media(max-width: 1000px) {
+        .responsive-header-img {
+            background-image: url(content/images/size/w1000/2022/01/--.jpg);
+            background-image: -webkit-image-set(url(content/images/size/w1000/2022/01/--.jpg) 1x,
+                url(content/images/size/w2000/2022/01/--.jpg) 2x);
+            background-image: image-set(url(content/images/size/w1000/2022/01/--.jpg) 1x,
+                url(content/images/size/w2000/2022/01/--.jpg) 2x);
+        }
+    }
+
+    @media(max-width: 600px) {
+        .responsive-header-img {
+            background-image: url(content/images/size/w600/2022/01/--.jpg);
+            background-image: -webkit-image-set(url(content/images/size/w600/2022/01/--.jpg) 1x,
+                url(content/images/size/w1000/2022/01/--.jpg) 2x);
+            background-image: image-set(url(content/images/size/w600/2022/01/--.jpg) 1x,
+                url(content/images/size/w1000/2022/01/--.jpg) 2x);
+        }
+    }
+</style>
+<div class="outer site-header-background responsive-header-img">
+
+ 
+        <div class="inner">
+            <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home nav-current"><a href="index.html">Home</a></li>
+    <li class="nav-about"><a href="about/index.html">About</a></li>
+</ul>
+
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+            <div class="site-header-content">
+                <h1 class="site-title">
+                        Pion1eer
+                </h1>
+                <h2 class="site-description">Stand with Ukraine 💙💛</h2>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main id="site-main" class="site-main outer">
+    <div class="inner posts">
+
+        <div class="post-feed">
+
+                <article class="post-card post tag-fuzzing disable-post-card-large">
+
+    <a class="post-card-image-link" href="afl-source-2/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/05/output-3.jpg 300w,
+                    content/images/size/w600/2023/05/output-3.jpg 600w,
+                    content/images/size/w1000/2023/05/output-3.jpg 1000w,
+                    content/images/size/w2000/2023/05/output-3.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/05/output-3.jpg"
+            alt="AFL源码阅读（二）：Main Payload 汇编"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="afl-source-2/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">AFL源码阅读（二）：Main Payload 汇编</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>AFL 源码阅读的第二篇。本文详细解读了 AFL main payload 汇编代码，分析了共享内存区域的建立方式和 fork server 逻辑。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-05-16">16 May 2023</time> <span class="bull">&bull;</span> 12 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="afl-source-1/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/05/output-2.jpg 300w,
+                    content/images/size/w600/2023/05/output-2.jpg 600w,
+                    content/images/size/w1000/2023/05/output-2.jpg 1000w,
+                    content/images/size/w2000/2023/05/output-2.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/05/output-2.jpg"
+            alt="AFL源码阅读（一）：启程"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="afl-source-1/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">AFL源码阅读（一）：启程</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>开始阅读 AFL 的源码。本文分析了 AFL 项目的文件结构，确定了阅读代码的顺序，并详细解释了 afl-gcc 和 afl-as 代码。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-05-07">7 May 2023</time> <span class="bull">&bull;</span> 25 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-reverse ">
+
+    <a class="post-card-image-link" href="js-deobfuscate/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/03/output-1.jpg 300w,
+                    content/images/size/w600/2023/03/output-1.jpg 600w,
+                    content/images/size/w1000/2023/03/output-1.jpg 1000w,
+                    content/images/size/w2000/2023/03/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/03/output-1.jpg"
+            alt="一场有趣的 js 反混淆"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="js-deobfuscate/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reverse</div>
+                <h2 class="post-card-title">一场有趣的 js 反混淆</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>对哈工大运动场馆预约系统 js 的分析过程。我们通过自动和人工分析，提取出了网络请求的相关逻辑，为编写爬虫提供基础。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-03-30">30 Mar 2023</time> <span class="bull">&bull;</span> 13 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="how-to-teach-oi/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/02/output-6.jpg 300w,
+                    content/images/size/w600/2023/02/output-6.jpg 600w,
+                    content/images/size/w1000/2023/02/output-6.jpg 1000w,
+                    content/images/size/w2000/2023/02/output-6.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/02/output-6.jpg"
+            alt="OI 教育漫谈（三）：如何教好基础算法"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="how-to-teach-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（三）：如何教好基础算法</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第三篇。分享 OI 教学的若干经验，为基础算法教师提供指导。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-02-02">2 Feb 2023</time> <span class="bull">&bull;</span> 22 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="how-to-study-oi/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/02/output-5.jpg 300w,
+                    content/images/size/w600/2023/02/output-5.jpg 600w,
+                    content/images/size/w1000/2023/02/output-5.jpg 1000w,
+                    content/images/size/w2000/2023/02/output-5.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/02/output-5.jpg"
+            alt="OI 教育漫谈（二）：信息学竞赛算法自学指南"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="how-to-study-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（二）：信息学竞赛算法自学指南</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第二篇。主要讨论选手应该如何高效地自学算法。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-01-30">30 Jan 2023</time> <span class="bull">&bull;</span> 18 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-oi ">
+
+    <a class="post-card-image-link" href="why-study-oi/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2023/02/output-4.jpg 300w,
+                    content/images/size/w600/2023/02/output-4.jpg 600w,
+                    content/images/size/w1000/2023/02/output-4.jpg 1000w,
+                    content/images/size/w2000/2023/02/output-4.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2023/02/output-4.jpg"
+            alt="OI 教育漫谈（一）：为什么学习信息学竞赛"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="why-study-oi/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">oi</div>
+                <h2 class="post-card-title">OI 教育漫谈（一）：为什么学习信息学竞赛</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>「OI 教育漫谈」系列的第一篇。主要探讨学习 OI 的得失，以及对算法初学者的建议。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2023-01-29">29 Jan 2023</time> <span class="bull">&bull;</span> 23 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-game disable-post-card-large">
+
+    <a class="post-card-image-link" href="p5r/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/12/2022121712423800_s.jpg 300w,
+                    content/images/size/w600/2022/12/2022121712423800_s.jpg 600w,
+                    content/images/size/w1000/2022/12/2022121712423800_s.jpg 1000w,
+                    content/images/size/w2000/2022/12/2022121712423800_s.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/12/2022121712423800_s.jpg"
+            alt="《女神异闻录5R》评测：极具生活感的 JRPG 佳作"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="p5r/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《女神异闻录5R》评测：极具生活感的 JRPG 佳作</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>《女神异闻录 5 皇家版》的评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-12-19">19 Dec 2022</time> <span class="bull">&bull;</span> 19 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-embedded ">
+
+    <a class="post-card-image-link" href="stm8-ws2812b/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/11/output-1.jpg 300w,
+                    content/images/size/w600/2022/11/output-1.jpg 600w,
+                    content/images/size/w1000/2022/11/output-1.jpg 1000w,
+                    content/images/size/w2000/2022/11/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/11/output-1.jpg"
+            alt="用 STM8 控制 WS2812B LED"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="stm8-ws2812b/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">embedded</div>
+                <h2 class="post-card-title">用 STM8 控制 WS2812B LED</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>利用 STM8 来控制 WS2812B 三色 LED 的实验过程和代码。我们需要手写汇编码以满足时序要求。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-24">24 Nov 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-embedded tag-crypto ">
+
+    <a class="post-card-image-link" href="totp/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/11/QQ--20221118220509.png 300w,
+                    content/images/size/w600/2022/11/QQ--20221118220509.png 600w,
+                    content/images/size/w1000/2022/11/QQ--20221118220509.png 1000w,
+                    content/images/size/w2000/2022/11/QQ--20221118220509.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/11/QQ--20221118220509.png"
+            alt="二步验证 TOTP 协议及其实现"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="totp/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">embedded</div>
+                <h2 class="post-card-title">二步验证 TOTP 协议及其实现</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>TOTP 协议在 ESP8266 上的实现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-18">18 Nov 2022</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing101-wp-5/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/11/output.jpg 300w,
+                    content/images/size/w600/2022/11/output.jpg 600w,
+                    content/images/size/w1000/2022/11/output.jpg 1000w,
+                    content/images/size/w2000/2022/11/output.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/11/output.jpg"
+            alt="Fuzzing101-5：LibXML2"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing101-wp-5/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-5：LibXML2</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>LibXML2 栈溢出漏洞 CVE-2017-9048 的挖掘和复现。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-11-02">2 Nov 2022</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing101-wp-4/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/output-4.jpg 300w,
+                    content/images/size/w600/2022/10/output-4.jpg 600w,
+                    content/images/size/w1000/2022/10/output-4.jpg 1000w,
+                    content/images/size/w2000/2022/10/output-4.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/output-4.jpg"
+            alt="Fuzzing101-4：LibTIFF"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing101-wp-4/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-4：LibTIFF</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>利用 AFL 挖掘 CVE-2016-9297。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-30">30 Oct 2022</time> <span class="bull">&bull;</span> 5 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-math ">
+
+    <a class="post-card-image-link" href="random-process-homework/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/19e4f5c2-47e7-49d0-a668-9f481b1c22b0-1.png 300w,
+                    content/images/size/w600/2022/10/19e4f5c2-47e7-49d0-a668-9f481b1c22b0-1.png 600w,
+                    content/images/size/w1000/2022/10/19e4f5c2-47e7-49d0-a668-9f481b1c22b0-1.png 1000w,
+                    content/images/size/w2000/2022/10/19e4f5c2-47e7-49d0-a668-9f481b1c22b0-1.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/19e4f5c2-47e7-49d0-a668-9f481b1c22b0-1.png"
+            alt="应用随机过程作业"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="random-process-homework/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">math</div>
+                <h2 class="post-card-title">应用随机过程作业</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>HIT 研究生 2022 秋《应用随机过程》课程的作业。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-21">21 Oct 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-math disable-post-card-large">
+
+    <a class="post-card-image-link" href="random-process/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/--2022-10-18---12.29.15-2.png 300w,
+                    content/images/size/w600/2022/10/--2022-10-18---12.29.15-2.png 600w,
+                    content/images/size/w1000/2022/10/--2022-10-18---12.29.15-2.png 1000w,
+                    content/images/size/w2000/2022/10/--2022-10-18---12.29.15-2.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/--2022-10-18---12.29.15-2.png"
+            alt="应用随机过程复习笔记"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="random-process/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">math</div>
+                <h2 class="post-card-title">应用随机过程复习笔记</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>HIT 研究生 2022 秋《应用随机过程》课程的复习笔记。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-18">18 Oct 2022</time> <span class="bull">&bull;</span> 77 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-reproduce ">
+
+    <a class="post-card-image-link" href="lunan/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/flower-g4cbc024a1_1280.jpg 300w,
+                    content/images/size/w600/2022/10/flower-g4cbc024a1_1280.jpg 600w,
+                    content/images/size/w1000/2022/10/flower-g4cbc024a1_1280.jpg 1000w,
+                    content/images/size/w2000/2022/10/flower-g4cbc024a1_1280.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/flower-g4cbc024a1_1280.jpg"
+            alt="转载：左传 · 闵公元年"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="lunan/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">reproduce</div>
+                <h2 class="post-card-title">转载：左传 · 闵公元年</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>《春秋左传 · 闵公》节选。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        reproduce
+                    </div>
+            
+                    <a href="author/reproduce/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/06/world-908894_640.png" alt="reproduce" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/reproduce/index.html">reproduce</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-17">17 Oct 2022</time> <span class="bull">&bull;</span> 2 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing101-wp-3/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/output-3.jpg 300w,
+                    content/images/size/w600/2022/10/output-3.jpg 600w,
+                    content/images/size/w1000/2022/10/output-3.jpg 1000w,
+                    content/images/size/w2000/2022/10/output-3.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/output-3.jpg"
+            alt="Fuzzing101-3：TCPdump"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing101-wp-3/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-3：TCPdump</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>TCPdump CVE-2017-13028 的复现和修复。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-07">7 Oct 2022</time> <span class="bull">&bull;</span> 8 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing101-wp-2/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/output-2.jpg 300w,
+                    content/images/size/w600/2022/10/output-2.jpg 600w,
+                    content/images/size/w1000/2022/10/output-2.jpg 1000w,
+                    content/images/size/w2000/2022/10/output-2.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/output-2.jpg"
+            alt="Fuzzing101-2：libexif"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing101-wp-2/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-2：libexif</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>libexif 0.6.14 漏洞的 fuzz、复现和修复。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-06">6 Oct 2022</time> <span class="bull">&bull;</span> 15 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing101-wp-1/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/output-1.jpg 300w,
+                    content/images/size/w600/2022/10/output-1.jpg 600w,
+                    content/images/size/w1000/2022/10/output-1.jpg 1000w,
+                    content/images/size/w2000/2022/10/output-1.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/output-1.jpg"
+            alt="Fuzzing101-1：Xpdf"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing101-wp-1/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing101-1：Xpdf</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Xpdf CVE-2019-13288 的 fuzzing、复现和修复。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-03">3 Oct 2022</time> <span class="bull">&bull;</span> 13 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing ">
+
+    <a class="post-card-image-link" href="fuzzing-newbie-guide/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/---2022-10-03-14-07-57.png 300w,
+                    content/images/size/w600/2022/10/---2022-10-03-14-07-57.png 600w,
+                    content/images/size/w1000/2022/10/---2022-10-03-14-07-57.png 1000w,
+                    content/images/size/w2000/2022/10/---2022-10-03-14-07-57.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/---2022-10-03-14-07-57.png"
+            alt="Fuzzing 学习笔记：Fuzzing Module 练习"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing-newbie-guide/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing 学习笔记：Fuzzing Module 练习</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>AFL++ 文档推荐的 Newbie guide 练习。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-03">3 Oct 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-fuzzing disable-post-card-large">
+
+    <a class="post-card-image-link" href="fuzzing-startup/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/10/---2022-10-02-17-18-48.png 300w,
+                    content/images/size/w600/2022/10/---2022-10-02-17-18-48.png 600w,
+                    content/images/size/w1000/2022/10/---2022-10-02-17-18-48.png 1000w,
+                    content/images/size/w2000/2022/10/---2022-10-02-17-18-48.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/10/---2022-10-02-17-18-48.png"
+            alt="Fuzzing 学习笔记：起步"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="fuzzing-startup/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Fuzzing</div>
+                <h2 class="post-card-title">Fuzzing 学习笔记：起步</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>开始学习 Fuzzing。本文是 AFL++ 的安装以及基本样例。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-10-02">2 Oct 2022</time> <span class="bull">&bull;</span> 8 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-crypto ">
+
+    <a class="post-card-image-link" href="2022-fall-crypto-problems/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/09/output.jpg 300w,
+                    content/images/size/w600/2022/09/output.jpg 600w,
+                    content/images/size/w1000/2022/09/output.jpg 1000w,
+                    content/images/size/w2000/2022/09/output.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/09/output.jpg"
+            alt="2022秋见到的一些Crypto题"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="2022-fall-crypto-problems/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">2022秋见到的一些Crypto题</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>对 2022 夏、秋季见过的一些 Crypto 题目的讨论。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-09-15">15 Sep 2022</time> <span class="bull">&bull;</span> 38 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="shijima-story/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 300w,
+                    content/images/size/w600/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 600w,
+                    content/images/size/w1000/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 1000w,
+                    content/images/size/w2000/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/09/8fe383a54853ff26de1bcc83202a7a62_1920_KR.jpg"
+            alt="《春逝百年抄》简评"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="shijima-story/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《春逝百年抄》简评</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>SE新本格推理游戏《春逝百年抄》简要评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-09-08">8 Sep 2022</time> <span class="bull">&bull;</span> 6 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-crypto ">
+
+    <a class="post-card-image-link" href="rsa-attack-survey/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/08/--2022-08-19---7.55.17.png 300w,
+                    content/images/size/w600/2022/08/--2022-08-19---7.55.17.png 600w,
+                    content/images/size/w1000/2022/08/--2022-08-19---7.55.17.png 1000w,
+                    content/images/size/w2000/2022/08/--2022-08-19---7.55.17.png 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/08/--2022-08-19---7.55.17.png"
+            alt="论文阅读：上世纪的 RSA 攻击方式"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="rsa-attack-survey/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">Crypto</div>
+                <h2 class="post-card-title">论文阅读：上世纪的 RSA 攻击方式</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Dan Boneh 对上世纪 RSA 攻击的综述。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-08-19">19 Aug 2022</time> <span class="bull">&bull;</span> 11 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="xb3/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/08/2022080910502600_s-2.jpg 300w,
+                    content/images/size/w600/2022/08/2022080910502600_s-2.jpg 600w,
+                    content/images/size/w1000/2022/08/2022080910502600_s-2.jpg 1000w,
+                    content/images/size/w2000/2022/08/2022080910502600_s-2.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/08/2022080910502600_s-2.jpg"
+            alt="《异度之刃3》评测：可能是今年最好的JRPG"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="xb3/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《异度之刃3》评测：可能是今年最好的JRPG</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Switch《异度之刃3》评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-08-09">9 Aug 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-game ">
+
+    <a class="post-card-image-link" href="octopath-traveler-2/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/07/2022072422285200_s.jpg 300w,
+                    content/images/size/w600/2022/07/2022072422285200_s.jpg 600w,
+                    content/images/size/w1000/2022/07/2022072422285200_s.jpg 1000w,
+                    content/images/size/w2000/2022/07/2022072422285200_s.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/07/2022072422285200_s.jpg"
+            alt="二刷《八方旅人》"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="octopath-traveler-2/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">二刷《八方旅人》</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>在 Switch 上再次游玩《八方旅人》的感想。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-07-27">27 Jul 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+
+                <article class="post-card post tag-game disable-post-card-large">
+
+    <a class="post-card-image-link" href="xb1/index.html">
+        <img class="post-card-image"
+            srcset="content/images/size/w300/2022/07/2022070111110800_s.jpg 300w,
+                    content/images/size/w600/2022/07/2022070111110800_s.jpg 600w,
+                    content/images/size/w1000/2022/07/2022070111110800_s.jpg 1000w,
+                    content/images/size/w2000/2022/07/2022070111110800_s.jpg 2000w"
+            sizes="(max-width: 1000px) 400px, 700px"
+            src="content/images/size/w600/2022/07/2022070111110800_s.jpg"
+            alt="《异度之刃决定版》评测：十年前的 JRPG"
+        />
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="xb1/index.html">
+
+            <header class="post-card-header">
+                    <div class="post-card-primary-tag">game</div>
+                <h2 class="post-card-title">《异度之刃决定版》评测：十年前的 JRPG</h2>
+            </header>
+
+            <section class="post-card-excerpt">
+                    <p>Switch《异度之刃决定版》简要评测。</p>
+            </section>
+
+        </a>
+
+        <footer class="post-card-meta">
+            <ul class="author-list">
+                <li class="author-list-item">
+            
+                    <div class="author-name-tooltip">
+                        Ruan Xingzhi
+                    </div>
+            
+                    <a href="author/blue/index.html" class="static-avatar">
+                        <img class="author-profile-image" src="content/images/size/w100/2020/05/blue.jpeg" alt="Ruan Xingzhi" />
+                    </a>
+                </li>
+            </ul>
+            <div class="post-card-byline-content">
+                <span><a href="author/blue/index.html">Ruan Xingzhi</a></span>
+                <span class="post-card-byline-date"><time datetime="2022-07-02">2 Jul 2022</time> <span class="bull">&bull;</span> 9 min read</span>
+            </div>
+        </footer>
+
+    </div>
+
+</article>
+
+        </div>
+
+    </div>
+</main>
+
+<div class="outer site-nav-main">
+    <div class="inner">
+        <nav class="site-nav">
+    <div class="site-nav-left-wrapper">
+        <div class="site-nav-left">
+                <a class="site-nav-logo" href="index.html">Pion1eer</a>
+            <div class="site-nav-content">
+                    <ul class="nav">
+    <li class="nav-home nav-current"><a href="index.html">Home</a></li>
+    <li class="nav-about"><a href="about/index.html">About</a></li>
+</ul>
+
+            </div>
+        </div>
+    </div>
+    <div class="site-nav-right">
+            <div class="social-links">
+            </div>
+                <a class="rss-button" href="https://feedly.com/i/subscription/feed/https://www.ruanx.net/rss/" title="RSS" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+</a>
+
+    </div>
+</nav>
+    </div>
+</div>
+
+
+        <footer class="site-footer outer">
+            <div class="site-footer-content inner">
+                <section class="copyright"><a href="index.html">Pion1eer</a> &copy; 2023</section>
+                <nav class="site-footer-nav">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">湘ICP备20008720号-1</a>
+                    <a href="index.html">Latest Posts</a>
+                    
+                    
+                    <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>
+                </nav>
+            </div>
+        </footer>
+
+    </div>
+
+<!--
+
+    <div class="subscribe-success-message">
+        <a class="subscribe-close" href="javascript:;"></a>
+        You've successfully subscribed to Pion1eer!
+    </div>
+
+    <div id="subscribe" class="subscribe-overlay">
+        <a class="subscribe-close" href="#"></a>
+        <div class="subscribe-overlay-content">
+            <div class="subscribe-form">
+                <h1 class="subscribe-overlay-title">Subscribe to Pion1eer</h1>
+                <p class="subscribe-overlay-description">Stay up to date! Get all the latest & greatest posts delivered straight to your inbox</p>
+                <form data-members-form="subscribe">
+                    <div class="form-group">
+                        <input class="subscribe-email" data-members-email placeholder="youremail@example.com"
+                            autocomplete="false" />
+                        <button class="button primary" type="submit">
+                            <span class="button-content">Subscribe</span>
+                            <span class="button-loader"><svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+    y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20"
+            dur="0.5s" repeatCount="indefinite" />
+    </path>
+</svg></span>
+                        </button>
+                    </div>
+                    <div class="message-success">
+                        <strong>Great!</strong> Check your inbox and click the link to confirm your subscription.
+                    </div>
+                    <div class="message-error">
+                        Please enter a valid email address!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+-->
+
+    <script
+        src="https://cdn.ruanx.net/js/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+    <script src="assets/built/casper%EF%B9%96v=792c672b3c.js"></script>
+
+    <script>
+        // Parse the URL parameter
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        // Give the parameter a variable name
+        var action = getParameterByName('action');
+
+        $(document).ready(function () {
+            if (action == 'subscribe') {
+                $('body').addClass("subscribe-success");
+            }
+
+            $('.subscribe-success-message .subscribe-close').click(function () {
+                $('.subscribe-success-message').addClass('close');
+            });
+
+            // Reset form on opening subscrion overlay
+            $('.subscribe-button').click(function() {
+                $('.subscribe-overlay form').removeClass();
+                $('.subscribe-email').val('');
+            });
+        });
+    </script>
+
+    <script>
+
+    // NOTE: Scroll performance is poor in Safari
+    // - this appears to be due to the events firing much more slowly in Safari.
+    //   Dropping the scroll event and using only a raf loop results in smoother
+    //   scrolling but continuous processing even when not scrolling
+    $(document).ready(function () {
+        
+        var nav = document.querySelector('.site-nav-main .site-nav');
+        var feed = document.querySelector('.post-feed');
+
+        var lastScrollY = window.scrollY;
+        var lastWindowHeight = window.innerHeight;
+        var lastDocumentHeight = $(document).height();
+        var ticking = false;
+
+        function onScroll() {
+            lastScrollY = window.scrollY;
+            requestTick();
+        }
+
+        function onResize() {
+            lastWindowHeight = window.innerHeight;
+            lastDocumentHeight = $(document).height();
+            requestTick();
+        }
+
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(update);
+            }
+            ticking = true;
+        }
+
+        function update() {
+            var trigger = feed.getBoundingClientRect().top + window.scrollY;
+            var progressMax = lastDocumentHeight - lastWindowHeight;
+
+            // show/hide nav
+            if (lastScrollY >= trigger - 20) {
+                nav.classList.add('fixed-nav-active');
+            } else {
+                nav.classList.remove('fixed-nav-active');
+            }
+
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize, false);
+
+        update();
+
+    });
+</script>
+
+
+    <style>.kg-bookmark-metadata > .kg-bookmark-publisher:before {
+    content: "" !important; 
+    margin: 0 !important;
+}
+</style>
+
+</body>
+</html>
