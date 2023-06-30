@@ -8,4 +8,4 @@
 
 对网站的引用配置文件为 `/public/json/properties.json/`
 
-配置文件格式可参照 `CTFDictionary/src/components/site-item.vue` 中的TSDoc注释
+配置文件格式可参照 `src/components/site-item.vue` 中的TSDoc注释
