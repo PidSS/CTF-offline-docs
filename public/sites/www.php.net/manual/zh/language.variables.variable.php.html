@@ -1,1054 +1,0 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh">
-<head>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>PHP: 可变变量 - Manual </title>
-
- <link rel="icon" type="image/svg+xml" sizes="any" href="https://www.php.net/favicon.svg?v=2">
- <link rel="icon" type="image/png" sizes="196x196" href="https://www.php.net/favicon-196x196.png?v=2">
- <link rel="icon" type="image/png" sizes="32x32" href="https://www.php.net/favicon-32x32.png?v=2">
- <link rel="icon" type="image/png" sizes="16x16" href="https://www.php.net/favicon-16x16.png?v=2">
- <link rel="shortcut icon" href="https://www.php.net/favicon.ico?v=2">
-
- <link rel="search" type="application/opensearchdescription+xml" href="http://php.net/phpnetimprovedsearch.src" title="Add PHP.net search">
- <link rel="alternate" type="application/atom+xml" href="https://www.php.net/releases/feed.php" title="PHP Release feed">
- <link rel="alternate" type="application/atom+xml" href="https://www.php.net/feed.atom" title="PHP: Hypertext Preprocessor">
-
- <link rel="canonical" href="language.variables.variable.php.html">
- <link rel="shorturl" href="https://www.php.net/variables.variable">
- <link rel="alternate" href="https://www.php.net/variables.variable" hreflang="x-default">
-
- <link rel="contents" href="https://www.php.net/manual/zh/index.php">
- <link rel="index" href="https://www.php.net/manual/zh/language.variables.php">
- <link rel="prev" href="https://www.php.net/manual/zh/language.variables.scope.php">
- <link rel="next" href="https://www.php.net/manual/zh/language.variables.external.php">
-
- <link rel="alternate" href="https://www.php.net/manual/en/language.variables.variable.php" hreflang="en">
- <link rel="alternate" href="https://www.php.net/manual/pt_BR/language.variables.variable.php" hreflang="pt_BR">
- <link rel="alternate" href="language.variables.variable.php.html" hreflang="zh">
- <link rel="alternate" href="https://www.php.net/manual/fr/language.variables.variable.php" hreflang="fr">
- <link rel="alternate" href="https://www.php.net/manual/de/language.variables.variable.php" hreflang="de">
- <link rel="alternate" href="https://www.php.net/manual/ja/language.variables.variable.php" hreflang="ja">
- <link rel="alternate" href="https://www.php.net/manual/ru/language.variables.variable.php" hreflang="ru">
- <link rel="alternate" href="https://www.php.net/manual/es/language.variables.variable.php" hreflang="es">
- <link rel="alternate" href="https://www.php.net/manual/tr/language.variables.variable.php" hreflang="tr">
-
-<link rel="stylesheet" type="text/css" href="https://www.php.net/cached.php?t=1639034403&amp;f=/fonts/Fira/fira.css" media="screen">
-<link rel="stylesheet" type="text/css" href="https://www.php.net/cached.php?t=1539765004&amp;f=/fonts/Font-Awesome/css/fontello.css" media="screen">
-<link rel="stylesheet" type="text/css" href="https://www.php.net/cached.php?t=1687530602&amp;f=/styles/theme-base.css" media="screen">
-<link rel="stylesheet" type="text/css" href="https://www.php.net/cached.php?t=1676992203&amp;f=/styles/theme-medium.css" media="screen">
-
- <!--<base href="https://www.php.net/manual/zh/language.variables.variable.php">-->
-
-
-</head>
-<body class="docs ">
-
-<nav id="head-nav" class="navbar navbar-fixed-top">
-  <div class="navbar-inner clearfix">
-    <a href="https://www.php.net/" class="brand"><img src="https://www.php.net/images/logos/php-logo.svg" width="48" height="24" alt="php"></a>
-    <div id="mainmenu-toggle-overlay"></div>
-    <input type="checkbox" id="mainmenu-toggle">
-    <ul class="nav">
-      <li class=""><a href="https://www.php.net/downloads">Downloads</a></li>
-      <li class="active"><a href="https://www.php.net/docs.php">Documentation</a></li>
-      <li class=""><a href="https://www.php.net/get-involved" >Get Involved</a></li>
-      <li class=""><a href="https://www.php.net/support">Help</a></li>
-      <li class="">
-        <a href="https://www.php.net/releases/8.2/index.php">
-          <img src="https://www.php.net/images/php8/logo_php8_2.svg" alt="php8.2" height="22" width="60">
-        </a>
-      </li>
-    </ul>
-    <form class="navbar-search" id="topsearch" action="https://www.php.net/search.php">
-      <input type="hidden" name="show" value="quickref">
-      <input type="search" name="pattern" class="search-query" placeholder="Search" accesskey="s">
-    </form>
-  </div>
-  <div id="flash-message"></div>
-</nav>
-<nav id="trick"><div><dl>
-<dt><a href='https://www.php.net/manual/en/getting-started.php'>Getting Started</a></dt>
-	<dd><a href='https://www.php.net/manual/en/introduction.php'>Introduction</a></dd>
-	<dd><a href='https://www.php.net/manual/en/tutorial.php'>A simple tutorial</a></dd>
-<dt><a href='https://www.php.net/manual/en/langref.php'>Language Reference</a></dt>
-	<dd><a href='https://www.php.net/manual/en/language.basic-syntax.php'>Basic syntax</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.types.php'>Types</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.variables.php'>Variables</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.constants.php'>Constants</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.expressions.php'>Expressions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.operators.php'>Operators</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.control-structures.php'>Control Structures</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.functions.php'>Functions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.oop5.php'>Classes and Objects</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.namespaces.php'>Namespaces</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.enumerations.php'>Enumerations</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.errors.php'>Errors</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.exceptions.php'>Exceptions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.fibers.php'>Fibers</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.generators.php'>Generators</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.attributes.php'>Attributes</a></dd>
-	<dd><a href='https://www.php.net/manual/en/language.references.php'>References Explained</a></dd>
-	<dd><a href='https://www.php.net/manual/en/reserved.variables.php'>Predefined Variables</a></dd>
-	<dd><a href='https://www.php.net/manual/en/reserved.exceptions.php'>Predefined Exceptions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/reserved.interfaces.php'>Predefined Interfaces and Classes</a></dd>
-	<dd><a href='https://www.php.net/manual/en/reserved.attributes.php'>Predefined Attributes</a></dd>
-	<dd><a href='https://www.php.net/manual/en/context.php'>Context options and parameters</a></dd>
-	<dd><a href='https://www.php.net/manual/en/wrappers.php'>Supported Protocols and Wrappers</a></dd>
-</dl>
-<dl>
-<dt><a href='https://www.php.net/manual/en/security.php'>Security</a></dt>
-	<dd><a href='https://www.php.net/manual/en/security.intro.php'>Introduction</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.general.php'>General considerations</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.cgi-bin.php'>Installed as CGI binary</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.apache.php'>Installed as an Apache module</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.sessions.php'>Session Security</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.filesystem.php'>Filesystem Security</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.database.php'>Database Security</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.errors.php'>Error Reporting</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.variables.php'>User Submitted Data</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.hiding.php'>Hiding PHP</a></dd>
-	<dd><a href='https://www.php.net/manual/en/security.current.php'>Keeping Current</a></dd>
-<dt><a href='https://www.php.net/manual/en/features.php'>Features</a></dt>
-	<dd><a href='https://www.php.net/manual/en/features.http-auth.php'>HTTP authentication with PHP</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.cookies.php'>Cookies</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.sessions.php'>Sessions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.xforms.php'>Dealing with XForms</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.file-upload.php'>Handling file uploads</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.remote-files.php'>Using remote files</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.connection-handling.php'>Connection handling</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.persistent-connections.php'>Persistent Database Connections</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.commandline.php'>Command line usage</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.gc.php'>Garbage Collection</a></dd>
-	<dd><a href='https://www.php.net/manual/en/features.dtrace.php'>DTrace Dynamic Tracing</a></dd>
-</dl>
-<dl>
-<dt><a href='https://www.php.net/manual/en/funcref.php'>Function Reference</a></dt>
-	<dd><a href='https://www.php.net/manual/en/refs.basic.php.php'>Affecting PHP's Behaviour</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.audio.php'>Audio Formats Manipulation</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.remote.auth.php'>Authentication Services</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.cmdline.php'>Command Line Specific Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.compression.php'>Compression and Archive Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.crypto.php'>Cryptography Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.database.php'>Database Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.calendar.php'>Date and Time Related Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.fileprocess.file.php'>File System Related Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.international.php'>Human Language and Character Encoding Support</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.image.php'>Image Processing and Generation</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.remote.mail.php'>Mail Related Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.math.php'>Mathematical Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.nontext.php'>Non-Text MIME Output</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.fileprocess.process.php'>Process Control Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.basic.other.php'>Other Basic Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.remote.other.php'>Other Services</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.search.php'>Search Engine Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.server.php'>Server Specific Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.basic.session.php'>Session Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.basic.text.php'>Text Processing</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.basic.vartype.php'>Variable and Type Related Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.webservice.php'>Web Services</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.utilspec.windows.php'>Windows Only Extensions</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.xml.php'>XML Manipulation</a></dd>
-	<dd><a href='https://www.php.net/manual/en/refs.ui.php'>GUI Extensions</a></dd>
-</dl>
-<dl>
-<dt>Keyboard Shortcuts</dt><dt>?</dt>
-<dd>This help</dd>
-<dt>j</dt>
-<dd>Next menu item</dd>
-<dt>k</dt>
-<dd>Previous menu item</dd>
-<dt>g p</dt>
-<dd>Previous man page</dd>
-<dt>g n</dt>
-<dd>Next man page</dd>
-<dt>G</dt>
-<dd>Scroll to bottom</dd>
-<dt>g g</dt>
-<dd>Scroll to top</dd>
-<dt>g h</dt>
-<dd>Goto homepage</dd>
-<dt>g s</dt>
-<dd>Goto search<br>(current page)</dd>
-<dt>/</dt>
-<dd>Focus search box</dd>
-</dl></div></nav>
-<div id="goto">
-    <div class="search">
-         <div class="text"></div>
-         <div class="results"><ul></ul></div>
-   </div>
-</div>
-
-  <div id="breadcrumbs" class="clearfix">
-    <div id="breadcrumbs-inner">
-          <div class="next">
-        <a href="https://www.php.net/manual/zh/language.variables.external.php">
-          来自 PHP 之外的变量 &raquo;
-        </a>
-      </div>
-              <div class="prev">
-        <a href="https://www.php.net/manual/zh/language.variables.scope.php">
-          &laquo; 变量范围        </a>
-      </div>
-          <ul>
-            <li><a href='https://www.php.net/manual/zh/index.php'>PHP 手册</a></li>      <li><a href='https://www.php.net/manual/zh/langref.php'>语言参考</a></li>      <li><a href='https://www.php.net/manual/zh/language.variables.php'>变量</a></li>      </ul>
-    </div>
-  </div>
-
-
-
-
-<div id="layout" class="clearfix">
-  <section id="layout-content">
-  <div class="page-tools">
-    <div class="change-language">
-      <form action="https://www.php.net/manual/change.php" method="get" id="changelang" name="changelang">
-        <fieldset>
-          <label for="changelang-langs">Change language:</label>
-          <select onchange="document.changelang.submit()" name="page" id="changelang-langs">
-            <option value='en/language.variables.variable.php'>English</option>
-            <option value='pt_BR/language.variables.variable.php'>Brazilian Portuguese</option>
-            <option value='zh/language.variables.variable.php' selected="selected">Chinese (Simplified)</option>
-            <option value='fr/language.variables.variable.php'>French</option>
-            <option value='de/language.variables.variable.php'>German</option>
-            <option value='ja/language.variables.variable.php'>Japanese</option>
-            <option value='ru/language.variables.variable.php'>Russian</option>
-            <option value='es/language.variables.variable.php'>Spanish</option>
-            <option value='tr/language.variables.variable.php'>Turkish</option>
-            <option value='help-translate.php'>Other</option>
-          </select>
-        </fieldset>
-      </form>
-    </div>
-    <div class="edit-bug">
-      <a href="https://github.com/php/doc-zh/blob/master/language/variables.xml">Submit a Pull Request</a>
-      <a href="https://github.com/php/doc-zh/issues/new?body=From%20manual%20page:%20https:%2F%2Fphp.net%2Flanguage.variables.variable%0A%0A---">Report a Bug</a>
-    </div>
-  </div><div id="language.variables.variable" class="sect1">
-   <h2 class="title">可变变量</h2>
-
-   <p class="simpara">
-     有时候使用可变变量名是很方便的。就是说，一个变量的变量名可以动态的设置和使用。一个普通的变量通过声明来设置，例如：
-   </p>
-
-   <div class="informalexample">
-    <div class="example-contents">
-<div class="phpcode"><code><span style="color: #000000">
-<span style="color: #0000BB">&lt;?php<br />$a </span><span style="color: #007700">= </span><span style="color: #DD0000">'hello'</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">?&gt;</span>
-</span>
-</code></div>
-    </div>
-
-   </div>
-
-   <p class="simpara">
-    一个可变变量获取了一个普通变量的值作为这个可变变量的变量名。在上面的例子中
-    <em class="emphasis">hello</em> 使用了两个美元符号（$）以后，就可以作为一个可变变量的变量了。例如：
-   </p>
-
-   <div class="informalexample">
-    <div class="example-contents">
-<div class="phpcode"><code><span style="color: #000000">
-<span style="color: #0000BB">&lt;?php<br /></span><span style="color: #007700">$</span><span style="color: #0000BB">$a </span><span style="color: #007700">= </span><span style="color: #DD0000">'world'</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">?&gt;</span>
-</span>
-</code></div>
-    </div>
-
-   </div>
-
-   <p class="simpara">
-    这时，两个变量都被定义了：<var class="varname">$a</var> 的内容是“hello”并且
-    <var class="varname">$hello</var> 的内容是“world”。因此，以下语句：
-   </p>
-
-   <div class="informalexample">
-    <div class="example-contents">
-<div class="phpcode"><code><span style="color: #000000">
-<span style="color: #0000BB">&lt;?php<br /></span><span style="color: #007700">echo </span><span style="color: #DD0000">"</span><span style="color: #0000BB">$a</span><span style="color: #DD0000"> </span><span style="color: #007700">{$</span><span style="color: #0000BB">$a</span><span style="color: #007700">}</span><span style="color: #DD0000">"</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">?&gt;</span>
-</span>
-</code></div>
-    </div>
-
-   </div>
-
-   <p class="simpara">
-    与以下语句输出完全相同的结果：
-   </p>
-
-   <div class="informalexample">
-    <div class="example-contents">
-<div class="phpcode"><code><span style="color: #000000">
-<span style="color: #0000BB">&lt;?php<br /></span><span style="color: #007700">echo </span><span style="color: #DD0000">"</span><span style="color: #0000BB">$a</span><span style="color: #DD0000"> </span><span style="color: #0000BB">$hello</span><span style="color: #DD0000">"</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">?&gt;</span>
-</span>
-</code></div>
-    </div>
-
-   </div>
-
-   <p class="simpara">
-    它们都会输出：<span class="computeroutput">hello world</span>。
-   </p>
-
-   <p class="simpara">
-    要将可变变量用于数组，必须解决一个模棱两可的问题。这就是当写下
-    <var class="varname">$$a[1]</var>
-    时，解析器需要知道是想要
-    <var class="varname">$a[1]</var>
-    作为一个变量呢，还是想要
-    <var class="varname">$$a</var>
-    作为一个变量并取出该变量中索引为 [1]
-    的值。解决此问题的语法是，对第一种情况用
-    <var class="varname">${$a[1]}</var>，对第二种情况用
-    <var class="varname">${$a}[1]</var>。
-   </p>
-
-   <p class="simpara">
-    类的属性也可以通过可变属性名来访问。可变属性名将在该调用所处的范围内被解析。例如，对于
-    <var class="varname">$foo->$bar</var> 表达式，则会在本地范围来解析 <var class="varname">$bar</var>
-    并且其值将被用于 <var class="varname">$foo</var> 的属性名。对于 <var class="varname">$bar</var>
-    是数组单元时也是一样。
-   </p>
-   
-   <p class="simpara">
-    也可使用花括号来给属性名清晰定界。最有用是在属性位于数组中，或者属性名包含有多个部分或者属性名包含有非法字符时（例如来自
-    <span class="function"><a href="https://www.php.net/manual/zh/function.json-decode.php" class="function">json_decode()</a></span> 或 <a href="https://www.php.net/manual/zh/book.simplexml.php" class="link">SimpleXML</a>）。
-   </p>
-
-   <p class="para">
-    <div class="example" id="example-96">
-     <p><strong>示例 #1 可变属性示例</strong></p>
-      <div class="example-contents">
-<div class="phpcode"><code><span style="color: #000000">
-<span style="color: #0000BB">&lt;?php<br /></span><span style="color: #007700">class </span><span style="color: #0000BB">foo </span><span style="color: #007700">{<br />    var </span><span style="color: #0000BB">$bar </span><span style="color: #007700">= </span><span style="color: #DD0000">'I am bar.'</span><span style="color: #007700">;<br />    var </span><span style="color: #0000BB">$arr </span><span style="color: #007700">= array(</span><span style="color: #DD0000">'I am A.'</span><span style="color: #007700">, </span><span style="color: #DD0000">'I am B.'</span><span style="color: #007700">, </span><span style="color: #DD0000">'I am C.'</span><span style="color: #007700">);<br />    var </span><span style="color: #0000BB">$r   </span><span style="color: #007700">= </span><span style="color: #DD0000">'I am r.'</span><span style="color: #007700">;<br />}<br /><br /></span><span style="color: #0000BB">$foo </span><span style="color: #007700">= new </span><span style="color: #0000BB">foo</span><span style="color: #007700">();<br /></span><span style="color: #0000BB">$bar </span><span style="color: #007700">= </span><span style="color: #DD0000">'bar'</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">$baz </span><span style="color: #007700">= array(</span><span style="color: #DD0000">'foo'</span><span style="color: #007700">, </span><span style="color: #DD0000">'bar'</span><span style="color: #007700">, </span><span style="color: #DD0000">'baz'</span><span style="color: #007700">, </span><span style="color: #DD0000">'quux'</span><span style="color: #007700">);<br />echo </span><span style="color: #0000BB">$foo</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">$bar </span><span style="color: #007700">. </span><span style="color: #DD0000">"\n"</span><span style="color: #007700">;<br />echo </span><span style="color: #0000BB">$foo</span><span style="color: #007700">-&gt;{</span><span style="color: #0000BB">$baz</span><span style="color: #007700">[</span><span style="color: #0000BB">1</span><span style="color: #007700">]} . </span><span style="color: #DD0000">"\n"</span><span style="color: #007700">;<br /><br /></span><span style="color: #0000BB">$start </span><span style="color: #007700">= </span><span style="color: #DD0000">'b'</span><span style="color: #007700">;<br /></span><span style="color: #0000BB">$end   </span><span style="color: #007700">= </span><span style="color: #DD0000">'ar'</span><span style="color: #007700">;<br />echo </span><span style="color: #0000BB">$foo</span><span style="color: #007700">-&gt;{</span><span style="color: #0000BB">$start </span><span style="color: #007700">. </span><span style="color: #0000BB">$end</span><span style="color: #007700">} . </span><span style="color: #DD0000">"\n"</span><span style="color: #007700">;<br /><br /></span><span style="color: #0000BB">$arr </span><span style="color: #007700">= </span><span style="color: #DD0000">'arr'</span><span style="color: #007700">;<br />echo </span><span style="color: #0000BB">$foo</span><span style="color: #007700">-&gt;{</span><span style="color: #0000BB">$arr</span><span style="color: #007700">[</span><span style="color: #0000BB">1</span><span style="color: #007700">]} . </span><span style="color: #DD0000">"\n"</span><span style="color: #007700">;<br /><br /></span><span style="color: #0000BB">?&gt;</span>
-</span>
-</code></div>
-     </div>
-
-     <div class="example-contents"><p>以上示例会输出：</p></div>
-     <div class="example-contents screen"><br />
-I am bar.<br />
-I am bar.<br />
-I am bar.<br />
-I am r.<br />
-     </div>
-    </div>
-   </p>
-
-   <div class="warning"><strong class="warning">警告</strong>
-    <p class="simpara">
-     注意，在 PHP 的函数和类的方法中，<a href="https://www.php.net/manual/zh/language.variables.superglobals.php" class="link">超全局变量</a>不能用作可变变量。<code class="literal">$this</code>
-     变量也是一个特殊变量，不能被动态引用。
-    </p>
-   </div>
-
-  </div><section id="usernotes">
- <div class="head">
-  <span class="action"><a href="https://www.php.net/manual/add-note.php?sect=language.variables.variable&amp;redirect=https://www.php.net/manual/zh/language.variables.variable.php">＋<small>add a note</small></a></span>
-  <h3 class="title">User Contributed Notes <span class="count">33 notes</span></h3>
- </div><div id="allnotes">
-  <div class="note" id="97222">  <div class="votes">
-    <div id="Vu97222">
-    <a href="https://www.php.net/manual/vote-note.php?id=97222&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd97222">
-    <a href="https://www.php.net/manual/vote-note.php?id=97222&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V97222" title="74% like this...">
-    536
-    </div>
-  </div>
-  <a href="#97222" class="name">
-  <strong class="user"><em>userb at exampleb dot org</em></strong></a><a class="genanchor" href="#97222"> &para;</a><div class="date" title="2010-04-08 02:39"><strong>13 years ago</strong></div>
-  <div class="text" id="Hcom97222">
-<div class="phpcode"><code><span class="html">
-<span class="default">&lt;?php<br /><br />&nbsp; </span><span class="comment">//You can even add more Dollar Signs<br /><br />&nbsp; </span><span class="default">$Bar </span><span class="keyword">= </span><span class="string">"a"</span><span class="keyword">;<br />&nbsp; </span><span class="default">$Foo </span><span class="keyword">= </span><span class="string">"Bar"</span><span class="keyword">;<br />&nbsp; </span><span class="default">$World </span><span class="keyword">= </span><span class="string">"Foo"</span><span class="keyword">;<br />&nbsp; </span><span class="default">$Hello </span><span class="keyword">= </span><span class="string">"World"</span><span class="keyword">;<br />&nbsp; </span><span class="default">$a </span><span class="keyword">= </span><span class="string">"Hello"</span><span class="keyword">;<br /><br />&nbsp; </span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns Hello<br />&nbsp; </span><span class="keyword">$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns World<br />&nbsp; </span><span class="keyword">$$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns Foo<br />&nbsp; </span><span class="keyword">$$$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns Bar<br />&nbsp; </span><span class="keyword">$$$$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns a<br /><br />&nbsp; </span><span class="keyword">$$$$$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns Hello<br />&nbsp; </span><span class="keyword">$$$$$$</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">//Returns World<br /><br />&nbsp; //... and so on ...//<br /><br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="50912">  <div class="votes">
-    <div id="Vu50912">
-    <a href="https://www.php.net/manual/vote-note.php?id=50912&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd50912">
-    <a href="https://www.php.net/manual/vote-note.php?id=50912&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V50912" title="60% like this...">
-    68
-    </div>
-  </div>
-  <a href="#50912" class="name">
-  <strong class="user"><em>Anonymous</em></strong></a><a class="genanchor" href="#50912"> &para;</a><div class="date" title="2005-03-13 07:25"><strong>18 years ago</strong></div>
-  <div class="text" id="Hcom50912">
-<div class="phpcode"><code><span class="html">
-It may be worth specifically noting, if variable names follow some kind of "template," they can be referenced like this:<br /><br /><span class="default">&lt;?php<br /></span><span class="comment">// Given these variables ...<br /></span><span class="default">$nameTypes&nbsp; &nbsp; </span><span class="keyword">= array(</span><span class="string">"first"</span><span class="keyword">, </span><span class="string">"last"</span><span class="keyword">, </span><span class="string">"company"</span><span class="keyword">);<br /></span><span class="default">$name_first&nbsp;&nbsp; </span><span class="keyword">= </span><span class="string">"John"</span><span class="keyword">;<br /></span><span class="default">$name_last&nbsp; &nbsp; </span><span class="keyword">= </span><span class="string">"Doe"</span><span class="keyword">;<br /></span><span class="default">$name_company </span><span class="keyword">= </span><span class="string">"PHP.net"</span><span class="keyword">;<br /><br /></span><span class="comment">// Then this loop is ...<br /></span><span class="keyword">foreach(</span><span class="default">$nameTypes </span><span class="keyword">as </span><span class="default">$type</span><span class="keyword">)<br />&nbsp; print ${</span><span class="string">"name_</span><span class="default">$type</span><span class="string">"</span><span class="keyword">} . </span><span class="string">"\n"</span><span class="keyword">;<br /><br /></span><span class="comment">// ... equivalent to this print statement.<br /></span><span class="keyword">print </span><span class="string">"</span><span class="default">$name_first</span><span class="string">\n</span><span class="default">$name_last</span><span class="string">\n</span><span class="default">$name_company</span><span class="string">\n"</span><span class="keyword">;<br /></span><span class="default">?&gt;<br /></span><br />This is apparent from the notes others have left, but is not explicitly stated.</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="127568">  <div class="votes">
-    <div id="Vu127568">
-    <a href="https://www.php.net/manual/vote-note.php?id=127568&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd127568">
-    <a href="https://www.php.net/manual/vote-note.php?id=127568&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V127568" title="62% like this...">
-    4
-    </div>
-  </div>
-  <a href="#127568" class="name">
-  <strong class="user"><em>sebastopolys at gmail dot com</em></strong></a><a class="genanchor" href="#127568"> &para;</a><div class="date" title="2022-09-03 03:54"><strong>9 months ago</strong></div>
-  <div class="text" id="Hcom127568">
-<div class="phpcode"><code><span class="html">
-In addition, it is possible to use associative array to secure name of variables available to be used within a function (or class / not tested).<br /><br />This way the variable variable feature is useful to validate variables; define, output and manage only within the function that receives as parameter <br />an associative array : <br />&nbsp; &nbsp; array('index'=&gt;'value','index'=&gt;'value');<br />index = reference to variable to be used within function<br />value = name of the variable to be used within function<br /><span class="default">&lt;?php <br /><br />$vars </span><span class="keyword">= [</span><span class="string">'id'</span><span class="keyword">=&gt;</span><span class="string">'user_id'</span><span class="keyword">,</span><span class="string">'email'</span><span class="keyword">=&gt;</span><span class="string">'user_email'</span><span class="keyword">];<br /><br /></span><span class="default">validateVarsFunction</span><span class="keyword">(</span><span class="default">$vars</span><span class="keyword">);<br /><br />function </span><span class="default">validateVarsFunction</span><span class="keyword">(</span><span class="default">$vars</span><span class="keyword">){<br /><br />&nbsp; &nbsp; </span><span class="comment">//$vars['id']=34; &lt;- does not work<br />&nbsp; &nbsp;&nbsp; // define allowed variables<br />&nbsp; &nbsp;&nbsp; </span><span class="default">$user_id</span><span class="keyword">=</span><span class="default">21</span><span class="keyword">;<br />&nbsp; &nbsp;&nbsp; </span><span class="default">$user_email</span><span class="keyword">=</span><span class="string">'email@mail.com'</span><span class="keyword">;<br /><br />&nbsp; &nbsp;&nbsp; echo </span><span class="default">$vars</span><span class="keyword">[</span><span class="string">'id'</span><span class="keyword">]; </span><span class="comment">// prints name of variable: user_id<br />&nbsp; &nbsp;&nbsp; </span><span class="keyword">echo ${</span><span class="default">$vars</span><span class="keyword">[</span><span class="string">'id'</span><span class="keyword">]}; </span><span class="comment">// prints 21&nbsp; &nbsp; <br />&nbsp; &nbsp;&nbsp; </span><span class="keyword">echo </span><span class="string">'Email: '</span><span class="keyword">.${</span><span class="default">$vars</span><span class="keyword">[</span><span class="string">'email'</span><span class="keyword">]};&nbsp; </span><span class="comment">// print email@mail.com<br /><br />&nbsp; &nbsp;&nbsp; // we don't have the name of the variables before declaring them inside the function<br /></span><span class="keyword">}<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="123599">  <div class="votes">
-    <div id="Vu123599">
-    <a href="https://www.php.net/manual/vote-note.php?id=123599&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd123599">
-    <a href="https://www.php.net/manual/vote-note.php?id=123599&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V123599" title="59% like this...">
-    6
-    </div>
-  </div>
-  <a href="#123599" class="name">
-  <strong class="user"><em>marcin dot dzdza at gmail dot com</em></strong></a><a class="genanchor" href="#123599"> &para;</a><div class="date" title="2019-02-10 11:59"><strong>4 years ago</strong></div>
-  <div class="text" id="Hcom123599">
-<div class="phpcode"><code><span class="html">
-The feature of variable variable names is welcome, but it should be avoided when possible. Modern IDE software fails to interpret such variables correctly, regular find/replace also fails. It's a kind of magic :) This may really make it hard to refactor code. Imagine you want to rename variable $username to $userName and try to find all occurrences of $username in code by checking "$userName". You may easily omit:<br />$a = 'username';<br />echo $$a;</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="116632">  <div class="votes">
-    <div id="Vu116632">
-    <a href="https://www.php.net/manual/vote-note.php?id=116632&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd116632">
-    <a href="https://www.php.net/manual/vote-note.php?id=116632&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V116632" title="57% like this...">
-    12
-    </div>
-  </div>
-  <a href="#116632" class="name">
-  <strong class="user"><em>jefrey.sobreira [at] gmail [dot] com</em></strong></a><a class="genanchor" href="#116632"> &para;</a><div class="date" title="2015-02-01 05:34"><strong>8 years ago</strong></div>
-  <div class="text" id="Hcom116632">
-<div class="phpcode"><code><span class="html">
-If you want to use a variable value in part of the name of a variable variable (not the whole name itself), you can do like the following:<br /><br /><span class="default">&lt;?php<br />$price_for_monday </span><span class="keyword">= </span><span class="default">10</span><span class="keyword">;<br /></span><span class="default">$price_for_tuesday </span><span class="keyword">= </span><span class="default">20</span><span class="keyword">;<br /></span><span class="default">$price_for_wednesday </span><span class="keyword">= </span><span class="default">30</span><span class="keyword">;<br /><br /></span><span class="default">$today </span><span class="keyword">= </span><span class="string">'tuesday'</span><span class="keyword">;<br /><br /></span><span class="default">$price_for_today </span><span class="keyword">= ${ </span><span class="string">'price_for_' </span><span class="keyword">. </span><span class="default">$today</span><span class="keyword">};<br />echo </span><span class="default">$price_for_today</span><span class="keyword">; </span><span class="comment">// will return 20<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="98641">  <div class="votes">
-    <div id="Vu98641">
-    <a href="https://www.php.net/manual/vote-note.php?id=98641&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd98641">
-    <a href="https://www.php.net/manual/vote-note.php?id=98641&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V98641" title="56% like this...">
-    18
-    </div>
-  </div>
-  <a href="#98641" class="name">
-  <strong class="user"><em>mason</em></strong></a><a class="genanchor" href="#98641"> &para;</a><div class="date" title="2010-06-28 12:39"><strong>13 years ago</strong></div>
-  <div class="text" id="Hcom98641">
-<div class="phpcode"><code><span class="html">
-PHP actually supports invoking a new instance of a class using a variable class name since at least version 5.2<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">Foo </span><span class="keyword">{<br />&nbsp;&nbsp; public function </span><span class="default">hello</span><span class="keyword">() {<br />&nbsp; &nbsp; &nbsp; echo </span><span class="string">'Hello world!'</span><span class="keyword">;<br />&nbsp;&nbsp; }<br />}<br /></span><span class="default">$my_foo </span><span class="keyword">= </span><span class="string">'Foo'</span><span class="keyword">;<br /></span><span class="default">$a </span><span class="keyword">= new </span><span class="default">$my_foo</span><span class="keyword">();<br /></span><span class="default">$a</span><span class="keyword">-&gt;</span><span class="default">hello</span><span class="keyword">(); </span><span class="comment">//prints 'Hello world!'<br /></span><span class="default">?&gt;<br /></span><br />Additionally, you can access static methods and properties using variable class names, but only since PHP 5.3<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">Foo </span><span class="keyword">{<br />&nbsp;&nbsp; public static function </span><span class="default">hello</span><span class="keyword">() {<br />&nbsp; &nbsp; &nbsp; echo </span><span class="string">'Hello world!'</span><span class="keyword">;<br />&nbsp;&nbsp; }<br />}<br /></span><span class="default">$my_foo </span><span class="keyword">= </span><span class="string">'Foo'</span><span class="keyword">;<br /></span><span class="default">$my_foo</span><span class="keyword">::</span><span class="default">hello</span><span class="keyword">(); </span><span class="comment">//prints 'Hello world!'<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="25314">  <div class="votes">
-    <div id="Vu25314">
-    <a href="https://www.php.net/manual/vote-note.php?id=25314&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd25314">
-    <a href="https://www.php.net/manual/vote-note.php?id=25314&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V25314" title="57% like this...">
-    13
-    </div>
-  </div>
-  <a href="#25314" class="name">
-  <strong class="user"><em>antony dot booth at nodomain dot here</em></strong></a><a class="genanchor" href="#25314"> &para;</a><div class="date" title="2002-09-19 07:17"><strong>20 years ago</strong></div>
-  <div class="text" id="Hcom25314">
-<div class="phpcode"><code><span class="html">
-You may think of using variable variables to dynamically generate variables from an array, by doing something similar to: -<br /><br /><span class="default">&lt;?php<br /> </span><span class="keyword">foreach (</span><span class="default">$array </span><span class="keyword">as </span><span class="default">$key </span><span class="keyword">=&gt; </span><span class="default">$value</span><span class="keyword">) <br /> {<br />&nbsp; $</span><span class="default">$key</span><span class="keyword">= </span><span class="default">$value</span><span class="keyword">;<br /> }<br /><br /></span><span class="default">?&gt;<br /></span><br />This however would be reinventing the wheel when you can simply use: <br /><br /><span class="default">&lt;?php<br />extract</span><span class="keyword">( </span><span class="default">$array</span><span class="keyword">, </span><span class="default">EXTR_OVERWRITE</span><span class="keyword">);<br /></span><span class="default">?&gt;<br /></span><br />Note that this will overwrite the contents of variables that already exist.<br /><br />Extract has useful functionality to prevent this, or you may group the variables by using prefixes too, so you could use: -<br /><br />EXTR_PREFIX_ALL<br /><br /><span class="default">&lt;?php<br />$array </span><span class="keyword">=array(</span><span class="string">"one" </span><span class="keyword">=&gt; </span><span class="string">"First Value"</span><span class="keyword">,<br /></span><span class="string">"two" </span><span class="keyword">=&gt; </span><span class="string">"2nd Value"</span><span class="keyword">,<br /></span><span class="string">"three" </span><span class="keyword">=&gt; </span><span class="string">"8"<br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span><span class="keyword">);<br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <br /></span><span class="default">extract</span><span class="keyword">( </span><span class="default">$array</span><span class="keyword">, </span><span class="default">EXTR_PREFIX_ALL</span><span class="keyword">, </span><span class="string">"my_prefix_"</span><span class="keyword">);<br />&nbsp;&nbsp; <br /></span><span class="default">?&gt;<br /></span><br />This would create variables: -<br />$my_prefix_one <br />$my_prefix_two<br />$my_prefix_three<br /><br />containing: -<br />"First Value", "2nd Value" and "8" respectively</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="24296">  <div class="votes">
-    <div id="Vu24296">
-    <a href="https://www.php.net/manual/vote-note.php?id=24296&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd24296">
-    <a href="https://www.php.net/manual/vote-note.php?id=24296&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V24296" title="57% like this...">
-    15
-    </div>
-  </div>
-  <a href="#24296" class="name">
-  <strong class="user"><em>J. Dyer</em></strong></a><a class="genanchor" href="#24296"> &para;</a><div class="date" title="2002-08-12 01:05"><strong>20 years ago</strong></div>
-  <div class="text" id="Hcom24296">
-<div class="phpcode"><code><span class="html">
-Another use for this feature in PHP is dynamic parsing..&nbsp; <br /><br />Due to the rather odd structure of an input string I am currently parsing, I must have a reference for each particular object instantiation in the order which they were created.&nbsp; In addition, because of the syntax of the input string, elements of the previous object creation are required for the current one.&nbsp; <br /><br />Normally, you won't need something this convolute.&nbsp; In this example, I needed to load an array with dynamically named objects - (yes, this has some basic Object Oriented programming, please bare with me..)<br /><br /><span class="default">&lt;?php<br />&nbsp;&nbsp; </span><span class="keyword">include(</span><span class="string">"obj.class"</span><span class="keyword">);<br /><br />&nbsp;&nbsp; </span><span class="comment">// this is only a skeletal example, of course.<br />&nbsp;&nbsp; </span><span class="default">$object_array </span><span class="keyword">= array();<br /><br />&nbsp;&nbsp; </span><span class="comment">// assume the $input array has tokens for parsing.<br />&nbsp;&nbsp; </span><span class="keyword">foreach (</span><span class="default">$input_array </span><span class="keyword">as </span><span class="default">$key</span><span class="keyword">=&gt;</span><span class="default">$value</span><span class="keyword">){<br />&nbsp; &nbsp; &nbsp; </span><span class="comment">// test to ensure the $value is what we need.<br />&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; </span><span class="default">$obj </span><span class="keyword">= </span><span class="string">"obj"</span><span class="keyword">.</span><span class="default">$key</span><span class="keyword">;<br />&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; $</span><span class="default">$obj </span><span class="keyword">= new </span><span class="default">Obj</span><span class="keyword">(</span><span class="default">$value</span><span class="keyword">, </span><span class="default">$other_var</span><span class="keyword">);<br />&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; </span><span class="default">Array_Push</span><span class="keyword">(</span><span class="default">$object_array</span><span class="keyword">, $</span><span class="default">$obj</span><span class="keyword">);<br />&nbsp; &nbsp; &nbsp; </span><span class="comment">// etc..<br />&nbsp;&nbsp; </span><span class="keyword">}<br /><br /></span><span class="default">?&gt;<br /></span><br />Now, we can use basic array manipulation to get these objects out in the particular order we need, and the objects no longer are dependant on the previous ones.<br /><br />I haven't fully tested the implimentation of the objects.&nbsp; The&nbsp; scope of a variable-variable's object attributes (get all that?) is a little tough to crack.&nbsp; Regardless, this is another example of the manner in which the var-vars can be used with precision where tedious, extra hard-coding is the only alternative.<br /><br />Then, we can easily pull everything back out again using a basic array function: foreach.<br /><br /><span class="default">&lt;?php<br /></span><span class="comment">//...<br />&nbsp;&nbsp; </span><span class="keyword">foreach(</span><span class="default">$array </span><span class="keyword">as </span><span class="default">$key</span><span class="keyword">=&gt;</span><span class="default">$object</span><span class="keyword">){<br /><br />&nbsp; &nbsp; &nbsp; echo </span><span class="default">$key</span><span class="keyword">.</span><span class="string">" -- "</span><span class="keyword">.</span><span class="default">$object</span><span class="keyword">-&gt;</span><span class="default">print_fcn</span><span class="keyword">().</span><span class="string">" &lt;br/&gt;\n"</span><span class="keyword">;<br /><br />&nbsp;&nbsp; } </span><span class="comment">// end foreach&nbsp;&nbsp; <br /><br /></span><span class="default">?&gt;<br /></span><br />Through this, we can pull a dynamically named object out of the array it was stored in without actually knowing its name.</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="75669">  <div class="votes">
-    <div id="Vu75669">
-    <a href="https://www.php.net/manual/vote-note.php?id=75669&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd75669">
-    <a href="https://www.php.net/manual/vote-note.php?id=75669&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V75669" title="56% like this...">
-    7
-    </div>
-  </div>
-  <a href="#75669" class="name">
-  <strong class="user"><em>Sinured</em></strong></a><a class="genanchor" href="#75669"> &para;</a><div class="date" title="2007-06-11 06:07"><strong>16 years ago</strong></div>
-  <div class="text" id="Hcom75669">
-<div class="phpcode"><code><span class="html">
-One interesting thing I found out: You can concatenate variables and use spaces. Concatenating constants and function calls are also possible.<br /><br /><span class="default">&lt;?php<br />define</span><span class="keyword">(</span><span class="string">'ONE'</span><span class="keyword">, </span><span class="default">1</span><span class="keyword">);<br />function </span><span class="default">one</span><span class="keyword">() {<br />&nbsp; &nbsp; return </span><span class="default">1</span><span class="keyword">;<br />}<br /></span><span class="default">$one </span><span class="keyword">= </span><span class="default">1</span><span class="keyword">;<br /><br />${</span><span class="string">"foo</span><span class="default">$one</span><span class="string">"</span><span class="keyword">} = </span><span class="string">'foo'</span><span class="keyword">;<br />echo </span><span class="default">$foo1</span><span class="keyword">; </span><span class="comment">// foo<br /></span><span class="keyword">${</span><span class="string">'foo' </span><span class="keyword">. </span><span class="default">ONE</span><span class="keyword">} = </span><span class="string">'bar'</span><span class="keyword">; <br />echo </span><span class="default">$foo1</span><span class="keyword">; </span><span class="comment">// bar<br /></span><span class="keyword">${</span><span class="string">'foo' </span><span class="keyword">. </span><span class="default">one</span><span class="keyword">()} = </span><span class="string">'baz'</span><span class="keyword">;<br />echo </span><span class="default">$foo1</span><span class="keyword">; </span><span class="comment">// baz<br /></span><span class="default">?&gt;<br /></span><br />This syntax doesn't work for functions:<br /><br /><span class="default">&lt;?php<br />$foo </span><span class="keyword">= </span><span class="string">'info'</span><span class="keyword">;<br />{</span><span class="string">"php</span><span class="default">$foo</span><span class="string">"</span><span class="keyword">}(); </span><span class="comment">// Parse error<br /><br />// You'll have to do:<br /></span><span class="default">$func </span><span class="keyword">= </span><span class="string">"php</span><span class="default">$foo</span><span class="string">"</span><span class="keyword">;<br /></span><span class="default">$func</span><span class="keyword">();<br /></span><span class="default">?&gt;<br /></span><br />Note: Don't leave out the quotes on strings inside the curly braces, PHP won't handle that graciously.</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="31857">  <div class="votes">
-    <div id="Vu31857">
-    <a href="https://www.php.net/manual/vote-note.php?id=31857&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd31857">
-    <a href="https://www.php.net/manual/vote-note.php?id=31857&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V31857" title="57% like this...">
-    4
-    </div>
-  </div>
-  <a href="#31857" class="name">
-  <strong class="user"><em>sir_hmba AT yahoo DOT com</em></strong></a><a class="genanchor" href="#31857"> &para;</a><div class="date" title="2003-05-06 03:08"><strong>20 years ago</strong></div>
-  <div class="text" id="Hcom31857">
-<div class="phpcode"><code><span class="html">
-This is somewhat redundant, but I didn't see an example that combined dynamic reference of *both* object and attribute names.<br /><br />Here's the code:<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">foo<br /></span><span class="keyword">{<br />&nbsp; &nbsp; var </span><span class="default">$bar</span><span class="keyword">;<br />&nbsp; &nbsp; var </span><span class="default">$baz</span><span class="keyword">;<br /><br />&nbsp; &nbsp; function </span><span class="default">foo</span><span class="keyword">()<br />&nbsp; &nbsp; {<br />&nbsp; &nbsp; &nbsp; &nbsp; </span><span class="default">$this</span><span class="keyword">-&gt;</span><span class="default">bar </span><span class="keyword">= </span><span class="default">3</span><span class="keyword">;<br />&nbsp; &nbsp; &nbsp; &nbsp; </span><span class="default">$this</span><span class="keyword">-&gt;</span><span class="default">baz </span><span class="keyword">= </span><span class="default">6</span><span class="keyword">;<br />&nbsp; &nbsp; }<br />}<br /><br /></span><span class="default">$f </span><span class="keyword">= new </span><span class="default">foo</span><span class="keyword">();<br />echo </span><span class="string">"f-&gt;bar=</span><span class="default">$f</span><span class="keyword">-&gt;</span><span class="default">bar</span><span class="string">&nbsp; f-&gt;baz=</span><span class="default">$f</span><span class="keyword">-&gt;</span><span class="default">baz</span><span class="string">\n"</span><span class="keyword">;<br /><br /></span><span class="default">$obj&nbsp; </span><span class="keyword">= </span><span class="string">'f'</span><span class="keyword">;<br /></span><span class="default">$attr </span><span class="keyword">= </span><span class="string">'bar'</span><span class="keyword">;<br /></span><span class="default">$val&nbsp; </span><span class="keyword">= $</span><span class="default">$obj</span><span class="keyword">-&gt;{</span><span class="default">$attr</span><span class="keyword">};<br /><br />echo </span><span class="string">"obj=</span><span class="default">$obj</span><span class="string">&nbsp; attr=</span><span class="default">$attr</span><span class="string">&nbsp; val=</span><span class="default">$val</span><span class="string">\n"</span><span class="keyword">;<br /></span><span class="default">?&gt;<br /></span><br />And here's the output:<br /><br />f-&gt;bar=3&nbsp; f-&gt;baz=6<br />$obj=f&nbsp; $attr=bar&nbsp; $val=3</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="119582">  <div class="votes">
-    <div id="Vu119582">
-    <a href="https://www.php.net/manual/vote-note.php?id=119582&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd119582">
-    <a href="https://www.php.net/manual/vote-note.php?id=119582&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V119582" title="54% like this...">
-    8
-    </div>
-  </div>
-  <a href="#119582" class="name">
-  <strong class="user"><em>herebepost (ta at ta) [iwonderr] gmail dot com</em></strong></a><a class="genanchor" href="#119582"> &para;</a><div class="date" title="2016-07-11 07:32"><strong>6 years ago</strong></div>
-  <div class="text" id="Hcom119582">
-<div class="phpcode"><code><span class="html">
-While not relevant in everyday PHP programming, it seems to be possible to insert whitespace and comments between the dollar signs of a variable variable.&nbsp; All three comment styles work. This information becomes relevant when writing a parser, tokenizer or something else that operates on PHP syntax.<br /><br /><span class="default">&lt;?php<br /><br />&nbsp; &nbsp; $foo </span><span class="keyword">= </span><span class="string">'bar'</span><span class="keyword">;<br />&nbsp; &nbsp; $<br /><br />&nbsp; &nbsp; </span><span class="comment">/*<br />&nbsp; &nbsp; &nbsp; &nbsp; I am complete legal and will compile without notices or error as a variable variable.<br />&nbsp; &nbsp; */<br />&nbsp; &nbsp; &nbsp; &nbsp; </span><span class="default">$foo </span><span class="keyword">= </span><span class="string">'magic'</span><span class="keyword">;<br /><br />&nbsp; &nbsp; echo </span><span class="default">$bar</span><span class="keyword">; </span><span class="comment">// Outputs magic.<br /><br /></span><span class="default">?&gt;<br /></span><br />Behaviour tested with PHP Version 5.6.19</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="81033">  <div class="votes">
-    <div id="Vu81033">
-    <a href="https://www.php.net/manual/vote-note.php?id=81033&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd81033">
-    <a href="https://www.php.net/manual/vote-note.php?id=81033&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V81033" title="55% like this...">
-    8
-    </div>
-  </div>
-  <a href="#81033" class="name">
-  <strong class="user"><em>Nathan Hammond</em></strong></a><a class="genanchor" href="#81033"> &para;</a><div class="date" title="2008-02-11 03:41"><strong>15 years ago</strong></div>
-  <div class="text" id="Hcom81033">
-<div class="phpcode"><code><span class="html">
-These are the scenarios that you may run into trying to reference superglobals dynamically. Whether or not it works appears to be dependent upon the current scope.<br /><br /><span class="default">&lt;?php<br /><br />$_POST</span><span class="keyword">[</span><span class="string">'asdf'</span><span class="keyword">] = </span><span class="string">'something'</span><span class="keyword">;<br /><br />function </span><span class="default">test</span><span class="keyword">() {<br />&nbsp; &nbsp; </span><span class="comment">// NULL -- not what initially expected<br />&nbsp; &nbsp; </span><span class="default">$string </span><span class="keyword">= </span><span class="string">'_POST'</span><span class="keyword">;<br />&nbsp; &nbsp; </span><span class="default">var_dump</span><span class="keyword">(${</span><span class="default">$string</span><span class="keyword">});<br /><br />&nbsp; &nbsp; </span><span class="comment">// Works as expected<br />&nbsp; &nbsp; </span><span class="default">var_dump</span><span class="keyword">(${</span><span class="string">'_POST'</span><span class="keyword">});<br /><br />&nbsp; &nbsp; </span><span class="comment">// Works as expected<br />&nbsp; &nbsp; </span><span class="keyword">global ${</span><span class="default">$string</span><span class="keyword">};<br />&nbsp; &nbsp; </span><span class="default">var_dump</span><span class="keyword">(${</span><span class="default">$string</span><span class="keyword">});<br /><br />}<br /><br /></span><span class="comment">// Works as expected<br /></span><span class="default">$string </span><span class="keyword">= </span><span class="string">'_POST'</span><span class="keyword">;<br /></span><span class="default">var_dump</span><span class="keyword">(${</span><span class="default">$string</span><span class="keyword">});<br /><br /></span><span class="default">test</span><span class="keyword">();<br /><br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="22037">  <div class="votes">
-    <div id="Vu22037">
-    <a href="https://www.php.net/manual/vote-note.php?id=22037&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd22037">
-    <a href="https://www.php.net/manual/vote-note.php?id=22037&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V22037" title="56% like this...">
-    4
-    </div>
-  </div>
-  <a href="#22037" class="name"><strong class="user"><em>Anonymous</em></strong></a><a class="genanchor" href="#22037"> &para;</a><div class="date" title="2002-06-04 11:34"><strong>21 years ago</strong></div>
-  <div class="text" id="Hcom22037">
-<div class="phpcode"><code><span class="html">
-The 'dollar dereferencing' (to coin a phrase) doesn't seem to be limited to two layers, even without curly braces.&nbsp; Observe:<br /><br /><span class="default">&lt;?php<br />$one </span><span class="keyword">= </span><span class="string">"two"</span><span class="keyword">;<br /></span><span class="default">$two </span><span class="keyword">= </span><span class="string">"three"</span><span class="keyword">;<br /></span><span class="default">$three </span><span class="keyword">= </span><span class="string">"four"</span><span class="keyword">;<br /></span><span class="default">$four </span><span class="keyword">= </span><span class="string">"five"</span><span class="keyword">;<br />echo $$$</span><span class="default">$one</span><span class="keyword">; </span><span class="comment">//prints 'five'.<br /></span><span class="default">?&gt;<br /></span><br />This works for L-values as well.&nbsp; So the below works the same way:<br /><br /><span class="default">&lt;?php<br />$one </span><span class="keyword">= </span><span class="string">"two"</span><span class="keyword">;<br />$</span><span class="default">$one </span><span class="keyword">= </span><span class="string">"three"</span><span class="keyword">;<br />$$</span><span class="default">$one </span><span class="keyword">= </span><span class="string">"four"</span><span class="keyword">;<br />$$$</span><span class="default">$one </span><span class="keyword">= </span><span class="string">"five"</span><span class="keyword">;<br />echo $$$</span><span class="default">$one</span><span class="keyword">; </span><span class="comment">//still prints 'five'.<br /></span><span class="default">?&gt;<br /></span><br />NOTE: Tested on PHP 4.2.1, Apache 2.0.36, Red Hat 7.2</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="91181">  <div class="votes">
-    <div id="Vu91181">
-    <a href="https://www.php.net/manual/vote-note.php?id=91181&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd91181">
-    <a href="https://www.php.net/manual/vote-note.php?id=91181&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V91181" title="54% like this...">
-    8
-    </div>
-  </div>
-  <a href="#91181" class="name">
-  <strong class="user"><em>php at ianco dot co dot uk</em></strong></a><a class="genanchor" href="#91181"> &para;</a><div class="date" title="2009-05-28 02:47"><strong>14 years ago</strong></div>
-  <div class="text" id="Hcom91181">
-<div class="phpcode"><code><span class="html">
-<span class="default">&lt;?php<br /></span><span class="comment">// $variable-name = 'parse error';<br />// You can't do that but you can do this:<br /></span><span class="default">$a </span><span class="keyword">= </span><span class="string">'variable-name'</span><span class="keyword">;<br />$</span><span class="default">$a </span><span class="keyword">= </span><span class="string">'hello'</span><span class="keyword">;<br />echo </span><span class="default">$variable</span><span class="keyword">-</span><span class="default">name </span><span class="keyword">. </span><span class="string">' ' </span><span class="keyword">. $</span><span class="default">$a</span><span class="keyword">; </span><span class="comment">// Gives&nbsp; &nbsp;&nbsp; 0 hello<br /></span><span class="default">?&gt;<br /></span><br />For a particular reason I had been using some variable names with hyphens for ages. There was no problem because they were only referenced via a variable variable. I only saw a parse error much later, when I tried to reference one directly. It took a while to realise that illegal hyphens were the cause because the parse error only occurs on assignment.</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="14664">  <div class="votes">
-    <div id="Vu14664">
-    <a href="https://www.php.net/manual/vote-note.php?id=14664&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd14664">
-    <a href="https://www.php.net/manual/vote-note.php?id=14664&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V14664" title="54% like this...">
-    4
-    </div>
-  </div>
-  <a href="#14664" class="name">
-  <strong class="user"><em>chrisNOSPAM at kampmeier dot net</em></strong></a><a class="genanchor" href="#14664"> &para;</a><div class="date" title="2001-08-08 10:40"><strong>21 years ago</strong></div>
-  <div class="text" id="Hcom14664">
-<div class="phpcode"><code><span class="html">
-Note that normal variable variables will not be parsed in double-quoted strings. You'll have to use the braces to make it work, to resolve the ambiguity. For example:<br /><br /><span class="default">&lt;?php<br />$varname </span><span class="keyword">= </span><span class="string">"foo"</span><span class="keyword">;<br /></span><span class="default">$foo </span><span class="keyword">= </span><span class="string">"bar"</span><span class="keyword">;<br /><br />print $</span><span class="default">$varname</span><span class="keyword">;&nbsp; </span><span class="comment">// Prints "bar"<br /></span><span class="keyword">print </span><span class="string">"$</span><span class="default">$varname</span><span class="string">"</span><span class="keyword">;&nbsp; </span><span class="comment">// Prints "$foo"<br /></span><span class="keyword">print </span><span class="string">"</span><span class="keyword">${</span><span class="default">$varname</span><span class="keyword">}</span><span class="string">"</span><span class="keyword">; </span><span class="comment">// Prints "bar"<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="109230">  <div class="votes">
-    <div id="Vu109230">
-    <a href="https://www.php.net/manual/vote-note.php?id=109230&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd109230">
-    <a href="https://www.php.net/manual/vote-note.php?id=109230&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V109230" title="53% like this...">
-    4
-    </div>
-  </div>
-  <a href="#109230" class="name">
-  <strong class="user"><em>nils dot rocine at gmail dot com</em></strong></a><a class="genanchor" href="#109230"> &para;</a><div class="date" title="2012-06-28 01:58"><strong>11 years ago</strong></div>
-  <div class="text" id="Hcom109230">
-<div class="phpcode"><code><span class="html">
-Variable Class Instantiation with Namespace Gotcha:<br /><br />Say you have a class you'd like to instantiate via a variable (with a string value of the Class name)<br /><br /><span class="default">&lt;?php<br /><br /></span><span class="keyword">class </span><span class="default">Foo <br /></span><span class="keyword">{ <br />&nbsp; &nbsp; public function </span><span class="default">__construct</span><span class="keyword">() <br />&nbsp; &nbsp; { <br />&nbsp; &nbsp; &nbsp; &nbsp; echo </span><span class="string">"I'm a real class!" </span><span class="keyword">. </span><span class="default">PHP_EOL</span><span class="keyword">;<br />&nbsp; &nbsp; }<br />}<br /><br /></span><span class="default">$class </span><span class="keyword">= </span><span class="string">'Foo'</span><span class="keyword">;<br /><br /></span><span class="default">$instance </span><span class="keyword">= new </span><span class="default">$class</span><span class="keyword">;<br /><br /></span><span class="default">?&gt;<br /></span><br />The above works fine UNLESS you are in a (defined) namespace. Then you must provide the full namespaced identifier of the class as shown below. This is the case EVEN THOUGH the instancing happens in the same namespace. Instancing a class normally (not through a variable) does not require the namespace. This seems to establish the pattern that if you are using an namespace and you have a class name in a string, you must provide the namespace with the class for the PHP engine to correctly resolve (other cases: class_exists(), interface_exists(), etc.) <br /><br /><span class="default">&lt;?php<br /><br /></span><span class="keyword">namespace </span><span class="default">MyNamespace</span><span class="keyword">;<br /><br />class </span><span class="default">Foo <br /></span><span class="keyword">{ <br />&nbsp; &nbsp; public function </span><span class="default">__construct</span><span class="keyword">() <br />&nbsp; &nbsp; { <br />&nbsp; &nbsp; &nbsp; &nbsp; echo </span><span class="string">"I'm a real class!" </span><span class="keyword">. </span><span class="default">PHP_EOL</span><span class="keyword">;<br />&nbsp; &nbsp; }<br />}<br /><br /></span><span class="default">$class </span><span class="keyword">= </span><span class="string">'MyNamespace\Foo'</span><span class="keyword">;<br /><br /></span><span class="default">$instance </span><span class="keyword">= new </span><span class="default">$class</span><span class="keyword">;<br /><br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="78466">  <div class="votes">
-    <div id="Vu78466">
-    <a href="https://www.php.net/manual/vote-note.php?id=78466&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd78466">
-    <a href="https://www.php.net/manual/vote-note.php?id=78466&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V78466" title="52% like this...">
-    2
-    </div>
-  </div>
-  <a href="#78466" class="name">
-  <strong class="user"><em>the_tevildo at yahoo dot com</em></strong></a><a class="genanchor" href="#78466"> &para;</a><div class="date" title="2007-10-13 06:22"><strong>15 years ago</strong></div>
-  <div class="text" id="Hcom78466">
-<div class="phpcode"><code><span class="html">
-This is a handy function I put together to allow variable variables to be used with arrays.<br /><br />To use the function, when you want to reference an array, send it in the form 'array:key' rather than 'array[key]'.<br /><br />For example:<br /><br /><span class="default">&lt;?php<br /><br /></span><span class="keyword">function </span><span class="default">indirect </span><span class="keyword">(</span><span class="default">$var</span><span class="keyword">, </span><span class="default">$value</span><span class="keyword">)&nbsp; &nbsp;&nbsp; </span><span class="comment">// Replaces $$var = $value<br /></span><span class="keyword">{<br />&nbsp;&nbsp; </span><span class="default">$var_data </span><span class="keyword">= </span><span class="default">$explode</span><span class="keyword">(</span><span class="default">$var</span><span class="keyword">, </span><span class="string">':'</span><span class="keyword">);<br />&nbsp;&nbsp; if (isset(</span><span class="default">$var_data</span><span class="keyword">[</span><span class="default">1</span><span class="keyword">]))<br />&nbsp;&nbsp; {<br />&nbsp; &nbsp; &nbsp; ${</span><span class="default">$var_data</span><span class="keyword">[</span><span class="default">0</span><span class="keyword">]}[</span><span class="default">$var_data</span><span class="keyword">[</span><span class="default">1</span><span class="keyword">]] = </span><span class="default">$value</span><span class="keyword">;<br />&nbsp;&nbsp; }<br />&nbsp;&nbsp; else<br />&nbsp;&nbsp; {<br />&nbsp; &nbsp; &nbsp; ${</span><span class="default">$var_data</span><span class="keyword">[</span><span class="default">0</span><span class="keyword">]} = </span><span class="default">$value</span><span class="keyword">;<br />&nbsp;&nbsp; }<br />}<br /><br /></span><span class="default">$temp_array </span><span class="keyword">= </span><span class="default">array_fill</span><span class="keyword">(</span><span class="default">0</span><span class="keyword">, </span><span class="default">4</span><span class="keyword">, </span><span class="default">1</span><span class="keyword">);<br /></span><span class="default">$temp_var </span><span class="keyword">= </span><span class="default">1</span><span class="keyword">;<br /></span><span class="default">$int_var_list </span><span class="keyword">= array(</span><span class="string">'temp_array[2]'</span><span class="keyword">, </span><span class="string">'temp_var'</span><span class="keyword">);<br /><br />while (list(</span><span class="default">$key</span><span class="keyword">, </span><span class="default">$var_name</span><span class="keyword">) = </span><span class="default">each</span><span class="keyword">(</span><span class="default">$int_var_list</span><span class="keyword">))<br />{<br />&nbsp;&nbsp; </span><span class="comment">//&nbsp; Doesn't work - creates scalar variable called "$temp_array[2]" <br />&nbsp;&nbsp; </span><span class="keyword">$</span><span class="default">$var_name </span><span class="keyword">= </span><span class="default">0</span><span class="keyword">;<br />}<br /><br /></span><span class="default">var_dump</span><span class="keyword">(</span><span class="default">$temp_array</span><span class="keyword">);<br />echo </span><span class="string">'&lt;br&gt;'</span><span class="keyword">;<br /></span><span class="default">var_dump</span><span class="keyword">(</span><span class="default">$temp_var</span><span class="keyword">);<br />echo </span><span class="string">'&lt;br&gt;'</span><span class="keyword">;<br /><br /></span><span class="comment">//&nbsp; Does work!<br /><br /></span><span class="default">$int_var_list </span><span class="keyword">= array(</span><span class="string">'temp_array:2'</span><span class="keyword">, </span><span class="string">'temp_var'</span><span class="keyword">);<br /><br />while (list(</span><span class="default">$key</span><span class="keyword">, </span><span class="default">$var_name</span><span class="keyword">) = </span><span class="default">each</span><span class="keyword">(</span><span class="default">$int_var_list</span><span class="keyword">))<br />{<br />&nbsp;&nbsp; </span><span class="default">indirect</span><span class="keyword">(</span><span class="default">$var_name</span><span class="keyword">, </span><span class="default">2</span><span class="keyword">);<br />}<br /><br /></span><span class="default">var_dump</span><span class="keyword">(</span><span class="default">$temp_array</span><span class="keyword">);<br />echo </span><span class="string">'&lt;br&gt;'</span><span class="keyword">;<br /></span><span class="default">var_dump</span><span class="keyword">(</span><span class="default">$temp_var</span><span class="keyword">);<br />echo </span><span class="string">'&lt;br&gt;'</span><span class="keyword">;<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="96225">  <div class="votes">
-    <div id="Vu96225">
-    <a href="https://www.php.net/manual/vote-note.php?id=96225&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd96225">
-    <a href="https://www.php.net/manual/vote-note.php?id=96225&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V96225" title="51% like this...">
-    3
-    </div>
-  </div>
-  <a href="#96225" class="name">
-  <strong class="user"><em>dlorre at yahoo dot com</em></strong></a><a class="genanchor" href="#96225"> &para;</a><div class="date" title="2010-02-16 12:04"><strong>13 years ago</strong></div>
-  <div class="text" id="Hcom96225">
-<div class="phpcode"><code><span class="html">
-Adding an element directly to an array using variables:<br /><br /><span class="default">&lt;?php<br />$tab </span><span class="keyword">= array(</span><span class="string">"one"</span><span class="keyword">, </span><span class="string">"two"</span><span class="keyword">, </span><span class="string">"three"</span><span class="keyword">) ;<br /></span><span class="default">$a </span><span class="keyword">= </span><span class="string">"tab" </span><span class="keyword">;<br />$</span><span class="default">$a</span><span class="keyword">[] =</span><span class="string">"four" </span><span class="keyword">; </span><span class="comment">// &lt;==== fatal error<br /></span><span class="default">print_r</span><span class="keyword">(</span><span class="default">$tab</span><span class="keyword">) ;<br /></span><span class="default">?&gt;<br /></span>will issue this error:<br /><br />Fatal error: Cannot use [] for reading<br /><br />This is not a bug, you need to use the {} syntax to remove the ambiguity.<br /><br /><span class="default">&lt;?php<br />$tab </span><span class="keyword">= array(</span><span class="string">"one"</span><span class="keyword">, </span><span class="string">"two"</span><span class="keyword">, </span><span class="string">"three"</span><span class="keyword">) ;<br /></span><span class="default">$a </span><span class="keyword">= </span><span class="string">"tab" </span><span class="keyword">;<br />${</span><span class="default">$a</span><span class="keyword">}[] =&nbsp; </span><span class="string">"four" </span><span class="keyword">; </span><span class="comment">// &lt;==== this is the correct way to do it<br /></span><span class="default">print_r</span><span class="keyword">(</span><span class="default">$tab</span><span class="keyword">) ;<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="128420">  <div class="votes">
-    <div id="Vu128420">
-    <a href="https://www.php.net/manual/vote-note.php?id=128420&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd128420">
-    <a href="https://www.php.net/manual/vote-note.php?id=128420&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V128420" title="no votes...">
-    0
-    </div>
-  </div>
-  <a href="#128420" class="name">
-  <strong class="user"><em>greaties at ghvernuft dot nl</em></strong></a><a class="genanchor" href="#128420"> &para;</a><div class="date" title="2023-04-22 11:59"><strong>2 months ago</strong></div>
-  <div class="text" id="Hcom128420">
-<div class="phpcode"><code><span class="html">
-Superglobals can be referenced variably within a function, by calling them global:<br /><span class="default">&lt;?php<br /></span><span class="keyword">function </span><span class="default">get_var</span><span class="keyword">(</span><span class="default">$varname</span><span class="keyword">){<br />&nbsp; global $</span><span class="default">$varname</span><span class="keyword">;<br />&nbsp; </span><span class="default">var_dump</span><span class="keyword">( $</span><span class="default">$varname</span><span class="keyword">);<br />}<br /><br /></span><span class="default">get_var</span><span class="keyword">(</span><span class="string">'_POST'</span><span class="keyword">);<br /></span><span class="default">?&gt;<br /></span><br />(Note originally posted at <a href="https://www.php.net/manual/en/language.variables.superglobals.php#128418" rel="nofollow" target="_blank">https://www.php.net/manual/en/language.variables.superglobals.php#128418</a> but also appropriate here)</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="122530">  <div class="votes">
-    <div id="Vu122530">
-    <a href="https://www.php.net/manual/vote-note.php?id=122530&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd122530">
-    <a href="https://www.php.net/manual/vote-note.php?id=122530&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V122530" title="50% like this...">
-    0
-    </div>
-  </div>
-  <a href="#122530" class="name">
-  <strong class="user"><em>wuhanqinb at gmail dot com</em></strong></a><a class="genanchor" href="#122530"> &para;</a><div class="date" title="2018-03-21 07:42"><strong>5 years ago</strong></div>
-  <div class="text" id="Hcom122530">
-<div class="phpcode"><code><span class="html">
-For example #1，line：<br />echo $foo-&gt;$baz[1] . "\n";<br />It should be:<br />echo $foo-&gt;{$baz[1]} . "\n";<br />to run correctly.</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="12841">  <div class="votes">
-    <div id="Vu12841">
-    <a href="https://www.php.net/manual/vote-note.php?id=12841&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd12841">
-    <a href="https://www.php.net/manual/vote-note.php?id=12841&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V12841" title="52% like this...">
-    1
-    </div>
-  </div>
-  <a href="#12841" class="name">
-  <strong class="user"><em>mstearne at entermix dot com</em></strong></a><a class="genanchor" href="#12841"> &para;</a><div class="date" title="2001-05-10 06:09"><strong>22 years ago</strong></div>
-  <div class="text" id="Hcom12841">
-<div class="phpcode"><code><span class="html">
-Variable variables techniques do not work when one of the "variables" is a constant.&nbsp; The example below illustrates this.&nbsp; This is probably the desired behavior for constants, but was confusing for me when I was trying to figure it out.&nbsp; The alternative I used was to add the variables I needed to the $GLOBALS array instead of defining them as constants. <br /><br /><span class="default">&lt;?php<br /><br />define</span><span class="keyword">(</span><span class="string">"DB_X_NAME"</span><span class="keyword">,</span><span class="string">"database1"</span><span class="keyword">);<br /></span><span class="default">define</span><span class="keyword">(</span><span class="string">"DB_Y_NAME"</span><span class="keyword">,</span><span class="string">"database2"</span><span class="keyword">);<br /></span><span class="default">$DB_Z_NAME</span><span class="keyword">=</span><span class="string">"database3"</span><span class="keyword">;<br /><br /><br />function </span><span class="default">connectTo</span><span class="keyword">(</span><span class="default">$databaseName</span><span class="keyword">){<br />global </span><span class="default">$DB_Z_NAME</span><span class="keyword">;<br /><br /></span><span class="default">$fullDatabaseName</span><span class="keyword">=</span><span class="string">"DB_"</span><span class="keyword">.</span><span class="default">$databaseName</span><span class="keyword">.</span><span class="string">"_NAME"</span><span class="keyword">;<br />return ${</span><span class="default">$fullDatabaseName</span><span class="keyword">};<br /><br />}<br /><br />print </span><span class="string">"DB_X_NAME is "</span><span class="keyword">.</span><span class="default">connectTo</span><span class="keyword">(</span><span class="string">"X"</span><span class="keyword">).</span><span class="string">"&lt;br&gt;"</span><span class="keyword">;<br />print </span><span class="string">"DB_Y_NAME is "</span><span class="keyword">.</span><span class="default">connectTo</span><span class="keyword">(</span><span class="string">"Y"</span><span class="keyword">).</span><span class="string">"&lt;br&gt;"</span><span class="keyword">;<br />print </span><span class="string">"DB_Z_NAME is "</span><span class="keyword">.</span><span class="default">connectTo</span><span class="keyword">(</span><span class="string">"Z"</span><span class="keyword">).</span><span class="string">"&lt;br&gt;"</span><span class="keyword">;<br /><br /></span><span class="default">?&gt;<br /></span>[Editor Note: For variable constants, use constant() --Philip]</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="83658">  <div class="votes">
-    <div id="Vu83658">
-    <a href="https://www.php.net/manual/vote-note.php?id=83658&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd83658">
-    <a href="https://www.php.net/manual/vote-note.php?id=83658&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V83658" title="50% like this...">
-    1
-    </div>
-  </div>
-  <a href="#83658" class="name">
-  <strong class="user"><em>nullhility at gmail dot com</em></strong></a><a class="genanchor" href="#83658"> &para;</a><div class="date" title="2008-06-06 12:43"><strong>15 years ago</strong></div>
-  <div class="text" id="Hcom83658">
-<div class="phpcode"><code><span class="html">
-It's also valuable to note the following:<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">${</span><span class="default">date</span><span class="keyword">(</span><span class="string">"M"</span><span class="keyword">)} = </span><span class="string">"Worked"</span><span class="keyword">;<br />echo ${</span><span class="default">date</span><span class="keyword">(</span><span class="string">"M"</span><span class="keyword">)};<br /></span><span class="default">?&gt;<br /></span><br />This is perfectly legal, anything inside the braces is executed first, the return value then becomes the variable name. Echoing the same variable variable using the function that created it results in the same return and therefore the same variable name is used in the echo statement. Have fun ;).</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="113497">  <div class="votes">
-    <div id="Vu113497">
-    <a href="https://www.php.net/manual/vote-note.php?id=113497&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd113497">
-    <a href="https://www.php.net/manual/vote-note.php?id=113497&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V113497" title="50% like this...">
-    0
-    </div>
-  </div>
-  <a href="#113497" class="name">
-  <strong class="user"><em>Aycan Yat</em></strong></a><a class="genanchor" href="#113497"> &para;</a><div class="date" title="2013-10-19 06:15"><strong>9 years ago</strong></div>
-  <div class="text" id="Hcom113497">
-<div class="phpcode"><code><span class="html">
-Sometimes you might wish to modify value of an existing variable by its name. This is easily accomplishable with a combination of using "passing by reference" and "variable variables".<br /><br />$first_var = 1;<br />$second_var = 2;<br />$third_var = 3;<br /><br />$which_one = array_rand('first', 'second', 'third');<br />//Let's consider the result is "second".<br /><br />$modifier = $$which_one;&nbsp; //Now $modifier has value 2.<br />$modifier++; //Now $modifier's value is 3.<br />echo $second_var; //Prints out 2<br /><br />//Consider we wish to modify the value of $second_var<br />$modifier = &amp;$$which_one;&nbsp; //Simply passing by reference<br />$modifier++; //Now value of $second_var is 3 too.<br />echo $second_var; //Prints out 3<br /><br />It's that simple!</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="105282">  <div class="votes">
-    <div id="Vu105282">
-    <a href="https://www.php.net/manual/vote-note.php?id=105282&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd105282">
-    <a href="https://www.php.net/manual/vote-note.php?id=105282&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V105282" title="48% like this...">
-    -1
-    </div>
-  </div>
-  <a href="#105282" class="name">
-  <strong class="user"><em>Omar Juvera</em></strong></a><a class="genanchor" href="#105282"> &para;</a><div class="date" title="2011-08-07 01:40"><strong>11 years ago</strong></div>
-  <div class="text" id="Hcom105282">
-<div class="phpcode"><code><span class="html">
-The example given in the php manual is confusing!<br />I think this example it's easier to understand: <br /><br /><span class="default">&lt;?php<br /><br /></span><span class="comment">//Let's create a new variable: $new_variable_1<br /></span><span class="default">$var_name </span><span class="keyword">= </span><span class="string">"new_variable_1"</span><span class="keyword">; </span><span class="comment">//$var_name will store the NAME of the new variable<br /><br />//Let's assign a value to that [$new_variable_1] variable:<br /></span><span class="keyword">$</span><span class="default">$var_name&nbsp; </span><span class="keyword">= </span><span class="string">"value 1"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_1 = "value 1"<br /><br /></span><span class="keyword">echo </span><span class="string">"VARIABLE: " </span><span class="keyword">. </span><span class="default">$var_name</span><span class="keyword">;<br />echo </span><span class="string">"&lt;br /&gt;"</span><span class="keyword">;<br />echo </span><span class="string">"VALUE: " </span><span class="keyword">. $</span><span class="default">$var_name</span><span class="keyword">;<br /></span><span class="default">?&gt;<br /></span><br />The OUTPUT is:<br />VARIABLE: new_variable_1<br />VALUE: value 1 <br /><br />You can also create new variables in a loop:<br /><span class="default">&lt;?php<br /><br /></span><span class="keyword">for( </span><span class="default">$i </span><span class="keyword">= </span><span class="default">1</span><span class="keyword">; </span><span class="default">$i </span><span class="keyword">&lt; </span><span class="default">6</span><span class="keyword">; </span><span class="default">$i</span><span class="keyword">++ )<br />{<br /></span><span class="default">$var_name</span><span class="keyword">[] = </span><span class="string">"new_variable_" </span><span class="keyword">. </span><span class="default">$i</span><span class="keyword">; </span><span class="comment">//$var_name[] will hold the new variable NAME<br /></span><span class="keyword">}<br /><br />${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">0</span><span class="keyword">]}&nbsp; = </span><span class="string">"value 1"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_1 = "value 1"<br /></span><span class="keyword">${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">1</span><span class="keyword">]}&nbsp; = </span><span class="string">"value 2"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_2 = "value 2"<br /></span><span class="keyword">${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">2</span><span class="keyword">]}&nbsp; = </span><span class="string">"value 3"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_3 = "value 3"<br /></span><span class="keyword">${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">3</span><span class="keyword">]}&nbsp; = </span><span class="string">"value 4"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_4 = "value 4"<br /></span><span class="keyword">${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">4</span><span class="keyword">]}&nbsp; = </span><span class="string">"value 5"</span><span class="keyword">; </span><span class="comment">//Value of $new_variable_5 = "value 5"<br /><br /></span><span class="keyword">echo </span><span class="string">"VARIABLE: " </span><span class="keyword">. </span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">0</span><span class="keyword">] . </span><span class="string">"\n"</span><span class="keyword">;<br />echo </span><span class="string">"&lt;br /&gt;"</span><span class="keyword">;<br />echo </span><span class="string">"VALUE: " </span><span class="keyword">. ${</span><span class="default">$var_name</span><span class="keyword">[</span><span class="default">0</span><span class="keyword">]};<br /></span><span class="default">?&gt;<br /></span><br />The OUTPUT is:<br />VARIABLE: new_variable_1<br />VALUE: value 1</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="113168">  <div class="votes">
-    <div id="Vu113168">
-    <a href="https://www.php.net/manual/vote-note.php?id=113168&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd113168">
-    <a href="https://www.php.net/manual/vote-note.php?id=113168&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V113168" title="47% like this...">
-    -1
-    </div>
-  </div>
-  <a href="#113168" class="name">
-  <strong class="user"><em>coviex at gmail dot com</em></strong></a><a class="genanchor" href="#113168"> &para;</a><div class="date" title="2013-09-08 02:31"><strong>9 years ago</strong></div>
-  <div class="text" id="Hcom113168">
-<div class="phpcode"><code><span class="html">
-In 5.4 "Dynamic class references require the fully qualified class name (with the namespace in it) because at runtime there is no information about the current namespace." is still true.<br />Neither simple class name nor containing subnamespace works.<br />Initial source: <a href="https://bugs.php.net/bug.php?id=45197" rel="nofollow" target="_blank">https://bugs.php.net/bug.php?id=45197</a></span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="10034">  <div class="votes">
-    <div id="Vu10034">
-    <a href="https://www.php.net/manual/vote-note.php?id=10034&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd10034">
-    <a href="https://www.php.net/manual/vote-note.php?id=10034&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V10034" title="46% like this...">
-    -2
-    </div>
-  </div>
-  <a href="#10034" class="name">
-  <strong class="user"><em>dnl at au dot ru</em></strong></a><a class="genanchor" href="#10034"> &para;</a><div class="date" title="2000-12-08 11:01"><strong>22 years ago</strong></div>
-  <div class="text" id="Hcom10034">
-<div class="phpcode"><code><span class="html">
-By the way...<br />Variable variables can be used as pointers to objects' properties:<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">someclass </span><span class="keyword">{<br />&nbsp; var </span><span class="default">$a </span><span class="keyword">= </span><span class="string">"variable a"</span><span class="keyword">;<br />&nbsp; var </span><span class="default">$b </span><span class="keyword">= </span><span class="string">"another variable: b"</span><span class="keyword">;<br />&nbsp; }<br /><br /></span><span class="default">$c </span><span class="keyword">= new </span><span class="default">someclass</span><span class="keyword">;<br /></span><span class="default">$d </span><span class="keyword">= </span><span class="string">"b"</span><span class="keyword">;<br />echo </span><span class="default">$c</span><span class="keyword">-&gt;{</span><span class="default">$d</span><span class="keyword">};<br /></span><span class="default">?&gt;<br /></span><br />outputs: another variable: b</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="79460">  <div class="votes">
-    <div id="Vu79460">
-    <a href="https://www.php.net/manual/vote-note.php?id=79460&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd79460">
-    <a href="https://www.php.net/manual/vote-note.php?id=79460&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V79460" title="45% like this...">
-    -2
-    </div>
-  </div>
-  <a href="#79460" class="name">
-  <strong class="user"><em>correojulian33-php at yahoo dot es</em></strong></a><a class="genanchor" href="#79460"> &para;</a><div class="date" title="2007-11-28 06:59"><strong>15 years ago</strong></div>
-  <div class="text" id="Hcom79460">
-<div class="phpcode"><code><span class="html">
-This example may help to overcome the limitation on $this.<br /><br />Populate automatically fields of an object form a $_GET variable.<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">pp</span><span class="keyword">{<br />&nbsp;&nbsp; var </span><span class="default">$prop1</span><span class="keyword">=</span><span class="default">1</span><span class="keyword">,</span><span class="default">$prop2</span><span class="keyword">=</span><span class="default">2</span><span class="keyword">,</span><span class="default">$prop3</span><span class="keyword">=array(</span><span class="default">3</span><span class="keyword">,</span><span class="default">4</span><span class="keyword">,</span><span class="default">5</span><span class="keyword">);<br /><br />&nbsp;&nbsp; function </span><span class="default">fun1</span><span class="keyword">(){<br />&nbsp; &nbsp; &nbsp; </span><span class="default">$vars</span><span class="keyword">=</span><span class="default">get_class_vars</span><span class="keyword">(</span><span class="string">'pp'</span><span class="keyword">);<br />&nbsp; &nbsp; &nbsp; while(list(</span><span class="default">$var</span><span class="keyword">,</span><span class="default">$value</span><span class="keyword">)=</span><span class="default">each</span><span class="keyword">(</span><span class="default">$vars</span><span class="keyword">)){<br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; </span><span class="default">$ref</span><span class="keyword">=&amp; </span><span class="default">$this</span><span class="keyword">-&gt;</span><span class="default">$var</span><span class="keyword">;<br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; </span><span class="default">$ref</span><span class="keyword">=</span><span class="default">$_GET</span><span class="keyword">[</span><span class="default">$var</span><span class="keyword">];<br /><br />&nbsp; &nbsp; &nbsp; } </span><span class="comment">// while<br />&nbsp; &nbsp; &nbsp; </span><span class="default">var_dump</span><span class="keyword">(</span><span class="default">$this</span><span class="keyword">);<br />&nbsp;&nbsp; }<br />}<br /><br /></span><span class="default">$_GET</span><span class="keyword">[</span><span class="string">'prop1'</span><span class="keyword">]=</span><span class="string">"uno"</span><span class="keyword">;<br /></span><span class="default">$_GET</span><span class="keyword">[</span><span class="string">'prop2'</span><span class="keyword">]=</span><span class="string">"dos"</span><span class="keyword">;<br /></span><span class="default">$_GET</span><span class="keyword">[</span><span class="string">'prop3'</span><span class="keyword">]=array(</span><span class="string">'tres'</span><span class="keyword">,</span><span class="string">'cuatro'</span><span class="keyword">,</span><span class="string">'cinco'</span><span class="keyword">,</span><span class="string">'seis'</span><span class="keyword">);<br /><br /></span><span class="default">$p</span><span class="keyword">=new </span><span class="default">pp</span><span class="keyword">();<br /></span><span class="default">$p</span><span class="keyword">-&gt;</span><span class="default">fun1</span><span class="keyword">();<br /></span><span class="default">?&gt;<br /></span><br />output is ...<br /><br />object(pp)#1 (3) {<br />&nbsp; ["prop1"]=&gt;<br />&nbsp; &amp;string(3) "uno"<br />&nbsp; ["prop2"]=&gt;<br />&nbsp; &amp;string(3) "dos"<br />&nbsp; ["prop3"]=&gt;<br />&nbsp; &amp;array(4) {<br />&nbsp; &nbsp; [0]=&gt;<br />&nbsp; &nbsp; string(4) "tres"<br />&nbsp; &nbsp; [1]=&gt;<br />&nbsp; &nbsp; string(6) "cuatro"<br />&nbsp; &nbsp; [2]=&gt;<br />&nbsp; &nbsp; string(5) "cinco"<br />&nbsp; &nbsp; [3]=&gt;<br />&nbsp; &nbsp; string(4) "seis"<br />&nbsp; }<br />}</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="25023">  <div class="votes">
-    <div id="Vu25023">
-    <a href="https://www.php.net/manual/vote-note.php?id=25023&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd25023">
-    <a href="https://www.php.net/manual/vote-note.php?id=25023&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V25023" title="45% like this...">
-    -4
-    </div>
-  </div>
-  <a href="#25023" class="name">
-  <strong class="user"><em>jupp-mueller at t-online dot de</em></strong></a><a class="genanchor" href="#25023"> &para;</a><div class="date" title="2002-09-08 06:29"><strong>20 years ago</strong></div>
-  <div class="text" id="Hcom25023">
-<div class="phpcode"><code><span class="html">
-I found another undocumented/cool feature: variable member variables in classes. It's pretty easy:<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">foo </span><span class="keyword">{<br />&nbsp; function </span><span class="default">bar</span><span class="keyword">() {<br />&nbsp; &nbsp; </span><span class="default">$bar1 </span><span class="keyword">= </span><span class="string">"var1"</span><span class="keyword">;<br />&nbsp; &nbsp; </span><span class="default">$bar2 </span><span class="keyword">= </span><span class="string">"var2"</span><span class="keyword">;<br />&nbsp; &nbsp; </span><span class="default">$this</span><span class="keyword">-&gt;{</span><span class="default">$bar1</span><span class="keyword">}= </span><span class="string">"this "</span><span class="keyword">;<br />&nbsp; &nbsp; </span><span class="default">$this</span><span class="keyword">-&gt;{</span><span class="default">$bar2</span><span class="keyword">} = </span><span class="string">"works"</span><span class="keyword">;<br />&nbsp; }<br />}<br /><br /></span><span class="default">$test </span><span class="keyword">= new </span><span class="default">foo</span><span class="keyword">;<br /></span><span class="default">$test</span><span class="keyword">-&gt;</span><span class="default">bar</span><span class="keyword">();<br />echo </span><span class="default">$test</span><span class="keyword">-&gt;</span><span class="default">var1 </span><span class="keyword">. </span><span class="default">$test</span><span class="keyword">-&gt;</span><span class="default">var2</span><span class="keyword">;<br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="126036">  <div class="votes">
-    <div id="Vu126036">
-    <a href="https://www.php.net/manual/vote-note.php?id=126036&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd126036">
-    <a href="https://www.php.net/manual/vote-note.php?id=126036&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V126036" title="41% like this...">
-    -2
-    </div>
-  </div>
-  <a href="#126036" class="name">
-  <strong class="user"><em>derek at deperu dot com</em></strong></a><a class="genanchor" href="#126036"> &para;</a><div class="date" title="2021-04-23 07:14"><strong>2 years ago</strong></div>
-  <div class="text" id="Hcom126036">
-<div class="phpcode"><code><span class="html">
-How to use variable variables with for and foreach():<br /><br /><span class="default">&lt;?php<br />$obj_1 </span><span class="keyword">= array(</span><span class="string">"one" </span><span class="keyword">=&gt; </span><span class="string">"One"</span><span class="keyword">, </span><span class="string">"two" </span><span class="keyword">=&gt; </span><span class="string">"Two"</span><span class="keyword">, </span><span class="string">"three" </span><span class="keyword">=&gt; </span><span class="string">"Three"</span><span class="keyword">);<br /></span><span class="default">$obj_2 </span><span class="keyword">= array(</span><span class="string">"one" </span><span class="keyword">=&gt; </span><span class="string">"Four"</span><span class="keyword">, </span><span class="string">"two" </span><span class="keyword">=&gt; </span><span class="string">"Five"</span><span class="keyword">, </span><span class="string">"three" </span><span class="keyword">=&gt; </span><span class="string">"Six"</span><span class="keyword">);<br /></span><span class="default">$obj_3 </span><span class="keyword">= array(</span><span class="string">"one" </span><span class="keyword">=&gt; </span><span class="string">"Seven"</span><span class="keyword">, </span><span class="string">"two" </span><span class="keyword">=&gt; </span><span class="string">"Eight"</span><span class="keyword">, </span><span class="string">"three" </span><span class="keyword">=&gt; </span><span class="string">"Nine"</span><span class="keyword">);<br /><br />for (</span><span class="default">$i</span><span class="keyword">=</span><span class="default">1</span><span class="keyword">; </span><span class="default">$i </span><span class="keyword">&lt; </span><span class="default">4</span><span class="keyword">; </span><span class="default">$i</span><span class="keyword">++) { <br /><br />&nbsp; &nbsp; foreach (${</span><span class="string">"obj_"</span><span class="keyword">.</span><span class="default">$i</span><span class="keyword">} as </span><span class="default">$key </span><span class="keyword">=&gt; </span><span class="default">$value</span><span class="keyword">) {<br />&nbsp; &nbsp; &nbsp; &nbsp; <br />&nbsp; &nbsp; &nbsp; &nbsp; echo </span><span class="default">$key </span><span class="keyword">. </span><span class="string">': ' </span><span class="keyword">. </span><span class="default">$value</span><span class="keyword">.</span><span class="string">"\n"</span><span class="keyword">;<br /><br />&nbsp; &nbsp; }<br />}<br /></span><span class="default">?&gt;<br /></span><br />Result:<br /><br />one: One<br />two: Two<br />three: Three<br />one: Four<br />two: Five<br />three: Six<br />one: Seven<br />two: Eight<br />three: Nine</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="122793">  <div class="votes">
-    <div id="Vu122793">
-    <a href="https://www.php.net/manual/vote-note.php?id=122793&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd122793">
-    <a href="https://www.php.net/manual/vote-note.php?id=122793&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V122793" title="40% like this...">
-    -4
-    </div>
-  </div>
-  <a href="#122793" class="name">
-  <strong class="user"><em>houssemzitoun91 at gmail dot com</em></strong></a><a class="genanchor" href="#122793"> &para;</a><div class="date" title="2018-06-02 05:54"><strong>5 years ago</strong></div>
-  <div class="text" id="Hcom122793">
-<div class="phpcode"><code><span class="html">
-Even outside a function or a class method&nbsp; variable variables cannot be used with PHP's Superglobal arrays. See the example bellow:<br /><span class="default">&lt;?php<br /><br />$a </span><span class="keyword">= </span><span class="string">'$GLOBALS["a"]'</span><span class="keyword">;<br /><br />function </span><span class="default">foo</span><span class="keyword">()<br />{<br />&nbsp; &nbsp; &nbsp; &nbsp; global </span><span class="default">$a</span><span class="keyword">;<br />&nbsp; &nbsp; &nbsp; &nbsp; echo $</span><span class="default">$a</span><span class="keyword">;<br />}<br /><br />echo </span><span class="default">$GLOBALS</span><span class="keyword">[</span><span class="string">"a"</span><span class="keyword">], </span><span class="default">PHP_EOL</span><span class="keyword">; </span><span class="comment">// $GLOBALS["a"]<br /><br /></span><span class="keyword">echo ${</span><span class="default">$a</span><span class="keyword">}; </span><span class="comment">// PHP Notice:&nbsp; Undefined variable: $GLOBALS["a"]</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="9451">  <div class="votes">
-    <div id="Vu9451">
-    <a href="https://www.php.net/manual/vote-note.php?id=9451&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd9451">
-    <a href="https://www.php.net/manual/vote-note.php?id=9451&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V9451" title="40% like this...">
-    -5
-    </div>
-  </div>
-  <a href="#9451" class="name">
-  <strong class="user"><em>mccoyj at mail dot utexas dot edu</em></strong></a><a class="genanchor" href="#9451"> &para;</a><div class="date" title="2000-11-03 03:36"><strong>22 years ago</strong></div>
-  <div class="text" id="Hcom9451">
-<div class="phpcode"><code><span class="html">
-There is no need for the braces for variable object names...they are only needed by an ambiguity arises concerning which part of the reference is variable...usually with arrays.<br /><br /><span class="default">&lt;?php<br /></span><span class="keyword">class </span><span class="default">Schlemiel </span><span class="keyword">{<br />var </span><span class="default">$aVar </span><span class="keyword">= </span><span class="string">"foo"</span><span class="keyword">;<br />}<br /><br /></span><span class="default">$schlemiel </span><span class="keyword">= new </span><span class="default">Schlemiel</span><span class="keyword">;<br /></span><span class="default">$a </span><span class="keyword">= </span><span class="string">"schlemiel"</span><span class="keyword">;<br />echo $</span><span class="default">$a</span><span class="keyword">-&gt;</span><span class="default">aVar</span><span class="keyword">;<br /></span><span class="default">?&gt;<br /></span><br />This code outputs "foo" using PHP 4.0.3.<br /><br />Hope this helps...<br />- Jordan</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="125052">  <div class="votes">
-    <div id="Vu125052">
-    <a href="https://www.php.net/manual/vote-note.php?id=125052&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd125052">
-    <a href="https://www.php.net/manual/vote-note.php?id=125052&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V125052" title="29% like this...">
-    -7
-    </div>
-  </div>
-  <a href="#125052" class="name">
-  <strong class="user"><em>Alex</em></strong></a><a class="genanchor" href="#125052"> &para;</a><div class="date" title="2020-05-27 10:27"><strong>3 years ago</strong></div>
-  <div class="text" id="Hcom125052">
-<div class="phpcode"><code><span class="html">
-If you want to use Variable Variables with $_POST,<br />you may follow this example:<br /><br /><span class="default">&lt;?php<br /></span><span class="comment">// you created a form with variable names:<br /></span><span class="default">$_POST</span><span class="keyword">[</span><span class="string">'content_1'</span><span class="keyword">] = </span><span class="string">"blabla"</span><span class="keyword">;<br /></span><span class="default">$_POST</span><span class="keyword">[</span><span class="string">'content_2'</span><span class="keyword">] = </span><span class="string">"blublu"</span><span class="keyword">; <br /></span><span class="comment">// ...<br /></span><span class="default">$_POST</span><span class="keyword">[</span><span class="string">'content_99'</span><span class="keyword">] = </span><span class="string">"bleble"</span><span class="keyword">; <br /><br /></span><span class="comment">// Then, you can use a loop:<br /><br /></span><span class="keyword">for (</span><span class="default">$i</span><span class="keyword">=</span><span class="default">1</span><span class="keyword">; </span><span class="default">$i</span><span class="keyword">&lt;</span><span class="default">99</span><span class="keyword">;</span><span class="default">$i</span><span class="keyword">++)<br />{<br />echo </span><span class="default">$_POST</span><span class="keyword">[</span><span class="string">"content_</span><span class="default">$i</span><span class="string">"</span><span class="keyword">];<br />}<br /><br /></span><span class="default">?&gt;</span>
-</span>
-</code></div>
-  </div>
- </div>
-  <div class="note" id="127526">  <div class="votes">
-    <div id="Vu127526">
-    <a href="https://www.php.net/manual/vote-note.php?id=127526&amp;page=language.variables.variable&amp;vote=up" title="Vote up!" class="usernotes-voteu">up</a>
-    </div>
-    <div id="Vd127526">
-    <a href="https://www.php.net/manual/vote-note.php?id=127526&amp;page=language.variables.variable&amp;vote=down" title="Vote down!" class="usernotes-voted">down</a>
-    </div>
-    <div class="tally" id="V127526" title="20% like this...">
-    -3
-    </div>
-  </div>
-  <a href="#127526" class="name">
-  <strong class="user"><em>Anonymous</em></strong></a><a class="genanchor" href="#127526"> &para;</a><div class="date" title="2022-08-24 02:54"><strong>10 months ago</strong></div>
-  <div class="text" id="Hcom127526">
-<div class="phpcode"><code><span class="html">
-I've found this could be useful in some way for using on multidimensional arrays:<br /><br />&nbsp; &nbsp; &nbsp;&nbsp; $f="1";$g="2";$h="3";<br />&nbsp; &nbsp; &nbsp; &nbsp; $m="4";$n="5";$b="6";<br />&nbsp; &nbsp; &nbsp; &nbsp; $q="7";$w="8";$e="9";<br />&nbsp; &nbsp; &nbsp; &nbsp; $s="10";$d="11";$a="12";<br />&nbsp; &nbsp; &nbsp; &nbsp; $l="13";$o="14";$p="15";<br />&nbsp; &nbsp; &nbsp; &nbsp; $x="16";$c="17";$v="18";<br />&nbsp; &nbsp; &nbsp; &nbsp; <br />&nbsp; &nbsp; &nbsp; &nbsp; $one=["f","g","h"];<br />&nbsp; &nbsp; &nbsp; &nbsp; $two=["m","n","b"];<br />&nbsp; &nbsp; &nbsp; &nbsp; $three=["q","w","e"];<br />&nbsp; &nbsp; &nbsp; &nbsp; $four=["s","d","a"];<br />&nbsp; &nbsp; &nbsp; &nbsp; $five=["l","o","p"];<br />&nbsp; &nbsp; &nbsp; &nbsp; $six=["x","c","v"]; <br />&nbsp; &nbsp; &nbsp; &nbsp; <br /><br />&nbsp; &nbsp; &nbsp; &nbsp; <br />&nbsp; &nbsp; &nbsp; &nbsp; $first = array("one", "two", "three") ;<br />&nbsp; &nbsp; &nbsp; &nbsp; $second = array("four", "five", "six") ;<br /><br />&nbsp; &nbsp; &nbsp; &nbsp; $a = ["first","second"] ;<br />&nbsp; &nbsp; &nbsp; &nbsp; <br />&nbsp; &nbsp; &nbsp; &nbsp; print_r(${${${$a[1]}[1]}[1]});&nbsp; &nbsp; // 16</span>
-</code></div>
-  </div>
- </div></div>
-<div class="foot"><a href="https://www.php.net/manual/add-note.php?sect=language.variables.variable&amp;redirect=https://www.php.net/manual/zh/language.variables.variable.php">＋<small>add a note</small></a></div>
-</section>    </section><!-- layout-content -->
-        <aside class='layout-menu'>
-
-        <ul class='parent-menu-list'>
-                                    <li>
-                <a href="https://www.php.net/manual/zh/language.variables.php">变量</a>
-
-                                    <ul class='child-menu-list'>
-
-                                                <li class="">
-                            <a href="https://www.php.net/manual/zh/language.variables.basics.php" title="基础">基础</a>
-                        </li>
-                                                <li class="">
-                            <a href="https://www.php.net/manual/zh/language.variables.predefined.php" title="预定义变量">预定义变量</a>
-                        </li>
-                                                <li class="">
-                            <a href="https://www.php.net/manual/zh/language.variables.scope.php" title="变量范围">变量范围</a>
-                        </li>
-                                                <li class="current">
-                            <a href="language.variables.variable.php.html" title="可变变量">可变变量</a>
-                        </li>
-                                                <li class="">
-                            <a href="https://www.php.net/manual/zh/language.variables.external.php" title="来自 PHP 之外的变量">来自 PHP 之外的变量</a>
-                        </li>
-                        
-                    </ul>
-                
-            </li>
-                        
-                    </ul>
-    </aside>
-
-
-  </div><!-- layout -->
-
-  <footer>
-    <div class="container footer-content">
-      <div class="row-fluid">
-      <ul class="footmenu">
-        <li><a href="https://www.php.net/copyright.php">Copyright &copy; 2001-2023 The PHP Group</a></li>
-        <li><a href="https://www.php.net/my.php">My PHP.net</a></li>
-        <li><a href="https://www.php.net/contact.php">Contact</a></li>
-        <li><a href="https://www.php.net/sites.php">Other PHP.net sites</a></li>
-        <li><a href="https://www.php.net/privacy.php">Privacy policy</a></li>
-      </ul>
-      </div>
-    </div>
-  </footer>
-
-    
- <!-- External and third party libraries. -->
- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://www.php.net/cached.php?t=1657730402&amp;f=/js/ext/hogan-3.0.2.min.js"></script>
-<script src="https://www.php.net/cached.php?t=1421837618&amp;f=/js/ext/typeahead.min.js"></script>
-<script src="https://www.php.net/cached.php?t=1657876202&amp;f=/js/ext/mousetrap.min.js"></script>
-<script src="https://www.php.net/cached.php?t=1657730402&amp;f=/js/ext/jquery.scrollTo.min.js"></script>
-<script src="https://www.php.net/cached.php?t=1653918602&amp;f=/js/search.js"></script>
-<script src="https://www.php.net/cached.php?t=1671018002&amp;f=/js/common.js"></script>
-
-<a id="toTop" href="javascript:;"><span id="toTopHover"></span><img width="40" height="40" alt="To Top" src="https://www.php.net/images/to-top@2x.png"></a>
-
-</body>
-</html>

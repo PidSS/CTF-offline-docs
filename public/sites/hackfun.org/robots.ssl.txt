@@ -1,3 +1,0 @@
-User-agent: *
-Disallow:
-Sitemap: https://shmilylty.github.io/sitemap.xml

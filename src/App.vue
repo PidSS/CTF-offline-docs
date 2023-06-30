@@ -42,7 +42,6 @@ onMounted(()=>{
 
     #content {
         width: 80vw;
-        height: 80vh;
         margin: auto;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
